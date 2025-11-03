@@ -19,7 +19,7 @@
 
 替代方案（Node CLI：msdf-bmfont-xml）
 - 亦可使用 CLI 產生點陣字；Phaser 建議使用傳統 `.fnt + .png` 位圖輸出。
-- 已提供 PowerShell 腳本：`generate-font.ps1`（中文註解），可直接在此資料夾執行。
+- 已提供 PowerShell 腳本：`generate-font.ps1`（中文註解），可直接在此資料夾執行。腳本會自動偵測工具版本支援的參數（`--charset`/`--chars-file`/`--chars`），若不支援則輸出完整字集。
 
 注意事項
 - 目前 UI 的中文字集見 `charset_zh-Hant.txt`，若有新字請補上並重新產生字型。
