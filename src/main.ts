@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { ConcourseScene } from './scenes/ConcourseScene';
 import { StoreScene } from './scenes/StoreScene';
 import { UIOverlay } from './ui/UIOverlay';
+import { BootScene } from './scenes/BootScene';
 
 export const GAME_WIDTH = 320;
 export const GAME_HEIGHT = 180;
@@ -18,7 +19,7 @@ const config: Phaser.Types.Core.GameConfig = {
   render: { antialias: false, pixelArt: true, roundPixels: true },
   physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.NONE },
-  scene: [ConcourseScene, StoreScene, UIOverlay],
+  scene: [BootScene, ConcourseScene, StoreScene, UIOverlay],
 };
 
 const game = new Phaser.Game(config);
@@ -28,9 +29,8 @@ game.registry.set('money', 3000);
 game.registry.set('timeRemaining', 60 * 5);
 game.registry.set('basket', [] as { id: string; name: string; price: number }[]);
 
-// Start scenes
-game.scene.start('ConcourseScene');
-game.scene.launch('UIOverlay');
+// Start boot (will launch main scenes after preloading optional fonts)
+game.scene.start('BootScene');
 
 // Scaling: always use integer scaling for crisp pixels
 let integerScalePreferred = true;

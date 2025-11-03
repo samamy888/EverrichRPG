@@ -100,7 +100,9 @@ export class ConcourseScene extends Phaser.Scene {
     this.layer.setCollision([BORDER, FACADE], true);
 
     // Signage
-    this.add.text(GAME_WIDTH - 112, 8, t('concourse.sign'), { fontSize: '10px', color: '#cce8ff', resolution: 2 });
+    const hasHan = this.cache.bitmapFont.exists('han');
+    if (hasHan) this.add.bitmapText(GAME_WIDTH - 112, 4, 'han', t('concourse.sign'), 12).setTint(0xcce8ff);
+    else this.add.text(GAME_WIDTH - 112, 8, t('concourse.sign'), { fontSize: '10px', color: '#cce8ff', resolution: 2 });
 
     // Player
     const p = this.add.image(0, 0, 'sprite-player');
@@ -116,7 +118,9 @@ export class ConcourseScene extends Phaser.Scene {
     this.spawnCrowd();
 
     // Hint
-    this.hint = this.add.text(6, 6, t('concourse.hintMoveEnter'), { fontSize: '10px', color: '#e6f0ff', resolution: 2 });
+    this.hint = hasHan
+      ? (this.add.bitmapText(6, 4, 'han', t('concourse.hintMoveEnter'), 12).setTint(0xe6f0ff) as any)
+      : this.add.text(6, 6, t('concourse.hintMoveEnter'), { fontSize: '10px', color: '#e6f0ff', resolution: 2 });
 
     this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
     this.cameras.main.setRoundPixels(true);
@@ -150,13 +154,14 @@ export class ConcourseScene extends Phaser.Scene {
     // Door interaction
     const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.doorWorld.x, this.doorWorld.y);
     if (dist < 18) {
-      this.hint.setText(t('concourse.hintEnter'));
+      if (hasHan && 'setText' in this.hint) (this.hint as any).setText(t('concourse.hintEnter'));
+      else (this.hint as any).setText(t('concourse.hintEnter'));
       if (Phaser.Input.Keyboard.JustDown(this.keys.E)) {
         this.scene.pause();
         this.scene.launch('StoreScene', { storeId: 'cosmetics' });
       }
     } else {
-      this.hint.setText(t('concourse.hintMoveEnter'));
+      (this.hint as any).setText(t('concourse.hintMoveEnter'));
     }
 
     // Countdown time
