@@ -1,10 +1,14 @@
 import Phaser from 'phaser';
 import { t } from '../i18n';
+import { registerTinyBitmapFont } from './BitmapFont';
 
 export class UIOverlay extends Phaser.Scene {
-  private timeText!: Phaser.GameObjects.Text;
-  private moneyText!: Phaser.GameObjects.Text;
-  private basketText!: Phaser.GameObjects.Text;
+  private timeLabel!: Phaser.GameObjects.Text;
+  private moneyLabel!: Phaser.GameObjects.Text;
+  private basketLabel!: Phaser.GameObjects.Text;
+  private timeValue!: Phaser.GameObjects.BitmapText;
+  private moneyValue!: Phaser.GameObjects.BitmapText;
+  private basketValue!: Phaser.GameObjects.BitmapText;
 
   constructor() { super('UIOverlay'); }
 
@@ -13,12 +17,18 @@ export class UIOverlay extends Phaser.Scene {
     this.cameras.main.setAlpha(0);
     this.cameras.main.setRoundPixels(true);
 
-    this.timeText = this.add.text(4, 2, '', { fontSize: '10px', color: '#ffd966', resolution: 2 }).setDepth(1000);
-    this.moneyText = this.add.text(120, 2, '', { fontSize: '10px', color: '#cfe2f3', resolution: 2 }).setDepth(1000);
-    this.basketText = this.add.text(220, 2, '', { fontSize: '10px', color: '#d9ead3', resolution: 2 }).setDepth(1000);
-    this.timeText.setResolution?.(2);
-    this.moneyText.setResolution?.(2);
-    this.basketText.setResolution?.(2);
+    // Register bitmap font for numeric values
+    registerTinyBitmapFont(this);
+
+    // Labels (Chinese)
+    this.timeLabel = this.add.text(4, 2, '時間 ', { fontSize: '10px', color: '#ffd966', resolution: 2 }).setDepth(1000);
+    this.moneyLabel = this.add.text(110, 2, '金額 ', { fontSize: '10px', color: '#cfe2f3', resolution: 2 }).setDepth(1000);
+    this.basketLabel = this.add.text(200, 2, '購物籃 ', { fontSize: '10px', color: '#d9ead3', resolution: 2 }).setDepth(1000);
+
+    // Values (ASCII via bitmap font, very crisp)
+    this.timeValue = this.add.bitmapText(this.timeLabel.x + this.timeLabel.width, 3, 'tiny5x7', '00:00', 10).setDepth(1000);
+    this.moneyValue = this.add.bitmapText(this.moneyLabel.x + this.moneyLabel.width, 3, 'tiny5x7', '$0', 10).setDepth(1000);
+    this.basketValue = this.add.bitmapText(this.basketLabel.x + this.basketLabel.width, 3, 'tiny5x7', '$0', 10).setDepth(1000);
 
     this.registry.events.on('changedata', this.onDataChanged, this);
     this.refresh();
@@ -38,8 +48,8 @@ export class UIOverlay extends Phaser.Scene {
     const basket = ((this.registry.get('basket') as { price: number }[]) ?? []);
     const basketTotal = basket.reduce((s, b) => s + b.price, 0);
 
-    this.timeText.setText(t('ui.time', { mm, ss }));
-    this.moneyText.setText(t('ui.money', { money }));
-    this.basketText.setText(t('ui.basket', { total: basketTotal }));
+    this.timeValue.setText(`${mm}:${ss}`);
+    this.moneyValue.setText(`$${money}`);
+    this.basketValue.setText(`$${basketTotal}`);
   }
 }
