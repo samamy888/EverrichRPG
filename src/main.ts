@@ -18,7 +18,7 @@ const config: Phaser.Types.Core.GameConfig = {
   pixelArt: true,
   render: { antialias: false, pixelArt: true, roundPixels: true },
   physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
-  scale: { mode: Phaser.Scale.NONE },
+  scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.NO_CENTER },
   scene: [BootScene, ConcourseScene, StoreScene, UIOverlay],
 };
 
@@ -32,28 +32,16 @@ game.registry.set('basket', [] as { id: string; name: string; price: number }[])
 // Start boot (will launch main scenes after preloading optional fonts)
 game.scene.start('BootScene');
 
-// Scaling: always use integer scaling for crisp pixels
-let integerScalePreferred = true;
-
-function applyScale() {
-  const cw = appContainer.clientWidth || window.innerWidth;
-  const ch = appContainer.clientHeight || window.innerHeight;
-  const canvas = game.canvas as HTMLCanvasElement;
-  (canvas.style as any).imageRendering = 'pixelated';
-
-  // Try 6x first if space allows
-  const scale6 = 6;
-  const can6 = GAME_WIDTH * scale6 <= cw && GAME_HEIGHT * scale6 <= ch;
-  let w: number, h: number;
-  if (integerScalePreferred && can6) {
-    w = GAME_WIDTH * scale6; h = GAME_HEIGHT * scale6;
-  } else {
-    const maxScale = Math.max(1, Math.floor(Math.min(cw / GAME_WIDTH, ch / GAME_HEIGHT)));
-    w = GAME_WIDTH * maxScale; h = GAME_HEIGHT * maxScale;
-  }
-  if ((game.scale as any).resize) (game.scale as any).resize(w, h);
-  canvas.style.width = `${w}px`; canvas.style.height = `${h}px`;
+// 原生滿版：使用 RESIZE 讓 canvas 跟隨視窗大小，並以相機 zoom 做整數縮放（不做 CSS 縮放）
+function applyCameraZoom() {
+  const w = game.scale.width;
+  const h = game.scale.height;
+  // 以設計解析度計算整數 zoom（320x180 為基準）
+  const zoom = Math.max(1, Math.floor(Math.min(w / GAME_WIDTH, h / GAME_HEIGHT)));
+  game.scene.getScenes(true).forEach(s => {
+    s.cameras?.main?.setZoom(zoom).setRoundPixels(true);
+  });
 }
 
-window.addEventListener('resize', applyScale);
-applyScale();
+game.scale.on('resize', applyCameraZoom);
+window.addEventListener('load', applyCameraZoom);

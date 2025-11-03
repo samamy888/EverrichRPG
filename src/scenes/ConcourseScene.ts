@@ -124,6 +124,7 @@ export class ConcourseScene extends Phaser.Scene {
       ? (this.add.bitmapText(6, 4, 'han', t('concourse.hintMoveEnter'), 12).setTint(0xe6f0ff) as any)
       : this.add.text(6, 6, t('concourse.hintMoveEnter'), { fontSize: '12px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
 
+    // 物理世界使用設計解析度，視圖大小由相機 zoom 控制
     this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
     this.cameras.main.setRoundPixels(true);
   }
