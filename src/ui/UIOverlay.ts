@@ -29,7 +29,7 @@ export class UIOverlay extends Phaser.Scene {
       this.moneyLabelBmp = this.add.bitmapText(110, 3, 'han', '金額 ', 12).setDepth(1000).setTint(0xcfe2f3);
       this.basketLabelBmp = this.add.bitmapText(200, 3, 'han', '購物籃 ', 12).setDepth(1000).setTint(0xd9ead3);
     } else {
-      const base = { fontSize: '10px', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' } as any;
+      const base = { fontSize: '12px', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' } as any;
       this.timeLabelText = this.add.text(4, 2, '時間 ', { ...base, color: '#ffd966' }).setDepth(1000);
       this.moneyLabelText = this.add.text(110, 2, '金額 ', { ...base, color: '#cfe2f3' }).setDepth(1000);
       this.basketLabelText = this.add.text(200, 2, '購物籃 ', { ...base, color: '#d9ead3' }).setDepth(1000);
@@ -39,9 +39,9 @@ export class UIOverlay extends Phaser.Scene {
     const tlx = (this.timeLabelBmp?.x ?? this.timeLabelText!.x) + (this.timeLabelBmp?.width ?? this.timeLabelText!.width);
     const mlx = (this.moneyLabelBmp?.x ?? this.moneyLabelText!.x) + (this.moneyLabelBmp?.width ?? this.moneyLabelText!.width);
     const blx = (this.basketLabelBmp?.x ?? this.basketLabelText!.x) + (this.basketLabelBmp?.width ?? this.basketLabelText!.width);
-    this.timeValue = this.add.bitmapText(tlx, 3, 'tiny5x7', '00:00', 10).setDepth(1000);
-    this.moneyValue = this.add.bitmapText(mlx, 3, 'tiny5x7', '$0', 10).setDepth(1000);
-    this.basketValue = this.add.bitmapText(blx, 3, 'tiny5x7', '$0', 10).setDepth(1000);
+    this.timeValue = this.add.bitmapText(tlx, 4, 'tiny5x7', '00:00', 10).setDepth(1000);
+    this.moneyValue = this.add.bitmapText(mlx, 4, 'tiny5x7', '$0', 10).setDepth(1000);
+    this.basketValue = this.add.bitmapText(blx, 4, 'tiny5x7', '$0', 10).setDepth(1000);
 
     this.registry.events.on('changedata', this.onDataChanged, this);
 

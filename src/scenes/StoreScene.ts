@@ -28,10 +28,10 @@ export class StoreScene extends Phaser.Scene {
     const title = this.storeId === 'cosmetics' ? t('store.title.cosmetics') : t('store.title.liquor');
     if (this.hasHanBitmap) {
       this.add.bitmapText(8, 4, 'han', title, 12).setTint(0xcce8ff);
-      this.add.bitmapText(8, 16, 'han', t('store.hint'), 10).setTint(0x9fb3c8);
+      this.add.bitmapText(8, 18, 'han', t('store.hint'), 12).setTint(0x9fb3c8);
     } else {
       this.add.text(8, 6, title, { fontSize: '12px', color: '#cce8ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
-      this.add.text(8, 18, t('store.hint'), { fontSize: '10px', color: '#9fb3c8', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
+      this.add.text(8, 18, t('store.hint'), { fontSize: '12px', color: '#9fb3c8', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
     }
     this.renderList();
   }
@@ -41,14 +41,14 @@ export class StoreScene extends Phaser.Scene {
     this.rows = [];
     const data = items.filter(i => i.store === this.storeId);
     data.forEach((it, idx) => {
-      const y = 36 + idx * 12;
+      const y = 36 + idx * 14;
       const prefix = idx === this.selected ? '>' : ' ';
       const line = `${prefix} ${it.name}  $${it.price}`;
       if (this.hasHanBitmap) {
         const txt = this.add.bitmapText(12, y - 2, 'han', line, 12).setTint(idx === this.selected ? 0xffffff : 0xc0c8d0);
         this.rows.push(txt as any);
       } else {
-        const txt = this.add.text(12, y, line, { fontSize: '10px', color: idx === this.selected ? '#ffffff' : '#c0c8d0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
+        const txt = this.add.text(12, y, line, { fontSize: '12px', color: idx === this.selected ? '#ffffff' : '#c0c8d0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
         this.rows.push(txt);
       }
     });
@@ -58,9 +58,9 @@ export class StoreScene extends Phaser.Scene {
     const total = basket.reduce((s, b) => s + b.price, 0);
     this.add.rectangle(0, 0, this.scale.width, 16, 0x000000, 0.25).setOrigin(0);
     if (this.hasHanBitmap) {
-      (this.add.bitmapText(150, 4, 'han', t('store.status', { money, total }), 10).setTint(0xe6f0ff) as any).setOrigin?.(0, 0.5);
+      (this.add.bitmapText(150, 6, 'han', t('store.status', { money, total }), 12).setTint(0xe6f0ff) as any).setOrigin?.(0, 0.5);
     } else {
-      this.add.text(150, 7, t('store.status', { money, total }), { fontSize: '10px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setOrigin(0, 0.5);
+      this.add.text(150, 7, t('store.status', { money, total }), { fontSize: '12px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setOrigin(0, 0.5);
     }
   }
 
