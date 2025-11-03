@@ -3,7 +3,7 @@
 # 建議：使用 AngelCode BMFont（圖形介面）更直覺；此腳本提供指令列備選方案。
 
 param(
-  [string]$TtfPath = "C:\\Windows\\Fonts\\msyh.ttf",   # 預設路徑（請改成你的 TTF/OTF；.ttc 可能失敗）
+  [string]$TtfPath = "C:\\Windows\\Fonts\\Arial.ttf",   # 預設路徑（請改成你的 TTF/OTF；.ttc 可能失敗）
   [int]$FontSize = 16,                                      # 字體大小（12~16 建議）
   [string]$Charset = "charset_zh-Hant.txt",                # 字集檔案路徑（相對於本資料夾）
   [string]$OutBase = "han",                                # 輸出檔名（han.fnt / han.png）
@@ -66,7 +66,37 @@ Write-Host "[執行] $exe $($args -join ' ')"
 $procOut = & $exe @args 2>&1
 $procOut | Write-Host
 
-if (Test-Path "$OutBase.fnt" -and Test-Path "$OutBase.png") {
+# 若遇到 unknown option for charset 參數，移除 charset 重新嘗試一次
+if ($LASTEXITCODE -ne 0 -and ($procOut -match 'unknown option .*charset' -or $procOut -match 'Unknown option .*charset')) {
+  Write-Host "[提示] 工具不支援 charset 參數，改以完整字集重新產生…"
+  $args = $base  # 不帶任何 charset 相關參數
+  Write-Host "[執行] $exe $($args -join ' ')"
+  $procOut = & $exe @args 2>&1
+  $procOut | Write-Host
+}
+
+# 若回報 too many arguments，嘗試移除 --texture-size 或改為 1024x1024 再試
+if ($LASTEXITCODE -ne 0 -and ($procOut -match 'too many arguments')) {
+  Write-Host "[提示] 參數過多，嘗試移除 --texture-size 再執行…"
+  $noTexArgs = $args | Where-Object { $_ -ne '--texture-size' -and ($_ -ne $TextureSize) }
+  Write-Host "[執行] $exe $($noTexArgs -join ' ')"
+  $procOut = & $exe @noTexArgs 2>&1
+  $procOut | Write-Host
+
+  if ($LASTEXITCODE -ne 0) {
+    Write-Host "[提示] 改用 1024x1024 格式重試…"
+    $texX = ($TextureSize -replace ',', 'x')
+    $withX = @()
+    for ($i=0; $i -lt $args.Count; $i++) {
+      if ($args[$i] -eq '--texture-size') { $withX += '--texture-size'; $withX += $texX; $i++ } else { $withX += $args[$i] }
+    }
+    Write-Host "[執行] $exe $($withX -join ' ')"
+    $procOut = & $exe @withX 2>&1
+    $procOut | Write-Host
+  }
+}
+
+if ((Test-Path "$OutBase.fnt") -and (Test-Path "$OutBase.png")) {
   Write-Host "[完成] 已輸出 $OutBase.fnt 與 $OutBase.png"
 } else {
   Write-Host "[提醒] 產生失敗。可能原因："

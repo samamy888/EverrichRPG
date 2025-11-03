@@ -1,0 +1,7 @@
+/* 將你的中文字型檔放到同資料夾，命名為 han.woff2（或修改下方 src） */
+@font-face {
+  font-family: 'HanPixel';
+  src: url('/fonts/han.woff2') format('woff2');
+  font-display: swap;
+}
+

@@ -23,15 +23,18 @@ export class UIOverlay extends Phaser.Scene {
     // Register bitmap font for numeric values
     registerTinyBitmapFont(this);
 
-    const hasHan = this.cache.bitmapFont.exists('han');
+    const hasHanBitmap = this.cache.bitmapFont.exists('han');
+    const hasHanWeb = (document as any).fonts?.check?.('12px HanPixel') === true;
+    const hasHan = hasHanBitmap || hasHanWeb;
     if (hasHan) {
       this.timeLabelBmp = this.add.bitmapText(4, 3, 'han', '時間 ', 12).setDepth(1000).setTint(0xffd966);
       this.moneyLabelBmp = this.add.bitmapText(110, 3, 'han', '金額 ', 12).setDepth(1000).setTint(0xcfe2f3);
       this.basketLabelBmp = this.add.bitmapText(200, 3, 'han', '購物籃 ', 12).setDepth(1000).setTint(0xd9ead3);
     } else {
-      this.timeLabelText = this.add.text(4, 2, '時間 ', { fontSize: '10px', color: '#ffd966', resolution: 2 }).setDepth(1000);
-      this.moneyLabelText = this.add.text(110, 2, '金額 ', { fontSize: '10px', color: '#cfe2f3', resolution: 2 }).setDepth(1000);
-      this.basketLabelText = this.add.text(200, 2, '購物籃 ', { fontSize: '10px', color: '#d9ead3', resolution: 2 }).setDepth(1000);
+      const base = { fontSize: '10px', resolution: 2, fontFamily: hasHanWeb ? 'HanPixel, system-ui, sans-serif' : undefined } as any;
+      this.timeLabelText = this.add.text(4, 2, '時間 ', { ...base, color: '#ffd966' }).setDepth(1000);
+      this.moneyLabelText = this.add.text(110, 2, '金額 ', { ...base, color: '#cfe2f3' }).setDepth(1000);
+      this.basketLabelText = this.add.text(200, 2, '購物籃 ', { ...base, color: '#d9ead3' }).setDepth(1000);
     }
 
     // Values (ASCII via bitmap font, very crisp)

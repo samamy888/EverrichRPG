@@ -100,9 +100,11 @@ export class ConcourseScene extends Phaser.Scene {
     this.layer.setCollision([BORDER, FACADE], true);
 
     // Signage
-    const hasHan = this.cache.bitmapFont.exists('han');
-    if (hasHan) this.add.bitmapText(GAME_WIDTH - 112, 4, 'han', t('concourse.sign'), 12).setTint(0xcce8ff);
-    else this.add.text(GAME_WIDTH - 112, 8, t('concourse.sign'), { fontSize: '10px', color: '#cce8ff', resolution: 2 });
+    const hasHanBitmap = this.cache.bitmapFont.exists('han');
+    const hasHanWeb = (document as any).fonts?.check?.('12px HanPixel') === true;
+    const hasHan = hasHanBitmap || hasHanWeb;
+    if (hasHanBitmap) this.add.bitmapText(GAME_WIDTH - 112, 4, 'han', t('concourse.sign'), 12).setTint(0xcce8ff);
+    else this.add.text(GAME_WIDTH - 112, 8, t('concourse.sign'), { fontSize: '10px', color: '#cce8ff', resolution: 2, fontFamily: hasHanWeb ? 'HanPixel, system-ui, sans-serif' : undefined });
 
     // Player
     const p = this.add.image(0, 0, 'sprite-player');
@@ -118,9 +120,9 @@ export class ConcourseScene extends Phaser.Scene {
     this.spawnCrowd();
 
     // Hint
-    this.hint = hasHan
+    this.hint = hasHanBitmap
       ? (this.add.bitmapText(6, 4, 'han', t('concourse.hintMoveEnter'), 12).setTint(0xe6f0ff) as any)
-      : this.add.text(6, 6, t('concourse.hintMoveEnter'), { fontSize: '10px', color: '#e6f0ff', resolution: 2 });
+      : this.add.text(6, 6, t('concourse.hintMoveEnter'), { fontSize: '10px', color: '#e6f0ff', resolution: 2, fontFamily: hasHanWeb ? 'HanPixel, system-ui, sans-serif' : undefined });
 
     this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
     this.cameras.main.setRoundPixels(true);
