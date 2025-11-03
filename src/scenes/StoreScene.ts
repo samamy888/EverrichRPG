@@ -20,6 +20,7 @@ export class StoreScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#0d1220');
     this.cameras.main.setRoundPixels(true);
+    try { (window as any).__applyCameraZoom?.(); } catch {}
     this.cursor = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys('ESC,ENTER,SPACE') as any;
 

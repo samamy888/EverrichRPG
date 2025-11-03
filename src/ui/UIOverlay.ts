@@ -19,6 +19,7 @@ export class UIOverlay extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(0x000000);
     this.cameras.main.setAlpha(0);
     this.cameras.main.setRoundPixels(true);
+    try { (window as any).__applyCameraZoom?.(); } catch {}
 
     // Register bitmap font for numeric values
     registerTinyBitmapFont(this);
