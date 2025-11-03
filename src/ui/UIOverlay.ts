@@ -11,6 +11,7 @@ export class UIOverlay extends Phaser.Scene {
   private timeValue!: Phaser.GameObjects.BitmapText;
   private moneyValue!: Phaser.GameObjects.BitmapText;
   private basketValue!: Phaser.GameObjects.BitmapText;
+  private fontDebugText?: Phaser.GameObjects.Text;
 
   constructor() { super('UIOverlay'); }
 
@@ -55,8 +56,10 @@ export class UIOverlay extends Phaser.Scene {
         this.moneyValue.setX(nmlx);
         this.basketValue.setX(nblx);
         this.refresh();
+        this.updateFontDebug();
       }).catch(() => {});
     }
+    this.maybeInitFontDebug();
     this.refresh();
   }
 
@@ -78,5 +81,24 @@ export class UIOverlay extends Phaser.Scene {
     this.moneyValue.setText(`$${money}`);
     this.basketValue.setText(`$${basketTotal}`);
   }
-}
 
+  // 開發模式顯示字型載入狀態（網址加上 ?debugFonts=1 或 #debugFonts 生效）
+  private maybeInitFontDebug() {
+    const isDev = !!((import.meta as any)?.env?.DEV);
+    const url = new URL(window.location.href);
+    const enabled = isDev && (url.searchParams.get('debugFonts') === '1' || url.hash.includes('debugFonts'));
+    if (!enabled) return;
+    this.fontDebugText = this.add.text(4, 14, '', { fontSize: '9px', color: '#a8ffbf', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000);
+    this.updateFontDebug();
+  }
+
+  private updateFontDebug() {
+    if (!this.fontDebugText) return;
+    const hasBitmap = this.cache.bitmapFont.exists('han');
+    let hasWeb = false;
+    try { hasWeb = (document as any).fonts?.check?.('12px "HanPixel"') === true; } catch {}
+    const msg = `字型 Bitmap(han): ${hasBitmap ? '是' : '否'}｜Web(HanPixel): ${hasWeb ? '已載入' : '尚未'}`;
+    this.fontDebugText.setText(msg);
+    console.info('[fonts]', { bitmap: hasBitmap, web: hasWeb });
+  }
+}
