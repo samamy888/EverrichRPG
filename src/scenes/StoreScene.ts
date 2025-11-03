@@ -22,8 +22,8 @@ export class StoreScene extends Phaser.Scene {
     this.keys = this.input.keyboard.addKeys('ESC,ENTER,SPACE') as any;
 
     const title = this.storeId === 'cosmetics' ? t('store.title.cosmetics') : t('store.title.liquor');
-    this.add.text(8, 6, title, { fontSize: '12px', color: '#cce8ff' });
-    this.add.text(8, 18, t('store.hint'), { fontSize: '10px', color: '#9fb3c8' });
+    this.add.text(8, 6, title, { fontSize: '12px', color: '#cce8ff', resolution: 2 });
+    this.add.text(8, 18, t('store.hint'), { fontSize: '10px', color: '#9fb3c8', resolution: 2 });
     this.renderList();
   }
 
@@ -35,7 +35,7 @@ export class StoreScene extends Phaser.Scene {
       const y = 36 + idx * 12;
       const prefix = idx === this.selected ? '>' : ' ';
       const line = `${prefix} ${it.name}  $${it.price}`;
-      const txt = this.add.text(12, y, line, { fontSize: '10px', color: idx === this.selected ? '#ffffff' : '#c0c8d0' });
+      const txt = this.add.text(12, y, line, { fontSize: '10px', color: idx === this.selected ? '#ffffff' : '#c0c8d0', resolution: 2 });
       this.rows.push(txt);
     });
 
@@ -43,7 +43,7 @@ export class StoreScene extends Phaser.Scene {
     const basket = (this.registry.get('basket') as any[]) ?? [];
     const total = basket.reduce((s, b) => s + b.price, 0);
     this.add.rectangle(0, 0, this.scale.width, 16, 0x000000, 0.25).setOrigin(0);
-    this.add.text(150, 7, t('store.status', { money, total }), { fontSize: '10px', color: '#e6f0ff' }).setOrigin(0, 0.5);
+    this.add.text(150, 7, t('store.status', { money, total }), { fontSize: '10px', color: '#e6f0ff', resolution: 2 }).setOrigin(0, 0.5);
   }
 
   update() {

@@ -13,9 +13,12 @@ export class UIOverlay extends Phaser.Scene {
     this.cameras.main.setAlpha(0);
     this.cameras.main.setRoundPixels(true);
 
-    this.timeText = this.add.text(4, 2, '', { fontSize: '10px', color: '#ffd966' }).setDepth(1000);
-    this.moneyText = this.add.text(120, 2, '', { fontSize: '10px', color: '#cfe2f3' }).setDepth(1000);
-    this.basketText = this.add.text(220, 2, '', { fontSize: '10px', color: '#d9ead3' }).setDepth(1000);
+    this.timeText = this.add.text(4, 2, '', { fontSize: '10px', color: '#ffd966', resolution: 2 }).setDepth(1000);
+    this.moneyText = this.add.text(120, 2, '', { fontSize: '10px', color: '#cfe2f3', resolution: 2 }).setDepth(1000);
+    this.basketText = this.add.text(220, 2, '', { fontSize: '10px', color: '#d9ead3', resolution: 2 }).setDepth(1000);
+    this.timeText.setResolution?.(2);
+    this.moneyText.setResolution?.(2);
+    this.basketText.setResolution?.(2);
 
     this.registry.events.on('changedata', this.onDataChanged, this);
     this.refresh();

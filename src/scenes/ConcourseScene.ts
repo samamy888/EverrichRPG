@@ -13,12 +13,55 @@ export class ConcourseScene extends Phaser.Scene {
   constructor() { super('ConcourseScene'); }
 
   preload() {
-    // Generate a tiny tileset texture (6 tiles, 16x16 each)
+    // Generate a nicer tiny tileset (8 tiles, 16x16): floor A/B, border, stripe, facade, glass, door, light
     const g = this.make.graphics({ x: 0, y: 0, add: false });
-    const colors = [0x1b2733, 0x2a3a4a, 0x203244, 0x345e6a, 0x497a84, 0x2e8b57];
-    colors.forEach((c, i) => { g.fillStyle(c, 1); g.fillRect(i * 16, 0, 16, 16); });
-    g.generateTexture('df-tiles', 16 * colors.length, 16);
+    const TILE = 16;
+    const palette = {
+      floorA: 0x1c2430,
+      floorB: 0x1f2a38,
+      border: 0x314150,
+      stripe: 0x3b4d5f,
+      facade: 0x24424e,
+      glass: 0x3aa1bf,
+      door: 0x2e8b57,
+      light: 0xfff1b6,
+      shadow: 0x0a0e12,
+    };
+    // floorA
+    g.fillStyle(palette.floorA, 1); g.fillRect(0 * TILE, 0, TILE, TILE);
+    // floorB with dots
+    g.fillStyle(palette.floorB, 1); g.fillRect(1 * TILE, 0, TILE, TILE);
+    g.fillStyle(0x000000, 0.15);
+    for (let y = 2; y < TILE; y += 4) for (let x = 2; x < TILE; x += 4) g.fillRect(1 * TILE + x, y, 1, 1);
+    // border
+    g.fillStyle(palette.border, 1); g.fillRect(2 * TILE, 0, TILE, TILE);
+    // stripe (decor line)
+    g.fillStyle(palette.floorA, 1); g.fillRect(3 * TILE, 0, TILE, TILE);
+    g.fillStyle(palette.stripe, 1); g.fillRect(3 * TILE, TILE - 3, TILE, 2);
+    // facade
+    g.fillStyle(palette.facade, 1); g.fillRect(4 * TILE, 0, TILE, TILE);
+    // glass
+    g.fillStyle(palette.glass, 1); g.fillRect(5 * TILE, 2, TILE, TILE - 4);
+    g.fillStyle(0xffffff, 0.15); g.fillRect(5 * TILE + 2, 2, 3, TILE - 4);
+    // door
+    g.fillStyle(palette.door, 1); g.fillRect(6 * TILE + 3, 2, TILE - 6, TILE - 4);
+    // light
+    g.fillStyle(palette.shadow, 1); g.fillRect(7 * TILE, 0, TILE, TILE);
+    g.fillStyle(palette.light, 1); g.fillRect(7 * TILE + 4, 2, 8, 4);
+    g.generateTexture('df-tiles', TILE * 8, TILE);
     g.destroy();
+
+    // Player/NPC tiny sprites
+    const pg = this.make.graphics({ x: 0, y: 0, add: false });
+    // player: body
+    pg.fillStyle(0xebb35e, 1); pg.fillRect(2, 3, 4, 7); // torso
+    pg.fillStyle(0x3a2a1a, 1); pg.fillRect(2, 10, 1, 2); pg.fillRect(5, 10, 1, 2); // shoes
+    pg.fillStyle(0x5a3a2a, 1); pg.fillRect(2, 2, 4, 1); // hair band
+    pg.generateTexture('sprite-player', 8, 12); pg.clear();
+    // npc simple
+    pg.fillStyle(0xaec6cf, 1); pg.fillRect(2, 3, 4, 7);
+    pg.fillStyle(0x2a3a4a, 1); pg.fillRect(2, 10, 1, 2); pg.fillRect(5, 10, 1, 2);
+    pg.generateTexture('sprite-npc', 8, 12); pg.destroy();
   }
 
   create() {
@@ -32,14 +75,22 @@ export class ConcourseScene extends Phaser.Scene {
 
     // Tile indices (offset by tileset firstgid)
     const base = (tiles as any).firstgid ?? 1;
-    const WALK = base + 0, BORDER = base + 1, FACADE = base + 3, DOOR = base + 5;
-    // Fill base walkway
-    this.layer.fill(WALK, 0, 0, 20, 11);
-    // Borders top/bottom
+    const FLOOR_A = base + 0, FLOOR_B = base + 1, BORDER = base + 2, STRIPE = base + 3, FACADE = base + 4, GLASS = base + 5, DOOR = base + 6, LIGHT = base + 7;
+    // Checker floor
+    for (let y = 0; y < 11; y++) {
+      for (let x = 0; x < 20; x++) {
+        this.layer.putTileAt(((x + y) % 2 === 0) ? FLOOR_A : FLOOR_B, x, y);
+      }
+    }
+    // Borders top/bottom and stripe
     this.layer.fill(BORDER, 0, 0, 20, 1);
     this.layer.fill(BORDER, 0, 10, 20, 1);
-    // Store facade at right
+    this.layer.fill(STRIPE, 0, 9, 20, 1);
+    // Store facade and glass
     for (let y = 2; y <= 8; y++) this.layer.putTileAt(FACADE, 18, y);
+    for (let y = 3; y <= 7; y++) this.layer.putTileAt(GLASS, 18, y);
+    // Light panels on top
+    for (let x = 2; x <= 16; x += 7) this.layer.putTileAt(LIGHT, x, 1);
     // Door position
     const doorTile = new Phaser.Math.Vector2(18, 5);
     this.layer.putTileAt(DOOR, doorTile.x, doorTile.y);
@@ -49,10 +100,10 @@ export class ConcourseScene extends Phaser.Scene {
     this.layer.setCollision([BORDER, FACADE], true);
 
     // Signage
-    this.add.text(GAME_WIDTH - 112, 8, t('concourse.sign'), { fontSize: '10px', color: '#cce8ff' });
+    this.add.text(GAME_WIDTH - 112, 8, t('concourse.sign'), { fontSize: '10px', color: '#cce8ff', resolution: 2 });
 
     // Player
-    const p = this.add.rectangle(0, 0, 8, 12, 0xffcc66);
+    const p = this.add.image(0, 0, 'sprite-player');
     this.physics.add.existing(p);
     this.player = p as unknown as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     this.player.body.setCollideWorldBounds(true);
@@ -65,7 +116,7 @@ export class ConcourseScene extends Phaser.Scene {
     this.spawnCrowd();
 
     // Hint
-    this.hint = this.add.text(6, 6, t('concourse.hintMoveEnter'), { fontSize: '10px', color: '#e6f0ff' });
+    this.hint = this.add.text(6, 6, t('concourse.hintMoveEnter'), { fontSize: '10px', color: '#e6f0ff', resolution: 2 });
 
     this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
     this.cameras.main.setRoundPixels(true);
@@ -76,8 +127,7 @@ export class ConcourseScene extends Phaser.Scene {
     for (let i = 0; i < 6; i++) {
       const yRow = Phaser.Math.Between(3, 8) * 16 + 2 + 8; // align to rows
       const x = Phaser.Math.Between(40, GAME_WIDTH - 60);
-      const color = Phaser.Display.Color.HSLToColor(Phaser.Math.FloatBetween(0.05, 0.15), 0.4, 0.7).color;
-      const npc = this.add.rectangle(x, yRow, 6, 10, color);
+      const npc = this.add.image(x, yRow, 'sprite-npc');
       group.add(npc);
       this.physics.add.existing(npc);
       const body = (npc.body as Phaser.Physics.Arcade.Body);

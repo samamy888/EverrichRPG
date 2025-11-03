@@ -32,7 +32,7 @@ game.registry.set('basket', [] as { id: string; name: string; price: number }[])
 game.scene.start('ConcourseScene');
 game.scene.launch('UIOverlay');
 
-// Scaling helpers: prefer 6x (1920x1080) when possible; otherwise fit while keeping pixel look
+// Scaling: always use integer scaling for crisp pixels
 let integerScalePreferred = true;
 
 function applyScale() {
@@ -47,12 +47,9 @@ function applyScale() {
   let w: number, h: number;
   if (integerScalePreferred && can6) {
     w = GAME_WIDTH * scale6; h = GAME_HEIGHT * scale6;
-  } else if (integerScalePreferred) {
+  } else {
     const maxScale = Math.max(1, Math.floor(Math.min(cw / GAME_WIDTH, ch / GAME_HEIGHT)));
     w = GAME_WIDTH * maxScale; h = GAME_HEIGHT * maxScale;
-  } else {
-    const ratio = Math.min(cw / GAME_WIDTH, ch / GAME_HEIGHT);
-    w = Math.floor(GAME_WIDTH * ratio); h = Math.floor(GAME_HEIGHT * ratio);
   }
   if ((game.scale as any).resize) (game.scale as any).resize(w, h);
   canvas.style.width = `${w}px`; canvas.style.height = `${h}px`;
@@ -60,4 +57,3 @@ function applyScale() {
 
 window.addEventListener('resize', applyScale);
 applyScale();
-
