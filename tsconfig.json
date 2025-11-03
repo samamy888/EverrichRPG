@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@data/*": ["src/data/*"],
+      "@systems/*": ["src/systems/*"],
+      "@scenes/*": ["src/scenes/*"],
+      "@ui/*": ["src/ui/*"]
+    }
+  },
+  "include": ["src"]
+}
+
