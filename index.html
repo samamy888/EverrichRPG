@@ -3,15 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EverrichRPG - 免稅店逛街原型</title>
+    <title>EverrichRPG - 免稅店像素RPG</title>
     <style>
       html, body, #app { height: 100%; margin: 0; }
-      canvas { image-rendering: pixelated; }
+      /* 置中容器，並讓 canvas 用整數像素放大 */
+      #app { display: flex; align-items: center; justify-content: center; background: #10141a; }
+      canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
     </style>
+    <script>
+      // 提前於 Vite 客戶端注入 Web Crypto 後備（避免某些環境缺少 getRandomValues）
+      (function(){
+        const g = (typeof globalThis !== 'undefined') ? globalThis : window;
+        g.crypto = g.crypto || {};
+        if (typeof g.crypto.getRandomValues !== 'function') {
+          g.crypto.getRandomValues = function(arr){
+            if (!arr || typeof arr.length !== 'number') throw new TypeError('Expected typed array');
+            for (let i = 0; i < arr.length; i++) { arr[i] = Math.floor(Math.random() * 256); }
+            return arr;
+          }
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
   </html>
-
