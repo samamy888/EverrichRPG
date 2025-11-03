@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "font:gen": "pwsh ./public/fonts/generate-font.ps1"
   },
   "dependencies": {
     "phaser": "^3.70.0"
@@ -16,4 +17,3 @@
     "vite": "^5.0.0"
   }
 }
-
