@@ -20,5 +20,6 @@ export class BootScene extends Phaser.Scene {
     // 進入主場景與 UI
     this.scene.start('ConcourseScene');
     this.scene.launch('UIOverlay');
+    try { (window as any).__applyCameraZoom?.(); } catch {}
   }
 }
