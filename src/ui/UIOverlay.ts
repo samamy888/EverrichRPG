@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { t } from '../i18n';
 import { registerTinyBitmapFont } from './BitmapFont';
 
 export class UIOverlay extends Phaser.Scene {
@@ -24,14 +23,12 @@ export class UIOverlay extends Phaser.Scene {
     registerTinyBitmapFont(this);
 
     const hasHanBitmap = this.cache.bitmapFont.exists('han');
-    const hasHanWeb = (document as any).fonts?.check?.('12px HanPixel') === true;
-    const hasHan = hasHanBitmap || hasHanWeb;
-    if (hasHan) {
+    if (hasHanBitmap) {
       this.timeLabelBmp = this.add.bitmapText(4, 3, 'han', '時間 ', 12).setDepth(1000).setTint(0xffd966);
       this.moneyLabelBmp = this.add.bitmapText(110, 3, 'han', '金額 ', 12).setDepth(1000).setTint(0xcfe2f3);
       this.basketLabelBmp = this.add.bitmapText(200, 3, 'han', '購物籃 ', 12).setDepth(1000).setTint(0xd9ead3);
     } else {
-      const base = { fontSize: '10px', resolution: 2, fontFamily: hasHanWeb ? 'HanPixel, system-ui, sans-serif' : undefined } as any;
+      const base = { fontSize: '10px', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' } as any;
       this.timeLabelText = this.add.text(4, 2, '時間 ', { ...base, color: '#ffd966' }).setDepth(1000);
       this.moneyLabelText = this.add.text(110, 2, '金額 ', { ...base, color: '#cfe2f3' }).setDepth(1000);
       this.basketLabelText = this.add.text(200, 2, '購物籃 ', { ...base, color: '#d9ead3' }).setDepth(1000);
@@ -46,6 +43,20 @@ export class UIOverlay extends Phaser.Scene {
     this.basketValue = this.add.bitmapText(blx, 3, 'tiny5x7', '$0', 10).setDepth(1000);
 
     this.registry.events.on('changedata', this.onDataChanged, this);
+
+    // For webfont, after load the width may change; adjust once fonts are ready
+    const fonts: any = (document as any).fonts;
+    if (fonts?.ready) {
+      fonts.ready.then(() => {
+        const ntlx = (this.timeLabelBmp?.x ?? this.timeLabelText!.x) + (this.timeLabelBmp?.width ?? this.timeLabelText!.width);
+        const nmlx = (this.moneyLabelBmp?.x ?? this.moneyLabelText!.x) + (this.moneyLabelBmp?.width ?? this.moneyLabelText!.width);
+        const nblx = (this.basketLabelBmp?.x ?? this.basketLabelText!.x) + (this.basketLabelBmp?.width ?? this.basketLabelText!.width);
+        this.timeValue.setX(ntlx);
+        this.moneyValue.setX(nmlx);
+        this.basketValue.setX(nblx);
+        this.refresh();
+      }).catch(() => {});
+    }
     this.refresh();
   }
 
@@ -68,3 +79,4 @@ export class UIOverlay extends Phaser.Scene {
     this.basketValue.setText(`$${basketTotal}`);
   }
 }
+
