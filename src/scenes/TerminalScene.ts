@@ -64,17 +64,8 @@ export class TerminalScene extends Phaser.Scene {
       this.hintText.setText('方向鍵/WASD移動，E 進入商店');
     }
 
-    // 倒數時間
-    const remaining = this.registry.get('timeRemaining') as number;
-    const dt = delta / 1000;
-    const next = Math.max(0, remaining - dt);
-    if (Math.floor(next) !== Math.floor(remaining)) this.registry.set('timeRemaining', next);
-    if (next <= 0) {
-      this.registry.set('timeRemaining', 0);
-      this.scene.pause();
-      this.add.text(60, GAME_HEIGHT / 2 - 10, '時間到！請前往登機口', { fontSize: `${CONFIG.ui.fontSize}px`, color: '#ffdddd' });
-    }
-  }
+    // 移除倒數計時\r\n  }
 }
+
 
 

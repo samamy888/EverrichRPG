@@ -27,7 +27,6 @@ const game = new Phaser.Game(config);
 
 // Initial state
 game.registry.set('money', 3000);
-game.registry.set('timeRemaining', 60 * 5);
 game.registry.set('basket', [] as { id: string; name: string; price: number }[]);
 
 // Start boot (will launch main scenes after preloading optional fonts)

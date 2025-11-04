@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { registerTinyBitmapFont } from './BitmapFont';
 import { CONFIG } from '../config';
+import { t } from '../i18n';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 
 export class UIOverlay extends Phaser.Scene {
@@ -124,7 +125,11 @@ export class UIOverlay extends Phaser.Scene {
     }
 
     const itemsCount = basket.length;
-    this.statusText.setText(`Money $${money} | Basket ${itemsCount} items $${basketTotal}`);
+    const localized = t('ui.status', { money, items: itemsCount, total: basketTotal }) as string;
+    const text = localized && localized !== 'ui.status'
+      ? localized
+      : `Money $${money} | Basket ${itemsCount} items $${basketTotal}`;
+    this.statusText.setText(text);
   }
 
   // 開發模式顯示字型載入狀態（網址加上 ?debugFonts=1 或 #debugFonts 生效）

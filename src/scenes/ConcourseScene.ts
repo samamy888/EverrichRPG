@@ -172,10 +172,7 @@ export class ConcourseScene extends Phaser.Scene {
       this.registry.set('hint', t('concourse.hintMoveEnter'));
     }
 
-    // Countdown time
-    const remaining = (this.registry.get('timeRemaining') as number) ?? 0;
-    const next = Math.max(0, remaining - delta / 1000);
-    if (Math.floor(next) !== Math.floor(remaining)) this.registry.set('timeRemaining', next);
+    // 移除倒數計時
   }
 }
 
