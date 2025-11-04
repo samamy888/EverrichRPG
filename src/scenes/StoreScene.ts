@@ -54,15 +54,7 @@ export class StoreScene extends Phaser.Scene {
       }
     });
 
-    const money = (this.registry.get('money') as number) ?? 0;
-    const basket = (this.registry.get('basket') as any[]) ?? [];
-    const total = basket.reduce((s, b) => s + b.price, 0);
-    this.add.rectangle(0, 0, this.scale.width, 16, 0x000000, 0.25).setOrigin(0);
-    if (this.hasHanBitmap) {
-      (this.add.bitmapText(150, 6, 'han', t('store.status', { money, total }), 12).setTint(0xe6f0ff) as any).setOrigin?.(0, 0.5);
-    } else {
-      this.add.text(150, 7, t('store.status', { money, total }), { fontSize: '12px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setOrigin(0, 0.5);
-    }
+    // 狀態列改由 UIOverlay 顯示，避免重複與字體切換影響
   }
 
   update() {

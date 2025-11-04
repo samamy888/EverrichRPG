@@ -17,9 +17,24 @@ export class BootScene extends Phaser.Scene {
   }
 
   create() {
-    // 進入主場景與 UI
-    this.scene.start('ConcourseScene');
-    this.scene.launch('UIOverlay');
-    try { (window as any).__applyCameraZoom?.(); } catch {}
+    // 等待 WebFont（HanPixel）就緒，避免初次顯示/切換時字體跳動
+    const waitWebFont = async () => {
+      try {
+        const fonts: any = (document as any).fonts;
+        const ready = fonts?.ready;
+        // 最多等 1200ms，超時就先啟動場景
+        await Promise.race([
+          (async () => { if (ready) { await ready; } else { await fonts?.load?.('12px "HanPixel"'); } })(),
+          new Promise((resolve) => setTimeout(resolve, 1200))
+        ]);
+      } catch {}
+    };
+
+    (async () => {
+      await waitWebFont();
+      this.scene.start('ConcourseScene');
+      this.scene.launch('UIOverlay');
+      try { (window as any).__applyCameraZoom?.(); } catch {}
+    })();
   }
 }
