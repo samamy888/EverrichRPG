@@ -111,7 +111,8 @@ export class ConcourseScene extends Phaser.Scene {
     this.physics.add.existing(p);
     this.player = p as unknown as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     this.player.body.setCollideWorldBounds(true);
-    this.player.setPosition(24, GAME_HEIGHT / 2);
+    // 主人公出生在大廳正中央
+    this.player.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2);
 
     // Collide with walls
     this.physics.add.collider(this.player, this.layer);
@@ -178,3 +179,4 @@ export class ConcourseScene extends Phaser.Scene {
     if (Math.floor(next) !== Math.floor(remaining)) this.registry.set('timeRemaining', next);
   }
 }
+
