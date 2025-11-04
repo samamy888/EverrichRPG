@@ -7,8 +7,8 @@ export class ConcourseScene extends Phaser.Scene {
   private keys!: { [k: string]: Phaser.Input.Keyboard.Key };
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private layer!: Phaser.Tilemaps.TilemapLayer;
-  private doorCosmetics!: Phaser.Math.Vector2;
-  private doorLiquor!: Phaser.Math.Vector2;
+  private doors: { world: Phaser.Math.Vector2; id: string; label: string }[] = [];
+  private crowd?: Phaser.Physics.Arcade.Group;
 
   constructor() { super('ConcourseScene'); }
 
@@ -68,8 +68,8 @@ export class ConcourseScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys('W,A,S,D,E') as any;
 
-    // Build tilemap: 20x11 tiles (320x176)
-    const map = this.make.tilemap({ width: 20, height: 11, tileWidth: 16, tileHeight: 16 });
+    // Build tilemap: 100x11 tiles (1600x176)
+    const map = this.make.tilemap({ width: 100, height: 11, tileWidth: 16, tileHeight: 16 });
     const tiles = map.addTilesetImage('df-tiles');
     this.layer = map.createBlankLayer('floor', tiles!, 0, 2);
 
@@ -78,28 +78,38 @@ export class ConcourseScene extends Phaser.Scene {
     const FLOOR_A = base + 0, FLOOR_B = base + 1, BORDER = base + 2, STRIPE = base + 3, FACADE = base + 4, GLASS = base + 5, DOOR = base + 6, LIGHT = base + 7;
     // Checker floor
     for (let y = 0; y < 11; y++) {
-      for (let x = 0; x < 20; x++) {
+      for (let x = 0; x < 100; x++) {
         this.layer.putTileAt(((x + y) % 2 === 0) ? FLOOR_A : FLOOR_B, x, y);
       }
     }
     // Borders top/bottom and stripe
-    this.layer.fill(BORDER, 0, 0, 20, 1);
-    this.layer.fill(BORDER, 0, 10, 20, 1);
-    this.layer.fill(STRIPE, 0, 9, 20, 1);
-    // Store facades (right: cosmetics, left: liquor)
-    for (let y = 2; y <= 8; y++) this.layer.putTileAt(FACADE, 18, y);
-    for (let y = 3; y <= 7; y++) this.layer.putTileAt(GLASS, 18, y);
-    for (let y = 2; y <= 8; y++) this.layer.putTileAt(FACADE, 1, y);
-    for (let y = 3; y <= 7; y++) this.layer.putTileAt(GLASS, 1, y);
+    this.layer.fill(BORDER, 0, 0, 100, 1);
+    this.layer.fill(BORDER, 0, 10, 100, 1);
+    this.layer.fill(STRIPE, 0, 9, 100, 1);
+    // Ensure small icon textures for door signage
+    this.ensureDoorIcons();
+    // Multiple store facades along corridor
+    const entries: { x: number; id: string; label: string }[] = [
+      { x: 18, id: 'cosmetics', label: t('store.title.cosmetics') },
+      { x: 35, id: 'liquor', label: t('store.title.liquor') },
+      { x: 52, id: 'snacks', label: t('store.title.snacks') },
+      { x: 69, id: 'tobacco', label: t('store.title.tobacco') },
+      { x: 86, id: 'perfume', label: t('store.title.perfume') },
+    ];
+    for (const e of entries) {
+      for (let y = 2; y <= 8; y++) this.layer.putTileAt(FACADE, e.x, y);
+      for (let y = 3; y <= 7; y++) this.layer.putTileAt(GLASS, e.x, y);
+      this.layer.putTileAt(DOOR, e.x, 5);
+      const world = new Phaser.Math.Vector2(e.x * 16 + 8, 2 + 5 * 16 + 8);
+      this.doors.push({ world, id: e.id, label: e.label });
+
+      // Small icon signage near the door side
+      const iconKey = `icon-${e.id}`;
+      const icon = this.add.image(world.x + 10, world.y, iconKey).setOrigin(0, 0.5).setDepth(5);
+    }
     // Light panels on top
     for (let x = 2; x <= 16; x += 7) this.layer.putTileAt(LIGHT, x, 1);
-    // Door positions (right = cosmetics, left = liquor)
-    const doorCosTile = new Phaser.Math.Vector2(18, 5);
-    const doorLiqTile = new Phaser.Math.Vector2(1, 5);
-    this.layer.putTileAt(DOOR, doorCosTile.x, doorCosTile.y);
-    this.layer.putTileAt(DOOR, doorLiqTile.x, doorLiqTile.y);
-    this.doorCosmetics = new Phaser.Math.Vector2(doorCosTile.x * 16 + 8, 2 + doorCosTile.y * 16 + 8);
-    this.doorLiquor = new Phaser.Math.Vector2(doorLiqTile.x * 16 + 8, 2 + doorLiqTile.y * 16 + 8);
+    // Doors created above
 
     // Collisions with borders/facade
     this.layer.setCollision([BORDER, FACADE], true);
@@ -121,13 +131,18 @@ export class ConcourseScene extends Phaser.Scene {
 
     // Crowd NPCs
     this.spawnCrowd();
+    if (this.crowd) {
+      this.physics.add.collider(this.player, this.crowd);
+      this.physics.add.collider(this.crowd, this.crowd);
+    }
 
     // 初始提示交由全域 UIOverlay 顯示
     this.registry.set('hint', `${t('concourse.hintMoveEnter')}｜ESC 購物籃`);
 
     // 物理世界使用設計解析度，視圖大小由相機 zoom 控制
-    this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    this.physics.world.setBounds(0, 0, map.width * 16, GAME_HEIGHT);
     this.cameras.main.setRoundPixels(true);
+    this.cameras.main.startFollow(this.player, true, 1, 1, 0, 0);
     // 重新套用全域相機縮放於喚醒/恢復時
     this.events.on(Phaser.Scenes.Events.WAKE, () => { try { (window as any).__applyCameraZoom?.(); } catch {} this.registry.set('location', t('concourse.sign')); this.registry.set('locationType', 'concourse'); });
     this.events.on(Phaser.Scenes.Events.RESUME, () => { try { (window as any).__applyCameraZoom?.(); } catch {} this.registry.set('location', t('concourse.sign')); this.registry.set('locationType', 'concourse'); });
@@ -135,6 +150,7 @@ export class ConcourseScene extends Phaser.Scene {
 
   private spawnCrowd() {
     const group = this.physics.add.group();
+    this.crowd = group;
     for (let i = 0; i < 6; i++) {
       const yRow = Phaser.Math.Between(3, 8) * 16 + 2 + 8; // align to rows
       const x = Phaser.Math.Between(40, GAME_WIDTH - 60);
@@ -144,9 +160,45 @@ export class ConcourseScene extends Phaser.Scene {
       const body = (npc.body as Phaser.Physics.Arcade.Body);
       body.setCollideWorldBounds(true);
       body.setVelocityX(Phaser.Math.Between(-40, 40) || 30);
-      body.setBounce(1, 0);
+      body.setBounce(1, 1);
     }
     this.physics.add.collider(group, this.layer);
+    this.physics.add.collider(group, group);
+  }
+
+  private ensureDoorIcons() {
+    const make = (key: string, draw: (g: Phaser.GameObjects.Graphics) => void) => {
+      if (this.textures.exists(key)) return;
+      const g = this.add.graphics({ x: 0, y: 0, add: false });
+      draw(g);
+      g.generateTexture(key, 12, 12);
+      g.destroy();
+    };
+    // Cosmetics: lipstick
+    make('icon-cosmetics', (g) => {
+      g.fillStyle(0xff6fae, 1); g.fillRect(6, 2, 2, 5);
+      g.fillStyle(0x333333, 1); g.fillRect(5, 7, 4, 3);
+    });
+    // Liquor: bottle
+    make('icon-liquor', (g) => {
+      g.fillStyle(0x2e8b57, 1); g.fillRect(4, 3, 4, 6);
+      g.fillStyle(0xcce8ff, 1); g.fillRect(5, 2, 2, 1);
+    });
+    // Snacks: box
+    make('icon-snacks', (g) => {
+      g.fillStyle(0xf4b183, 1); g.fillRect(3, 4, 6, 5);
+      g.fillStyle(0xc55a11, 1); g.fillRect(3, 3, 6, 1);
+    });
+    // Tobacco: cigar
+    make('icon-tobacco', (g) => {
+      g.fillStyle(0x8d6e63, 1); g.fillRect(3, 5, 6, 2);
+      g.fillStyle(0xff7043, 1); g.fillRect(8, 5, 1, 2);
+    });
+    // Perfume: bottle
+    make('icon-perfume', (g) => {
+      g.fillStyle(0x6fa8dc, 1); g.fillRect(4, 4, 4, 5);
+      g.fillStyle(0x674ea7, 1); g.fillRect(5, 2, 2, 2);
+    });
   }
 
   update(_time: number, delta: number) {
@@ -158,23 +210,30 @@ export class ConcourseScene extends Phaser.Scene {
     if (this.cursors.up?.isDown || this.keys.W.isDown) body.setVelocityY(-speed);
     else if (this.cursors.down?.isDown || this.keys.S.isDown) body.setVelocityY(speed);
 
-    // Door interaction (two stores)
-    const distCos = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.doorCosmetics.x, this.doorCosmetics.y);
-    const distLiq = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.doorLiquor.x, this.doorLiquor.y);
-    if (distCos < 18 || distLiq < 18) {
-      this.registry.set('hint', `${t('concourse.hintEnter')}｜ESC 購物籃`);
+    // Door interaction (multiple stores)
+    let nearest: { world: Phaser.Math.Vector2; id: string; label: string } | null = null;
+    let nd = Number.POSITIVE_INFINITY;
+    for (const d of this.doors) {
+      const dd = Phaser.Math.Distance.Between(this.player.x, this.player.y, d.world.x, d.world.y);
+      if (dd < nd) { nd = dd; nearest = d; }
+    }
+    if (nearest && nd < 18) {
+      this.registry.set('hint', `${nearest.label}｜${t('concourse.hintEnter')}｜ESC 購物籃`);
       if (Phaser.Input.Keyboard.JustDown(this.keys.E)) {
-        const target: 'cosmetics' | 'liquor' = distCos <= distLiq ? 'cosmetics' : 'liquor';
         this.scene.pause();
-        this.scene.launch('StoreScene', { storeId: target });
+        this.scene.launch('StoreScene', { storeId: nearest.id });
       }
+      return;
     } else {
       this.registry.set('hint', `${t('concourse.hintMoveEnter')}｜ESC 購物籃`);
+      return;
     }
 
     // 移除倒數計時
   }
 }
+
+
 
 
 

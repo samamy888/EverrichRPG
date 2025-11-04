@@ -55,9 +55,11 @@ function applyCameraZoom() {
   if (integerZoom && preferredIntZoom) { zoom = Math.max(CONFIG.scale.minZoom, Math.min(CONFIG.scale.maxZoom, preferredIntZoom)); }
 
   game.scene.getScenes(true).forEach(s => {
-    const cam = s.cameras?.main;
+    const cam: any = (s as any).cameras?.main as any;
     if (!cam) return;
     cam.setZoom(zoom).setRoundPixels(true);
+    // Skip centering if camera is following a target (e.g., large horizontal map)
+    if ((cam as any)._follow) return;
     cam.centerOn(GAME_WIDTH / 2, GAME_HEIGHT / 2);
   });
 }

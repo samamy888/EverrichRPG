@@ -4,7 +4,7 @@ import { t } from '../i18n';
 import { CONFIG } from '../config';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 
-type StoreData = { storeId: 'cosmetics' | 'liquor' };
+type StoreData = { storeId: string };
 
 export class StoreScene extends Phaser.Scene {
   private cursor!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -117,7 +117,9 @@ export class StoreScene extends Phaser.Scene {
     for (let x=2; x<=16; x+=7) this.layer.putTileAt(LIGHT, x, 1);
 
     // Location 顯示交由 UIOverlay（右上），本場景不再另外繪製標題文字
-    const title = this.storeId === 'cosmetics' ? t('store.title.cosmetics') : t('store.title.liquor');
+    const key = `store.title.${this.storeId}`;
+    let title = t(key);
+    if (!title || title === key) title = this.storeId;
     this.registry.set('location', title);
     this.registry.set('locationType', this.storeId);
     this.registry.set('hint', `${t('store.hintApproach')}｜ESC 購物籃`);
