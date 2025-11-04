@@ -57,6 +57,13 @@ function applyCameraZoom() {
   game.scene.getScenes(true).forEach(s => {
     const cam: any = (s as any).cameras?.main as any;
     if (!cam) return;
+    // UI 覆蓋層不隨遊戲縮放，固定以 1x 呈現並使用視窗尺寸排版
+    if ((s as any).scene?.key === 'UIOverlay') {
+      cam.setZoom(1).setRoundPixels(true);
+      cam.setScroll(0, 0);
+      try { (s as any).layoutHUD?.(); } catch {}
+      return;
+    }
     cam.setZoom(zoom).setRoundPixels(true);
     // Skip centering if camera is following a target (e.g., large horizontal map)
     if ((cam as any)._follow) return;

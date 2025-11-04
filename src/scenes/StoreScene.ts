@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { items } from '../data/items';
+import { createCrowd, updateCrowd } from '../actors/NpcCrowd';
 import { t } from '../i18n';
 import { CONFIG } from '../config';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
@@ -21,8 +22,6 @@ export class StoreScene extends Phaser.Scene {
 
   // Dialogue gating
   private phase: 'browse' | 'dialog' | 'listing' = 'browse';
-  private dialogBox!: Phaser.GameObjects.Rectangle;
-  private dialogText!: Phaser.GameObjects.Text;
   private dialogLines: string[] = [];
   private dialogStep = 0;
 
@@ -30,7 +29,6 @@ export class StoreScene extends Phaser.Scene {
   private player!: Phaser.GameObjects.Image;
   private cashier!: Phaser.GameObjects.Image;
   private customers?: Phaser.Physics.Arcade.Group;
-  private customerMeta: Map<Phaser.GameObjects.Image, { state: 'walk' | 'pause'; nextAt: number } > = new Map();
   private layer!: Phaser.Tilemaps.TilemapLayer;
   private pBody!: Phaser.Physics.Arcade.Body;
   private exitWorld!: Phaser.Math.Vector2;
@@ -54,7 +52,7 @@ export class StoreScene extends Phaser.Scene {
       try { this.customers.clear(true, true); } catch {}
       this.customers = undefined;
     }
-    this.customerMeta.clear();
+    try { (this.customers as any).__meta?.clear?.(); } catch {}
     // Reset basket overlay
   }
 
@@ -139,121 +137,66 @@ export class StoreScene extends Phaser.Scene {
     this.cashier.setTint(0xffd966);
 
     // 化妝品店顧客：數名隨機移動的 NPC，與地圖/玩家/店員碰撞
-    if (this.storeId === 'cosmetics' || this.storeId === 'liquor') { this.spawnCustomers(); }
+    if (['cosmetics','liquor','snacks','tobacco','perfume'].includes(this.storeId)) {
+      this.customers = createCrowd(this, {
+        count: 4,
+        area: { xMin: 24, xMax: GAME_WIDTH - 24, yMin: 16 * 4, yMax: 16 * 9 },
+        texture: 'sprite-npc',
+        tint: 0x8fd3ff,
+        layer: this.layer,
+        collideWith: [this.player as unknown as any, this.cashier as unknown as any],
+        speed: { vx: [-30, 30], vy: [-20, 20] },
+        bounce: { x: 1, y: 1 },
+      });
+    }
     // 出口：左下角門框，靠近按 E 離開
     this.exitWorld = new Phaser.Math.Vector2(16 * 1 + 8, 2 + 16 * 9 + 8);
     this.add.rectangle(this.exitWorld.x, this.exitWorld.y - 6, 10, 12, 0x2e8b57).setOrigin(0.5, 1);
     this.add.rectangle(this.exitWorld.x, this.exitWorld.y - 6, 12, 14).setStrokeStyle(1, 0x4a5668).setOrigin(0.5, 1);
 
-    // Dialog UI (hidden by default)
-    // 對話框縮小：高度由 40 降至 24，並微調文字位置
-    const DIALOG_H = 24;
-    this.dialogBox = this.add.rectangle(0, GAME_HEIGHT - DIALOG_H - 2, GAME_WIDTH, DIALOG_H, 0x000000, 0.7)
-      .setOrigin(0)
-      .setDepth(1000)
-      .setVisible(false);
-    this.dialogText = this.add.text(6, GAME_HEIGHT - DIALOG_H + 2 - 2, '', {
-      fontSize: `${CONFIG.ui.fontSize}px`,
-      color: '#e6f0ff',
-      resolution: 2,
-      fontFamily: 'HanPixel, system-ui, sans-serif'
-    }).setDepth(1001).setVisible(false);
+    // 對話框改由 UIOverlay 顯示，這裡不建立本地對話 UI
   }
 
   // 產生顧客（化妝品店專用）
-  private spawnCustomers() {
-    const group = this.physics.add.group();
-    this.customers = group;
-    const count = 4;
-    for (let i = 0; i < count; i++) {
-      const x = Phaser.Math.Between(24, GAME_WIDTH - 24);
-      const y = Phaser.Math.Between(16 * 4, 16 * 9);
-      const npc = this.add.image(x, y, 'sprite-npc');
-      npc.setTint(0x8fd3ff);
-      this.physics.add.existing(npc);
-      const body = npc.body as Phaser.Physics.Arcade.Body;
-      body.setCollideWorldBounds(true);
-      body.setBounce(1, 1);
-      this.randomizeCustomerVelocity(body);
-      group.add(npc);
-      this.customerMeta.set(npc, { state: 'walk', nextAt: this.time.now + Phaser.Math.Between(900, 1600) });
-    }
-    this.physics.add.collider(this.customers, this.layer);
-    this.physics.add.collider(this.customers, this.player);
-    this.physics.add.collider(this.customers, this.cashier);
-    this.physics.add.collider(this.customers, this.customers);
-  }
-
-  private randomizeCustomerVelocity(body: Phaser.Physics.Arcade.Body) {
-    const vx = Phaser.Math.Between(-35, 35) || 20;
-    const vy = Phaser.Math.Between(-25, 25) || 15;
-    body.setVelocity(vx, vy);
-  }
+  private spawnCustomers() {}
 
   private startDialog(lines: string[]) {
     this.phase = 'dialog';
     this.dialogLines = lines;
     this.dialogStep = 0;
-    this.dialogBox.setVisible(true);
-    this.dialogText.setVisible(true);
-    this.dialogText.setText(t('store.dialog.l1') + t('store.dialog.cont'));
+    try { (this.scene.get('UIOverlay') as any).openDialog(this.dialogLines, this.dialogStep); } catch {
+      // 後備：仍透過 registry 通知
+      this.registry.set('dialogLines', this.dialogLines);
+      this.registry.set('dialogStep', this.dialogStep);
+      this.registry.set('dialogOpen', true);
+    }
   }
 
   private endDialogToListing() {
-    this.dialogBox.setVisible(false);
-    this.dialogText.setVisible(false);
+    this.registry.set('dialogOpen', false);
     this.phase = 'listing';
     this.registry.set('hint', t('store.hint'));
-    this.ensureListPanel(true);
-    this.renderList();
+    // 將清單交由 UIOverlay 顯示
+    const data = items.filter(i => i.store === this.storeId);
+    const extended = [...data, { id: '__exit', name: t('store.listExit') || '結束對話', price: 0, store: this.storeId as any } as any];
+    this.selected = 0;
+    this.registry.set('listingItems', extended);
+    this.registry.set('listingSelected', this.selected);
+    this.registry.set('listingOpen', true);
+    // 列表開啟後前幾幀強制重排（UIOverlay 會讀取）
+    try { (this.scene.get('UIOverlay') as any).listingForceFrames = 2; } catch {}
   }
 
   private renderList() {
     if (this.phase !== 'listing') return;
-    this.ensureListPanel(true);
-    this.rows.forEach(t => t.destroy());
-    this.rows = [];
     const data = items.filter(i => i.store === this.storeId);
-    const extended = [...data, { id: '__exit', name: '結束對話', price: 0, store: this.storeId as any }];
-    const p = this.listPanel!;
-    const startY = p.y + p.pad + (CONFIG.ui.fontSize + 4); // 頁首留標題行
-    const startX = p.x + p.pad;
-    // 標題
-    const title = this.add.text(startX, p.y + p.pad - 2, t('store.listTitle'), { fontSize: `${CONFIG.ui.fontSize}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
-    p.container.add(title);
-    this.rows.push(title);
-    extended.forEach((it, idx) => {
-      const y = startY + idx * CONFIG.ui.lineStep;
-      const prefix = idx === this.selected ? '>' : ' ';
-      const line = (it as any).id === '__exit' ? `${prefix} 結束對話` : `${prefix} ${it.name}  $${it.price}`;
-      const txt = this.add.text(startX, y, line, { fontSize: `${CONFIG.ui.fontSize}px`, color: idx === this.selected ? '#ffffff' : '#c0c8d0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
-      p.container.add(txt);
-      this.rows.push(txt);
-    });
+    const extended = [...data, { id: '__exit', name: t('store.listExit') || '結束對話', price: 0, store: this.storeId as any } as any];
+    this.registry.set('listingItems', extended);
+    this.registry.set('listingSelected', this.selected);
   }
 
   // 建立或顯示右側框框
-  private ensureListPanel(show: boolean) {
-    if (this.listPanel) {
-      this.listPanel.container.setVisible(show);
-      return;
-    }
-    const pad = 6;
-    const w = 140;
-    const h = GAME_HEIGHT - 16;
-    const x = GAME_WIDTH - w - 6;
-    const y = 8;
-    const container = this.add.container(0, 0).setDepth(900);
-    const gfx = this.add.graphics();
-    gfx.fillStyle(0x0b111a, 0.85);
-    gfx.fillRect(x, y, w, h);
-    gfx.lineStyle(1, 0x4a5668, 1);
-    // 0.5 對齊像素獲得銳利邊緣
-    gfx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
-    container.add(gfx);
-    this.listPanel = { container, gfx, x, y, w, h, pad };
-    container.setVisible(show);
-  }
+  private ensureListPanel(_show: boolean) { /* Deprecated: moved to UIOverlay */ }
 
   // Basket overlay rendering moved to UIOverlay (global)
 
@@ -274,7 +217,8 @@ export class StoreScene extends Phaser.Scene {
     const speed = 70;
     if (this.pBody) {
       this.pBody.setVelocity(0);
-      if (this.phase !== 'dialog') {
+      // 僅在瀏覽狀態允許移動；對話與清單期間主角定格
+      if (this.phase === 'browse') {
         if (this.cursor.left?.isDown || (this.keys as any).A.isDown) this.pBody.setVelocityX(-speed);
         else if (this.cursor.right?.isDown || (this.keys as any).D.isDown) this.pBody.setVelocityX(speed);
         if (this.cursor.up?.isDown || (this.keys as any).W.isDown) this.pBody.setVelocityY(-speed);
@@ -283,30 +227,8 @@ export class StoreScene extends Phaser.Scene {
     }
 
 
-    // 顧客 AI：走動/暫停的簡單狀態機
-    if (this.customers) {
-      const now = this.time.now;
-      this.customers.children.iterate((obj: any) => {
-        const npc = obj as Phaser.GameObjects.Image;
-        const meta = this.customerMeta.get(npc);
-        const body = (npc.body as Phaser.Physics.Arcade.Body);
-        if (!meta || !body) return undefined;
-        if (now >= meta.nextAt) {
-          if (meta.state === 'walk') {
-            // 切換到暫停
-            meta.state = 'pause';
-            meta.nextAt = now + Phaser.Math.Between(500, 900);
-            body.setVelocity(0, 0);
-          } else {
-            // 切回走動
-            meta.state = 'walk';
-            meta.nextAt = now + Phaser.Math.Between(900, 1600);
-            this.randomizeCustomerVelocity(body);
-          }
-        }
-        return undefined;
-      });
-    }
+    // 顧客 AI（共用）：走動/暫停
+    updateCrowd(this, this.customers);
 
     // 取消 ESC 強制返回大廳（改由清單的「離開」或出口互動離開）
 
@@ -331,32 +253,39 @@ export class StoreScene extends Phaser.Scene {
 
     if (this.phase === 'dialog') {
       if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) {
-        this.dialogStep++;
-        if (this.dialogStep < this.dialogLines.length) {
-          this.dialogText.setText((this.dialogLines[this.dialogStep] || '') + t('store.dialog.cont'));
-        } else {
-          this.endDialogToListing();
+        let ended = false;
+        try { ended = (this.scene.get('UIOverlay') as any).advanceDialog(); } catch {
+          this.dialogStep++;
+          if (this.dialogStep < this.dialogLines.length) {
+            this.registry.set('dialogStep', this.dialogStep);
+            this.registry.set('dialogOpen', true);
+          } else {
+            ended = true;
+          }
         }
+        if (ended) { this.endDialogToListing(); }
       }
       return;
     }
 
     // phase === 'listing': list navigation
     const data = items.filter(i => i.store === this.storeId);
-    const listExt = [...data, { id: '__exit', name: '結束對話', price: 0, store: this.storeId as any }];
+    const listExt = [...data, { id: '__exit', name: t('store.listExit') || '結束對話', price: 0, store: this.storeId as any }];
     // 支援方向鍵與 W/S 進行選取
     if (Phaser.Input.Keyboard.JustDown(this.cursor.down!) || Phaser.Input.Keyboard.JustDown((this.keys as any).S)) {
       this.selected = (this.selected + 1) % listExt.length;
       this.renderList();
+      this.registry.set('listingSelected', this.selected);
     }
     if (Phaser.Input.Keyboard.JustDown(this.cursor.up!) || Phaser.Input.Keyboard.JustDown((this.keys as any).W)) {
       this.selected = (this.selected - 1 + listExt.length) % listExt.length;
       this.renderList();
+      this.registry.set('listingSelected', this.selected);
     }
     // Enter 或 Space 加入購物車
     if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) {
       const it = listExt[this.selected];
-      if (it?.id === '__exit') { this.endListingToBrowse(); return; }
+      if (it?.id === '__exit') { this.endListingToBrowse(); this.registry.set('listingOpen', false); return; }
       const basket = ((this.registry.get('basket') as any[]) ?? []).slice();
       const money = (this.registry.get('money') as number) ?? 0;
       if (money >= it.price) {
@@ -365,6 +294,7 @@ export class StoreScene extends Phaser.Scene {
         this.registry.set('money', money - it.price);
       }
       this.renderList();
+      this.registry.set('listingSelected', this.selected);
     }
     // 出口互動：靠近門口按 E 離開
     if (this.exitWorld) {
@@ -378,6 +308,9 @@ export class StoreScene extends Phaser.Scene {
 
   private leaveStore() {
     try { (window as any).__applyCameraZoom?.(); } catch {}
+    // 關閉對話覆蓋層（若尚未關閉）
+    try { this.registry.set('dialogOpen', false); } catch {}
+    try { this.registry.set('listingOpen', false); } catch {}
     this.scene.resume('ConcourseScene');
     this.scene.stop();
   }
@@ -392,3 +325,5 @@ export class StoreScene extends Phaser.Scene {
 
 
 
+    // 將主角世界座標提供給 UIOverlay，用於將清單定位在主角右側
+    try { this.registry.set('playerPos', { x: this.player.x, y: this.player.y }); } catch {}

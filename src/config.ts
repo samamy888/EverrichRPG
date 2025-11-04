@@ -16,12 +16,15 @@ export const CONFIG = {
     maxZoom: 8,
   },
   ui: {
-    fontSize: 10,
-    small: 9,
-    tiny: 8,
-    hudHeight: 14,
-    lineStep: 12,
-    dialogHeight: 20,
+    // 唯一需要人工調整的值：其他皆為衍生值
+    fontSize: 24,
+    get small(): number { return Math.max(9, Math.round(this.fontSize * 0.45)); },
+    get tiny(): number { return Math.max(8, Math.round(this.fontSize * 0.35)); },
+    // 頂/底 HUD 高度：字體大小 + 8 像素留白
+    get hudHeight(): number { return Math.max(16, this.fontSize + 8); },
+    // 行距：字體大小 + 2
+    get lineStep(): number { return this.fontSize + 2; },
+    // 對話框/購物籃最小高度：字體大小 + 16（至少 40）
+    get dialogHeight(): number { return Math.max(40, this.fontSize + 16); },
   }
 };
-

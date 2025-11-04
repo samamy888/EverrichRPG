@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
+import { createCrowd, updateCrowd } from '../actors/NpcCrowd';
 import { t } from '../i18n';
 
 export class ConcourseScene extends Phaser.Scene {
@@ -130,11 +131,16 @@ export class ConcourseScene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.layer);
 
     // Crowd NPCs
-    this.spawnCrowd();
-    if (this.crowd) {
-      this.physics.add.collider(this.player, this.crowd);
-      this.physics.add.collider(this.crowd, this.crowd);
-    }
+    this.crowd = createCrowd(this, {
+      count: 6,
+      area: { xMin: 40, xMax: GAME_WIDTH * 2, yMin: 3 * 16 + 2 + 8, yMax: 8 * 16 + 2 + 8 },
+      texture: 'sprite-npc',
+      tint: 0xffffff,
+      layer: this.layer,
+      collideWith: [this.player as unknown as any],
+      speed: { vx: [-40, 40], vy: [-10, 10] },
+      bounce: { x: 1, y: 1 },
+    });
 
     // 初始提示交由全域 UIOverlay 顯示
     this.registry.set('hint', `${t('concourse.hintMoveEnter')}｜ESC 購物籃`);
@@ -149,21 +155,8 @@ export class ConcourseScene extends Phaser.Scene {
   }
 
   private spawnCrowd() {
-    const group = this.physics.add.group();
-    this.crowd = group;
-    for (let i = 0; i < 6; i++) {
-      const yRow = Phaser.Math.Between(3, 8) * 16 + 2 + 8; // align to rows
-      const x = Phaser.Math.Between(40, GAME_WIDTH - 60);
-      const npc = this.add.image(x, yRow, 'sprite-npc');
-      group.add(npc);
-      this.physics.add.existing(npc);
-      const body = (npc.body as Phaser.Physics.Arcade.Body);
-      body.setCollideWorldBounds(true);
-      body.setVelocityX(Phaser.Math.Between(-40, 40) || 30);
-      body.setBounce(1, 1);
-    }
-    this.physics.add.collider(group, this.layer);
-    this.physics.add.collider(group, group);
+    const group = this.physics.add.group(); // kept stub to preserve method structure
+    this.crowd = this.crowd ?? group;
   }
 
   private ensureDoorIcons() {
@@ -209,6 +202,7 @@ export class ConcourseScene extends Phaser.Scene {
     else if (this.cursors.right?.isDown || this.keys.D.isDown) body.setVelocityX(speed);
     if (this.cursors.up?.isDown || this.keys.W.isDown) body.setVelocityY(-speed);
     else if (this.cursors.down?.isDown || this.keys.S.isDown) body.setVelocityY(speed);
+    updateCrowd(this, this.crowd);
 
     // Door interaction (multiple stores)
     let nearest: { world: Phaser.Math.Vector2; id: string; label: string } | null = null;
@@ -228,8 +222,6 @@ export class ConcourseScene extends Phaser.Scene {
       this.registry.set('hint', `${t('concourse.hintMoveEnter')}｜ESC 購物籃`);
       return;
     }
-
-    // 移除倒數計時
   }
 }
 
