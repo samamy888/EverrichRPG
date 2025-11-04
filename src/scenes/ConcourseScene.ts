@@ -98,12 +98,8 @@ export class ConcourseScene extends Phaser.Scene {
     // Collisions with borders/facade
     this.layer.setCollision([BORDER, FACADE], true);
 
-    // Signage
-    const hasHanBitmap = this.cache.bitmapFont.exists('han');
-    const hasHanWeb = (document as any).fonts?.check?.('12px HanPixel') === true;
-    const hasHan = hasHanBitmap || hasHanWeb;
-    if (hasHanBitmap) this.add.bitmapText(GAME_WIDTH - 112, 4, 'han', t('concourse.sign'), 12).setTint(0xcce8ff);
-    else this.add.text(GAME_WIDTH - 112, 8, t('concourse.sign'), { fontSize: '12px', color: '#cce8ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
+    // Location status via global UIOverlay (right-top)
+    this.registry.set('location', t('concourse.sign'));
 
     // Player
     const p = this.add.image(0, 0, 'sprite-player');

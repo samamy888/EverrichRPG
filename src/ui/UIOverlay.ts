@@ -16,6 +16,7 @@ export class UIOverlay extends Phaser.Scene {
   private fontDebugText?: Phaser.GameObjects.Text;
   private hintBox!: Phaser.GameObjects.Rectangle;
   private hintText!: Phaser.GameObjects.Text;
+  private locationText!: Phaser.GameObjects.Text;
   private statusBox!: Phaser.GameObjects.Rectangle;
   private statusText!: Phaser.GameObjects.Text;
 
@@ -38,9 +39,12 @@ export class UIOverlay extends Phaser.Scene {
     // Register bitmap font for numeric values
     registerTinyBitmapFont(this);
 
-    // Top hint box + text
+    // Top hint box + texts (left: hint, right: location)
     this.hintBox = this.add.rectangle(0, 0, GAME_WIDTH, 16, 0x000000, 0.55).setOrigin(0).setDepth(999);
     this.hintText = this.add.text(4, 3, '', { fontSize: '12px', resolution: 2, color: '#e6f0ff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000);
+    this.locationText = this.add.text(GAME_WIDTH - 4, 3, '', { fontSize: '12px', resolution: 2, color: '#cfe2f3', fontFamily: 'HanPixel, system-ui, sans-serif' })
+      .setOrigin(1, 0)
+      .setDepth(1000);
 
     const hasHanBitmap = this.cache.bitmapFont.exists('han');
     if (hasHanBitmap) {
@@ -72,10 +76,14 @@ export class UIOverlay extends Phaser.Scene {
     }
     this.maybeInitFontDebug();
     this.refresh();
+    // 以下一幀再套用一次縮放，避免初次啟動時場景尚未完成建立導致比例不正確
+    try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
+    // 當視窗大小或比例變化時，確保覆蓋層也一起更新
+    try { this.scale.on('resize', () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
   }
 
   private onDataChanged(_parent: any, key: string, _value: any) {
-    if (key === 'timeRemaining' || key === 'money' || key === 'basket' || key === 'hint') {
+    if (key === 'timeRemaining' || key === 'money' || key === 'basket' || key === 'hint' || key === 'location') {
       this.refresh();
     }
   }
@@ -93,7 +101,9 @@ export class UIOverlay extends Phaser.Scene {
     this.basketValue.setText(`$${basketTotal}`);
 
     const hint = (this.registry.get('hint') as string) ?? '';
-    if (hint) this.hintText.setText(hint);
+    if (hint !== undefined) this.hintText.setText(hint || '');
+    const loc = (this.registry.get('location') as string) ?? '';
+    if (loc !== undefined) this.locationText.setText(loc || '');
 
     const itemsCount = basket.length;
     this.statusText.setText(`Money $${money} | Time ${mm}:${ss} | Basket ${itemsCount} items $${basketTotal}`);

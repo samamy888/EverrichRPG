@@ -10,7 +10,7 @@ const dict: Record<Locale, any> = {
       basket: '購物籃 ${total}',
     },
     concourse: {
-      sign: '中庭・化妝品 →',
+      sign: '大廳',
       hintMoveEnter: '使用 WASD/方向鍵移動，按 E 進入',
       hintEnter: '按 E 進入商店',
     },
@@ -19,8 +19,18 @@ const dict: Record<Locale, any> = {
         cosmetics: '化妝品',
         liquor: '酒類',
       },
-      hint: '上下選擇，Space 加入購物籃，Esc 返回',
-      status: '金額 ${money}｜購物籃 ${total}',
+      listTitle: '商品',
+      hint: '上下選擇，按 E 選擇（購買/結束對話）',
+      hintApproach: '靠近店員按 E 對話，或前往出口',
+      hintTalk: '按 E 對話',
+      hintExitDoor: '按 E 離開商店',
+      dialog: {
+        l1: '歡迎光臨！',
+        l2: '本店有試用品喔。',
+        l3: '需要什麼可以問我。',
+        cont: '（按 E 繼續）',
+      },
+      listExit: '結束對話',
     },
   },
   en: {
@@ -30,7 +40,7 @@ const dict: Record<Locale, any> = {
       basket: 'Basket ${total}',
     },
     concourse: {
-      sign: 'Concourse · Cosmetics →',
+      sign: 'Concourse',
       hintMoveEnter: 'WASD/Arrows to move, press E to enter',
       hintEnter: 'Press E to enter store',
     },
@@ -39,8 +49,18 @@ const dict: Record<Locale, any> = {
         cosmetics: 'Cosmetics',
         liquor: 'Liquor',
       },
-      hint: 'Up/Down select, Space add, Esc back',
-      status: 'Money ${money} | Basket ${total}',
+      listTitle: 'Items',
+      hint: 'Up/Down select, press E (buy/exit dialog)',
+      hintApproach: 'Approach clerk and press E; door to exit',
+      hintTalk: 'Press E to talk',
+      hintExitDoor: 'Press E to exit store',
+      dialog: {
+        l1: 'Welcome!',
+        l2: 'We have testers available.',
+        l3: 'Ask me if you need anything.',
+        cont: '(Press E to continue)',
+      },
+      listExit: 'Exit dialog',
     },
   },
 };
@@ -70,4 +90,3 @@ export function t(path: string, params?: Record<string, string | number>): strin
   return raw.replace(/\{(\w+)\}/g, (_m, k) => params[k] !== undefined ? String(params[k]) : _m)
             .replace(/\$\{(\w+)\}/g, (_m, k) => params[k] !== undefined ? String(params[k]) : _m);
 }
-

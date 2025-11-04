@@ -34,7 +34,20 @@ export class StoreScene extends Phaser.Scene {
 
   constructor() { super('StoreScene'); }
 
-  init(data: StoreData) { if (data?.storeId) this.storeId = data.storeId; }
+  init(data: StoreData) {
+    if (data?.storeId) this.storeId = data.storeId;
+    // 確保每次進入商店都重置狀態（避免前一次的 listing 狀態殘留）
+    this.phase = 'browse';
+    this.selected = 0;
+    this.dialogLines = [];
+    this.dialogStep = 0;
+    try { this.rows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
+    this.rows = [];
+    if (this.listPanel) {
+      try { this.listPanel.container.destroy(true); } catch {}
+      this.listPanel = undefined;
+    }
+  }
 
   preload() {
     // Procedural store tiles (16x16)
@@ -73,9 +86,14 @@ export class StoreScene extends Phaser.Scene {
     // 進入商店時強制使用 cover 以避免畫面縮放異常（等同於自動按下 Fit=>Cover）
     try { (window as any).__setFillMode?.('cover'); } catch {}
     try { (window as any).__applyCameraZoom?.(); } catch {}
+    // 下一幀再套用一次，避免剛啟動場景時未被收集到而維持 1x/左上
+    try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
+    // 場景喚醒/恢復時也補一次，避免切換瞬間出現 1x 閃動
+    this.events.on(Phaser.Scenes.Events.WAKE, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
+    this.events.on(Phaser.Scenes.Events.RESUME, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
 
     this.cursor = this.input.keyboard.createCursorKeys();
-    this.keys = this.input.keyboard.addKeys('ESC,ENTER,SPACE,E,W,A,S,D') as any;
+    this.keys = this.input.keyboard.addKeys('ESC,E,W,A,S,D') as any;
 
     // Build store map (20x11 tiles = 320x176)
     const map = this.make.tilemap({ width: 20, height: 11, tileWidth: 16, tileHeight: 16 });
@@ -89,10 +107,10 @@ export class StoreScene extends Phaser.Scene {
     for (let x=8; x<=11; x++) this.layer.putTileAt(COUNTER, x, 2);
     for (let x=2; x<=16; x+=7) this.layer.putTileAt(LIGHT, x, 1);
 
-    // Title & hint
+    // Location 顯示交由 UIOverlay（右上），本場景不再另外繪製標題文字
     const title = this.storeId === 'cosmetics' ? t('store.title.cosmetics') : t('store.title.liquor');
-    this.add.text(8, 6, title, { fontSize: '12px', color: '#cce8ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
-    this.registry.set('hint', '靠近店員按 E 對話，或前往出口');
+    this.registry.set('location', title);
+    this.registry.set('hint', t('store.hintApproach'));
 
     // Player & cashier
     this.player = this.add.image(16, 16 * 9, 'sprite-player');
@@ -121,7 +139,7 @@ export class StoreScene extends Phaser.Scene {
     this.dialogStep = 0;
     this.dialogBox.setVisible(true);
     this.dialogText.setVisible(true);
-    this.dialogText.setText(this.dialogLines[0] + '（按 E 繼續）');
+    this.dialogText.setText(t('store.dialog.l1') + t('store.dialog.cont'));
   }
 
   private endDialogToListing() {
@@ -139,18 +157,18 @@ export class StoreScene extends Phaser.Scene {
     this.rows.forEach(t => t.destroy());
     this.rows = [];
     const data = items.filter(i => i.store === this.storeId);
-    const extended = [...data, { id: '__exit', name: '離開', price: 0, store: this.storeId as any }];
+    const extended = [...data, { id: '__exit', name: '結束對話', price: 0, store: this.storeId as any }];
     const p = this.listPanel!;
     const startY = p.y + p.pad + 16; // 頁首留標題行
     const startX = p.x + p.pad;
     // 標題
-    const title = this.add.text(startX, p.y + p.pad - 2, t('store.listTitle') || '商品', { fontSize: '12px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
+    const title = this.add.text(startX, p.y + p.pad - 2, t('store.listTitle'), { fontSize: '12px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
     p.container.add(title);
     this.rows.push(title);
     extended.forEach((it, idx) => {
       const y = startY + idx * 14;
       const prefix = idx === this.selected ? '>' : ' ';
-      const line = (it as any).id === '__exit' ? `${prefix} 離開` : `${prefix} ${it.name}  $${it.price}`;
+      const line = (it as any).id === '__exit' ? `${prefix} 結束對話` : `${prefix} ${it.name}  $${it.price}`;
       const txt = this.add.text(startX, y, line, { fontSize: '12px', color: idx === this.selected ? '#ffffff' : '#c0c8d0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
       p.container.add(txt);
       this.rows.push(txt);
@@ -180,6 +198,19 @@ export class StoreScene extends Phaser.Scene {
     container.setVisible(show);
   }
 
+  private endListingToBrowse() {
+    this.phase = 'browse';
+    // 隱藏清單面板與其文字
+    try {
+      this.rows.forEach(r => { try { r.destroy(); } catch {} });
+    } catch {}
+    this.rows = [];
+    if (this.listPanel) {
+      try { this.listPanel.container.setVisible(false); } catch {}
+    }
+    this.registry.set('hint', t('store.hintApproach'));
+  }
+
   update() {
     const speed = 70;
     if (this.pBody) {
@@ -200,24 +231,24 @@ export class StoreScene extends Phaser.Scene {
     if (this.exitWorld) {
       const distExitEarly = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.exitWorld.x, this.exitWorld.y);
       if (distExitEarly < 18) {
-        this.registry.set('hint', '按 E 離開商店');
+        this.registry.set('hint', t('store.hintExitDoor'));
         if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) { this.leaveStore(); return; }
       }
     }
 
     if (this.phase === 'browse') {
-      if (dist < 18) this.registry.set('hint', '按 E 對話');
+      if (dist < 18) this.registry.set('hint', t('store.hintTalk'));
       if (dist < 18 && Phaser.Input.Keyboard.JustDown((this.keys as any).E)) {
-        this.startDialog(['歡迎光臨！', '今天有特價喔～', '請慢慢挑選。']);
+        this.startDialog([t('store.dialog.l1'), t('store.dialog.l2'), t('store.dialog.l3')]);
       }
       return;
     }
 
     if (this.phase === 'dialog') {
-      if (Phaser.Input.Keyboard.JustDown((this.keys as any).E) || Phaser.Input.Keyboard.JustDown(this.keys.ENTER) || Phaser.Input.Keyboard.JustDown(this.keys.SPACE)) {
+      if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) {
         this.dialogStep++;
         if (this.dialogStep < this.dialogLines.length) {
-          this.dialogText.setText(this.dialogLines[this.dialogStep] + '（按 E 繼續）');
+          this.dialogText.setText((this.dialogLines[this.dialogStep] || '') + t('store.dialog.cont'));
         } else {
           this.endDialogToListing();
         }
@@ -227,7 +258,7 @@ export class StoreScene extends Phaser.Scene {
 
     // phase === 'listing': list navigation
     const data = items.filter(i => i.store === this.storeId);
-    const listExt = [...data, { id: '__exit', name: '離開', price: 0, store: this.storeId as any }];
+    const listExt = [...data, { id: '__exit', name: '結束對話', price: 0, store: this.storeId as any }];
     // 支援方向鍵與 W/S 進行選取
     if (Phaser.Input.Keyboard.JustDown(this.cursor.down!) || Phaser.Input.Keyboard.JustDown((this.keys as any).S)) {
       this.selected = (this.selected + 1) % listExt.length;
@@ -238,9 +269,9 @@ export class StoreScene extends Phaser.Scene {
       this.renderList();
     }
     // Enter 或 Space 加入購物車
-    if (Phaser.Input.Keyboard.JustDown(this.keys.SPACE) || Phaser.Input.Keyboard.JustDown(this.keys.ENTER)) {
+    if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) {
       const it = listExt[this.selected];
-      if (it?.id === '__exit') { this.leaveStore(); return; }
+      if (it?.id === '__exit') { this.endListingToBrowse(); return; }
       const basket = ((this.registry.get('basket') as any[]) ?? []).slice();
       const money = (this.registry.get('money') as number) ?? 0;
       if (money >= it.price) {
@@ -254,7 +285,7 @@ export class StoreScene extends Phaser.Scene {
     if (this.exitWorld) {
       const distExit = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.exitWorld.x, this.exitWorld.y);
       if (distExit < 18) {
-        this.registry.set('hint', '按 E 離開商店');
+        this.registry.set('hint', t('store.hintExitDoor'));
         if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) { this.leaveStore(); return; }
       }
     }
@@ -266,6 +297,9 @@ export class StoreScene extends Phaser.Scene {
     this.scene.stop();
   }
 }
+
+
+
 
 
 
