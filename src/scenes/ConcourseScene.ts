@@ -7,7 +7,8 @@ export class ConcourseScene extends Phaser.Scene {
   private keys!: { [k: string]: Phaser.Input.Keyboard.Key };
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private layer!: Phaser.Tilemaps.TilemapLayer;
-  private doorWorld!: Phaser.Math.Vector2;
+  private doorCosmetics!: Phaser.Math.Vector2;
+  private doorLiquor!: Phaser.Math.Vector2;
 
   constructor() { super('ConcourseScene'); }
 
@@ -85,21 +86,27 @@ export class ConcourseScene extends Phaser.Scene {
     this.layer.fill(BORDER, 0, 0, 20, 1);
     this.layer.fill(BORDER, 0, 10, 20, 1);
     this.layer.fill(STRIPE, 0, 9, 20, 1);
-    // Store facade and glass
+    // Store facades (right: cosmetics, left: liquor)
     for (let y = 2; y <= 8; y++) this.layer.putTileAt(FACADE, 18, y);
     for (let y = 3; y <= 7; y++) this.layer.putTileAt(GLASS, 18, y);
+    for (let y = 2; y <= 8; y++) this.layer.putTileAt(FACADE, 1, y);
+    for (let y = 3; y <= 7; y++) this.layer.putTileAt(GLASS, 1, y);
     // Light panels on top
     for (let x = 2; x <= 16; x += 7) this.layer.putTileAt(LIGHT, x, 1);
-    // Door position
-    const doorTile = new Phaser.Math.Vector2(18, 5);
-    this.layer.putTileAt(DOOR, doorTile.x, doorTile.y);
-    this.doorWorld = new Phaser.Math.Vector2(doorTile.x * 16 + 8, 2 + doorTile.y * 16 + 8);
+    // Door positions (right = cosmetics, left = liquor)
+    const doorCosTile = new Phaser.Math.Vector2(18, 5);
+    const doorLiqTile = new Phaser.Math.Vector2(1, 5);
+    this.layer.putTileAt(DOOR, doorCosTile.x, doorCosTile.y);
+    this.layer.putTileAt(DOOR, doorLiqTile.x, doorLiqTile.y);
+    this.doorCosmetics = new Phaser.Math.Vector2(doorCosTile.x * 16 + 8, 2 + doorCosTile.y * 16 + 8);
+    this.doorLiquor = new Phaser.Math.Vector2(doorLiqTile.x * 16 + 8, 2 + doorLiqTile.y * 16 + 8);
 
     // Collisions with borders/facade
     this.layer.setCollision([BORDER, FACADE], true);
 
     // Location status via global UIOverlay (right-top)
     this.registry.set('location', t('concourse.sign'));
+    this.registry.set('locationType', 'concourse');
 
     // Player
     const p = this.add.image(0, 0, 'sprite-player');
@@ -151,13 +158,15 @@ export class ConcourseScene extends Phaser.Scene {
     if (this.cursors.up?.isDown || this.keys.W.isDown) body.setVelocityY(-speed);
     else if (this.cursors.down?.isDown || this.keys.S.isDown) body.setVelocityY(speed);
 
-    // Door interaction
-    const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.doorWorld.x, this.doorWorld.y);
-    if (dist < 18) {
+    // Door interaction (two stores)
+    const distCos = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.doorCosmetics.x, this.doorCosmetics.y);
+    const distLiq = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.doorLiquor.x, this.doorLiquor.y);
+    if (distCos < 18 || distLiq < 18) {
       this.registry.set('hint', t('concourse.hintEnter'));
       if (Phaser.Input.Keyboard.JustDown(this.keys.E)) {
+        const target: 'cosmetics' | 'liquor' = distCos <= distLiq ? 'cosmetics' : 'liquor';
         this.scene.pause();
-        this.scene.launch('StoreScene', { storeId: 'cosmetics' });
+        this.scene.launch('StoreScene', { storeId: target });
       }
     } else {
       this.registry.set('hint', t('concourse.hintMoveEnter'));

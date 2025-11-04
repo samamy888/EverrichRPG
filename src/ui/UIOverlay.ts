@@ -17,6 +17,7 @@ export class UIOverlay extends Phaser.Scene {
   private hintBox!: Phaser.GameObjects.Rectangle;
   private hintText!: Phaser.GameObjects.Text;
   private locationText!: Phaser.GameObjects.Text;
+  private locationIcon!: Phaser.GameObjects.Image;
   private statusBox!: Phaser.GameObjects.Rectangle;
   private statusText!: Phaser.GameObjects.Text;
 
@@ -45,6 +46,8 @@ export class UIOverlay extends Phaser.Scene {
     this.locationText = this.add.text(GAME_WIDTH - 4, 3, '', { fontSize: '12px', resolution: 2, color: '#cfe2f3', fontFamily: 'HanPixel, system-ui, sans-serif' })
       .setOrigin(1, 0)
       .setDepth(1000);
+    this.ensureLocationIcons();
+    this.locationIcon = this.add.image(GAME_WIDTH - 4, 3, 'icon-concourse').setOrigin(1, 0).setDepth(1000).setVisible(false);
 
     const hasHanBitmap = this.cache.bitmapFont.exists('han');
     if (hasHanBitmap) {
@@ -83,7 +86,7 @@ export class UIOverlay extends Phaser.Scene {
   }
 
   private onDataChanged(_parent: any, key: string, _value: any) {
-    if (key === 'timeRemaining' || key === 'money' || key === 'basket' || key === 'hint' || key === 'location') {
+    if (key === 'timeRemaining' || key === 'money' || key === 'basket' || key === 'hint' || key === 'location' || key === 'locationType') {
       this.refresh();
     }
   }
@@ -104,6 +107,22 @@ export class UIOverlay extends Phaser.Scene {
     if (hint !== undefined) this.hintText.setText(hint || '');
     const loc = (this.registry.get('location') as string) ?? '';
     if (loc !== undefined) this.locationText.setText(loc || '');
+    const locType = (this.registry.get('locationType') as string) ?? '';
+    let key: string | null = null;
+    if (locType === 'cosmetics') key = 'icon-cosmetics';
+    else if (locType === 'liquor') key = 'icon-liquor';
+    else if (locType === 'concourse') key = 'icon-concourse';
+    this.locationIcon.setVisible(!!key);
+    if (key) {
+      if (this.locationIcon.texture.key !== key) this.locationIcon.setTexture(key);
+      this.locationIcon.setPosition(GAME_WIDTH - 4, 3);
+      const iconW = this.locationIcon.displayWidth || 10;
+      this.locationText.setOrigin(1, 0);
+      this.locationText.setPosition(GAME_WIDTH - 4 - iconW - 4, 3);
+    } else {
+      this.locationText.setOrigin(1, 0);
+      this.locationText.setPosition(GAME_WIDTH - 4, 3);
+    }
 
     const itemsCount = basket.length;
     this.statusText.setText(`Money $${money} | Time ${mm}:${ss} | Basket ${itemsCount} items $${basketTotal}`);
@@ -127,6 +146,29 @@ export class UIOverlay extends Phaser.Scene {
     const msg = `字型 Bitmap(han): ${hasBitmap ? '是' : '否'}｜Web(HanPixel): ${hasWeb ? '已載入' : '尚未'}`;
     this.fontDebugText.setText(msg);
     console.info('[fonts]', { bitmap: hasBitmap, web: hasWeb });
+  }
+
+  private ensureLocationIcons() {
+    const makeIcon = (key: string, draw: (g: Phaser.GameObjects.Graphics) => void) => {
+      if (this.textures.exists(key)) return;
+      const g = this.add.graphics({ x: 0, y: 0, add: false });
+      g.clear();
+      draw(g);
+      g.generateTexture(key, 12, 12);
+      g.destroy();
+    };
+    makeIcon('icon-concourse', (g) => {
+      g.fillStyle(0x3aa1bf, 1); g.fillRect(2, 5, 8, 3);
+      g.fillStyle(0x24424e, 1); g.fillRect(1, 3, 10, 2);
+    });
+    makeIcon('icon-cosmetics', (g) => {
+      g.fillStyle(0xff6fae, 1); g.fillRect(5, 2, 2, 5);
+      g.fillStyle(0x333333, 1); g.fillRect(4, 7, 4, 3);
+    });
+    makeIcon('icon-liquor', (g) => {
+      g.fillStyle(0x2e8b57, 1); g.fillRect(4, 3, 4, 6);
+      g.fillStyle(0xcce8ff, 1); g.fillRect(5, 2, 2, 1);
+    });
   }
 }
 

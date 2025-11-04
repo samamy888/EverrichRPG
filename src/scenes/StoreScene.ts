@@ -28,6 +28,8 @@ export class StoreScene extends Phaser.Scene {
   // Scene objects
   private player!: Phaser.GameObjects.Image;
   private cashier!: Phaser.GameObjects.Image;
+  private customers?: Phaser.Physics.Arcade.Group;
+  private customerMeta: Map<Phaser.GameObjects.Image, { state: 'walk' | 'pause'; nextAt: number } > = new Map();
   private layer!: Phaser.Tilemaps.TilemapLayer;
   private pBody!: Phaser.Physics.Arcade.Body;
   private exitWorld!: Phaser.Math.Vector2;
@@ -47,6 +49,11 @@ export class StoreScene extends Phaser.Scene {
       try { this.listPanel.container.destroy(true); } catch {}
       this.listPanel = undefined;
     }
+    if (this.customers) {
+      try { this.customers.clear(true, true); } catch {}
+      this.customers = undefined;
+    }
+    this.customerMeta.clear();
   }
 
   preload() {
@@ -67,7 +74,7 @@ export class StoreScene extends Phaser.Scene {
       g.destroy();
     }
 
-    // Tiny sprites (player/cashier)
+    // Tiny sprites (player/NPC)
     if (!this.textures.exists('sprite-player')) {
       const pg = this.make.graphics({ x: 0, y: 0, add: false });
       pg.fillStyle(0xebb35e, 1); pg.fillRect(2, 3, 4, 7); // body
@@ -110,6 +117,7 @@ export class StoreScene extends Phaser.Scene {
     // Location 顯示交由 UIOverlay（右上），本場景不再另外繪製標題文字
     const title = this.storeId === 'cosmetics' ? t('store.title.cosmetics') : t('store.title.liquor');
     this.registry.set('location', title);
+    this.registry.set('locationType', this.storeId);
     this.registry.set('hint', t('store.hintApproach'));
 
     // Player & cashier
@@ -123,6 +131,11 @@ export class StoreScene extends Phaser.Scene {
     this.cashier = this.add.image(16 * 10, 16 * 3, 'sprite-npc');
     this.physics.add.existing(this.cashier);
     (this.cashier.body as Phaser.Physics.Arcade.Body).setImmovable(true);
+    // 與顧客區分：給店員不同色調
+    this.cashier.setTint(0xffd966);
+
+    // 化妝品店顧客：數名隨機移動的 NPC，與地圖/玩家/店員碰撞
+    if (this.storeId === 'cosmetics' || this.storeId === 'liquor') { this.spawnCustomers(); }
     // 出口：左下角門框，靠近按 E 離開
     this.exitWorld = new Phaser.Math.Vector2(16 * 1 + 8, 2 + 16 * 9 + 8);
     this.add.rectangle(this.exitWorld.x, this.exitWorld.y - 6, 10, 12, 0x2e8b57).setOrigin(0.5, 1);
@@ -131,6 +144,36 @@ export class StoreScene extends Phaser.Scene {
     // Dialog UI (hidden by default)
     this.dialogBox = this.add.rectangle(0, GAME_HEIGHT - 40 - 2, GAME_WIDTH, 40, 0x000000, 0.7).setOrigin(0).setDepth(1000).setVisible(false);
     this.dialogText = this.add.text(6, GAME_HEIGHT - 40 + 2 - 2, '', { fontSize: '12px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1001).setVisible(false);
+  }
+
+  // 產生顧客（化妝品店專用）
+  private spawnCustomers() {
+    const group = this.physics.add.group();
+    this.customers = group;
+    const count = 4;
+    for (let i = 0; i < count; i++) {
+      const x = Phaser.Math.Between(24, GAME_WIDTH - 24);
+      const y = Phaser.Math.Between(16 * 4, 16 * 9);
+      const npc = this.add.image(x, y, 'sprite-npc');
+      npc.setTint(0x8fd3ff);
+      this.physics.add.existing(npc);
+      const body = npc.body as Phaser.Physics.Arcade.Body;
+      body.setCollideWorldBounds(true);
+      body.setBounce(1, 1);
+      this.randomizeCustomerVelocity(body);
+      group.add(npc);
+      this.customerMeta.set(npc, { state: 'walk', nextAt: this.time.now + Phaser.Math.Between(900, 1600) });
+    }
+    this.physics.add.collider(this.customers, this.layer);
+    this.physics.add.collider(this.customers, this.player);
+    this.physics.add.collider(this.customers, this.cashier);
+    this.physics.add.collider(this.customers, this.customers);
+  }
+
+  private randomizeCustomerVelocity(body: Phaser.Physics.Arcade.Body) {
+    const vx = Phaser.Math.Between(-35, 35) || 20;
+    const vy = Phaser.Math.Between(-25, 25) || 15;
+    body.setVelocity(vx, vy);
   }
 
   private startDialog(lines: string[]) {
@@ -223,6 +266,31 @@ export class StoreScene extends Phaser.Scene {
       }
     }
 
+    // 顧客 AI：走動/暫停的簡單狀態機
+    if (this.customers) {
+      const now = this.time.now;
+      this.customers.children.iterate((obj: any) => {
+        const npc = obj as Phaser.GameObjects.Image;
+        const meta = this.customerMeta.get(npc);
+        const body = (npc.body as Phaser.Physics.Arcade.Body);
+        if (!meta || !body) return undefined;
+        if (now >= meta.nextAt) {
+          if (meta.state === 'walk') {
+            // 切換到暫停
+            meta.state = 'pause';
+            meta.nextAt = now + Phaser.Math.Between(500, 900);
+            body.setVelocity(0, 0);
+          } else {
+            // 切回走動
+            meta.state = 'walk';
+            meta.nextAt = now + Phaser.Math.Between(900, 1600);
+            this.randomizeCustomerVelocity(body);
+          }
+        }
+        return undefined;
+      });
+    }
+
     // 取消 ESC 強制返回大廳（改由清單的「離開」或出口互動離開）
 
     if (!this.player || !this.cashier) return;
@@ -297,6 +365,7 @@ export class StoreScene extends Phaser.Scene {
     this.scene.stop();
   }
 }
+
 
 
 
