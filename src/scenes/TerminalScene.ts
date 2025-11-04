@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
+import { CONFIG } from '../config';
 
 export class TerminalScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -22,7 +23,7 @@ export class TerminalScene extends Phaser.Scene {
 
     // 門口（進入商店觸發區）
     this.door = this.add.rectangle(GAME_WIDTH - 24, GAME_HEIGHT / 2, 16, 32, 0x2e8b57);
-    this.add.text(GAME_WIDTH - 60, GAME_HEIGHT / 2 - 28, '美妝店', { fontSize: '8px', color: '#cce8ff' });
+    this.add.text(GAME_WIDTH - 60, GAME_HEIGHT / 2 - 28, '美妝店', { fontSize: `${CONFIG.ui.tiny}px`, color: '#cce8ff' });
 
     // 玩家（簡單矩形貼圖）
     const playerGfx = this.add.rectangle(0, 0, 8, 12, 0xffcc66);
@@ -32,7 +33,7 @@ export class TerminalScene extends Phaser.Scene {
     this.player.setPosition(24, GAME_HEIGHT / 2);
 
     // 提示文字
-    this.hintText = this.add.text(8, 8, '方向鍵/WASD移動，E 進入商店', { fontSize: '8px', color: '#e6f0ff' });
+    this.hintText = this.add.text(8, 8, '方向鍵/WASD移動，E 進入商店', { fontSize: `${CONFIG.ui.tiny}px`, color: '#e6f0ff' });
 
     // 邊界
     this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
@@ -71,8 +72,9 @@ export class TerminalScene extends Phaser.Scene {
     if (next <= 0) {
       this.registry.set('timeRemaining', 0);
       this.scene.pause();
-      this.add.text(60, GAME_HEIGHT / 2 - 10, '時間到！請前往登機口', { fontSize: '10px', color: '#ffdddd' });
+      this.add.text(60, GAME_HEIGHT / 2 - 10, '時間到！請前往登機口', { fontSize: `${CONFIG.ui.fontSize}px`, color: '#ffdddd' });
     }
   }
 }
+
 

@@ -129,8 +129,8 @@ export class ConcourseScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
     this.cameras.main.setRoundPixels(true);
     // 重新套用全域相機縮放於喚醒/恢復時
-    this.events.on(Phaser.Scenes.Events.WAKE, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
-    this.events.on(Phaser.Scenes.Events.RESUME, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
+    this.events.on(Phaser.Scenes.Events.WAKE, () => { try { (window as any).__applyCameraZoom?.(); } catch {} this.registry.set('location', t('concourse.sign')); this.registry.set('locationType', 'concourse'); });
+    this.events.on(Phaser.Scenes.Events.RESUME, () => { try { (window as any).__applyCameraZoom?.(); } catch {} this.registry.set('location', t('concourse.sign')); this.registry.set('locationType', 'concourse'); });
   }
 
   private spawnCrowd() {
@@ -178,4 +178,6 @@ export class ConcourseScene extends Phaser.Scene {
     if (Math.floor(next) !== Math.floor(remaining)) this.registry.set('timeRemaining', next);
   }
 }
+
+
 

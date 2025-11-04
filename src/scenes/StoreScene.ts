@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { items } from '../data/items';
 import { t } from '../i18n';
+import { CONFIG } from '../config';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 
 type StoreData = { storeId: 'cosmetics' | 'liquor' };
@@ -142,8 +143,18 @@ export class StoreScene extends Phaser.Scene {
     this.add.rectangle(this.exitWorld.x, this.exitWorld.y - 6, 12, 14).setStrokeStyle(1, 0x4a5668).setOrigin(0.5, 1);
 
     // Dialog UI (hidden by default)
-    this.dialogBox = this.add.rectangle(0, GAME_HEIGHT - 40 - 2, GAME_WIDTH, 40, 0x000000, 0.7).setOrigin(0).setDepth(1000).setVisible(false);
-    this.dialogText = this.add.text(6, GAME_HEIGHT - 40 + 2 - 2, '', { fontSize: '12px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1001).setVisible(false);
+    // 對話框縮小：高度由 40 降至 24，並微調文字位置
+    const DIALOG_H = 24;
+    this.dialogBox = this.add.rectangle(0, GAME_HEIGHT - DIALOG_H - 2, GAME_WIDTH, DIALOG_H, 0x000000, 0.7)
+      .setOrigin(0)
+      .setDepth(1000)
+      .setVisible(false);
+    this.dialogText = this.add.text(6, GAME_HEIGHT - DIALOG_H + 2 - 2, '', {
+      fontSize: `${CONFIG.ui.fontSize}px`,
+      color: '#e6f0ff',
+      resolution: 2,
+      fontFamily: 'HanPixel, system-ui, sans-serif'
+    }).setDepth(1001).setVisible(false);
   }
 
   // 產生顧客（化妝品店專用）
@@ -202,17 +213,17 @@ export class StoreScene extends Phaser.Scene {
     const data = items.filter(i => i.store === this.storeId);
     const extended = [...data, { id: '__exit', name: '結束對話', price: 0, store: this.storeId as any }];
     const p = this.listPanel!;
-    const startY = p.y + p.pad + 16; // 頁首留標題行
+    const startY = p.y + p.pad + (CONFIG.ui.fontSize + 4); // 頁首留標題行
     const startX = p.x + p.pad;
     // 標題
-    const title = this.add.text(startX, p.y + p.pad - 2, t('store.listTitle'), { fontSize: '12px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
+    const title = this.add.text(startX, p.y + p.pad - 2, t('store.listTitle'), { fontSize: `${CONFIG.ui.fontSize}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
     p.container.add(title);
     this.rows.push(title);
     extended.forEach((it, idx) => {
-      const y = startY + idx * 14;
+      const y = startY + idx * CONFIG.ui.lineStep;
       const prefix = idx === this.selected ? '>' : ' ';
       const line = (it as any).id === '__exit' ? `${prefix} 結束對話` : `${prefix} ${it.name}  $${it.price}`;
-      const txt = this.add.text(startX, y, line, { fontSize: '12px', color: idx === this.selected ? '#ffffff' : '#c0c8d0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
+      const txt = this.add.text(startX, y, line, { fontSize: `${CONFIG.ui.fontSize}px`, color: idx === this.selected ? '#ffffff' : '#c0c8d0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
       p.container.add(txt);
       this.rows.push(txt);
     });
@@ -365,6 +376,9 @@ export class StoreScene extends Phaser.Scene {
     this.scene.stop();
   }
 }
+
+
+
 
 
 

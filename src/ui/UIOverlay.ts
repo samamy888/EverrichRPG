@@ -41,9 +41,11 @@ export class UIOverlay extends Phaser.Scene {
     registerTinyBitmapFont(this);
 
     // Top hint box + texts (left: hint, right: location)
-    this.hintBox = this.add.rectangle(0, 0, GAME_WIDTH, 16, 0x000000, 0.55).setOrigin(0).setDepth(999);
-    this.hintText = this.add.text(4, 3, '', { fontSize: '12px', resolution: 2, color: '#e6f0ff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000);
-    this.locationText = this.add.text(GAME_WIDTH - 4, 3, '', { fontSize: '12px', resolution: 2, color: '#cfe2f3', fontFamily: 'HanPixel, system-ui, sans-serif' })
+    const HUD = CONFIG.ui.hudHeight;
+    const FS = CONFIG.ui.fontSize;
+    this.hintBox = this.add.rectangle(0, 0, GAME_WIDTH, HUD, 0x000000, 0.55).setOrigin(0).setDepth(999);
+    this.hintText = this.add.text(4, Math.max(1, Math.floor((HUD - FS) / 2)), '', { fontSize: `${FS}px`, resolution: 2, color: '#e6f0ff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000);
+    this.locationText = this.add.text(GAME_WIDTH - 4, Math.max(1, Math.floor((HUD - FS) / 2)), '', { fontSize: `${FS}px`, resolution: 2, color: '#cfe2f3', fontFamily: 'HanPixel, system-ui, sans-serif' })
       .setOrigin(1, 0)
       .setDepth(1000);
     this.ensureLocationIcons();
@@ -69,8 +71,8 @@ export class UIOverlay extends Phaser.Scene {
     this.registry.events.on('changedata', this.onDataChanged, this);
 
     // Bottom status box + text
-    this.statusBox = this.add.rectangle(0, GAME_HEIGHT - 16, GAME_WIDTH, 16, 0x000000, 0.55).setOrigin(0).setDepth(999);
-    this.statusText = this.add.text(4, GAME_HEIGHT - 14, '', { fontSize: '12px', resolution: 2, color: '#e6f0ff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000);
+    this.statusBox = this.add.rectangle(0, GAME_HEIGHT - HUD, GAME_WIDTH, HUD, 0x000000, 0.55).setOrigin(0).setDepth(999);
+    this.statusText = this.add.text(4, GAME_HEIGHT - HUD + Math.max(1, Math.floor((HUD - FS) / 2)), '', { fontSize: `${FS}px`, resolution: 2, color: '#e6f0ff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000);
 
     // For webfont, after load the width may change; adjust once fonts are ready
     const fonts: any = (document as any).fonts;
@@ -86,20 +88,17 @@ export class UIOverlay extends Phaser.Scene {
   }
 
   private onDataChanged(_parent: any, key: string, _value: any) {
-    if (key === 'timeRemaining' || key === 'money' || key === 'basket' || key === 'hint' || key === 'location' || key === 'locationType') {
+    if (key === 'money' || key === 'basket' || key === 'hint' || key === 'location' || key === 'locationType') {
       this.refresh();
     }
   }
 
   private refresh() {
-    const totalSeconds = Math.max(0, Math.floor((this.registry.get('timeRemaining') as number) ?? 0));
-    const mm = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-    const ss = String(totalSeconds % 60).padStart(2, '0');
     const money = (this.registry.get('money') as number) ?? 0;
     const basket = ((this.registry.get('basket') as { price: number }[]) ?? []);
     const basketTotal = basket.reduce((s, b) => s + b.price, 0);
 
-    this.timeValue.setText(`${mm}:${ss}`);
+    // 移除時間欄位顯示
     this.moneyValue.setText(`$${money}`);
     this.basketValue.setText(`$${basketTotal}`);
 
@@ -125,7 +124,7 @@ export class UIOverlay extends Phaser.Scene {
     }
 
     const itemsCount = basket.length;
-    this.statusText.setText(`Money $${money} | Time ${mm}:${ss} | Basket ${itemsCount} items $${basketTotal}`);
+    this.statusText.setText(`Money $${money} | Basket ${itemsCount} items $${basketTotal}`);
   }
 
   // 開發模式顯示字型載入狀態（網址加上 ?debugFonts=1 或 #debugFonts 生效）

@@ -15,5 +15,13 @@ export const CONFIG = {
     minZoom: 1,
     maxZoom: 8,
   },
+  ui: {
+    fontSize: 10,
+    small: 9,
+    tiny: 8,
+    hudHeight: 14,
+    lineStep: 12,
+    dialogHeight: 20,
+  }
 };
 
