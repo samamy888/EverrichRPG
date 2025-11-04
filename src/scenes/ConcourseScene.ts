@@ -128,6 +128,9 @@ export class ConcourseScene extends Phaser.Scene {
     // 物理世界使用設計解析度，視圖大小由相機 zoom 控制
     this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
     this.cameras.main.setRoundPixels(true);
+    // 重新套用全域相機縮放於喚醒/恢復時
+    this.events.on(Phaser.Scenes.Events.WAKE, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
+    this.events.on(Phaser.Scenes.Events.RESUME, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
   }
 
   private spawnCrowd() {

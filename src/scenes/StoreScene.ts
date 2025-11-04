@@ -29,13 +29,18 @@ export class StoreScene extends Phaser.Scene {
       g.generateTexture('store-tiles', TILE * 6, TILE);
       g.destroy();
     }
-  }\n  constructor() { super('StoreScene'); }
+  }
+
+  constructor() { super('StoreScene'); }
 
   init(data: StoreData) { if (data?.storeId) this.storeId = data.storeId; }
 
   create() {
     this.cameras.main.setBackgroundColor('#0d1220');
     this.cameras.main.setRoundPixels(true);
+    // 重新套用全域相機縮放於喚醒/恢復時
+    this.events.on(Phaser.Scenes.Events.WAKE, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
+    this.events.on(Phaser.Scenes.Events.RESUME, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
     try { (window as any).__applyCameraZoom?.(); } catch {}
     this.cursor = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys('ESC,ENTER,SPACE') as any;

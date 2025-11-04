@@ -25,6 +25,9 @@ export class UIOverlay extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(0x000000);
     this.cameras.main.setAlpha(0);
     this.cameras.main.setRoundPixels(true);
+    // 重新套用全域相機縮放於喚醒/恢復時
+    this.events.on(Phaser.Scenes.Events.WAKE, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
+    this.events.on(Phaser.Scenes.Events.RESUME, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
     try { (window as any).__applyCameraZoom?.(); } catch {}
 
     // Register bitmap font for numeric values
