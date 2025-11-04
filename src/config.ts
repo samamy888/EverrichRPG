@@ -2,7 +2,7 @@ export type FillMode = 'fit' | 'cover';
 
 export const CONFIG = {
   // 是否在執行時預設顯示字型偵測面板（可用於開發階段）
-  debugFonts: false,
+  debugFonts: true,
 
   scale: {
     // 是否啟用整數縮放（像素最清晰）

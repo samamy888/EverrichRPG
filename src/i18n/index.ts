@@ -5,7 +5,7 @@ let currentLocale: Locale = 'zh-Hant';
 const dict: Record<Locale, any> = {
   'zh-Hant': {
     ui: {
-      status: '金額 ${money}｜購物籃 ${items} 件 $${total}',
+      status: '金額 ${money}｜購物籃 {items} 件｜總金額 ${total}',
     },
     concourse: {
       sign: '大廳',
@@ -25,7 +25,7 @@ const dict: Record<Locale, any> = {
   },
   en: {
     ui: {
-      status: 'Money ${money} | Basket ${items} items $${total}',
+      status: 'Money ${money} | Basket ${items} items  | Total $${total}',
     },
     concourse: {
       sign: 'Concourse',

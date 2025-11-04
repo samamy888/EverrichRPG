@@ -23,10 +23,7 @@ export class BootScene extends Phaser.Scene {
         const fonts: any = (document as any).fonts;
         const ready = fonts?.ready;
         // 最多等 1200ms，超時就先啟動場景
-        await Promise.race([
-          (async () => { if (ready) { await ready; } else { await fonts?.load?.('12px "HanPixel"'); } })(),
-          new Promise((resolve) => setTimeout(resolve, 1200))
-        ]);
+        if (fonts?.load) { await fonts.load("12px \"HanPixel\""); } if (fonts?.ready) { await fonts.ready; }
       } catch {}
     };
 
@@ -38,3 +35,4 @@ export class BootScene extends Phaser.Scene {
     })();
   }
 }
+

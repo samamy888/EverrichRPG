@@ -3,5 +3,7 @@
   font-family: 'HanPixel';
   src:
     url('/fonts/han.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
   font-display: swap;
 }
