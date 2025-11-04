@@ -35,6 +35,8 @@ game.scene.start('BootScene');
 // 原生滿版：使用 RESIZE 讓 canvas 跟隨視窗大小，並以相機 zoom 做整數縮放（不做 CSS 縮放）
 let fillMode: 'fit' | 'cover' = 'cover'; // fit: 內含留黑邊；cover: 充滿螢幕（可能裁切）
 let integerZoom = false; // true: 整數縮放最清晰；false: 連續縮放可完全滿版
+let preferredIntZoom: number | null = null; // 使用者指定的整數倍率（1~8），null 代表自動
+
 
 function applyCameraZoom() {
   // 取得實際渲染尺寸；若初始為 0，回退到 window 尺寸
@@ -49,7 +51,8 @@ function applyCameraZoom() {
   const ratioH = h / GAME_HEIGHT;
   let base = fillMode === 'cover' ? Math.max(ratioW, ratioH) : Math.min(ratioW, ratioH);
   if (!isFinite(base) || base <= 0) base = 1; // 避免 0 造成黑屏
-  const zoom = integerZoom ? Math.max(1, Math.floor(base)) : Math.max(1, base);
+  let zoom = integerZoom ? Math.max(1, Math.floor(base)) : Math.max(1, base);
+  if (integerZoom && preferredIntZoom) { zoom = Math.max(1, Math.min(8, preferredIntZoom)); }
 
   game.scene.getScenes(true).forEach(s => {
     const cam = s.cameras?.main;
@@ -76,6 +79,16 @@ window.addEventListener('keydown', (e) => {
     integerZoom = !integerZoom;
     applyCameraZoom();
   }
+  if (e.code === 'BracketRight') { // ] increase int zoom
+    if (!integerZoom) integerZoom = true;
+    preferredIntZoom = Math.min(8, (preferredIntZoom ?? 1) + 1);
+    applyCameraZoom();
+  }
+  if (e.code === 'BracketLeft') { // [ decrease int zoom
+    if (!integerZoom) integerZoom = true;
+    preferredIntZoom = Math.max(1, (preferredIntZoom ?? 2) - 1);
+    applyCameraZoom();
+  }
 });
 
 // 介面：右下角縮放面板（Cover/Fit、Snap 整數）
@@ -92,22 +105,30 @@ function createZoomControls() {
   const label = document.createElement('span');
   const btnMode = document.createElement('button');
   const btnSnap = document.createElement('button');
+  const btnMinus = document.createElement('button');
+  const btnPlus = document.createElement('button');
   const styleBtn = (b: HTMLButtonElement) => b.style.cssText = [
     'cursor:pointer','padding:2px 6px','border-radius:6px',
     'border:1px solid #4a5668','background:#1a2330','color:#e6f0ff'
   ].join(';');
-  styleBtn(btnMode); styleBtn(btnSnap);
+  styleBtn(btnMode); styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus);
 
   function updateLabel() {
-    label.textContent = `Mode: ${fillMode.toUpperCase()}  |  Snap: ${integerZoom ? 'ON' : 'OFF'}`;
+    const baseInt = Math.max(1, Math.floor(Math.max(game.scale.width / GAME_WIDTH, game.scale.height / GAME_HEIGHT)));
+    const snapInfo = integerZoom ? `ON (x${preferredIntZoom ?? baseInt})` : 'OFF';
+    label.textContent = `Mode: ${fillMode.toUpperCase()}  |  Snap: ${snapInfo}`;
     btnMode.textContent = fillMode === 'cover' ? 'Cover→Fit' : 'Fit→Cover';
-    btnSnap.textContent = integerZoom ? 'Snap 6×' : 'Smooth';
+    btnSnap.textContent = integerZoom ? 'Snap: ON' : 'Snap: OFF';
+    btnMinus.textContent = '−';
+    btnPlus.textContent = '+';
   }
 
   btnMode.addEventListener('click', () => { fillMode = fillMode === 'cover' ? 'fit' : 'cover'; applyCameraZoom(); updateLabel(); });
   btnSnap.addEventListener('click', () => { integerZoom = !integerZoom; applyCameraZoom(); updateLabel(); });
+  btnMinus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.max(1, (preferredIntZoom ?? 2) - 1); applyCameraZoom(); updateLabel(); });
+  btnPlus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.min(8, (preferredIntZoom ?? 1) + 1); applyCameraZoom(); updateLabel(); });
 
-  panel.append(label, btnMode, btnSnap);
+  panel.append(label, btnMode, btnSnap, btnMinus, btnPlus);
   document.body.appendChild(panel);
   updateLabel();
 }
