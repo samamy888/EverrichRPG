@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 import { createCrowd, updateCrowd, updateNameplates } from '../actors/NpcCrowd';
+import { CONFIG } from '../config';
 import { fetchTravelers } from '../api/travelers';
 import { t } from '../i18n';
 
@@ -11,6 +12,7 @@ export class ConcourseScene extends Phaser.Scene {
   private layer!: Phaser.Tilemaps.TilemapLayer;
   private doors: { world: Phaser.Math.Vector2; id: string; label: string }[] = [];
   private crowd?: Phaser.Physics.Arcade.Group;
+  private doorLabels: Map<string, Phaser.GameObjects.Text> = new Map();
 
   constructor() { super('ConcourseScene'); }
 
@@ -90,24 +92,33 @@ export class ConcourseScene extends Phaser.Scene {
     this.layer.fill(STRIPE, 0, 9, 100, 1);
     // Ensure small icon textures for door signage
     this.ensureDoorIcons();
-    // Multiple store facades along corridor
-    const entries: { x: number; id: string; label: string }[] = [
-      { x: 18, id: 'cosmetics', label: t('store.title.cosmetics') },
-      { x: 35, id: 'liquor', label: t('store.title.liquor') },
-      { x: 52, id: 'snacks', label: t('store.title.snacks') },
-      { x: 69, id: 'tobacco', label: t('store.title.tobacco') },
-      { x: 86, id: 'perfume', label: t('store.title.perfume') },
+    // Multiple store facades along corridor（平行商店，中央走道給旅客走）
+    // side: top/bottom，交錯配置；中央第 5 列為門口與走道
+    const entries: { x: number; id: string; label: string; side: 'top' | 'bottom' }[] = [
+      { x: 18, id: 'cosmetics', label: t('store.title.cosmetics'), side: 'top' },
+      { x: 35, id: 'liquor',    label: t('store.title.liquor'),    side: 'bottom' },
+      { x: 52, id: 'snacks',    label: t('store.title.snacks'),    side: 'top' },
+      { x: 69, id: 'tobacco',   label: t('store.title.tobacco'),   side: 'bottom' },
+      { x: 86, id: 'perfume',   label: t('store.title.perfume'),   side: 'top' },
     ];
     for (const e of entries) {
-      for (let y = 2; y <= 8; y++) this.layer.putTileAt(FACADE, e.x, y);
-      for (let y = 3; y <= 7; y++) this.layer.putTileAt(GLASS, e.x, y);
-      this.layer.putTileAt(DOOR, e.x, 5);
-      const world = new Phaser.Math.Vector2(e.x * 16 + 8, 2 + 5 * 16 + 8);
+      // 完全貼牆且店面高度 3x2：
+      // 上側使用列 [1,2]（1=貼牆立面、2=靠走道玻璃，門在 2）；
+      // 下側貼到底邊：使用列 [8,9]（9=貼牆立面緊貼底邊、8=靠走道玻璃，門在 8）。
+      const facadeRow = e.side === 'top' ? 1 : 9;
+      const glassRow = e.side === 'top' ? 2 : 8;
+      const doorRow = glassRow;
+      // 橫向三格（x-1..x+1）
+      for (let cx = e.x - 1; cx <= e.x + 1; cx++) {
+        // 貼牆那列放立面，靠走道那列放玻璃（單層圖塊，後者會覆蓋前者）
+        this.layer.putTileAt(FACADE, cx, facadeRow);
+        this.layer.putTileAt(GLASS, cx, glassRow);
+      }
+      // 門放在靠走道的那列中央
+      this.layer.putTileAt(DOOR, e.x, doorRow);
+      const world = new Phaser.Math.Vector2(e.x * 16 + 8, 2 + doorRow * 16 + 8);
       this.doors.push({ world, id: e.id, label: e.label });
-
-      // Small icon signage near the door side
-      const iconKey = `icon-${e.id}`;
-      const icon = this.add.image(world.x + 10, world.y, iconKey).setOrigin(0, 0.5).setDepth(5);
+      // 移除門邊 icon，改用靠近時名牌
     }
     // Light panels on top
     for (let x = 2; x <= 16; x += 7) this.layer.putTileAt(LIGHT, x, 1);
@@ -131,14 +142,15 @@ export class ConcourseScene extends Phaser.Scene {
     // Collide with walls
     this.physics.add.collider(this.player, this.layer);
 
-    // Crowd NPCs（從名單隨機抽人）
+    // Crowd NPCs（從名單隨機抽人；只在中央走道活動）
     fetchTravelers().then((list) => {
       const pool = list.slice();
       const pick = (n: number) => { const out: any[] = []; for (let i=0;i<n && pool.length;i++){ out.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]); } return out; };
       const chosen = pick(8);
       this.crowd = createCrowd(this, {
         count: chosen.length,
-        area: { xMin: 40, xMax: GAME_WIDTH * 2, yMin: 3 * 16 + 2 + 8, yMax: 8 * 16 + 2 + 8 },
+        // 中央走道範圍：第 4~6 列（避開上下店面）
+        area: { xMin: 40, xMax: GAME_WIDTH * 2, yMin: 4 * 16 + 2 + 4, yMax: 6 * 16 + 2 + 12 },
         texture: 'sprite-npc',
         tint: 0xffffff,
         layer: this.layer,
@@ -214,12 +226,32 @@ export class ConcourseScene extends Phaser.Scene {
     // 縮短名牌觸發距離，需更接近才顯示
     updateNameplates(this, this.crowd, this.player as any, 22);
 
-    // Door interaction (multiple stores)
+    // Door interaction (multiple stores) + 名牌顯示（靠近才顯示）
     let nearest: { world: Phaser.Math.Vector2; id: string; label: string } | null = null;
     let nd = Number.POSITIVE_INFINITY;
     for (const d of this.doors) {
       const dd = Phaser.Math.Distance.Between(this.player.x, this.player.y, d.world.x, d.world.y);
       if (dd < nd) { nd = dd; nearest = d; }
+    }
+    // 顯示最近門的名牌（距離閾值內）
+    const showDist = 22;
+    const zoom = Math.max(0.0001, this.cameras.main.zoom || 1);
+    const fsWorld = Math.max(8, Math.round(CONFIG.ui.fontSize / zoom));
+    for (const d of this.doors) {
+      let lbl = this.doorLabels.get(d.id);
+      if (!lbl) {
+        lbl = this.add.text(d.world.x, d.world.y - (fsWorld + 6), d.label, {
+          fontSize: `${fsWorld}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif'
+        }).setOrigin(0.5, 1).setDepth(12).setVisible(false);
+        this.doorLabels.set(d.id, lbl);
+      }
+      // 僅顯示最近且在距離內的門名牌
+      if (nearest && d.id === nearest.id && nd < showDist) {
+        if ((lbl.style.fontSize as any) !== `${fsWorld}px`) lbl.setFontSize(fsWorld);
+        lbl.setPosition(d.world.x, d.world.y - (fsWorld + 6)).setText(d.label).setVisible(true);
+      } else {
+        lbl.setVisible(false);
+      }
     }
     if (nearest && nd < 18) {
       this.registry.set('hint', `${nearest.label}｜${t('concourse.hintEnter')}｜ESC 購物籃`);
