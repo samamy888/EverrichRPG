@@ -6,7 +6,6 @@ export class ConcourseScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: { [k: string]: Phaser.Input.Keyboard.Key };
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  private hint!: Phaser.GameObjects.Text;
   private layer!: Phaser.Tilemaps.TilemapLayer;
   private doorWorld!: Phaser.Math.Vector2;
 
@@ -120,10 +119,7 @@ export class ConcourseScene extends Phaser.Scene {
     // Crowd NPCs
     this.spawnCrowd();
 
-    // Hint
-    this.hint = hasHanBitmap
-      ? (this.add.bitmapText(6, 4, 'han', t('concourse.hintMoveEnter'), 12).setTint(0xe6f0ff) as any)
-      : this.add.text(6, 6, t('concourse.hintMoveEnter'), { fontSize: '12px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
+    // 初始提示交由全域 UIOverlay 顯示
     this.registry.set('hint', t('concourse.hintMoveEnter'));
 
     // 物理世界使用設計解析度，視圖大小由相機 zoom 控制
@@ -162,14 +158,12 @@ export class ConcourseScene extends Phaser.Scene {
     // Door interaction
     const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.doorWorld.x, this.doorWorld.y);
     if (dist < 18) {
-      (this.hint as any).setText(t('concourse.hintEnter'));
       this.registry.set('hint', t('concourse.hintEnter'));
       if (Phaser.Input.Keyboard.JustDown(this.keys.E)) {
         this.scene.pause();
         this.scene.launch('StoreScene', { storeId: 'cosmetics' });
       }
     } else {
-      (this.hint as any).setText(t('concourse.hintMoveEnter'));
       this.registry.set('hint', t('concourse.hintMoveEnter'));
     }
 

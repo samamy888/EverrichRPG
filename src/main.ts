@@ -63,12 +63,26 @@ function applyCameraZoom() {
   });
 }
 
+function applyCameraZoomNextFrame() { requestAnimationFrame(() => applyCameraZoom()); }
+
 game.scale.on('resize', applyCameraZoom);
 window.addEventListener('load', applyCameraZoom);
 // 初始延遲再套用一次，避免首幀 scale 為 0
 window.setTimeout(applyCameraZoom, 0);
 // 暴露給其他場景在啟動後可呼叫（避免場景尚未建立時未套用 zoom）
 (window as any).__applyCameraZoom = applyCameraZoom;
+(window as any).__setFillMode = (mode: 'fit' | 'cover') => {
+  try { fillMode = mode; applyCameraZoom(); } catch {}
+};
+
+try {
+  const sceneEvents = (game.scene as any).events;
+  sceneEvents.on('start', applyCameraZoomNextFrame);
+  sceneEvents.on('wake', applyCameraZoomNextFrame);
+  sceneEvents.on('resume', applyCameraZoomNextFrame);
+  sceneEvents.on('transitioncomplete', applyCameraZoomNextFrame);
+} catch {}
+
 
 // 快捷鍵：Ctrl+Shift+F 切換 fit/cover；Ctrl+Shift+I 切換整數/連續縮放
 window.addEventListener('keydown', (e) => {
@@ -135,4 +149,6 @@ function createZoomControls() {
 }
 
 window.addEventListener('load', () => { createZoomControls(); });
+
+
 

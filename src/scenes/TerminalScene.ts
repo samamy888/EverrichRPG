@@ -56,8 +56,8 @@ export class TerminalScene extends Phaser.Scene {
     if (dist < 20) {
       this.hintText.setText('按 E 進入美妝店');
       if (Phaser.Input.Keyboard.JustDown(this.keys.E)) {
-        this.scene.pause();
-        this.scene.launch('StoreScene', { storeId: 'cosmetics' });
+        this.scene.start('StoreScene', { storeId: 'cosmetics' });
+        this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
       }
     } else {
       this.hintText.setText('方向鍵/WASD移動，E 進入商店');

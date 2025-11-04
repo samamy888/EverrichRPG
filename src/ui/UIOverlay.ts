@@ -22,13 +22,18 @@ export class UIOverlay extends Phaser.Scene {
   constructor() { super('UIOverlay'); }
 
   create() {
-    this.cameras.main.setBackgroundColor(0x000000);
-    this.cameras.main.setAlpha(0);
+    // 透明背景，不覆蓋主場景；相機本身維持可見
+    this.cameras.main.setBackgroundColor('rgba(0,0,0,0)');
+    this.cameras.main.setAlpha(1);
     this.cameras.main.setRoundPixels(true);
     // 重新套用全域相機縮放於喚醒/恢復時
     this.events.on(Phaser.Scenes.Events.WAKE, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
     this.events.on(Phaser.Scenes.Events.RESUME, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
     try { (window as any).__applyCameraZoom?.(); } catch {}
+    // 確保覆蓋層永遠在最上層
+    this.scene.bringToTop();
+    this.events.on(Phaser.Scenes.Events.WAKE, () => this.scene.bringToTop());
+    this.events.on(Phaser.Scenes.Events.RESUME, () => this.scene.bringToTop());
 
     // Register bitmap font for numeric values
     registerTinyBitmapFont(this);
@@ -39,21 +44,20 @@ export class UIOverlay extends Phaser.Scene {
 
     const hasHanBitmap = this.cache.bitmapFont.exists('han');
     if (hasHanBitmap) {
-      this.timeLabelBmp = this.add.bitmapText(4, 3, 'han', '時間 ', 12).setDepth(1000).setTint(0xffd966);
-      this.moneyLabelBmp = this.add.bitmapText(110, 3, 'han', '金額 ', 12).setDepth(1000).setTint(0xcfe2f3);
-      this.basketLabelBmp = this.add.bitmapText(200, 3, 'han', '購物籃 ', 12).setDepth(1000).setTint(0xd9ead3);
+      this.timeLabelBmp = this.add.bitmapText(-9999, -9999, 'han', '', 12).setVisible(false);
+      this.moneyLabelBmp = this.add.bitmapText(-9999, -9999, 'han', '', 12).setVisible(false);
+      this.basketLabelBmp = this.add.bitmapText(-9999, -9999, 'han', '', 12).setVisible(false);
     } else {
       const base = { fontSize: '12px', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' } as any;
-      this.timeLabelText = this.add.text(4, 2, '時間 ', { ...base, color: '#ffd966' }).setDepth(1000);
-      this.moneyLabelText = this.add.text(110, 2, '金額 ', { ...base, color: '#cfe2f3' }).setDepth(1000);
-      this.basketLabelText = this.add.text(200, 2, '購物籃 ', { ...base, color: '#d9ead3' }).setDepth(1000);
+      this.timeLabelText = this.add.text(-9999, -9999, '', { fontSize: '12px' }).setVisible(false);
+      this.moneyLabelText = this.add.text(-9999, -9999, '', { fontSize: '12px' }).setVisible(false);
+      this.basketLabelText = this.add.text(-9999, -9999, '', { fontSize: '12px' }).setVisible(false);
     }
 
     // Values (ASCII via bitmap font, very crisp)
-    const timeX = 52, moneyX = 162, basketX = 262;
-    this.timeValue = this.add.bitmapText(timeX, 4, 'tiny5x7', '00:00', 10).setDepth(1000);
-    this.moneyValue = this.add.bitmapText(moneyX, 4, 'tiny5x7', '', 10).setDepth(1000);
-    this.basketValue = this.add.bitmapText(basketX, 4, 'tiny5x7', '', 10).setDepth(1000);
+    this.timeValue = this.add.bitmapText(-9999, -9999, 'tiny5x7', '', 10).setVisible(false);
+    this.moneyValue = this.add.bitmapText(-9999, -9999, 'tiny5x7', '', 10).setVisible(false);
+    this.basketValue = this.add.bitmapText(-9999, -9999, 'tiny5x7', '', 10).setVisible(false);
 
     this.registry.events.on('changedata', this.onDataChanged, this);
 
@@ -115,6 +119,7 @@ export class UIOverlay extends Phaser.Scene {
     console.info('[fonts]', { bitmap: hasBitmap, web: hasWeb });
   }
 }
+
 
 
 
