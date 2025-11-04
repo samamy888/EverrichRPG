@@ -37,28 +37,17 @@ export class UIOverlay extends Phaser.Scene {
     }
 
     // Values (ASCII via bitmap font, very crisp)
-    const tlx = (this.timeLabelBmp?.x ?? this.timeLabelText!.x) + (this.timeLabelBmp?.width ?? this.timeLabelText!.width);
-    const mlx = (this.moneyLabelBmp?.x ?? this.moneyLabelText!.x) + (this.moneyLabelBmp?.width ?? this.moneyLabelText!.width);
-    const blx = (this.basketLabelBmp?.x ?? this.basketLabelText!.x) + (this.basketLabelBmp?.width ?? this.basketLabelText!.width);
-    this.timeValue = this.add.bitmapText(tlx, 4, 'tiny5x7', '00:00', 10).setDepth(1000);
-    this.moneyValue = this.add.bitmapText(mlx, 4, 'tiny5x7', '$0', 10).setDepth(1000);
-    this.basketValue = this.add.bitmapText(blx, 4, 'tiny5x7', '$0', 10).setDepth(1000);
+    const timeX = 52, moneyX = 162, basketX = 262;
+    this.timeValue = this.add.bitmapText(timeX, 4, 'tiny5x7', '00:00', 10).setDepth(1000);
+    this.moneyValue = this.add.bitmapText(moneyX, 4, 'tiny5x7', '', 10).setDepth(1000);
+    this.basketValue = this.add.bitmapText(basketX, 4, 'tiny5x7', '', 10).setDepth(1000);
 
     this.registry.events.on('changedata', this.onDataChanged, this);
 
     // For webfont, after load the width may change; adjust once fonts are ready
     const fonts: any = (document as any).fonts;
     if (fonts?.ready) {
-      fonts.ready.then(() => {
-        const ntlx = (this.timeLabelBmp?.x ?? this.timeLabelText!.x) + (this.timeLabelBmp?.width ?? this.timeLabelText!.width);
-        const nmlx = (this.moneyLabelBmp?.x ?? this.moneyLabelText!.x) + (this.moneyLabelBmp?.width ?? this.moneyLabelText!.width);
-        const nblx = (this.basketLabelBmp?.x ?? this.basketLabelText!.x) + (this.basketLabelBmp?.width ?? this.basketLabelText!.width);
-        this.timeValue.setX(ntlx);
-        this.moneyValue.setX(nmlx);
-        this.basketValue.setX(nblx);
-        this.refresh();
-        this.updateFontDebug();
-      }).catch(() => {});
+      this.refresh();
     }
     this.maybeInitFontDebug();
     this.refresh();
@@ -103,3 +92,6 @@ export class UIOverlay extends Phaser.Scene {
     console.info('[fonts]', { bitmap: hasBitmap, web: hasWeb });
   }
 }
+
+
+
