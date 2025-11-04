@@ -1,4 +1,7 @@
 import Phaser from 'phaser';
+import { CONFIG } from '../config';
+
+import type { Traveler } from '../api/travelers';
 
 export type CrowdOptions = {
   count: number;
@@ -9,6 +12,8 @@ export type CrowdOptions = {
   collideWith?: Phaser.Types.Physics.Arcade.GameObjectWithBody[];
   speed?: { vx: [number, number]; vy: [number, number] };
   bounce?: { x: number; y: number };
+  travelers?: Traveler[]; // 提供可選旅客屬性清單
+  texturesByGender?: { M?: string; F?: string; O?: string; default?: string };
 };
 
 type Meta = { state: 'walk' | 'pause'; nextAt: number };
@@ -35,10 +40,20 @@ export function createCrowd(
     return v === 0 ? fallback : v;
     };
 
+  const pool = (opts.travelers && opts.travelers.length) ? opts.travelers.slice() : undefined;
+  const pickTraveler = (): Traveler | undefined => {
+    if (!pool || !pool.length) return undefined;
+    const idx = Phaser.Math.Between(0, pool.length - 1);
+    return pool.splice(idx, 1)[0];
+  };
+
   for (let i = 0; i < opts.count; i++) {
     const x = rnd(opts.area.xMin, opts.area.xMax);
     const y = rnd(opts.area.yMin, opts.area.yMax);
-    const npc = scene.add.image(x, y, tex).setTint(tint);
+    const tv = pickTraveler();
+    const chosenTexture = tv ? (opts.texturesByGender?.[tv.gender as 'M' | 'F' | 'O'] || opts.texturesByGender?.default || tex) : tex;
+    const chosenTint = tv ? (tv.gender === 'F' ? 0xcfa8ff : tv.gender === 'M' ? 0xa8d1ff : 0xa8ffc6) : tint;
+    const npc = scene.add.image(x, y, chosenTexture).setTint(chosenTint);
     group.add(npc);
     physics.add.existing(npc);
     const body = npc.body as Phaser.Physics.Arcade.Body;
@@ -46,6 +61,7 @@ export function createCrowd(
     body.setBounce(bx, by);
     body.setVelocity(pick(vx[0], vx[1], 20), pick(vy[0], vy[1], 15));
     meta.set(npc, { state: 'walk', nextAt: scene.time.now + rnd(900, 1600) });
+    if (tv) npc.setData('traveler', tv);
   }
 
   if (opts.layer) physics.add.collider(group, opts.layer);
@@ -82,3 +98,61 @@ export function updateCrowd(scene: Phaser.Scene, group?: Phaser.Physics.Arcade.G
   });
 }
 
+export function updateNameplates(
+  scene: Phaser.Scene,
+  group: Phaser.Physics.Arcade.Group | undefined,
+  player: { x: number; y: number } | undefined,
+  maxDistance: number = 42
+) {
+  if (!group || !player) return;
+  const cam: any = (scene.cameras && (scene.cameras as any).main) ? (scene.cameras as any).main : null;
+  const zoom = Math.max(0.0001, cam?.zoom || 1);
+  const FS = CONFIG.ui.fontSize;
+  const fsWorld = Math.max(8, Math.round(FS / zoom));
+  const yOffset = Math.max(10, Math.round(fsWorld + 4));
+  group.children.iterate((obj: any) => {
+    const npc = obj as Phaser.GameObjects.Image & { getData: Function; setData: Function };
+    if (!npc || !npc.active) return undefined;
+    const tv = npc.getData?.('traveler') as any;
+    if (!tv) {
+      const lbl: Phaser.GameObjects.Text | undefined = npc.getData?.('nameLabel');
+      if (lbl) { try { lbl.destroy(); } catch {} npc.setData('nameLabel', undefined); }
+      return undefined;
+    }
+    const dist = Phaser.Math.Distance.Between(npc.x, npc.y, player.x, player.y);
+    let lbl: Phaser.GameObjects.Text | undefined = npc.getData?.('nameLabel');
+    if (dist <= maxDistance) {
+      if (!lbl || !lbl.active) {
+        const color = '#e6f0ff';
+        lbl = scene.add.text(npc.x, npc.y - yOffset, tv.name || '', {
+          fontSize: `${fsWorld}px`,
+          color,
+          resolution: 2,
+          fontFamily: 'HanPixel, system-ui, sans-serif',
+        }).setOrigin(0.5, 1).setDepth((npc.depth || 0) + 5);
+        npc.setData('nameLabel', lbl);
+      }
+      // 若縮放變化，更新字級
+      const want = `${fsWorld}px`;
+      if ((lbl!.style.fontSize as any) !== want) lbl!.setFontSize(fsWorld);
+      // 跟隨定位在頭上
+      lbl!.setPosition(npc.x, npc.y - yOffset).setVisible(true);
+    } else {
+      if (lbl) lbl.setVisible(false);
+    }
+    return undefined;
+  });
+}
+
+export function updateNameplateForSprite(
+  scene: Phaser.Scene,
+  sprite: (Phaser.GameObjects.Image & { getData?: Function; setData?: Function }) | undefined,
+  player: { x: number; y: number } | undefined,
+  maxDistance: number = 42
+) {
+  if (!sprite || !player) return;
+  const grp = (scene.physics as Phaser.Physics.Arcade.ArcadePhysics).add.group();
+  try { grp.add(sprite); } catch {}
+  updateNameplates(scene, grp, player, maxDistance);
+  try { grp.remove(sprite, false, false); } catch {}
+}

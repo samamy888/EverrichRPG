@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
-import { createCrowd, updateCrowd } from '../actors/NpcCrowd';
+import { createCrowd, updateCrowd, updateNameplates } from '../actors/NpcCrowd';
+import { fetchTravelers } from '../api/travelers';
 import { t } from '../i18n';
 
 export class ConcourseScene extends Phaser.Scene {
@@ -130,16 +131,23 @@ export class ConcourseScene extends Phaser.Scene {
     // Collide with walls
     this.physics.add.collider(this.player, this.layer);
 
-    // Crowd NPCs
-    this.crowd = createCrowd(this, {
-      count: 6,
-      area: { xMin: 40, xMax: GAME_WIDTH * 2, yMin: 3 * 16 + 2 + 8, yMax: 8 * 16 + 2 + 8 },
-      texture: 'sprite-npc',
-      tint: 0xffffff,
-      layer: this.layer,
-      collideWith: [this.player as unknown as any],
-      speed: { vx: [-40, 40], vy: [-10, 10] },
-      bounce: { x: 1, y: 1 },
+    // Crowd NPCs（從名單隨機抽人）
+    fetchTravelers().then((list) => {
+      const pool = list.slice();
+      const pick = (n: number) => { const out: any[] = []; for (let i=0;i<n && pool.length;i++){ out.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]); } return out; };
+      const chosen = pick(8);
+      this.crowd = createCrowd(this, {
+        count: chosen.length,
+        area: { xMin: 40, xMax: GAME_WIDTH * 2, yMin: 3 * 16 + 2 + 8, yMax: 8 * 16 + 2 + 8 },
+        texture: 'sprite-npc',
+        tint: 0xffffff,
+        layer: this.layer,
+        collideWith: [this.player as unknown as any],
+        speed: { vx: [-40, 40], vy: [-10, 10] },
+        bounce: { x: 1, y: 1 },
+        travelers: chosen,
+        texturesByGender: { default: 'sprite-npc' },
+      });
     });
 
     // 初始提示交由全域 UIOverlay 顯示
@@ -203,6 +211,8 @@ export class ConcourseScene extends Phaser.Scene {
     if (this.cursors.up?.isDown || this.keys.W.isDown) body.setVelocityY(-speed);
     else if (this.cursors.down?.isDown || this.keys.S.isDown) body.setVelocityY(speed);
     updateCrowd(this, this.crowd);
+    // 縮短名牌觸發距離，需更接近才顯示
+    updateNameplates(this, this.crowd, this.player as any, 22);
 
     // Door interaction (multiple stores)
     let nearest: { world: Phaser.Math.Vector2; id: string; label: string } | null = null;

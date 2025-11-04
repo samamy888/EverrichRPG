@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { items } from '../data/items';
-import { createCrowd, updateCrowd } from '../actors/NpcCrowd';
+import { createCrowd, updateCrowd, updateNameplates, updateNameplateForSprite } from '../actors/NpcCrowd';
+import { fetchTravelers } from '../api/travelers';
 import { t } from '../i18n';
 import { CONFIG } from '../config';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
@@ -135,18 +136,33 @@ export class StoreScene extends Phaser.Scene {
     (this.cashier.body as Phaser.Physics.Arcade.Body).setImmovable(true);
     // 與顧客區分：給店員不同色調
     this.cashier.setTint(0xffd966);
+    // 取得店員資料，給予名牌資訊
+    ;(async () => {
+      try {
+        const { fetchClerk } = await import('../api/travelers');
+        const c = await fetchClerk(this.storeId);
+        this.cashier.setData('traveler', c);
+      } catch {}
+    })();
 
     // 化妝品店顧客：數名隨機移動的 NPC，與地圖/玩家/店員碰撞
     if (['cosmetics','liquor','snacks','tobacco','perfume'].includes(this.storeId)) {
-      this.customers = createCrowd(this, {
-        count: 4,
-        area: { xMin: 24, xMax: GAME_WIDTH - 24, yMin: 16 * 4, yMax: 16 * 9 },
-        texture: 'sprite-npc',
-        tint: 0x8fd3ff,
-        layer: this.layer,
-        collideWith: [this.player as unknown as any, this.cashier as unknown as any],
-        speed: { vx: [-30, 30], vy: [-20, 20] },
-        bounce: { x: 1, y: 1 },
+      fetchTravelers().then((list) => {
+        const pool = list.slice();
+        const out: any[] = [];
+        for (let i=0;i<4 && pool.length;i++) out.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+        this.customers = createCrowd(this, {
+          count: out.length,
+          area: { xMin: 24, xMax: GAME_WIDTH - 24, yMin: 16 * 4, yMax: 16 * 9 },
+          texture: 'sprite-npc',
+          tint: 0x8fd3ff,
+          layer: this.layer,
+          collideWith: [this.player as unknown as any, this.cashier as unknown as any],
+          speed: { vx: [-30, 30], vy: [-20, 20] },
+          bounce: { x: 1, y: 1 },
+          travelers: out,
+          texturesByGender: { default: 'sprite-npc' },
+        });
       });
     }
     // 出口：左下角門框，靠近按 E 離開
@@ -229,6 +245,9 @@ export class StoreScene extends Phaser.Scene {
 
     // 顧客 AI（共用）：走動/暫停
     updateCrowd(this, this.customers);
+    // 名牌必須更接近才顯示（商店空間較小）
+    updateNameplates(this, this.customers, this.player as any, 20);
+    updateNameplateForSprite(this, this.cashier as any, this.player as any, 20);
 
     // 取消 ESC 強制返回大廳（改由清單的「離開」或出口互動離開）
 
