@@ -95,7 +95,7 @@ export class UIOverlay extends Phaser.Scene {
   private maybeInitFontDebug() {
     const isDev = !!((import.meta as any)?.env?.DEV);
     const url = new URL(window.location.href);
-    const enabled = isDev && (url.searchParams.get('debugFonts') === '1' || url.hash.includes('debugFonts'));
+    const enabled = isDev || (url.searchParams.get('debugFonts') === '1' || url.hash.includes('debugFonts'));
     if (!enabled) return;
     this.fontDebugText = this.add.text(4, 14, '', { fontSize: '9px', color: '#a8ffbf', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000);
     this.updateFontDebug();
@@ -111,6 +111,7 @@ export class UIOverlay extends Phaser.Scene {
     console.info('[fonts]', { bitmap: hasBitmap, web: hasWeb });
   }
 }
+
 
 
 

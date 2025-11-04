@@ -34,8 +34,8 @@ game.scene.start('BootScene');
 
 // 原生滿版：使用 RESIZE 讓 canvas 跟隨視窗大小，並以相機 zoom 做整數縮放（不做 CSS 縮放）
 let fillMode: 'fit' | 'cover' = 'cover'; // fit: 內含留黑邊；cover: 充滿螢幕（可能裁切）
-let integerZoom = false; // true: 整數縮放最清晰；false: 連續縮放可完全滿版
-let preferredIntZoom: number | null = null; // 使用者指定的整數倍率（1~8），null 代表自動
+let integerZoom = true; // 預設啟用整數縮放 // true: 整數縮放最清晰；false: 連續縮放可完全滿版
+let preferredIntZoom: number | null = 5; // 預設 5x（可由 UI/快捷鍵調整） // 使用者指定的整數倍率（1~8），null 代表自動
 
 
 function applyCameraZoom() {
@@ -134,3 +134,4 @@ function createZoomControls() {
 }
 
 window.addEventListener('load', () => { createZoomControls(); });
+
