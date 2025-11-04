@@ -123,6 +123,7 @@ export class ConcourseScene extends Phaser.Scene {
     this.hint = hasHanBitmap
       ? (this.add.bitmapText(6, 4, 'han', t('concourse.hintMoveEnter'), 12).setTint(0xe6f0ff) as any)
       : this.add.text(6, 6, t('concourse.hintMoveEnter'), { fontSize: '12px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
+    this.registry.set('hint', t('concourse.hintMoveEnter'));
 
     // 物理世界使用設計解析度，視圖大小由相機 zoom 控制
     this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
@@ -158,12 +159,14 @@ export class ConcourseScene extends Phaser.Scene {
     const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.doorWorld.x, this.doorWorld.y);
     if (dist < 18) {
       (this.hint as any).setText(t('concourse.hintEnter'));
+      this.registry.set('hint', t('concourse.hintEnter'));
       if (Phaser.Input.Keyboard.JustDown(this.keys.E)) {
         this.scene.pause();
         this.scene.launch('StoreScene', { storeId: 'cosmetics' });
       }
     } else {
       (this.hint as any).setText(t('concourse.hintMoveEnter'));
+      this.registry.set('hint', t('concourse.hintMoveEnter'));
     }
 
     // Countdown time

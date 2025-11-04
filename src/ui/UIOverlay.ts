@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { registerTinyBitmapFont } from './BitmapFont';
+import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 
 export class UIOverlay extends Phaser.Scene {
   private timeLabelText?: Phaser.GameObjects.Text;
@@ -12,6 +13,10 @@ export class UIOverlay extends Phaser.Scene {
   private moneyValue!: Phaser.GameObjects.BitmapText;
   private basketValue!: Phaser.GameObjects.BitmapText;
   private fontDebugText?: Phaser.GameObjects.Text;
+  private hintBox!: Phaser.GameObjects.Rectangle;
+  private hintText!: Phaser.GameObjects.Text;
+  private statusBox!: Phaser.GameObjects.Rectangle;
+  private statusText!: Phaser.GameObjects.Text;
 
   constructor() { super('UIOverlay'); }
 
@@ -23,6 +28,10 @@ export class UIOverlay extends Phaser.Scene {
 
     // Register bitmap font for numeric values
     registerTinyBitmapFont(this);
+
+    // Top hint box + text
+    this.hintBox = this.add.rectangle(0, 0, GAME_WIDTH, 16, 0x000000, 0.55).setOrigin(0).setDepth(999);
+    this.hintText = this.add.text(4, 3, '', { fontSize: '12px', resolution: 2, color: '#e6f0ff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000);
 
     const hasHanBitmap = this.cache.bitmapFont.exists('han');
     if (hasHanBitmap) {
@@ -44,6 +53,10 @@ export class UIOverlay extends Phaser.Scene {
 
     this.registry.events.on('changedata', this.onDataChanged, this);
 
+    // Bottom status box + text
+    this.statusBox = this.add.rectangle(0, GAME_HEIGHT - 16, GAME_WIDTH, 16, 0x000000, 0.55).setOrigin(0).setDepth(999);
+    this.statusText = this.add.text(4, GAME_HEIGHT - 14, '', { fontSize: '12px', resolution: 2, color: '#e6f0ff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000);
+
     // For webfont, after load the width may change; adjust once fonts are ready
     const fonts: any = (document as any).fonts;
     if (fonts?.ready) {
@@ -54,7 +67,7 @@ export class UIOverlay extends Phaser.Scene {
   }
 
   private onDataChanged(_parent: any, key: string, _value: any) {
-    if (key === 'timeRemaining' || key === 'money' || key === 'basket') {
+    if (key === 'timeRemaining' || key === 'money' || key === 'basket' || key === 'hint') {
       this.refresh();
     }
   }
@@ -70,6 +83,12 @@ export class UIOverlay extends Phaser.Scene {
     this.timeValue.setText(`${mm}:${ss}`);
     this.moneyValue.setText(`$${money}`);
     this.basketValue.setText(`$${basketTotal}`);
+
+    const hint = (this.registry.get('hint') as string) ?? '';
+    if (hint) this.hintText.setText(hint);
+
+    const itemsCount = basket.length;
+    this.statusText.setText(`Money $${money} | Time ${mm}:${ss} | Basket ${itemsCount} items $${basketTotal}`);
   }
 
   // 開發模式顯示字型載入狀態（網址加上 ?debugFonts=1 或 #debugFonts 生效）

@@ -34,6 +34,7 @@ export class StoreScene extends Phaser.Scene {
       this.add.text(8, 6, title, { fontSize: '12px', color: '#cce8ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
       this.add.text(8, 18, t('store.hint'), { fontSize: '12px', color: '#9fb3c8', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' });
     }
+    this.registry.set('hint', t('store.hint'));
     this.renderList();
   }
 
