@@ -123,7 +123,7 @@ export class ConcourseScene extends Phaser.Scene {
     this.spawnCrowd();
 
     // 初始提示交由全域 UIOverlay 顯示
-    this.registry.set('hint', t('concourse.hintMoveEnter'));
+    this.registry.set('hint', `${t('concourse.hintMoveEnter')}｜ESC 購物籃`);
 
     // 物理世界使用設計解析度，視圖大小由相機 zoom 控制
     this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
@@ -162,14 +162,14 @@ export class ConcourseScene extends Phaser.Scene {
     const distCos = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.doorCosmetics.x, this.doorCosmetics.y);
     const distLiq = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.doorLiquor.x, this.doorLiquor.y);
     if (distCos < 18 || distLiq < 18) {
-      this.registry.set('hint', t('concourse.hintEnter'));
+      this.registry.set('hint', `${t('concourse.hintEnter')}｜ESC 購物籃`);
       if (Phaser.Input.Keyboard.JustDown(this.keys.E)) {
         const target: 'cosmetics' | 'liquor' = distCos <= distLiq ? 'cosmetics' : 'liquor';
         this.scene.pause();
         this.scene.launch('StoreScene', { storeId: target });
       }
     } else {
-      this.registry.set('hint', t('concourse.hintMoveEnter'));
+      this.registry.set('hint', `${t('concourse.hintMoveEnter')}｜ESC 購物籃`);
     }
 
     // 移除倒數計時

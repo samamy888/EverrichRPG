@@ -55,6 +55,7 @@ export class StoreScene extends Phaser.Scene {
       this.customers = undefined;
     }
     this.customerMeta.clear();
+    // Reset basket overlay
   }
 
   preload() {
@@ -119,7 +120,7 @@ export class StoreScene extends Phaser.Scene {
     const title = this.storeId === 'cosmetics' ? t('store.title.cosmetics') : t('store.title.liquor');
     this.registry.set('location', title);
     this.registry.set('locationType', this.storeId);
-    this.registry.set('hint', t('store.hintApproach'));
+    this.registry.set('hint', `${t('store.hintApproach')}｜ESC 購物籃`);
 
     // Player & cashier
     this.player = this.add.image(16, 16 * 9, 'sprite-player');
@@ -252,6 +253,8 @@ export class StoreScene extends Phaser.Scene {
     container.setVisible(show);
   }
 
+  // Basket overlay rendering moved to UIOverlay (global)
+
   private endListingToBrowse() {
     this.phase = 'browse';
     // 隱藏清單面板與其文字
@@ -276,6 +279,7 @@ export class StoreScene extends Phaser.Scene {
         else if (this.cursor.down?.isDown || (this.keys as any).S.isDown) this.pBody.setVelocityY(speed);
       }
     }
+
 
     // 顧客 AI：走動/暫停的簡單狀態機
     if (this.customers) {
@@ -310,13 +314,13 @@ export class StoreScene extends Phaser.Scene {
     if (this.exitWorld) {
       const distExitEarly = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.exitWorld.x, this.exitWorld.y);
       if (distExitEarly < 18) {
-        this.registry.set('hint', t('store.hintExitDoor'));
+        this.registry.set('hint', `${t('store.hintExitDoor')}｜ESC 購物籃`);
         if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) { this.leaveStore(); return; }
       }
     }
 
     if (this.phase === 'browse') {
-      if (dist < 18) this.registry.set('hint', t('store.hintTalk'));
+      if (dist < 18) this.registry.set('hint', `${t('store.hintTalk')}｜ESC 購物籃`);
       if (dist < 18 && Phaser.Input.Keyboard.JustDown((this.keys as any).E)) {
         this.startDialog([t('store.dialog.l1'), t('store.dialog.l2'), t('store.dialog.l3')]);
       }

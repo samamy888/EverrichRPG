@@ -21,6 +21,12 @@ export class UIOverlay extends Phaser.Scene {
   private locationIcon!: Phaser.GameObjects.Image;
   private statusBox!: Phaser.GameObjects.Rectangle;
   private statusText!: Phaser.GameObjects.Text;
+  // Basket overlay state
+  private basketOpen = false;
+  private basketBox?: Phaser.GameObjects.Rectangle;
+  private basketRows: Phaser.GameObjects.Text[] = [];
+  private basketSelected = 0;
+  private lastHint: string | null = null;
 
   constructor() { super('UIOverlay'); }
 
@@ -86,11 +92,22 @@ export class UIOverlay extends Phaser.Scene {
     try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
     // 當視窗大小或比例變化時，確保覆蓋層也一起更新
     try { this.scale.on('resize', () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
+
+    // Global basket toggle and navigation
+    this.input.keyboard.on('keydown-ESC', () => {
+      if (this.basketOpen) this.closeBasket(); else this.openBasket();
+    });
+    this.input.keyboard.on('keydown-W', () => this.moveBasket(-1));
+    this.input.keyboard.on('keydown-UP', () => this.moveBasket(-1));
+    this.input.keyboard.on('keydown-S', () => this.moveBasket(1));
+    this.input.keyboard.on('keydown-DOWN', () => this.moveBasket(1));
+    this.input.keyboard.on('keydown-E', () => this.pickBasket());
   }
 
   private onDataChanged(_parent: any, key: string, _value: any) {
     if (key === 'money' || key === 'basket' || key === 'hint' || key === 'location' || key === 'locationType') {
       this.refresh();
+      if (this.basketOpen) this.renderBasket();
     }
   }
 
@@ -104,7 +121,12 @@ export class UIOverlay extends Phaser.Scene {
     this.basketValue.setText(`$${basketTotal}`);
 
     const hint = (this.registry.get('hint') as string) ?? '';
-    if (hint !== undefined) this.hintText.setText(hint || '');
+    if (this.basketOpen) {
+      const bh = (t('ui.basketHint') as string) || '';
+      this.hintText.setText(bh && bh !== 'ui.basketHint' ? bh : '購物籃：W/S 選擇，E 移除，ESC 關閉');
+    } else if (hint !== undefined) {
+      this.hintText.setText(hint || '');
+    }
     const loc = (this.registry.get('location') as string) ?? '';
     if (loc !== undefined) this.locationText.setText(loc || '');
     const locType = (this.registry.get('locationType') as string) ?? '';
@@ -150,6 +172,78 @@ export class UIOverlay extends Phaser.Scene {
     const msg = `字型 Bitmap(han): ${hasBitmap ? '是' : '否'}｜Web(HanPixel): ${hasWeb ? '已載入' : '尚未'}`;
     this.fontDebugText.setText(msg);
     console.info('[fonts]', { bitmap: hasBitmap, web: hasWeb });
+  }
+
+  private openBasket() {
+    this.basketOpen = true;
+    this.basketSelected = 0;
+    try { this.lastHint = (this.registry.get('hint') as string) ?? ''; } catch { this.lastHint = null; }
+    try {
+      const bh = t('ui.basketHint') as string;
+      this.registry.set('hint', bh && bh !== 'ui.basketHint' ? bh : '購物籃：W/S 選擇，E 移除，ESC 關閉');
+    } catch {}
+    this.renderBasket();
+    this.refresh();
+  }
+  private closeBasket() {
+    this.basketOpen = false;
+    try { this.basketRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
+    this.basketRows = [];
+    try { this.basketBox?.destroy(); } catch {}
+    this.basketBox = undefined;
+    if (this.lastHint !== null) {
+      this.registry.set('hint', this.lastHint);
+      this.lastHint = null;
+    }
+    this.refresh();
+  }
+  private renderBasket() {
+    const pad = 6;
+    const FS = CONFIG.ui.fontSize;
+    const lines = ((this.registry.get('basket') as { name: string; price: number }[]) ?? []);
+    const total = lines.reduce((s, b) => s + (b.price || 0), 0);
+    const maxLines = Math.max(3, Math.min(7, lines.length + 2));
+    const h = Math.max(CONFIG.ui.dialogHeight, pad * 2 + maxLines * (FS + 2));
+    const y = GAME_HEIGHT - h - 2;
+    if (!this.basketBox) {
+      this.basketBox = this.add.rectangle(0, y, GAME_WIDTH, h, 0x000000, 0.8).setOrigin(0).setDepth(2000);
+    } else {
+      this.basketBox.setPosition(0, y).setSize(GAME_WIDTH, h).setDepth(2000).setVisible(true);
+    }
+    // Clear rows
+    try { this.basketRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
+    this.basketRows = [];
+    const startY = y + pad;
+    const startX = 6;
+    const title = this.add.text(startX, startY, t('store.listTitle') || '商品', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001);
+    this.basketRows.push(title);
+    lines.forEach((it, idx) => {
+      const prefix = idx === this.basketSelected ? '>' : ' ';
+      const line = `${prefix} ${it.name}  $${it.price}`;
+      const ty = startY + (idx + 1) * (FS + 2);
+      const txt = this.add.text(startX, ty, line, { fontSize: `${FS}px`, color: idx === this.basketSelected ? '#ffffff' : '#c0c8d0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001);
+      this.basketRows.push(txt);
+    });
+    const sum = this.add.text(startX, startY + (lines.length + 1) * (FS + 2), `合計 $${total}`, { fontSize: `${FS}px`, color: '#ffd966', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001);
+    this.basketRows.push(sum);
+  }
+  private moveBasket(dir: 1 | -1) {
+    if (!this.basketOpen) return;
+    const lines = ((this.registry.get('basket') as any[]) ?? []);
+    if (!lines.length) return;
+    const n = lines.length;
+    this.basketSelected = (this.basketSelected + (dir === 1 ? 1 : -1) + n) % n;
+    this.renderBasket();
+  }
+  private pickBasket() {
+    if (!this.basketOpen) return;
+    const list = ((this.registry.get('basket') as any[]) ?? []).slice();
+    if (!list.length) return;
+    const idx = this.basketSelected;
+    list.splice(idx, 1);
+    this.registry.set('basket', list);
+    if (idx >= list.length) this.basketSelected = Math.max(0, list.length - 1);
+    this.renderBasket();
   }
 
   private ensureLocationIcons() {
