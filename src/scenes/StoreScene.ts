@@ -13,7 +13,23 @@ export class StoreScene extends Phaser.Scene {
   private hasHanBitmap = false;
   private hasHanWeb = false;
 
-  constructor() { super('StoreScene'); }
+  preload() {
+    if (!this.textures.exists('store-tiles')) {
+      const g = this.make.graphics({ x: 0, y: 0, add: false });
+      const TILE = 16;
+      const palette = { floorA: 0x1d2430, floorB: 0x202b39, wall: 0x2d3a48, shelf: 0x4b5a6a, counter: 0x355a6a, light: 0xfff1b6 };
+      g.fillStyle(palette.floorA, 1); g.fillRect(0 * TILE, 0, TILE, TILE);
+      g.fillStyle(palette.floorB, 1); g.fillRect(1 * TILE, 0, TILE, TILE);
+      g.fillStyle(0x000000, 0.15);
+      for (let y = 2; y < TILE; y += 4) for (let x = 2; x < TILE; x += 4) g.fillRect(1 * TILE + x, y, 1, 1);
+      g.fillStyle(palette.wall, 1); g.fillRect(2 * TILE, 0, TILE, TILE);
+      g.fillStyle(palette.shelf, 1); g.fillRect(3 * TILE + 2, 2, TILE - 4, TILE - 4);
+      g.fillStyle(palette.counter, 1); g.fillRect(4 * TILE + 1, 3, TILE - 2, TILE - 6);
+      g.fillStyle(palette.light, 1); g.fillRect(5 * TILE + 4, 2, 8, 4);
+      g.generateTexture('store-tiles', TILE * 6, TILE);
+      g.destroy();
+    }
+  }\n  constructor() { super('StoreScene'); }
 
   init(data: StoreData) { if (data?.storeId) this.storeId = data.storeId; }
 
@@ -23,6 +39,17 @@ export class StoreScene extends Phaser.Scene {
     try { (window as any).__applyCameraZoom?.(); } catch {}
     this.cursor = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys('ESC,ENTER,SPACE') as any;
+    // 店內地圖（20x11 tiles = 320x176）
+    const map = this.make.tilemap({ width: 20, height: 11, tileWidth: 16, tileHeight: 16 });
+    const tiles = map.addTilesetImage('store-tiles');
+    const layer = map.createBlankLayer('floor', tiles!, 0, 2);
+    const base = (tiles as any).firstgid ?? 1;
+    const FLOOR_A = base + 0, FLOOR_B = base + 1, WALL = base + 2, SHELF = base + 3, COUNTER = base + 4, LIGHT = base + 5;
+    for (let y = 0; y < 11; y++) { for (let x = 0; x < 20; x++) { layer.putTileAt(((x + y) % 2 === 0) ? FLOOR_A : FLOOR_B, x, y); } }
+    layer.fill(WALL, 0, 0, 20, 1); layer.fill(WALL, 0, 10, 20, 1);
+    [3,5,7].forEach((row)=>{ for (let x=3; x<=16; x+=4) layer.putTileAt(SHELF, x, row); });
+    for (let x=8; x<=11; x++) layer.putTileAt(COUNTER, x, 2);
+    for (let x=2; x<=16; x+=7) layer.putTileAt(LIGHT, x, 1);
 
     this.hasHanBitmap = this.cache.bitmapFont.exists('han');
     try { this.hasHanWeb = (document as any).fonts?.check?.('12px HanPixel') === true; } catch { this.hasHanWeb = false; }
