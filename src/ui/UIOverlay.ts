@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { registerTinyBitmapFont } from './BitmapFont';
+import { CONFIG } from '../config';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 
 export class UIOverlay extends Phaser.Scene {
@@ -95,7 +96,7 @@ export class UIOverlay extends Phaser.Scene {
   private maybeInitFontDebug() {
     const isDev = !!((import.meta as any)?.env?.DEV);
     const url = new URL(window.location.href);
-    const enabled = isDev || (url.searchParams.get('debugFonts') === '1' || url.hash.includes('debugFonts'));
+    const enabled = CONFIG.debugFonts || (url.searchParams.get('debugFonts') === '1' || url.hash.includes('debugFonts')) || isDev;
     if (!enabled) return;
     this.fontDebugText = this.add.text(4, 14, '', { fontSize: '9px', color: '#a8ffbf', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000);
     this.updateFontDebug();

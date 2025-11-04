@@ -3,6 +3,7 @@ import { ConcourseScene } from './scenes/ConcourseScene';
 import { StoreScene } from './scenes/StoreScene';
 import { UIOverlay } from './ui/UIOverlay';
 import { BootScene } from './scenes/BootScene';
+import { CONFIG } from './config';
 
 export const GAME_WIDTH = 320;
 export const GAME_HEIGHT = 180;
@@ -33,9 +34,9 @@ game.registry.set('basket', [] as { id: string; name: string; price: number }[])
 game.scene.start('BootScene');
 
 // 原生滿版：使用 RESIZE 讓 canvas 跟隨視窗大小，並以相機 zoom 做整數縮放（不做 CSS 縮放）
-let fillMode: 'fit' | 'cover' = 'cover'; // fit: 內含留黑邊；cover: 充滿螢幕（可能裁切）
-let integerZoom = true; // 預設啟用整數縮放 // true: 整數縮放最清晰；false: 連續縮放可完全滿版
-let preferredIntZoom: number | null = 5; // 預設 5x（可由 UI/快捷鍵調整） // 使用者指定的整數倍率（1~8），null 代表自動
+let fillMode: 'fit' | 'cover' = CONFIG.scale.fillMode; // fit: 內含留黑邊；cover: 充滿螢幕（可能裁切） // fit: 內含留黑邊；cover: 充滿螢幕（可能裁切）
+let integerZoom = CONFIG.scale.integerZoomEnabled; // 預設啟用整數縮放 // 預設啟用整數縮放 // true: 整數縮放最清晰；false: 連續縮放可完全滿版
+let preferredIntZoom: number | null = CONFIG.scale.preferredIntZoom; // 預設倍率（可由 UI/快捷鍵調整） // 預設 5x（可由 UI/快捷鍵調整） // 使用者指定的整數倍率（1~8），null 代表自動
 
 
 function applyCameraZoom() {
@@ -52,7 +53,7 @@ function applyCameraZoom() {
   let base = fillMode === 'cover' ? Math.max(ratioW, ratioH) : Math.min(ratioW, ratioH);
   if (!isFinite(base) || base <= 0) base = 1; // 避免 0 造成黑屏
   let zoom = integerZoom ? Math.max(1, Math.floor(base)) : Math.max(1, base);
-  if (integerZoom && preferredIntZoom) { zoom = Math.max(1, Math.min(8, preferredIntZoom)); }
+  if (integerZoom && preferredIntZoom) { zoom = Math.max(CONFIG.scale.minZoom, Math.min(CONFIG.scale.maxZoom, preferredIntZoom)); }
 
   game.scene.getScenes(true).forEach(s => {
     const cam = s.cameras?.main;
@@ -81,12 +82,12 @@ window.addEventListener('keydown', (e) => {
   }
   if (e.code === 'BracketRight') { // ] increase int zoom
     if (!integerZoom) integerZoom = true;
-    preferredIntZoom = Math.min(8, (preferredIntZoom ?? 1) + 1);
+    preferredIntZoom = Math.min(CONFIG.scale.maxZoom, (preferredIntZoom ?? CONFIG.scale.minZoom) + 1);
     applyCameraZoom();
   }
   if (e.code === 'BracketLeft') { // [ decrease int zoom
     if (!integerZoom) integerZoom = true;
-    preferredIntZoom = Math.max(1, (preferredIntZoom ?? 2) - 1);
+    preferredIntZoom = Math.max(CONFIG.scale.minZoom, (preferredIntZoom ?? (CONFIG.scale.minZoom + 1)) - 1);
     applyCameraZoom();
   }
 });
@@ -114,7 +115,7 @@ function createZoomControls() {
   styleBtn(btnMode); styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus);
 
   function updateLabel() {
-    const baseInt = Math.max(1, Math.floor(Math.max(game.scale.width / GAME_WIDTH, game.scale.height / GAME_HEIGHT)));
+    const baseInt = Math.max(CONFIG.scale.minZoom, Math.floor(Math.max(game.scale.width / GAME_WIDTH, game.scale.height / GAME_HEIGHT)));
     const snapInfo = integerZoom ? `ON (x${preferredIntZoom ?? baseInt})` : 'OFF';
     label.textContent = `Mode: ${fillMode.toUpperCase()}  |  Snap: ${snapInfo}`;
     btnMode.textContent = fillMode === 'cover' ? 'Cover→Fit' : 'Fit→Cover';
@@ -125,8 +126,8 @@ function createZoomControls() {
 
   btnMode.addEventListener('click', () => { fillMode = fillMode === 'cover' ? 'fit' : 'cover'; applyCameraZoom(); updateLabel(); });
   btnSnap.addEventListener('click', () => { integerZoom = !integerZoom; applyCameraZoom(); updateLabel(); });
-  btnMinus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.max(1, (preferredIntZoom ?? 2) - 1); applyCameraZoom(); updateLabel(); });
-  btnPlus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.min(8, (preferredIntZoom ?? 1) + 1); applyCameraZoom(); updateLabel(); });
+  btnMinus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.max(CONFIG.scale.minZoom, (preferredIntZoom ?? (CONFIG.scale.minZoom + 1)) - 1); applyCameraZoom(); updateLabel(); });
+  btnPlus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.min(CONFIG.scale.maxZoom, (preferredIntZoom ?? CONFIG.scale.minZoom) + 1); applyCameraZoom(); updateLabel(); });
 
   panel.append(label, btnMode, btnSnap, btnMinus, btnPlus);
   document.body.appendChild(panel);
