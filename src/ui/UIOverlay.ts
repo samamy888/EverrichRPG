@@ -3,6 +3,8 @@ import { registerTinyBitmapFont } from './BitmapFont';
 import { CONFIG } from '../config';
 import { t } from '../i18n';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
+import { ensureMinimap, positionMinimap, renderMinimap } from './overlays/minimap';
+import { openBasket as extOpenBasket, closeBasket as extCloseBasket, renderBasket as extRenderBasket, moveBasket as extMoveBasket, pickBasket as extPickBasket } from './overlays/basket';
 
 export class UIOverlay extends Phaser.Scene {
   private timeLabelText?: Phaser.GameObjects.Text;
@@ -44,10 +46,10 @@ export class UIOverlay extends Phaser.Scene {
   private interactRows: Phaser.GameObjects.Text[] = [];
   private interactMeasure?: Phaser.GameObjects.Text;
   // Minimap
-  private minimapBox?: Phaser.GameObjects.Rectangle;
-  private minimapGfx?: Phaser.GameObjects.Graphics;
-  private minimapScaleX = 1;
-  private minimapScaleY = 1;
+  public minimapBox?: Phaser.GameObjects.Rectangle;
+  public minimapGfx?: Phaser.GameObjects.Graphics;
+  public minimapScaleX = 1;
+  public minimapScaleY = 1;
   private shouldShowMinimap(): boolean {
     try {
       // 若頂層為商店，強制隱藏
@@ -259,81 +261,11 @@ export class UIOverlay extends Phaser.Scene {
     console.info('[fonts]', { bitmap: hasBitmap, web: hasWeb });
   }
 
-  private openBasket() {
-    this.basketOpen = true;
-    this.basketSelected = 0;
-    try { this.lastHint = (this.registry.get('hint') as string) ?? ''; } catch { this.lastHint = null; }
-    try {
-      const bh = t('ui.basketHint') as string;
-      this.registry.set('hint', bh && bh !== 'ui.basketHint' ? bh : '購物籃：W/S 選擇，E 移除，ESC 關閉');
-    } catch {}
-    this.renderBasket();
-    this.refresh();
-    this.updateInputLock();
-  }
-  private closeBasket() {
-    this.basketOpen = false;
-    try { this.basketRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
-    this.basketRows = [];
-    try { this.basketBox?.destroy(); } catch {}
-    this.basketBox = undefined;
-    if (this.lastHint !== null) {
-      this.registry.set('hint', this.lastHint);
-      this.lastHint = null;
-    }
-    this.refresh();
-    this.updateInputLock();
-  }
-  private renderBasket() {
-    const pad = 6;
-    const FS = CONFIG.ui.fontSize;
-    const { w: viewW, h: viewH } = this.getViewSize();
-    const lines = ((this.registry.get('basket') as { name: string; price: number }[]) ?? []);
-    const total = lines.reduce((s, b) => s + (b.price || 0), 0);
-    const maxLines = Math.max(3, Math.min(7, lines.length + 2));
-    const h = Math.max(CONFIG.ui.dialogHeight, pad * 2 + maxLines * (FS + 2));
-    const HUD = CONFIG.ui.hudHeight;
-    const y = viewH - HUD - h - 2;
-    if (!this.basketBox) {
-      this.basketBox = this.add.rectangle(0, y, viewW, h, 0x000000, 0.8).setOrigin(0).setDepth(2000).setScrollFactor(0);
-    } else {
-      this.basketBox.setPosition(0, y).setSize(viewW, h).setDepth(2000).setVisible(true).setScrollFactor(0);
-    }
-    // Clear rows
-    try { this.basketRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
-    this.basketRows = [];
-    const startY = y + pad;
-    const startX = 6;
-    const title = this.add.text(startX, startY, t('store.listTitle') || '商品', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
-    this.basketRows.push(title);
-    lines.forEach((it, idx) => {
-      const prefix = idx === this.basketSelected ? '>' : ' ';
-      const line = `${prefix} ${it.name}  $${it.price}`;
-      const ty = startY + (idx + 1) * (FS + 2);
-      const txt = this.add.text(startX, ty, line, { fontSize: `${FS}px`, color: idx === this.basketSelected ? '#ffffff' : '#c0c8d0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
-      this.basketRows.push(txt);
-    });
-    const sum = this.add.text(startX, startY + (lines.length + 1) * (FS + 2), `合計 $${total}`, { fontSize: `${FS}px`, color: '#ffd966', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
-    this.basketRows.push(sum);
-  }
-  private moveBasket(dir: 1 | -1) {
-    if (!this.basketOpen) return;
-    const lines = ((this.registry.get('basket') as any[]) ?? []);
-    if (!lines.length) return;
-    const n = lines.length;
-    this.basketSelected = (this.basketSelected + (dir === 1 ? 1 : -1) + n) % n;
-    this.renderBasket();
-  }
-  private pickBasket() {
-    if (!this.basketOpen) return;
-    const list = ((this.registry.get('basket') as any[]) ?? []).slice();
-    if (!list.length) return;
-    const idx = this.basketSelected;
-    list.splice(idx, 1);
-    this.registry.set('basket', list);
-    if (idx >= list.length) this.basketSelected = Math.max(0, list.length - 1);
-    this.renderBasket();
-  }
+  private openBasket() { (extOpenBasket as any)(this); }
+  private closeBasket() { (extCloseBasket as any)(this); }
+  private renderBasket() { (extRenderBasket as any)(this); }
+  private moveBasket(dir: 1 | -1) { (extMoveBasket as any)(this, dir); }
+  private pickBasket() { (extPickBasket as any)(this); }
 
   // 對話覆蓋層（外觀與購物籃一致，置底）
   private renderDialog() {
@@ -422,40 +354,9 @@ export class UIOverlay extends Phaser.Scene {
   }
 
   // 公開 API：由遊戲場景直接控制對話（避免事件時序競態）
-  public openDialog(lines: string[], step = 0) {
-    try {
-      this.registry.set('dialogLines', Array.isArray(lines) ? lines : []);
-      this.registry.set('dialogStep', Math.max(0, step|0));
-      this.registry.set('dialogOpen', true);
-      this.dialogOpen = true;
-      this.renderDialog();
-      this.scene.bringToTop();
-      this.dialogForceFrames = 3;
-    } catch {}
-  }
-  public advanceDialog(): boolean {
-    const lines: string[] = (this.registry.get('dialogLines') as string[]) || [];
-    let step = (this.registry.get('dialogStep') as number) ?? 0;
-    step++;
-    if (step < lines.length) {
-      this.registry.set('dialogStep', step);
-      this.registry.set('dialogOpen', true);
-      this.renderDialog();
-      this.dialogForceFrames = 2;
-      return false;
-    } else {
-      this.closeDialog();
-      return true;
-    }
-  }
-  public closeDialog() {
-    try {
-      this.registry.set('dialogOpen', false);
-      this.dialogOpen = false;
-      this.renderDialog();
-    } catch {}
-    this.updateInputLock();
-  }
+  public openDialog(lines: string[], step = 0) { const { openDialog } = require('./overlays/dialog'); openDialog(this, lines, step); }
+  public advanceDialog(): boolean { const { advanceDialog } = require('./overlays/dialog'); return advanceDialog(this); }
+  public closeDialog() { const { closeDialog } = require('./overlays/dialog'); closeDialog(this); }
 
   // 根據當前覆蓋層狀態，鎖定或解鎖玩家移動輸入
   private updateInputLock() {
@@ -532,137 +433,11 @@ export class UIOverlay extends Phaser.Scene {
     this.positionMinimap();
   }
 
-  private ensureMinimap() {
-    if (!this.shouldShowMinimap()) {
-      // 若不顯示，確保既有物件隱藏
-      try { this.minimapBox?.setVisible(false); this.minimapGfx?.setVisible(false); this.minimapGfx?.clear(); } catch {}
-      return;
-    }
-    if (!this.minimapBox) {
-      const { w } = this.getViewSize();
-      const pad = CONFIG.ui.minimap.pad;
-      const boxW = CONFIG.ui.minimap.maxWidth;
-      const boxH = CONFIG.ui.minimap.maxHeight;
-      this.minimapBox = this.add.rectangle(w - boxW - pad, this.hintBox.height + pad, boxW, boxH, 0x000000, CONFIG.ui.minimap.backgroundAlpha)
-        .setOrigin(0, 0).setScrollFactor(0).setDepth(1200);
-      this.minimapGfx = this.add.graphics().setScrollFactor(0).setDepth(1201);
-    }
-  }
+  private ensureMinimap() { ensureMinimap(this); }
 
-  private positionMinimap() {
-    if (!this.minimapBox || !this.minimapGfx) return;
-    const show = this.shouldShowMinimap();
-    this.minimapBox.setVisible(show); this.minimapGfx.setVisible(show);
-    if (!show) return;
-    const { w } = this.getViewSize();
-    const pad = CONFIG.ui.minimap.pad;
-    const boxW = CONFIG.ui.minimap.maxWidth;
-    const boxH = CONFIG.ui.minimap.maxHeight;
-    this.minimapBox.setPosition(w - boxW - pad, this.hintBox.height + pad).setSize(boxW, boxH);
-    this.minimapGfx.setPosition(w - boxW - pad, this.hintBox.height + pad);
-  }
+  private positionMinimap() { positionMinimap(this); }
 
-  private renderMinimap() {
-    this.ensureMinimap();
-    if (!this.shouldShowMinimap() || !this.minimapGfx || !this.minimapBox) return;
-    const activeScenes = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
-    const top = activeScenes[activeScenes.length - 1] as any;
-    const layer = top?.layer as Phaser.Tilemaps.TilemapLayer;
-    if (!layer) { this.minimapGfx.clear(); return; }
-    const map: any = layer.tilemap;
-    const tw = map.tileWidth || 16;
-    const th = map.tileHeight || 16;
-    const mw = map.width || (layer.layer?.width ?? 0);
-    const mh = map.height || (layer.layer?.height ?? 0);
-    if (!mw || !mh) { this.minimapGfx.clear(); return; }
-    // 1x 磚格倍率（每格 1px），若超出盒子寬高則等比縮小
-    const desiredSX = Math.max(1, CONFIG.ui.minimap.tileScaleX || 1);
-    const desiredSY = Math.max(1, CONFIG.ui.minimap.tileScaleY || 1);
-    const sX = Math.min(desiredSX, CONFIG.ui.minimap.maxWidth / mw);
-    const sY = Math.min(desiredSY, CONFIG.ui.minimap.maxHeight / mh);
-    this.minimapScaleX = sX;
-    this.minimapScaleY = sY;
-    try {
-      const contentW = Math.max(1, Math.round(mw * sX));
-      const contentH = Math.max(1, Math.round(mh * sY));
-      const { w } = this.getViewSize();
-      const pad = CONFIG.ui.minimap.pad;
-      const posX = w - contentW - pad;
-      const posY = this.hintBox.height + pad;
-      this.minimapBox.setPosition(posX, posY).setSize(contentW, contentH);
-      this.minimapGfx.setPosition(posX, posY);
-    } catch {}
-    this.minimapGfx.clear();
-    // 繪製可走/不可走區塊（以 collides 判斷）
-    for (let y = 0; y < mh; y++) {
-      for (let x = 0; x < mw; x++) {
-        const tile = layer.getTileAt(x, y);
-        const collides = !!tile && (tile.collides === true);
-        this.minimapGfx.fillStyle(collides ? 0x2a4a6a : 0xcfe8ff, collides ? 0.95 : 0.95);
-        this.minimapGfx.fillRect(x * sX, y * sY, Math.max(1, sX), Math.max(1, sY));
-      }
-    }
-    // Shops markers (blue)
-    try {
-      const doors: any[] = (top as any)?.doors || [];
-      if (doors && doors.length) {
-        this.minimapGfx.fillStyle(0x3399ff, 1);
-        for (const d of doors) {
-          const dx = ((d?.world?.x ?? 0) / tw) * sX;
-          const dy = ((d?.world?.y ?? 0) / th) * sY;
-          this.minimapGfx.fillRect(Math.round(dx) - 1, Math.round(dy) - 1, Math.max(2, sX), Math.max(2, sY));
-        }
-      }
-    } catch {}
-    // Travelers markers (black)
-      const crowdToggle = (window as any).__minimapCrowd !== false;
-      if (crowdToggle) {
-    try {
-      const drawGroup = (grp: any) => {
-        if (!grp) return;
-        let list: any[] | undefined;
-        try { list = grp.getChildren?.(); } catch {}
-        if (!list || !list.length) {
-          try {
-            const acc: any[] = [];
-            grp.children?.each?.((o: any) => acc.push(o));
-            list = acc;
-          } catch {}
-        }
-        if (!list) return;
-        this.minimapGfx.fillStyle(0x000000, 1);
-        for (const o of list) {
-          const ox = (Number(o?.x) / tw) * sX;
-          const oy = (Number(o?.y) / th) * sY;
-          this.minimapGfx.fillRect(Math.round(ox) - 1, Math.round(oy) - 1, Math.max(2, sX), Math.max(2, sY));
-        }
-      };
-      const crowds: any[] = (top as any)?.crowds || [];
-      if (crowds && crowds.length) crowds.forEach(drawGroup);
-      const hallGrp: any = (top as any)?.crowd;
-      if (hallGrp) drawGroup(hallGrp);
-    } catch {}
-      } // end if crowd toggle
-    // 玩家位置（紅點）
-    try {
-      const px = (top.player?.x ?? 0) / tw;
-      const py = (top.player?.y ?? 0) / th;
-      this.minimapGfx.fillStyle(0x000000, 1);
-      this.minimapGfx.fillRect(px * sX - 1, py * sY - 1, Math.max(2, sX), Math.max(2, sY));
-    } catch {}
-    // 相機視野範圍（矩形）
-    try {
-      const cam: any = top?.cameras?.main;
-      if (cam) {
-      const vx = (typeof cam.worldView?.x === 'number' ? cam.worldView.x : cam.scrollX || 0) / tw;
-      const vy = (typeof cam.worldView?.y === 'number' ? cam.worldView.y : cam.scrollY || 0) / th;
-      const vw = (typeof cam.worldView?.width === 'number' ? cam.worldView.width : cam.width || 0) / tw;
-      const vh = (typeof cam.worldView?.height === 'number' ? cam.worldView.height : cam.height || 0) / th;
-      this.minimapGfx.lineStyle(1, 0xffcc00, 1);
-      this.minimapGfx.strokeRect(vx * sX, vy * sY, Math.max(1, vw * sX), Math.max(1, vh * sY));
-      }
-    } catch {}
-  }
+  private renderMinimap() { renderMinimap(this); }
 
   // Render small interaction options panel near player (right side)
   private renderInteract() {
