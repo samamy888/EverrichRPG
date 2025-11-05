@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ConcourseScene } from './scenes/ConcourseScene';
+import { AirportScene } from './scenes/AirportScene';
 import { StoreScene } from './scenes/StoreScene';
 import { UIOverlay } from './ui/UIOverlay';
 import { BootScene } from './scenes/BootScene';
@@ -21,7 +21,7 @@ const config: Phaser.Types.Core.GameConfig = {
   render: { antialias: false, pixelArt: true, roundPixels: true },
   physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.NO_CENTER },
-  scene: [BootScene, ConcourseScene, StoreScene, UIOverlay],
+  scene: [BootScene, AirportScene, StoreScene, UIOverlay],
 };
 
 const game = new Phaser.Game(config);

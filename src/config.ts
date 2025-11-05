@@ -16,7 +16,7 @@ export const CONFIG = {
     runMultiplier: 1.9,
   },
   player: {
-    initialMoney: 3000,
+    initialMoney: 5000,
   },
   ui: {
     // 唯一需要人工調整的值：其他皆為衍生值
@@ -38,5 +38,9 @@ export const CONFIG = {
       tileScaleX: 1,
       tileScaleY: 3,
     }
+  },
+  npc: {
+    // 人潮預設數量配置（可依偏好調整分佈）
+    crowdCounts: { a: 6, hall: 8, b: 6 },
   }
 };

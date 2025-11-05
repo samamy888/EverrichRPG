@@ -43,6 +43,17 @@ export class UIOverlay extends Phaser.Scene {
   private minimapGfx?: Phaser.GameObjects.Graphics;
   private minimapScaleX = 1;
   private minimapScaleY = 1;
+  private shouldShowMinimap(): boolean {
+    try {
+      // 若頂層為商店，強制隱藏
+      const active = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
+      const topKey: string | undefined = (active[active.length - 1] as any)?.scene?.key;
+      if (topKey === 'StoreScene') return false;
+      const locType = (this.registry.get('locationType') as string) || '';
+      // 只在大廳/走廊顯示迷你地圖；商店（storeId）時隱藏
+      return !!CONFIG.ui.minimap.enabled && (locType.startsWith('concourse'));
+    } catch { return !!CONFIG.ui.minimap.enabled; }
+  }
 
   constructor() { super('UIOverlay'); }
 
@@ -107,6 +118,7 @@ export class UIOverlay extends Phaser.Scene {
     this.refresh();
     this.layoutHUD();
     this.ensureMinimap();
+    this.ensureMinimap();
     this.renderMinimap();
     // 以下一幀再套用一次縮放，避免初次啟動時場景尚未完成建立導致比例不正確
     try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
@@ -139,7 +151,7 @@ export class UIOverlay extends Phaser.Scene {
       this.refresh();
       if (this.basketOpen) this.renderBasket();
       this.renderDialog();
-      if (CONFIG.ui.minimap.enabled) this.renderMinimap();
+      this.renderMinimap();
       this.renderListing();
       if (isDialog) {
         // 對話剛開啟時，首幀可能尚未完成縮放/排版，追加多次保險重繪
@@ -489,7 +501,11 @@ export class UIOverlay extends Phaser.Scene {
   }
 
   private ensureMinimap() {
-    if (!CONFIG.ui.minimap.enabled) return;
+    if (!this.shouldShowMinimap()) {
+      // 若不顯示，確保既有物件隱藏
+      try { this.minimapBox?.setVisible(false); this.minimapGfx?.setVisible(false); this.minimapGfx?.clear(); } catch {}
+      return;
+    }
     if (!this.minimapBox) {
       const { w } = this.getViewSize();
       const pad = CONFIG.ui.minimap.pad;
@@ -502,7 +518,10 @@ export class UIOverlay extends Phaser.Scene {
   }
 
   private positionMinimap() {
-    if (!CONFIG.ui.minimap.enabled || !this.minimapBox || !this.minimapGfx) return;
+    if (!this.minimapBox || !this.minimapGfx) return;
+    const show = this.shouldShowMinimap();
+    this.minimapBox.setVisible(show); this.minimapGfx.setVisible(show);
+    if (!show) return;
     const { w } = this.getViewSize();
     const pad = CONFIG.ui.minimap.pad;
     const boxW = CONFIG.ui.minimap.maxWidth;
@@ -512,7 +531,8 @@ export class UIOverlay extends Phaser.Scene {
   }
 
   private renderMinimap() {
-    if (!CONFIG.ui.minimap.enabled || !this.minimapGfx || !this.minimapBox) return;
+    this.ensureMinimap();
+    if (!this.shouldShowMinimap() || !this.minimapGfx || !this.minimapBox) return;
     const activeScenes = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
     const top = activeScenes[activeScenes.length - 1] as any;
     const layer = top?.layer as Phaser.Tilemaps.TilemapLayer;
@@ -530,6 +550,16 @@ export class UIOverlay extends Phaser.Scene {
     const sY = Math.min(desiredSY, CONFIG.ui.minimap.maxHeight / mh);
     this.minimapScaleX = sX;
     this.minimapScaleY = sY;
+    try {
+      const contentW = Math.max(1, Math.round(mw * sX));
+      const contentH = Math.max(1, Math.round(mh * sY));
+      const { w } = this.getViewSize();
+      const pad = CONFIG.ui.minimap.pad;
+      const posX = w - contentW - pad;
+      const posY = this.hintBox.height + pad;
+      this.minimapBox.setPosition(posX, posY).setSize(contentW, contentH);
+      this.minimapGfx.setPosition(posX, posY);
+    } catch {}
     this.minimapGfx.clear();
     // 繪製可走/不可走區塊（以 collides 判斷）
     for (let y = 0; y < mh; y++) {
@@ -540,11 +570,49 @@ export class UIOverlay extends Phaser.Scene {
         this.minimapGfx.fillRect(x * sX, y * sY, Math.max(1, sX), Math.max(1, sY));
       }
     }
+    // Shops markers (blue)
+    try {
+      const doors: any[] = (top as any)?.doors || [];
+      if (doors && doors.length) {
+        this.minimapGfx.fillStyle(0x3399ff, 1);
+        for (const d of doors) {
+          const dx = ((d?.world?.x ?? 0) / tw) * sX;
+          const dy = ((d?.world?.y ?? 0) / th) * sY;
+          this.minimapGfx.fillRect(Math.round(dx) - 1, Math.round(dy) - 1, Math.max(2, sX), Math.max(2, sY));
+        }
+      }
+    } catch {}
+    // Travelers markers (black)
+    try {
+      const drawGroup = (grp: any) => {
+        if (!grp) return;
+        let list: any[] | undefined;
+        try { list = grp.getChildren?.(); } catch {}
+        if (!list || !list.length) {
+          try {
+            const acc: any[] = [];
+            grp.children?.each?.((o: any) => acc.push(o));
+            list = acc;
+          } catch {}
+        }
+        if (!list) return;
+        this.minimapGfx.fillStyle(0x000000, 1);
+        for (const o of list) {
+          const ox = (Number(o?.x) / tw) * sX;
+          const oy = (Number(o?.y) / th) * sY;
+          this.minimapGfx.fillRect(Math.round(ox) - 1, Math.round(oy) - 1, Math.max(2, sX), Math.max(2, sY));
+        }
+      };
+      const crowds: any[] = (top as any)?.crowds || [];
+      if (crowds && crowds.length) crowds.forEach(drawGroup);
+      const hallGrp: any = (top as any)?.crowd;
+      if (hallGrp) drawGroup(hallGrp);
+    } catch {}
     // 玩家位置（紅點）
     try {
       const px = (top.player?.x ?? 0) / tw;
       const py = (top.player?.y ?? 0) / th;
-      this.minimapGfx.fillStyle(0xff3b30, 1);
+      this.minimapGfx.fillStyle(0x000000, 1);
       this.minimapGfx.fillRect(px * sX - 1, py * sY - 1, Math.max(2, sX), Math.max(2, sY));
     } catch {}
     // 相機視野範圍（矩形）
@@ -674,6 +742,7 @@ export class UIOverlay extends Phaser.Scene {
     }
   }
 }
+
 
 
 

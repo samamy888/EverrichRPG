@@ -5,36 +5,37 @@
 - 原始碼：`src/`
   - `src/scenes/`：Phaser 場景（如 `TerminalScene.ts`、`StoreScene.ts`）。
   - `src/ui/`：UI 元件（如 `UIOverlay.ts`）。
-  - `src/data/`：靜態資料/組態（如 `items.ts`）。
-- 輸出目錄：`dist/`（已在 `.gitignore`）。靜態資產請放 `public/`。
+  - `src/data/`：靜態資料與設定（如 `items.ts`）。
+- 靜態資產：`public/`（新資產請放此處）。
+- 產出目錄：`dist/`（已加入 `.gitignore`）。
 
-## 建置、測試與開發指令
-- 建議使用 Node.js LTS；首次安裝：`npm ci`。
-- 開發伺服器（HMR）：`npm run dev`（預設 localhost）。
-- 產生正式版：`npm run build`（輸出至 `dist/`）。
-- 本機預覽正式版：`npm run preview`。
-- 測試：目前未配置。若新增測試，建議以 Vitest 並提供 `npm run test` 指令。
+## 建置、測試與開發命令
+- `npm ci`：依 lockfile 安裝依賴（建議首次 clone 後使用）。
+- `npm run dev`：啟動 Vite 本機開發伺服器（含 HMR）。
+- `npm run build`：進行生產環境建置到 `dist/`。
+- `npm run preview`：以本機伺服器預覽 `dist/`。
 
-## 程式風格與命名規範
-- 語言：TypeScript（ES modules）。縮排 2 空格，包含分號；匯入保持排序。
-- 命名：`PascalCase`（類別與場景/UI 檔案）、`camelCase`（函式/變數）、`UPPER_SNAKE_CASE`（常數）；資料/組態檔使用小寫（例：`items.ts`）。
-- 匯出：偏好具名匯出以提昇可讀性與維護性。
+## 程式風格與命名慣例
+- 語言：TypeScript（ES modules）。縮排 2 空格；使用分號；`import` 請排序。
+- 檔名與命名：
+  - 類別、Scene/UI 檔：`PascalCase`（例：`TerminalScene.ts`）。
+  - 變數/函式：`camelCase`；常數：`UPPER_SNAKE_CASE`。
+  - 資料/設定檔：小寫（例：`items.ts`）。
+- 匯出：優先使用具名匯出以提升可讀性與重構友善度。
 
 ## 測試指南
-- 尚未導入測試框架；若加入，建議：
-  - 單元測試使用 Vitest，檔名為 `*.spec.ts`，可置於來源旁或 `tests/`。
-  - 優先測純函式與工具；場景邏輯保持輕量。
-  - UI/E2E 可考慮 Playwright 於互動成熟後再導入。
+- 專案尚未配置測試框架；若新增，建議使用 Vitest。
+- 測試檔放置 `tests/` 或與原檔同層命名為 `*.spec.ts`。
+- 優先測試純函式與工具，Scene 內保持薄邏輯；測試需快速且可重現。
 
-## Commit 與 Pull Request 規範
-- Commit 採 Conventional Commits：如 `feat: 新增商店場景`、`fix: 修正縮放重置問題`、`chore: 更新相依套件`。
-- PR 請提供：變更摘要、關聯議題、UI 變更的截圖/GIF。維持聚焦與小範圍；新增指令或功能時同步更新 `README.md`。
+## Commit 與 Pull Request
+- Commit：請使用 Conventional Commits（如：`feat:`、`fix:`、`refactor:`、`chore:`、`docs:`），訊息簡潔且聚焦。
+- PR：提供摘要、關聯 Issue、必要截圖/GIF（UI 變更），並更新相關文件（如 `README.md`）。
 
-## 安全與設定建議
-- 不要提交機密；以 Vite 環境變數（`VITE_*`）並於 `.env.local` 設定，避免提交至版本控制。
-- 大型二進位資產請優化體積；必要時將重資產託管於倉庫外部。
+## 安全與設定
+- 請勿提交機密。環境變數使用 Vite 規則（`VITE_*`），放於 `.env.local`，避免納入版控。
+- 大型二進位資產請先優化；過重資產建議外部託管。
 
-## 實務小訣竅
-- 新增資產放在 `public/`，建置輸出於 `dist/`。
-- 場景邏輯盡量薄化，將重複邏輯抽至 `src/ui/`、`src/data/` 或共用工具，利於測試與重用。
-
+## 代理與協作提示
+- 本檔適用於整個倉庫；若子資料夾另有 `AGENTS.md`，以較深層者優先。
+- 修改結構或指令時，務必同步更新文件與範例，以降低進入成本。

@@ -6,7 +6,7 @@ import { t } from '../i18n';
 import { CONFIG } from '../config';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 
-type StoreData = { storeId: string };
+type StoreData = { storeId: string; returnTo?: string };
 
 export class StoreScene extends Phaser.Scene {
   private cursor!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -14,6 +14,7 @@ export class StoreScene extends Phaser.Scene {
   private rows: (Phaser.GameObjects.Text | Phaser.GameObjects.BitmapText)[] = [];
   private selected = 0;
   private storeId: StoreData['storeId'] = 'cosmetics';
+  private returnTo: string = 'ConcourseHallScene';
   // 商品清單面板（右側框框）
   private listPanel?: {
     container: Phaser.GameObjects.Container;
@@ -38,6 +39,7 @@ export class StoreScene extends Phaser.Scene {
 
   init(data: StoreData) {
     if (data?.storeId) this.storeId = data.storeId;
+    if (data?.returnTo) this.returnTo = data.returnTo;
     // 確保每次進入商店都重置狀態（避免前一次的 listing 狀態殘留）
     this.phase = 'browse';
     this.selected = 0;
@@ -183,7 +185,7 @@ export class StoreScene extends Phaser.Scene {
           travelers: out,
           texturesByGender: { default: 'sprite-npc' },
         });
-        try { this.customers!.children.iterate((obj: any) => obj.setDepth?.(5)); } catch {}
+        // createCrowd 內已設定預設 depth，這裡不再額外遍歷
       });
     }
     // 出口：左下角門框，靠近按 E 離開
@@ -377,7 +379,7 @@ export class StoreScene extends Phaser.Scene {
     // 關閉對話覆蓋層（若尚未關閉）
     try { this.registry.set('dialogOpen', false); } catch {}
     try { this.registry.set('listingOpen', false); } catch {}
-    this.scene.resume('ConcourseScene');
+    this.scene.resume(this.returnTo || 'ConcourseHallScene');
     this.scene.stop();
   }
 }

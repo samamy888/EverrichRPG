@@ -113,7 +113,7 @@ export class BootScene extends Phaser.Scene {
           this.anims.create({ key: 'clerk-walk-side', frames: this.anims.generateFrameNumbers('clerk_walk', { start: s.start, end: s.end }), frameRate: 8, repeat: -1 });
         }
       } catch {}
-      this.scene.start('ConcourseScene');
+      this.scene.start('AirportScene');
       this.scene.launch('UIOverlay');
       try { (window as any).__applyCameraZoom?.(); } catch {}
     })();

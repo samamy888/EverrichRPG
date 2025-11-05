@@ -101,7 +101,15 @@ export function updateCrowd(scene: Phaser.Scene, group?: Phaser.Physics.Arcade.G
   const meta: Map<Phaser.GameObjects.Image, Meta> = (group as any).__meta;
   if (!meta) return;
   const now = scene.time.now;
-  group.children.iterate((obj: any) => {
+  const children: any = (group as any).children;
+  const run = (fn: Function) => {
+    try {
+      if (children?.each) { children.each((o: any) => fn(o)); }
+      else if (children?.iterate) { children.iterate((o: any) => fn(o)); }
+    } catch {}
+  };
+
+  run((obj: any) => {
     const npc = obj as (Phaser.GameObjects.Sprite & { getData?: Function }) | Phaser.GameObjects.Image;
     const m = meta.get(npc as any);
     const body = (npc as any).body as Phaser.Physics.Arcade.Body;
@@ -158,7 +166,15 @@ export function updateNameplates(
   const zoom = Math.max(0.0001, cam?.zoom || 1);
   const FS = CONFIG.ui.fontSize;
   const fsWorld = Math.max(8, Math.round(FS / zoom));
-  group.children.iterate((obj: any) => {
+  const children: any = (group as any).children;
+  const run = (fn: Function) => {
+    try {
+      if (children?.each) { children.each((o: any) => fn(o)); }
+      else if (children?.iterate) { children.iterate((o: any) => fn(o)); }
+    } catch {}
+  };
+
+  run((obj: any) => {
     const npc = obj as (Phaser.GameObjects.Sprite | Phaser.GameObjects.Image) & { getData: Function; setData: Function };
     if (!npc || !npc.active) return undefined;
     const tv = npc.getData?.('traveler') as any;
