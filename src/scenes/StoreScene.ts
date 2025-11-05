@@ -127,7 +127,6 @@ export class StoreScene extends Phaser.Scene {
     if (!title || title === key) title = this.storeId;
     this.registry.set('location', title);
     this.registry.set('locationType', this.storeId);
-    this.registry.set('hint', `${t('store.hintApproach')}｜ESC 購物籃`);
 
     // Player & cashier
     const idleKey = this.textures.exists('player_idle') ? 'player_idle' : 'sprite-player';
@@ -252,15 +251,16 @@ export class StoreScene extends Phaser.Scene {
     this.registry.set('hint', t('store.hintApproach'));
   }
 
-  update() {
+    update() {
     const spr = this.player as unknown as Phaser.GameObjects.Sprite;
     const baseSpeed = CONFIG.controls.baseSpeed;
     const runMul = CONFIG.controls.runMultiplier;
     const speed = (this.keys as any).SHIFT?.isDown ? Math.round(baseSpeed * runMul) : baseSpeed;
     if (this.pBody) {
       this.pBody.setVelocity(0);
-      // 僅在瀏覽狀態允許移動；對話與清單期間主角定格
-      if (this.phase === 'browse') {
+      // 僅在瀏覽狀態且未鎖定輸入時允許移動；對話/清單/購物籃期間主角定格
+      const inputLocked = !!this.registry.get('inputLocked');
+      if (this.phase === 'browse' && !inputLocked) {
         if (this.cursor.left?.isDown || (this.keys as any).A.isDown) this.pBody.setVelocityX(-speed);
         else if (this.cursor.right?.isDown || (this.keys as any).D.isDown) this.pBody.setVelocityX(speed);
         if (this.cursor.up?.isDown || (this.keys as any).W.isDown) this.pBody.setVelocityY(-speed);
@@ -294,31 +294,52 @@ export class StoreScene extends Phaser.Scene {
     // 名牌接觸點比照對話：向下偏移 10，且更接近才顯示
     updateNameplates(this, this.customers, this.player as any, 20, 10);
     updateNameplateForSprite(this, this.cashier as any, this.player as any, 20, 10);
+    try { this.registry.set('playerPos', { x: this.player.x, y: this.player.y }); } catch {}
 
     // 取消 ESC 強制返回大廳（改由清單的「離開」或出口互動離開）
+
+    // 若輸入鎖定（購物籃/對話/清單開啟）則隱藏互動面板，但仍允許對話/清單邏輯在下方執行
+    const inputLocked2 = !!this.registry.get('inputLocked');
+    if (inputLocked2) { this.registry.set('interactOpen', false); }
 
     if (!this.player || !this.cashier) return;
     // 與店員互動距離：以店員身前（櫃台外側）作為接觸點，讓玩家不必貼太上方才能對話
     const talkTargetX = this.cashier.x;
     const talkTargetY = this.cashier.y + 10; // 下移 10px，接近櫃台外側
     const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, talkTargetX, talkTargetY);
-    // 出口互動（全階段檢查）：靠近門口按 E 離開
-    if (this.exitWorld) {
-      const distExitEarly = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.exitWorld.x, this.exitWorld.y);
-      if (distExitEarly < 18) {
-        this.registry.set('hint', `${t('store.hintExitDoor')}｜ESC 購物籃`);
-        if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) { this.leaveStore(); return; }
+    // 出口互動（全階段檢查）：靠近門口按 E 離開（僅在未鎖定時處理，避免干擾對話/清單）
+    // 出口與對話互動提示
+    if (!inputLocked2) {
+      if (this.exitWorld) {
+        const distExitEarly = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.exitWorld.x, this.exitWorld.y);
+        if (distExitEarly < 18) {
+          this.registry.set('hintLarge', true);
+          this.registry.set('hint', t('store.hintExitDoor') + ' | ESC 購物籃');
+          this.registry.set('interactOptions', [t('store.hintExitDoor') || '離開']);
+          this.registry.set('interactOpen', true);
+          if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) { this.leaveStore(); return; }
+        }
       }
     }
 
     if (this.phase === 'browse') {
-      if (dist < 24) this.registry.set('hint', `${t('store.hintTalk')}｜ESC 購物籃`);
-      if (dist < 24 && Phaser.Input.Keyboard.JustDown((this.keys as any).E)) {
+      // 瀏覽狀態下才提供店員互動提示；若鎖定則不顯示互動面板
+      if (dist < 24) {
+        this.registry.set('hintLarge', true);
+        this.registry.set('hint', t('store.hintTalk') + ' | ESC 購物籃');
+        if (!inputLocked2) {
+          this.registry.set('interactOptions', [t('store.hintTalk') || '對話']);
+          this.registry.set('interactOpen', true);
+        }
+      } else {
+        this.registry.set('hintLarge', false);
+        this.registry.set('interactOpen', false);
+      }
+      if (!inputLocked2 && dist < 24 && Phaser.Input.Keyboard.JustDown((this.keys as any).E)) {
         this.startDialog([t('store.dialog.l1'), t('store.dialog.l2'), t('store.dialog.l3')]);
       }
       return;
     }
-
     if (this.phase === 'dialog') {
       if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) {
         let ended = false;
@@ -395,3 +416,7 @@ export class StoreScene extends Phaser.Scene {
 
     // 將主角世界座標提供給 UIOverlay，用於將清單定位在主角右側
     try { this.registry.set('playerPos', { x: this.player.x, y: this.player.y }); } catch {}
+
+
+
+

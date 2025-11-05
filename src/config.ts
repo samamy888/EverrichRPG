@@ -21,6 +21,7 @@ export const CONFIG = {
   ui: {
     // 唯一需要人工調整的值：其他皆為衍生值
     fontSize: 24,
+    hintDelta: 2,
     get small(): number { return Math.max(9, Math.round(this.fontSize * 0.45)); },
     get tiny(): number { return Math.max(8, Math.round(this.fontSize * 0.35)); },
     // 頂/底 HUD 高度：字體大小 + 8 像素留白

@@ -38,6 +38,11 @@ export class UIOverlay extends Phaser.Scene {
   private listingRows: Phaser.GameObjects.Text[] = [];
   private listingForceFrames = 0;
   private listingMeasure?: Phaser.GameObjects.Text;
+  // Interact overlay state (context options near player)
+  private interactOpen = false;
+  private interactBox?: Phaser.GameObjects.Graphics;
+  private interactRows: Phaser.GameObjects.Text[] = [];
+  private interactMeasure?: Phaser.GameObjects.Text;
   // Minimap
   private minimapBox?: Phaser.GameObjects.Rectangle;
   private minimapGfx?: Phaser.GameObjects.Graphics;
@@ -77,8 +82,9 @@ export class UIOverlay extends Phaser.Scene {
     // Top hint box + texts (left: hint, right: location)
     const HUD = CONFIG.ui.hudHeight;
     const FS = CONFIG.ui.fontSize;
+    const HFS = FS + (((CONFIG.ui as any).hintDelta || 0));
     this.hintBox = this.add.rectangle(0, 0, GAME_WIDTH, HUD, 0x000000, 0.55).setOrigin(0).setDepth(999).setScrollFactor(0);
-    this.hintText = this.add.text(4, Math.max(1, Math.floor((HUD - FS) / 2)), '', { fontSize: `${FS}px`, resolution: 2, color: '#e6f0ff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000).setScrollFactor(0);
+    this.hintText = this.add.text(4, Math.max(1, Math.floor((HUD - HFS) / 2)), '', { fontSize: `${HFS}px`, resolution: 2, color: '#e6f0ff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000).setScrollFactor(0);
     this.locationText = this.add.text(GAME_WIDTH - 4, Math.max(1, Math.floor((HUD - FS) / 2)), '', { fontSize: `${FS}px`, resolution: 2, color: '#cfe2f3', fontFamily: 'HanPixel, system-ui, sans-serif' })
       .setOrigin(1, 0)
       .setDepth(1000)
@@ -130,7 +136,6 @@ export class UIOverlay extends Phaser.Scene {
         try { this.renderMinimap(); } catch {}
       });
     } catch {}
-
     // Global basket toggle and navigation
     this.input.keyboard.on('keydown-ESC', () => {
       // 對話開啟時，ESC 不打開購物籃以避免衝突
@@ -147,18 +152,21 @@ export class UIOverlay extends Phaser.Scene {
   private onDataChanged(_parent: any, key: string, value: any) {
     const isDialog = (key === 'dialogOpen' || key === 'dialogLines' || key === 'dialogStep');
     const isListing = (key === 'listingOpen' || key === 'listingItems' || key === 'listingSelected');
-    if (key === 'money' || key === 'basket' || key === 'hint' || key === 'location' || key === 'locationType' || isDialog || isListing) {
+    const isInteract = (key === 'interactOpen' || key === 'interactOptions' || key === 'playerPos');
+    if (key === 'money' || key === 'basket' || key === 'hint' || key === 'location' || key === 'locationType' || isDialog || isListing || isInteract) {
       this.refresh();
       if (this.basketOpen) this.renderBasket();
       this.renderDialog();
       this.renderMinimap();
       this.renderListing();
+      this.renderInteract();
       if (isDialog) {
         // 對話剛開啟時，首幀可能尚未完成縮放/排版，追加多次保險重繪
         try { this.time.delayedCall(0, () => this.renderDialog()); } catch {}
         try { this.time.delayedCall(16, () => this.renderDialog()); } catch {}
         try { requestAnimationFrame(() => this.renderDialog()); } catch {}
-        // 若是從關閉->開啟，立即置頂
+      }
+    // 若是從關閉->開啟，立即置頂
         if (key === 'dialogOpen' && !!value) {
           try { this.scene.bringToTop(); } catch {}
           this.dialogForceFrames = 2;
@@ -168,8 +176,12 @@ export class UIOverlay extends Phaser.Scene {
         try { this.time.delayedCall(0, () => this.renderListing()); } catch {}
         try { requestAnimationFrame(() => this.renderListing()); } catch {}
       }
+      if (isInteract) {
+        try { this.time.delayedCall(0, () => this.renderInteract()); } catch {}
+        try { requestAnimationFrame(() => this.renderInteract()); } catch {}
+      }
     }
-  }
+  
 
   private refresh() {
     const money = (this.registry.get('money') as number) ?? 0;
@@ -181,12 +193,20 @@ export class UIOverlay extends Phaser.Scene {
     this.basketValue.setText(`$${basketTotal}`);
 
     const hint = (this.registry.get('hint') as string) ?? '';
+    const hintLarge = !!this.registry.get('hintLarge');
     if (this.basketOpen) {
       const bh = (t('ui.basketHint') as string) || '';
       this.hintText.setText(bh && bh !== 'ui.basketHint' ? bh : '購物籃：W/S 選擇，E 移除，ESC 關閉');
     } else if (this.dialogOpen) {
       this.hintText.setText(t('store.dialog.cont') || '（按 E 繼續）');
     } else if (hint !== undefined) {
+      // Apply dynamic larger font for entry/exit hints if requested
+      try {
+        const baseFS = CONFIG.ui.fontSize + ((CONFIG.ui as any).hintDelta || 0);
+        const extra = hintLarge ? (((CONFIG.ui as any).hintDeltaLarge || 2)) : 0;
+        const want = `${baseFS + extra}px`;
+        if ((this.hintText.style.fontSize as any) !== want) this.hintText.setFontSize(baseFS + extra);
+      } catch {}
       this.hintText.setText(hint || '');
     }
     const loc = (this.registry.get('location') as string) ?? '';
@@ -249,6 +269,7 @@ export class UIOverlay extends Phaser.Scene {
     } catch {}
     this.renderBasket();
     this.refresh();
+    this.updateInputLock();
   }
   private closeBasket() {
     this.basketOpen = false;
@@ -261,6 +282,7 @@ export class UIOverlay extends Phaser.Scene {
       this.lastHint = null;
     }
     this.refresh();
+    this.updateInputLock();
   }
   private renderBasket() {
     const pad = 6;
@@ -317,6 +339,7 @@ export class UIOverlay extends Phaser.Scene {
   private renderDialog() {
     const open = !!this.registry.get('dialogOpen');
     this.dialogOpen = open;
+    this.updateInputLock();
     const lines: string[] = (this.registry.get('dialogLines') as string[]) || [];
     const step = (this.registry.get('dialogStep') as number) ?? 0;
     const playerPos = (this.registry.get('playerPos') as { x: number; y: number } | undefined);
@@ -431,6 +454,13 @@ export class UIOverlay extends Phaser.Scene {
       this.dialogOpen = false;
       this.renderDialog();
     } catch {}
+    this.updateInputLock();
+  }
+
+  // 根據當前覆蓋層狀態，鎖定或解鎖玩家移動輸入
+  private updateInputLock() {
+    const lock = !!(this.basketOpen || this.dialogOpen || this.listingOpen);
+    try { this.registry.set('inputLocked', lock); } catch {}
   }
 
   private ensureLocationIcons() {
@@ -480,7 +510,8 @@ export class UIOverlay extends Phaser.Scene {
     const { w, h } = this.getViewSize();
     // Top bar
     this.hintBox.setPosition(0, 0).setSize(w, HUD);
-    this.hintText.setPosition(4, Math.max(1, Math.floor((HUD - FS) / 2)));
+    const HFS = CONFIG.ui.fontSize + ((CONFIG.ui as any).hintDelta || 0);
+    this.hintText.setPosition(4, Math.max(1, Math.floor((HUD - HFS) / 2)));
     // Right-top location
     const hasIcon = this.locationIcon.visible;
     if (hasIcon) {
@@ -497,6 +528,7 @@ export class UIOverlay extends Phaser.Scene {
     if (this.basketOpen) this.renderBasket();
     if (this.dialogOpen) this.renderDialog();
     if (this.listingOpen) this.renderListing();
+    this.renderInteract();
     this.positionMinimap();
   }
 
@@ -583,6 +615,8 @@ export class UIOverlay extends Phaser.Scene {
       }
     } catch {}
     // Travelers markers (black)
+      const crowdToggle = (window as any).__minimapCrowd !== false;
+      if (crowdToggle) {
     try {
       const drawGroup = (grp: any) => {
         if (!grp) return;
@@ -608,6 +642,7 @@ export class UIOverlay extends Phaser.Scene {
       const hallGrp: any = (top as any)?.crowd;
       if (hallGrp) drawGroup(hallGrp);
     } catch {}
+      } // end if crowd toggle
     // 玩家位置（紅點）
     try {
       const px = (top.player?.x ?? 0) / tw;
@@ -629,10 +664,64 @@ export class UIOverlay extends Phaser.Scene {
     } catch {}
   }
 
+  // Render small interaction options panel near player (right side)
+  private renderInteract() {
+    // Do not show when dialog/listing/basket is open
+    if (this.dialogOpen || this.listingOpen || this.basketOpen) {
+      try { this.interactBox?.clear(); this.interactBox?.setVisible(false); } catch {}
+      try { this.interactRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
+      this.interactRows = [];
+      return;
+    }
+    const open = !!this.registry.get('interactOpen');
+    const opts: string[] = (this.registry.get('interactOptions') as any[]) || [];
+    const playerPos = (this.registry.get('playerPos') as { x: number; y: number } | undefined);
+    if (!open || !opts.length || !playerPos) {
+      try { this.interactBox?.clear(); this.interactBox?.setVisible(false); } catch {}
+      try { this.interactRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
+      this.interactRows = [];
+      return;
+    }
+    const FS = CONFIG.ui.small;
+    if (!this.interactMeasure) {
+      this.interactMeasure = this.add.text(-9999, -9999, '', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setVisible(false).setScrollFactor(0);
+    } else {
+      const cur = this.interactMeasure.style.fontSize as any; if (cur !== `${FS}px`) this.interactMeasure.setFontSize(FS);
+    }
+    let maxW = 0; const pad = 6; const gap = 2;
+    for (const s of opts) { this.interactMeasure!.setText(s); maxW = Math.max(maxW, Math.ceil(this.interactMeasure!.width)); }
+    const panelW = maxW + pad * 2;
+    const panelH = pad * 2 + opts.length * (FS + gap);
+    // World->screen conversion using top scene camera
+    const active = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
+    const top: any = active[active.length - 1] as any;
+    const cam: any = top?.cameras?.main;
+    let x = 8, y = 8;
+    if (cam) {
+      const baseX = (typeof cam.worldView?.x === 'number') ? cam.worldView.x : (cam.scrollX || 0);
+      const baseY = (typeof cam.worldView?.y === 'number') ? cam.worldView.y : (cam.scrollY || 0);
+      const z = cam.zoom || 1;
+      const screenX = (playerPos.x - baseX) * z;
+      const screenY = (playerPos.y - baseY) * z;
+      x = Math.round(screenX + 10);
+      y = Math.round(screenY - panelH + 4);
+    }
+    if (!this.interactBox) this.interactBox = this.add.graphics().setDepth(1600).setScrollFactor(0);
+    const g = this.interactBox;
+    g.clear().fillStyle(0x0b111a, 0.85).fillRect(x, y, panelW, panelH).lineStyle(1, 0x4a5668, 1).strokeRect(x + 0.5, y + 0.5, panelW - 1, panelH - 1).setVisible(true);
+    try { this.interactRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
+    this.interactRows = [];
+    for (let i = 0; i < opts.length; i++) {
+      const row = this.add.text(x + pad, y + pad + i * (FS + gap), opts[i], { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setScrollFactor(0).setDepth(1601);
+      this.interactRows.push(row);
+    }
+  }
+
   // 右側商店清單（固定在畫面右側，無視縮放）
   private renderListing() {
     const open = !!this.registry.get('listingOpen');
     this.listingOpen = open;
+    this.updateInputLock();
     const items: { name: string; price: number; id: string }[] = (this.registry.get('listingItems') as any[]) || [];
     const selected: number = (this.registry.get('listingSelected') as number) ?? 0;
     const playerPos = (this.registry.get('playerPos') as { x: number; y: number } | undefined);
@@ -742,6 +831,7 @@ export class UIOverlay extends Phaser.Scene {
     }
   }
 }
+
 
 
 

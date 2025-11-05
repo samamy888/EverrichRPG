@@ -107,6 +107,9 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+// 預設：迷你地圖人群黑點關閉（可由面板開啟）
+(window as any).__minimapCrowd = false;
+
 // 介面：右下角縮放面板（Snap 整數）
 function createZoomControls() {
   const panel = document.createElement('div');
@@ -122,11 +125,18 @@ function createZoomControls() {
   const btnSnap = document.createElement('button');
   const btnMinus = document.createElement('button');
   const btnPlus = document.createElement('button');
+  const btnCrowd = document.createElement('button');
   const styleBtn = (b: HTMLButtonElement) => b.style.cssText = [
     'cursor:pointer','padding:2px 6px','border-radius:6px',
     'border:1px solid #4a5668','background:#1a2330','color:#e6f0ff'
   ].join(';');
-  styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus);
+  styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus); styleBtn(btnCrowd);
+
+  // Minimap crowd toggle (persist in localStorage)
+  try {
+    const stored = localStorage.getItem('minimapCrowd');
+    (window as any).__minimapCrowd = stored === null ? false : stored === '1';
+  } catch { (window as any).__minimapCrowd = false; }
 
   function updateLabel() {
     const baseInt = Math.max(CONFIG.scale.minZoom, Math.floor(Math.max(game.scale.width / GAME_WIDTH, game.scale.height / GAME_HEIGHT)));
@@ -135,12 +145,21 @@ function createZoomControls() {
     btnSnap.textContent = integerZoom ? 'Snap: ON' : 'Snap: OFF';
     btnMinus.textContent = '−';
     btnPlus.textContent = '+';
+    const crowdOn = (window as any).__minimapCrowd !== false;
+    btnCrowd.textContent = crowdOn ? 'Crowd: ON' : 'Crowd: OFF';
   }
   btnSnap.addEventListener('click', () => { integerZoom = !integerZoom; applyCameraZoom(); updateLabel(); });
   btnMinus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.max(CONFIG.scale.minZoom, (preferredIntZoom ?? (CONFIG.scale.minZoom + 1)) - 1); applyCameraZoom(); updateLabel(); });
   btnPlus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.min(CONFIG.scale.maxZoom, (preferredIntZoom ?? CONFIG.scale.minZoom) + 1); applyCameraZoom(); updateLabel(); });
 
-  panel.append(label, btnSnap, btnMinus, btnPlus);
+  btnCrowd.addEventListener('click', () => {
+    const cur = (window as any).__minimapCrowd !== false;
+    (window as any).__minimapCrowd = !cur;
+    try { localStorage.setItem('minimapCrowd', ((window as any).__minimapCrowd ? '1' : '0')); } catch {}
+    updateLabel();
+  });
+
+  panel.append(label, btnSnap, btnMinus, btnPlus, btnCrowd);
   document.body.appendChild(panel);
   updateLabel();
 }

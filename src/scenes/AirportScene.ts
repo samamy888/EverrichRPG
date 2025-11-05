@@ -234,10 +234,13 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
     const base = CONFIG.controls.baseSpeed; const run = CONFIG.controls.runMultiplier;
     const speed = (this.keys as any).SHIFT?.isDown ? Math.round(base * run) : base;
     pBody.setVelocity(0);
-    if (this.cursors.left?.isDown || (this.keys as any).A.isDown) pBody.setVelocityX(-speed);
-    else if (this.cursors.right?.isDown || (this.keys as any).D.isDown) pBody.setVelocityX(speed);
-    if (this.cursors.up?.isDown || (this.keys as any).W.isDown) pBody.setVelocityY(-speed);
-    else if (this.cursors.down?.isDown || (this.keys as any).S.isDown) pBody.setVelocityY(speed);
+    const inputLocked = !!this.registry.get('inputLocked');
+    if (!inputLocked) {
+      if (this.cursors.left?.isDown || (this.keys as any).A.isDown) pBody.setVelocityX(-speed);
+      else if (this.cursors.right?.isDown || (this.keys as any).D.isDown) pBody.setVelocityX(speed);
+      if (this.cursors.up?.isDown || (this.keys as any).W.isDown) pBody.setVelocityY(-speed);
+      else if (this.cursors.down?.isDown || (this.keys as any).S.isDown) pBody.setVelocityY(speed);
+    }
 
     // Player anims
     try {
@@ -268,6 +271,8 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
     else if (y < H_END) { this.registry.set('location', '大廳'); this.registry.set('locationType', 'concourse'); }
     else { this.registry.set('location', 'B 區'); this.registry.set('locationType', 'concourse-B'); }
 
+    // 互動在輸入未鎖定時才處理（避免購物籃/對話時誤觸）
+    const inputLocked2 = !!this.registry.get('inputLocked');
     // Enter nearest door
     let nearest: Door | null = null; let nd = 1e9;
     for (const d of this.doors) { const dx = d.world.x - this.player.x, dy = d.world.y - this.player.y; const dd = Math.hypot(dx, dy); if (dd < nd) { nd = dd; nearest = d; } }
@@ -292,12 +297,24 @@ try {
     }
   }
 } catch {}
-if (nearest && nd < 22) {
-  this.registry.set('hint', nearest.label + ' | ' + t('concourse.hintEnter') + ' | ESC 購物籃');
-  if (Phaser.Input.Keyboard.JustDown(this.keys.E)) { this.scene.pause(); this.scene.launch('StoreScene', { storeId: nearest.id, returnTo: this.scene.key }); return; }
-} else {
-  this.registry.set('hint', t('concourse.hintMoveEnter') + ' | ESC 購物籃');
-}
+    // Provide interact options panel near player
+    this.registry.set('playerPos', { x: this.player.x, y: this.player.y });
+    if (!inputLocked2) {
+      if (nearest && nd < 22) {
+        this.registry.set('interactOptions', ['進入']);
+        this.registry.set('interactOpen', true);
+        this.registry.set('hintLarge', true);
+        this.registry.set('hint', nearest.label + ' | ' + t('concourse.hintEnter') + ' | ESC 購物籃');
+        if (Phaser.Input.Keyboard.JustDown(this.keys.E)) { this.scene.pause(); this.scene.launch('StoreScene', { storeId: nearest.id, returnTo: this.scene.key }); return; }
+      } else {
+        this.registry.set('interactOpen', false);
+        this.registry.set('hintLarge', false);
+        this.registry.set('hint', t('concourse.hintMoveEnter') + ' | ESC 購物籃');
+      }
+    } else {
+      // 鎖定輸入時隱藏互動面板，不覆蓋提示（讓購物籃提示顯示）
+      this.registry.set('interactOpen', false);
+    }
   }
 }
 

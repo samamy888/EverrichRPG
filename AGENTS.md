@@ -1,41 +1,42 @@
 # Repository Guidelines
 
-## 專案結構與模組組織
-- 根目錄：`index.html`、`vite.config.ts`、`tsconfig.json`、`package.json`。
+本文件為此專案的貢獻者指南，請在提交程式碼或文件前先閱讀。內容精簡直接，涵蓋專案結構、開發流程、風格規範與常見作業指引。
+
+## 專案結構與模組
+- 根目錄：`index.html`、`vite.config.ts`、`tsconfig.json`、`package.json`
 - 原始碼：`src/`
-  - `src/scenes/`：Phaser 場景（如 `TerminalScene.ts`、`StoreScene.ts`）。
-  - `src/ui/`：UI 元件（如 `UIOverlay.ts`）。
-  - `src/data/`：靜態資料與設定（如 `items.ts`）。
-- 靜態資產：`public/`（新資產請放此處）。
-- 產出目錄：`dist/`（已加入 `.gitignore`）。
+  - `src/scenes/` — Phaser 場景（如 `TerminalScene.ts`、`StoreScene.ts`）
+  - `src/ui/` — 介面元件（如 `UIOverlay.ts`）
+  - `src/data/` — 靜態資料/設定（如 `items.ts`）
+- 靜態資產：`public/`（字型、圖片、web.config 等）
+- 產出目錄：`dist/`（已忽略）
 
-## 建置、測試與開發命令
-- `npm ci`：依 lockfile 安裝依賴（建議首次 clone 後使用）。
-- `npm run dev`：啟動 Vite 本機開發伺服器（含 HMR）。
-- `npm run build`：進行生產環境建置到 `dist/`。
-- `npm run preview`：以本機伺服器預覽 `dist/`。
+## 建置、開發與預覽
+- `npm ci`：依 lockfile 安裝依賴（建議 Node.js LTS）
+- `npm run dev`：啟動 Vite 開發伺服器（含 HMR）
+- `npm run build`：生產建置至 `dist/`
+- `npm run preview`：本機預覽 `dist/` 內容
 
-## 程式風格與命名慣例
-- 語言：TypeScript（ES modules）。縮排 2 空格；使用分號；`import` 請排序。
-- 檔名與命名：
-  - 類別、Scene/UI 檔：`PascalCase`（例：`TerminalScene.ts`）。
-  - 變數/函式：`camelCase`；常數：`UPPER_SNAKE_CASE`。
-  - 資料/設定檔：小寫（例：`items.ts`）。
-- 匯出：優先使用具名匯出以提升可讀性與重構友善度。
+## 程式風格與命名
+- 語言：TypeScript（ES modules）；縮排 2 空白；必加分號；匯入請維持排序
+- 命名：Class/Scene/UI 檔案用 PascalCase；變數/函式用 camelCase；常數用 UPPER_SNAKE_CASE；資料/設定檔以小寫（如 `items.ts`）
+- 匯出：偏好具名匯出
+- 格式/靜態檢查：未強制，但若新增請用 Prettier + ESLint（TS）
 
-## 測試指南
-- 專案尚未配置測試框架；若新增，建議使用 Vitest。
-- 測試檔放置 `tests/` 或與原檔同層命名為 `*.spec.ts`。
-- 優先測試純函式與工具，Scene 內保持薄邏輯；測試需快速且可重現。
+## 測試指引
+- 目前未內建測試框架；若新增，建議使用 Vitest
+- 測試檔路徑：與原始碼同層以 `*.spec.ts` 或放在 `tests/`
+- 原則：快速、可重現；盡量測純函式與工具；互動場景可考慮 Playwright 做 E2E
 
-## Commit 與 Pull Request
-- Commit：請使用 Conventional Commits（如：`feat:`、`fix:`、`refactor:`、`chore:`、`docs:`），訊息簡潔且聚焦。
-- PR：提供摘要、關聯 Issue、必要截圖/GIF（UI 變更），並更新相關文件（如 `README.md`）。
+## Commit 與 PR
+- Commit：清楚、聚焦，建議使用 Conventional Commits（如 `feat:`、`fix:`、`refactor:`、`chore:`、`docs:`）
+- PR：說明變更重點、連結議題、提供畫面截圖/GIF（UI 變更時），保持小而專注；新增指令或功能請同步更新 `README.md`
 
 ## 安全與設定
-- 請勿提交機密。環境變數使用 Vite 規則（`VITE_*`），放於 `.env.local`，避免納入版控。
-- 大型二進位資產請先優化；過重資產建議外部託管。
+- 勿提交機密；使用 Vite 環境變數（`VITE_*`），放於 `.env.local` 並避免納入版控
+- 大型資產請最佳化；必要時改以外部託管
 
-## 代理與協作提示
-- 本檔適用於整個倉庫；若子資料夾另有 `AGENTS.md`，以較深層者優先。
-- 修改結構或指令時，務必同步更新文件與範例，以降低進入成本。
+## Agent/自動化說明
+- 本 `AGENTS.md` 對整個倉庫生效；若子目錄另有 `AGENTS.md`，則以較深層為準
+- 修改程式碼時，避免不相干調整，保持與現有風格一致；必要時更新相關文件
+
