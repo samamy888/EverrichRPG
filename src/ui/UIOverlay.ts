@@ -138,8 +138,8 @@ export class UIOverlay extends Phaser.Scene {
     } catch {}
     // Global basket toggle and navigation
     this.input.keyboard.on('keydown-ESC', () => {
-      // 對話開啟時，ESC 不打開購物籃以避免衝突
-      if (this.dialogOpen) return;
+      // 對話或清單開啟時，ESC 不打開購物籃以避免衝突
+      if (this.dialogOpen || this.listingOpen) return;
       if (this.basketOpen) this.closeBasket(); else this.openBasket();
     });
     this.input.keyboard.on('keydown-W', () => this.moveBasket(-1));
