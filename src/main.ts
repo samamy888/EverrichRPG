@@ -27,14 +27,13 @@ const config: Phaser.Types.Core.GameConfig = {
 const game = new Phaser.Game(config);
 
 // Initial state
-game.registry.set('money', 3000);
+game.registry.set('money', CONFIG.player.initialMoney);
 game.registry.set('basket', [] as { id: string; name: string; price: number }[]);
 
 // Start boot (will launch main scenes after preloading optional fonts)
 game.scene.start('BootScene');
 
 // 原生滿版：使用 RESIZE 讓 canvas 跟隨視窗大小，並以相機 zoom 做整數縮放（不做 CSS 縮放）
-let fillMode: 'fit' | 'cover' = CONFIG.scale.fillMode; // fit: 內含留黑邊；cover: 充滿螢幕（可能裁切） // fit: 內含留黑邊；cover: 充滿螢幕（可能裁切）
 let integerZoom = CONFIG.scale.integerZoomEnabled; // 預設啟用整數縮放 // 預設啟用整數縮放 // true: 整數縮放最清晰；false: 連續縮放可完全滿版
 let preferredIntZoom: number | null = CONFIG.scale.preferredIntZoom; // 預設倍率（可由 UI/快捷鍵調整） // 預設 5x（可由 UI/快捷鍵調整） // 使用者指定的整數倍率（1~8），null 代表自動
 
@@ -50,7 +49,7 @@ function applyCameraZoom() {
 
   const ratioW = w / GAME_WIDTH;
   const ratioH = h / GAME_HEIGHT;
-  let base = fillMode === 'cover' ? Math.max(ratioW, ratioH) : Math.min(ratioW, ratioH);
+  let base = Math.min(ratioW, ratioH); // 固定使用 fit（保留完整畫面）
   if (!isFinite(base) || base <= 0) base = 1; // 避免 0 造成黑屏
   let zoom = integerZoom ? Math.max(1, Math.floor(base)) : Math.max(1, base);
   if (integerZoom && preferredIntZoom) { zoom = Math.max(CONFIG.scale.minZoom, Math.min(CONFIG.scale.maxZoom, preferredIntZoom)); }
@@ -80,9 +79,6 @@ window.addEventListener('load', applyCameraZoom);
 window.setTimeout(applyCameraZoom, 0);
 // 暴露給其他場景在啟動後可呼叫（避免場景尚未建立時未套用 zoom）
 (window as any).__applyCameraZoom = applyCameraZoom;
-(window as any).__setFillMode = (mode: 'fit' | 'cover') => {
-  try { fillMode = mode; applyCameraZoom(); } catch {}
-};
 
 try {
   const sceneEvents = (game.scene as any).events;
@@ -93,12 +89,8 @@ try {
 } catch {}
 
 
-// 快捷鍵：Ctrl+Shift+F 切換 fit/cover；Ctrl+Shift+I 切換整數/連續縮放
+// 快捷鍵：Ctrl+Shift+I 切換整數/連續縮放；[ / ] 調整倍率
 window.addEventListener('keydown', (e) => {
-  if (e.ctrlKey && e.shiftKey && e.code === 'KeyF') {
-    fillMode = fillMode === 'cover' ? 'fit' : 'cover';
-    applyCameraZoom();
-  }
   if (e.ctrlKey && e.shiftKey && e.code === 'KeyI') {
     integerZoom = !integerZoom;
     applyCameraZoom();
@@ -115,7 +107,7 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// 介面：右下角縮放面板（Cover/Fit、Snap 整數）
+// 介面：右下角縮放面板（Snap 整數）
 function createZoomControls() {
   const panel = document.createElement('div');
   panel.id = 'zoom-controls';
@@ -127,7 +119,6 @@ function createZoomControls() {
   ].join(';');
 
   const label = document.createElement('span');
-  const btnMode = document.createElement('button');
   const btnSnap = document.createElement('button');
   const btnMinus = document.createElement('button');
   const btnPlus = document.createElement('button');
@@ -135,24 +126,21 @@ function createZoomControls() {
     'cursor:pointer','padding:2px 6px','border-radius:6px',
     'border:1px solid #4a5668','background:#1a2330','color:#e6f0ff'
   ].join(';');
-  styleBtn(btnMode); styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus);
+  styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus);
 
   function updateLabel() {
     const baseInt = Math.max(CONFIG.scale.minZoom, Math.floor(Math.max(game.scale.width / GAME_WIDTH, game.scale.height / GAME_HEIGHT)));
     const snapInfo = integerZoom ? `ON (x${preferredIntZoom ?? baseInt})` : 'OFF';
-    label.textContent = `Mode: ${fillMode.toUpperCase()}  |  Snap: ${snapInfo}`;
-    btnMode.textContent = fillMode === 'cover' ? 'Cover→Fit' : 'Fit→Cover';
+    label.textContent = `Snap: ${snapInfo}`;
     btnSnap.textContent = integerZoom ? 'Snap: ON' : 'Snap: OFF';
     btnMinus.textContent = '−';
     btnPlus.textContent = '+';
   }
-
-  btnMode.addEventListener('click', () => { fillMode = fillMode === 'cover' ? 'fit' : 'cover'; applyCameraZoom(); updateLabel(); });
   btnSnap.addEventListener('click', () => { integerZoom = !integerZoom; applyCameraZoom(); updateLabel(); });
   btnMinus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.max(CONFIG.scale.minZoom, (preferredIntZoom ?? (CONFIG.scale.minZoom + 1)) - 1); applyCameraZoom(); updateLabel(); });
   btnPlus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.min(CONFIG.scale.maxZoom, (preferredIntZoom ?? CONFIG.scale.minZoom) + 1); applyCameraZoom(); updateLabel(); });
 
-  panel.append(label, btnMode, btnSnap, btnMinus, btnPlus);
+  panel.append(label, btnSnap, btnMinus, btnPlus);
   document.body.appendChild(panel);
   updateLabel();
 }

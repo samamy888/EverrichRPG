@@ -170,7 +170,8 @@ export class ConcourseScene extends Phaser.Scene {
     // Doors created above
 
     // 中央大廳視覺安檢線（僅視覺，不設碰撞）
-    for (let y = Math.floor(map.height / 2) - 1; y <= Math.floor(map.height / 2) + 1; y++) this.layer.putTileAt(STRIPE, hubX, y);
+    const hubX2 = this.hubX;
+    for (let y = Math.floor(map.height / 2) - 1; y <= Math.floor(map.height / 2) + 1; y++) this.layer.putTileAt(STRIPE, hubX2, y);
     // Collisions with borders/facade
     this.layer.setCollision([BORDER, FACADE], true);
 

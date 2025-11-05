@@ -96,8 +96,7 @@ export class StoreScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#0d1220');
     this.cameras.main.setRoundPixels(true);
-    // 進入商店時強制使用 cover 以避免畫面縮放異常（等同於自動按下 Fit=>Cover）
-    try { (window as any).__setFillMode?.('cover'); } catch {}
+    // 進入商店後套用目前縮放設定
     try { (window as any).__applyCameraZoom?.(); } catch {}
     // 下一幀再套用一次，避免剛啟動場景時未被收集到而維持 1x/左上
     try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
