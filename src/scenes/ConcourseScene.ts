@@ -21,15 +21,16 @@ export class ConcourseScene extends Phaser.Scene {
     const g = this.make.graphics({ x: 0, y: 0, add: false });
     const TILE = 16;
     const palette = {
-      floorA: 0x1c2430,
-      floorB: 0x1f2a38,
-      border: 0x314150,
-      stripe: 0x3b4d5f,
-      facade: 0x24424e,
-      glass: 0x3aa1bf,
-      door: 0x2e8b57,
-      light: 0xfff1b6,
-      shadow: 0x0a0e12,
+      // 明亮機場風調色盤（柔和藍灰與亮玻璃）
+      floorA: 0xeaf2f9,
+      floorB: 0xdfeaf5,
+      border: 0xbdcfe1,
+      stripe: 0xb3d4f0,
+      facade: 0xe4f1fa,
+      glass:  0x8ad4ff,
+      door:   0x8bc34a,
+      light:  0xfff7cc,
+      shadow: 0xb0c6d8,
     };
     // floorA
     g.fillStyle(palette.floorA, 1); g.fillRect(0 * TILE, 0, TILE, TILE);
@@ -44,9 +45,9 @@ export class ConcourseScene extends Phaser.Scene {
     g.fillStyle(palette.stripe, 1); g.fillRect(3 * TILE, TILE - 3, TILE, 2);
     // facade
     g.fillStyle(palette.facade, 1); g.fillRect(4 * TILE, 0, TILE, TILE);
-    // glass
+    // glass（亮色玻璃，附高光）
     g.fillStyle(palette.glass, 1); g.fillRect(5 * TILE, 2, TILE, TILE - 4);
-    g.fillStyle(0xffffff, 0.15); g.fillRect(5 * TILE + 2, 2, 3, TILE - 4);
+    g.fillStyle(0xffffff, 0.25); g.fillRect(5 * TILE + 2, 2, 3, TILE - 4);
     // door
     g.fillStyle(palette.door, 1); g.fillRect(6 * TILE + 3, 2, TILE - 6, TILE - 4);
     // light
@@ -119,6 +120,17 @@ export class ConcourseScene extends Phaser.Scene {
       const world = new Phaser.Math.Vector2(e.x * 16 + 8, 2 + doorRow * 16 + 8);
       this.doors.push({ world, id: e.id, label: e.label });
       // 移除門邊 icon，改用靠近時名牌
+
+      // 商店外觀黑框（3x2 區塊外框）
+      const minRow = Math.min(facadeRow, glassRow);
+      const x0 = (e.x - 1) * 16;
+      const y0 = 2 + minRow * 16;
+      const w = 3 * 16;
+      const h = 2 * 16;
+      const frame = this.add.graphics();
+      frame.lineStyle(1, 0x000000, 1);
+      frame.strokeRect(x0 + 0.5, y0 + 0.5, w - 1, h - 1);
+      frame.setDepth(6);
     }
     // Light panels on top
     for (let x = 2; x <= 16; x += 7) this.layer.putTileAt(LIGHT, x, 1);
@@ -241,13 +253,15 @@ export class ConcourseScene extends Phaser.Scene {
       let lbl = this.doorLabels.get(d.id);
       if (!lbl) {
         lbl = this.add.text(d.world.x, d.world.y - (fsWorld + 6), d.label, {
-          fontSize: `${fsWorld}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif'
-        }).setOrigin(0.5, 1).setDepth(12).setVisible(false);
+          fontSize: `${fsWorld}px`, color: '#243b53', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif'
+        }).setOrigin(0.5, 1).setDepth(12).setVisible(false)
+          .setStroke('#ffffff', 2);
         this.doorLabels.set(d.id, lbl);
       }
       // 僅顯示最近且在距離內的門名牌
       if (nearest && d.id === nearest.id && nd < showDist) {
         if ((lbl.style.fontSize as any) !== `${fsWorld}px`) lbl.setFontSize(fsWorld);
+        try { lbl.setStroke('#ffffff', 2); } catch {}
         lbl.setPosition(d.world.x, d.world.y - (fsWorld + 6)).setText(d.label).setVisible(true);
       } else {
         lbl.setVisible(false);

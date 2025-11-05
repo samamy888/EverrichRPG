@@ -123,18 +123,21 @@ export function updateNameplates(
     let lbl: Phaser.GameObjects.Text | undefined = npc.getData?.('nameLabel');
     if (dist <= maxDistance) {
       if (!lbl || !lbl.active) {
-        const color = '#e6f0ff';
+        const color = '#243b53';
         lbl = scene.add.text(npc.x, npc.y - yOffset, tv.name || '', {
           fontSize: `${fsWorld}px`,
           color,
           resolution: 2,
           fontFamily: 'HanPixel, system-ui, sans-serif',
-        }).setOrigin(0.5, 1).setDepth((npc.depth || 0) + 5);
+        }).setOrigin(0.5, 1).setDepth((npc.depth || 0) + 5)
+          .setStroke('#ffffff', 2);
         npc.setData('nameLabel', lbl);
       }
       // 若縮放變化，更新字級
       const want = `${fsWorld}px`;
       if ((lbl!.style.fontSize as any) !== want) lbl!.setFontSize(fsWorld);
+      // 確保描邊存在（在某些 HMR 更新下可能丟失樣式）
+      try { lbl!.setStroke('#ffffff', 2); } catch {}
       // 跟隨定位在頭上
       lbl!.setPosition(npc.x, npc.y - yOffset).setVisible(true);
     } else {

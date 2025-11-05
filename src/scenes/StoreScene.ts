@@ -62,14 +62,17 @@ export class StoreScene extends Phaser.Scene {
     if (!this.textures.exists('store-tiles')) {
       const g = this.make.graphics({ x: 0, y: 0, add: false });
       const TILE = 16;
-      const palette = { floorA: 0x1d2430, floorB: 0x202b39, wall: 0x2d3a48, shelf: 0x4b5a6a, counter: 0x355a6a, light: 0xfff1b6 } as const;
+      const palette = { floorA: 0xf1f7fc, floorB: 0xe6f0f9, wall: 0xd7e6f3, shelf: 0xbfd6e8, counter: 0x9fc3dd, light: 0xfff7cc } as const;
+      // 地板（明亮棋盤）
       g.fillStyle(palette.floorA, 1); g.fillRect(0 * TILE, 0, TILE, TILE);
       g.fillStyle(palette.floorB, 1); g.fillRect(1 * TILE, 0, TILE, TILE);
-      g.fillStyle(0x000000, 0.15);
+      g.fillStyle(0xffffff, 0.25);
       for (let y = 2; y < TILE; y += 4) for (let x = 2; x < TILE; x += 4) g.fillRect(1 * TILE + x, y, 1, 1);
+      // 牆與家具（柔和藍灰）
       g.fillStyle(palette.wall, 1); g.fillRect(2 * TILE, 0, TILE, TILE);
       g.fillStyle(palette.shelf, 1); g.fillRect(3 * TILE + 2, 2, TILE - 4, TILE - 4);
       g.fillStyle(palette.counter, 1); g.fillRect(4 * TILE + 1, 3, TILE - 2, TILE - 6);
+      // 燈帶（暖黃）
       g.fillStyle(palette.light, 1); g.fillRect(5 * TILE + 4, 2, 8, 4);
       g.generateTexture('store-tiles', TILE * 6, TILE);
       g.destroy();

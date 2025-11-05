@@ -15,7 +15,8 @@ const config: Phaser.Types.Core.GameConfig = {
   parent: appContainer,
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
-  backgroundColor: '#10141a',
+  // 明亮基底背景（實際場景會覆蓋，但可避免進場黑畫面）
+  backgroundColor: '#eef4fb',
   pixelArt: true,
   render: { antialias: false, pixelArt: true, roundPixels: true },
   physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
