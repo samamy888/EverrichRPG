@@ -33,9 +33,11 @@ export const CONFIG = {
     minimap: {
       enabled: true,
       maxWidth: 140,
-      maxHeight: 60,
+      maxHeight: 80,
       pad: 4,
       backgroundAlpha: 0.35,
+      tileScaleX: 1,
+      tileScaleY: 3,
     }
   }
 };

@@ -41,7 +41,8 @@ export class UIOverlay extends Phaser.Scene {
   // Minimap
   private minimapBox?: Phaser.GameObjects.Rectangle;
   private minimapGfx?: Phaser.GameObjects.Graphics;
-  private minimapScale = 1;
+  private minimapScaleX = 1;
+  private minimapScaleY = 1;
 
   constructor() { super('UIOverlay'); }
 
@@ -523,10 +524,12 @@ export class UIOverlay extends Phaser.Scene {
     const mh = map.height || (layer.layer?.height ?? 0);
     if (!mw || !mh) { this.minimapGfx.clear(); return; }
     // 1x 磚格倍率（每格 1px），若超出盒子寬高則等比縮小
-    const sX = Math.min(1, CONFIG.ui.minimap.maxWidth / mw);
-    const sY = Math.min(1, CONFIG.ui.minimap.maxHeight / mh);
-    const s = Math.min(sX, sY);
-    this.minimapScale = s;
+    const desiredSX = Math.max(1, CONFIG.ui.minimap.tileScaleX || 1);
+    const desiredSY = Math.max(1, CONFIG.ui.minimap.tileScaleY || 1);
+    const sX = Math.min(desiredSX, CONFIG.ui.minimap.maxWidth / mw);
+    const sY = Math.min(desiredSY, CONFIG.ui.minimap.maxHeight / mh);
+    this.minimapScaleX = sX;
+    this.minimapScaleY = sY;
     this.minimapGfx.clear();
     // 繪製可走/不可走區塊（以 collides 判斷）
     for (let y = 0; y < mh; y++) {
@@ -534,7 +537,7 @@ export class UIOverlay extends Phaser.Scene {
         const tile = layer.getTileAt(x, y);
         const collides = !!tile && (tile.collides === true);
         this.minimapGfx.fillStyle(collides ? 0x2a4a6a : 0xcfe8ff, collides ? 0.95 : 0.95);
-        this.minimapGfx.fillRect(x * s, y * s, Math.max(1, s), Math.max(1, s));
+        this.minimapGfx.fillRect(x * sX, y * sY, Math.max(1, sX), Math.max(1, sY));
       }
     }
     // 玩家位置（紅點）
@@ -542,18 +545,18 @@ export class UIOverlay extends Phaser.Scene {
       const px = (top.player?.x ?? 0) / tw;
       const py = (top.player?.y ?? 0) / th;
       this.minimapGfx.fillStyle(0xff3b30, 1);
-      this.minimapGfx.fillRect(px * s - 1, py * s - 1, Math.max(2, s), Math.max(2, s));
+      this.minimapGfx.fillRect(px * sX - 1, py * sY - 1, Math.max(2, sX), Math.max(2, sY));
     } catch {}
     // 相機視野範圍（矩形）
     try {
       const cam: any = top?.cameras?.main;
       if (cam) {
-        const vx = (typeof cam.worldView?.x === 'number' ? cam.worldView.x : cam.scrollX || 0) / tw;
-        const vy = (typeof cam.worldView?.y === 'number' ? cam.worldView.y : cam.scrollY || 0) / th;
-        const vw = (typeof cam.worldView?.width === 'number' ? cam.worldView.width : cam.width || 0) / tw;
-        const vh = (typeof cam.worldView?.height === 'number' ? cam.worldView.height : cam.height || 0) / th;
-        this.minimapGfx.lineStyle(1, 0xffcc00, 1);
-        this.minimapGfx.strokeRect(vx * s, vy * s, Math.max(1, vw * s), Math.max(1, vh * s));
+      const vx = (typeof cam.worldView?.x === 'number' ? cam.worldView.x : cam.scrollX || 0) / tw;
+      const vy = (typeof cam.worldView?.y === 'number' ? cam.worldView.y : cam.scrollY || 0) / th;
+      const vw = (typeof cam.worldView?.width === 'number' ? cam.worldView.width : cam.width || 0) / tw;
+      const vh = (typeof cam.worldView?.height === 'number' ? cam.worldView.height : cam.height || 0) / th;
+      this.minimapGfx.lineStyle(1, 0xffcc00, 1);
+      this.minimapGfx.strokeRect(vx * sX, vy * sY, Math.max(1, vw * sX), Math.max(1, vh * sY));
       }
     } catch {}
   }
