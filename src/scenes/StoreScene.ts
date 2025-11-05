@@ -130,18 +130,29 @@ export class StoreScene extends Phaser.Scene {
 
     // Player & cashier
     const idleKey = this.textures.exists('player_idle') ? 'player_idle' : 'sprite-player';
-    const ps = this.add.sprite(16, 16 * 9, idleKey, 0).setOrigin(0.5, 1);
+    const ps = this.add.sprite(16, 16 * 9, idleKey, 0).setOrigin(0.5, 1).setDepth(100);
     this.physics.add.existing(ps);
     this.player = ps as any;
     this.pBody = (this.player as any).body as Phaser.Physics.Arcade.Body;
-    try { this.pBody.setSize(12, 8).setOffset(10, 24); } catch {}
+    try {
+      const frame: any = (ps as any).frame;
+      const fw = Math.max(1, Number(frame?.width ?? 32));
+      const fh = Math.max(1, Number(frame?.height ?? 32));
+      const bw = Math.max(6, Math.round(fw * 0.35));
+      const bh = Math.max(4, Math.round(fh * 0.25));
+      const offX = Math.round((fw - bw) / 2);
+      const offY = Math.round(fh - bh - fh * 0.06);
+      this.pBody.setSize(bw, bh).setOffset(offX, offY);
+    } catch {}
     this.pBody.setCollideWorldBounds(true);
     this.layer.setCollision([WALL, SHELF], true);
     this.physics.add.collider(this.player, this.layer);
 
-    this.cashier = this.add.image(16 * 10, 16 * 3, 'sprite-npc');
-    this.physics.add.existing(this.cashier);
-    (this.cashier.body as Phaser.Physics.Arcade.Body).setImmovable(true);
+    const clerkKey = this.textures.exists('clerk_idle') ? 'clerk_idle' : 'sprite-npc';
+    const clerk = this.add.sprite(16 * 10, 16 * 3, clerkKey, 0).setOrigin(0.5, 1).setDepth(10);
+    this.cashier = clerk as any;
+    this.physics.add.existing(clerk);
+    (clerk.body as Phaser.Physics.Arcade.Body).setImmovable(true);
     // 與顧客區分：給店員不同色調
     this.cashier.setTint(0xffd966);
     // 取得店員資料，給予名牌資訊
@@ -150,6 +161,8 @@ export class StoreScene extends Phaser.Scene {
         const { fetchClerk } = await import('../api/travelers');
         const c = await fetchClerk(this.storeId);
         this.cashier.setData('traveler', c);
+        this.cashier.setData('animPrefix', 'clerk');
+        try { (this.cashier as any).anims?.play?.('clerk-idle-down'); } catch {}
       } catch {}
     })();
 
@@ -171,6 +184,7 @@ export class StoreScene extends Phaser.Scene {
           travelers: out,
           texturesByGender: { default: 'sprite-npc' },
         });
+        try { this.customers!.children.iterate((obj: any) => obj.setDepth?.(5)); } catch {}
       });
     }
     // 出口：左下角門框，靠近按 E 離開
@@ -274,14 +288,17 @@ export class StoreScene extends Phaser.Scene {
 
     // 顧客 AI（共用）：走動/暫停
     updateCrowd(this, this.customers);
-    // 名牌必須更接近才顯示（商店空間較小）
-    updateNameplates(this, this.customers, this.player as any, 20);
-    updateNameplateForSprite(this, this.cashier as any, this.player as any, 20);
+    // 名牌接觸點比照對話：向下偏移 10，且更接近才顯示
+    updateNameplates(this, this.customers, this.player as any, 20, 10);
+    updateNameplateForSprite(this, this.cashier as any, this.player as any, 20, 10);
 
     // 取消 ESC 強制返回大廳（改由清單的「離開」或出口互動離開）
 
     if (!this.player || !this.cashier) return;
-    const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.cashier.x, this.cashier.y);
+    // 與店員互動距離：以店員身前（櫃台外側）作為接觸點，讓玩家不必貼太上方才能對話
+    const talkTargetX = this.cashier.x;
+    const talkTargetY = this.cashier.y + 10; // 下移 10px，接近櫃台外側
+    const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, talkTargetX, talkTargetY);
     // 出口互動（全階段檢查）：靠近門口按 E 離開
     if (this.exitWorld) {
       const distExitEarly = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.exitWorld.x, this.exitWorld.y);
@@ -292,8 +309,8 @@ export class StoreScene extends Phaser.Scene {
     }
 
     if (this.phase === 'browse') {
-      if (dist < 18) this.registry.set('hint', `${t('store.hintTalk')}｜ESC 購物籃`);
-      if (dist < 18 && Phaser.Input.Keyboard.JustDown((this.keys as any).E)) {
+      if (dist < 24) this.registry.set('hint', `${t('store.hintTalk')}｜ESC 購物籃`);
+      if (dist < 24 && Phaser.Input.Keyboard.JustDown((this.keys as any).E)) {
         this.startDialog([t('store.dialog.l1'), t('store.dialog.l2'), t('store.dialog.l3')]);
       }
       return;

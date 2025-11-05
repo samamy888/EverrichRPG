@@ -146,12 +146,21 @@ export class ConcourseScene extends Phaser.Scene {
 
     // Player
     const idleKey = this.textures.exists('player_idle') ? 'player_idle' : 'sprite-player';
-    const ps = this.add.sprite(0, 0, idleKey, 0).setOrigin(0.5, 1);
+    const ps = this.add.sprite(0, 0, idleKey, 0).setOrigin(0.5, 1).setDepth(100);
     this.physics.add.existing(ps);
     this.player = ps as unknown as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     this.player.body.setCollideWorldBounds(true);
     // 32x32 幀中，實際角色 16x16，腳底碰撞盒縮小貼地
-    try { (this.player.body as any).setSize(12, 8).setOffset(10, 24); } catch {}
+    try {
+      const frame: any = (ps as any).frame;
+      const fw = Math.max(1, Number(frame?.width ?? 32));
+      const fh = Math.max(1, Number(frame?.height ?? 32));
+      const bw = Math.max(6, Math.round(fw * 0.35));
+      const bh = Math.max(4, Math.round(fh * 0.25));
+      const offX = Math.round((fw - bw) / 2);
+      const offY = Math.round(fh - bh - fh * 0.06);
+      (this.player.body as any).setSize(bw, bh).setOffset(offX, offY);
+    } catch {}
     // 主人公出生在大廳正中央
     this.player.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2);
 
