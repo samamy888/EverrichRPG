@@ -38,6 +38,10 @@ export class UIOverlay extends Phaser.Scene {
   private listingRows: Phaser.GameObjects.Text[] = [];
   private listingForceFrames = 0;
   private listingMeasure?: Phaser.GameObjects.Text;
+  // Minimap
+  private minimapBox?: Phaser.GameObjects.Rectangle;
+  private minimapGfx?: Phaser.GameObjects.Graphics;
+  private minimapScale = 1;
 
   constructor() { super('UIOverlay'); }
 
@@ -101,6 +105,8 @@ export class UIOverlay extends Phaser.Scene {
     this.maybeInitFontDebug();
     this.refresh();
     this.layoutHUD();
+    this.ensureMinimap();
+    this.renderMinimap();
     // 以下一幀再套用一次縮放，避免初次啟動時場景尚未完成建立導致比例不正確
     try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
     // 當視窗大小或比例變化時，確保覆蓋層也一起更新
@@ -108,6 +114,7 @@ export class UIOverlay extends Phaser.Scene {
       this.scale.on('resize', () => {
         try { (window as any).__applyCameraZoom?.(); } catch {}
         try { this.layoutHUD(); } catch {}
+        try { this.renderMinimap(); } catch {}
       });
     } catch {}
 
@@ -131,6 +138,7 @@ export class UIOverlay extends Phaser.Scene {
       this.refresh();
       if (this.basketOpen) this.renderBasket();
       this.renderDialog();
+      if (CONFIG.ui.minimap.enabled) this.renderMinimap();
       this.renderListing();
       if (isDialog) {
         // 對話剛開啟時，首幀可能尚未完成縮放/排版，追加多次保險重繪
@@ -476,6 +484,78 @@ export class UIOverlay extends Phaser.Scene {
     if (this.basketOpen) this.renderBasket();
     if (this.dialogOpen) this.renderDialog();
     if (this.listingOpen) this.renderListing();
+    this.positionMinimap();
+  }
+
+  private ensureMinimap() {
+    if (!CONFIG.ui.minimap.enabled) return;
+    if (!this.minimapBox) {
+      const { w } = this.getViewSize();
+      const pad = CONFIG.ui.minimap.pad;
+      const boxW = CONFIG.ui.minimap.maxWidth;
+      const boxH = CONFIG.ui.minimap.maxHeight;
+      this.minimapBox = this.add.rectangle(w - boxW - pad, this.hintBox.height + pad, boxW, boxH, 0x000000, CONFIG.ui.minimap.backgroundAlpha)
+        .setOrigin(0, 0).setScrollFactor(0).setDepth(1200);
+      this.minimapGfx = this.add.graphics().setScrollFactor(0).setDepth(1201);
+    }
+  }
+
+  private positionMinimap() {
+    if (!CONFIG.ui.minimap.enabled || !this.minimapBox || !this.minimapGfx) return;
+    const { w } = this.getViewSize();
+    const pad = CONFIG.ui.minimap.pad;
+    const boxW = CONFIG.ui.minimap.maxWidth;
+    const boxH = CONFIG.ui.minimap.maxHeight;
+    this.minimapBox.setPosition(w - boxW - pad, this.hintBox.height + pad).setSize(boxW, boxH);
+    this.minimapGfx.setPosition(w - boxW - pad, this.hintBox.height + pad);
+  }
+
+  private renderMinimap() {
+    if (!CONFIG.ui.minimap.enabled || !this.minimapGfx || !this.minimapBox) return;
+    const activeScenes = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
+    const top = activeScenes[activeScenes.length - 1] as any;
+    const layer = top?.layer as Phaser.Tilemaps.TilemapLayer;
+    if (!layer) { this.minimapGfx.clear(); return; }
+    const map: any = layer.tilemap;
+    const tw = map.tileWidth || 16;
+    const th = map.tileHeight || 16;
+    const mw = map.width || (layer.layer?.width ?? 0);
+    const mh = map.height || (layer.layer?.height ?? 0);
+    if (!mw || !mh) { this.minimapGfx.clear(); return; }
+    // 1x 磚格倍率（每格 1px），若超出盒子寬高則等比縮小
+    const sX = Math.min(1, CONFIG.ui.minimap.maxWidth / mw);
+    const sY = Math.min(1, CONFIG.ui.minimap.maxHeight / mh);
+    const s = Math.min(sX, sY);
+    this.minimapScale = s;
+    this.minimapGfx.clear();
+    // 繪製可走/不可走區塊（以 collides 判斷）
+    for (let y = 0; y < mh; y++) {
+      for (let x = 0; x < mw; x++) {
+        const tile = layer.getTileAt(x, y);
+        const collides = !!tile && (tile.collides === true);
+        this.minimapGfx.fillStyle(collides ? 0x2a4a6a : 0xcfe8ff, collides ? 0.95 : 0.95);
+        this.minimapGfx.fillRect(x * s, y * s, Math.max(1, s), Math.max(1, s));
+      }
+    }
+    // 玩家位置（紅點）
+    try {
+      const px = (top.player?.x ?? 0) / tw;
+      const py = (top.player?.y ?? 0) / th;
+      this.minimapGfx.fillStyle(0xff3b30, 1);
+      this.minimapGfx.fillRect(px * s - 1, py * s - 1, Math.max(2, s), Math.max(2, s));
+    } catch {}
+    // 相機視野範圍（矩形）
+    try {
+      const cam: any = top?.cameras?.main;
+      if (cam) {
+        const vx = (typeof cam.worldView?.x === 'number' ? cam.worldView.x : cam.scrollX || 0) / tw;
+        const vy = (typeof cam.worldView?.y === 'number' ? cam.worldView.y : cam.scrollY || 0) / th;
+        const vw = (typeof cam.worldView?.width === 'number' ? cam.worldView.width : cam.width || 0) / tw;
+        const vh = (typeof cam.worldView?.height === 'number' ? cam.worldView.height : cam.height || 0) / th;
+        this.minimapGfx.lineStyle(1, 0xffcc00, 1);
+        this.minimapGfx.strokeRect(vx * s, vy * s, Math.max(1, vw * s), Math.max(1, vh * s));
+      }
+    } catch {}
   }
 
   // 右側商店清單（固定在畫面右側，無視縮放）

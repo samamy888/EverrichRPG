@@ -106,7 +106,7 @@ export class StoreScene extends Phaser.Scene {
     this.events.on(Phaser.Scenes.Events.RESUME, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
 
     this.cursor = this.input.keyboard.createCursorKeys();
-    this.keys = this.input.keyboard.addKeys('ESC,E,W,A,S,D') as any;
+    this.keys = this.input.keyboard.addKeys('ESC,E,W,A,S,D,SHIFT') as any;
 
     // Build store map (20x11 tiles = 320x176)
     const map = this.make.tilemap({ width: 20, height: 11, tileWidth: 16, tileHeight: 16 });
@@ -253,7 +253,9 @@ export class StoreScene extends Phaser.Scene {
 
   update() {
     const spr = this.player as unknown as Phaser.GameObjects.Sprite;
-    const speed = 70;
+    const baseSpeed = CONFIG.controls.baseSpeed;
+    const runMul = CONFIG.controls.runMultiplier;
+    const speed = (this.keys as any).SHIFT?.isDown ? Math.round(baseSpeed * runMul) : baseSpeed;
     if (this.pBody) {
       this.pBody.setVelocity(0);
       // 僅在瀏覽狀態允許移動；對話與清單期間主角定格

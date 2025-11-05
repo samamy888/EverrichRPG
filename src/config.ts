@@ -15,6 +15,10 @@ export const CONFIG = {
     minZoom: 1,
     maxZoom: 8,
   },
+  controls: {
+    baseSpeed: 80,
+    runMultiplier: 1.9,
+  },
   ui: {
     // 唯一需要人工調整的值：其他皆為衍生值
     fontSize: 24,
@@ -26,5 +30,12 @@ export const CONFIG = {
     get lineStep(): number { return this.fontSize + 2; },
     // 對話框/購物籃最小高度：字體大小 + 16（至少 40）
     get dialogHeight(): number { return Math.max(40, this.fontSize + 16); },
+    minimap: {
+      enabled: true,
+      maxWidth: 140,
+      maxHeight: 60,
+      pad: 4,
+      backgroundAlpha: 0.35,
+    }
   }
 };

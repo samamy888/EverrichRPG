@@ -12,6 +12,7 @@ export class ConcourseScene extends Phaser.Scene {
   private layer!: Phaser.Tilemaps.TilemapLayer;
   private doors: { world: Phaser.Math.Vector2; id: string; label: string }[] = [];
   private crowd?: Phaser.Physics.Arcade.Group;
+  private hubX!: number; // 中央大廳（安檢線）X 位置（以 tile 計）
   private doorLabels: Map<string, Phaser.GameObjects.Text> = new Map();
 
   constructor() { super('ConcourseScene'); }
@@ -72,36 +73,39 @@ export class ConcourseScene extends Phaser.Scene {
 
   create() {
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.keys = this.input.keyboard.addKeys('W,A,S,D,E') as any;
+    this.keys = this.input.keyboard.addKeys('W,A,S,D,E,SHIFT') as any;
 
-    // Build tilemap: 100x11 tiles (1600x176)
-    const map = this.make.tilemap({ width: 100, height: 11, tileWidth: 16, tileHeight: 16 });
+    // Build tilemap: 140x11 tiles，中央大廳＋A/B 兩翼走廊（T1 風格）
+    const map = this.make.tilemap({ width: 140, height: 11, tileWidth: 16, tileHeight: 16 });
+    this.hubX = Math.floor(map.width / 2);
     const tiles = map.addTilesetImage('df-tiles');
     this.layer = map.createBlankLayer('floor', tiles!, 0, 2);
 
     // Tile indices (offset by tileset firstgid)
     const base = (tiles as any).firstgid ?? 1;
     const FLOOR_A = base + 0, FLOOR_B = base + 1, BORDER = base + 2, STRIPE = base + 3, FACADE = base + 4, GLASS = base + 5, DOOR = base + 6, LIGHT = base + 7;
-    // Checker floor
+    // Checker floor（全圖）
     for (let y = 0; y < 11; y++) {
-      for (let x = 0; x < 100; x++) {
+      for (let x = 0; x < 140; x++) {
         this.layer.putTileAt(((x + y) % 2 === 0) ? FLOOR_A : FLOOR_B, x, y);
       }
     }
     // Borders top/bottom and stripe
-    this.layer.fill(BORDER, 0, 0, 100, 1);
-    this.layer.fill(BORDER, 0, 10, 100, 1);
-    this.layer.fill(STRIPE, 0, 9, 100, 1);
+    this.layer.fill(BORDER, 0, 0, 140, 1);
+    this.layer.fill(BORDER, 0, 10, 140, 1);
+    this.layer.fill(STRIPE, 0, 9, 140, 1);
     // Ensure small icon textures for door signage
     this.ensureDoorIcons();
-    // Multiple store facades along corridor（平行商店，中央走道給旅客走）
-    // side: top/bottom，交錯配置；中央第 5 列為門口與走道
-    const entries: { x: number; id: string; label: string; side: 'top' | 'bottom' }[] = [
-      { x: 18, id: 'cosmetics', label: t('store.title.cosmetics'), side: 'top' },
-      { x: 35, id: 'liquor',    label: t('store.title.liquor'),    side: 'bottom' },
-      { x: 52, id: 'snacks',    label: t('store.title.snacks'),    side: 'top' },
-      { x: 69, id: 'tobacco',   label: t('store.title.tobacco'),   side: 'bottom' },
-      { x: 86, id: 'perfume',   label: t('store.title.perfume'),   side: 'top' },
+    // Multiple store facades（A/B 兩翼）
+    // A 廊（左翼）靠牆：上側/下側交錯，門在靠走道的列
+    const entries: { x: number; id: string; label: string; side: 'top' | 'bottom'; wing: 'A' | 'B' }[] = [
+      { x: 18, id: 'cosmetics', label: t('store.title.cosmetics'), side: 'top', wing: 'A' },
+      { x: 30, id: 'liquor',    label: t('store.title.liquor'),    side: 'bottom', wing: 'A' },
+      { x: 42, id: 'snacks',    label: t('store.title.snacks'),    side: 'top', wing: 'A' },
+      // B 廊（右翼）
+      { x: 98,  id: 'tobacco',  label: t('store.title.tobacco'),   side: 'bottom', wing: 'B' },
+      { x: 110, id: 'perfume',  label: t('store.title.perfume'),   side: 'top', wing: 'B' },
+      { x: 122, id: 'liquor',   label: t('store.title.liquor'),    side: 'bottom', wing: 'B' },
     ];
     for (const e of entries) {
       // 完全貼牆且店面高度 3x2：
@@ -133,10 +137,14 @@ export class ConcourseScene extends Phaser.Scene {
       frame.strokeRect(x0 + 0.5, y0 + 0.5, w - 1, h - 1);
       frame.setDepth(6);
     }
-    // Light panels on top
-    for (let x = 2; x <= 16; x += 7) this.layer.putTileAt(LIGHT, x, 1);
+    // Light panels on top（中央＋左右翼）
+    for (let x = 2; x <= 20; x += 7) this.layer.putTileAt(LIGHT, x, 1);
+    for (let x = 96; x <= 136; x += 7) this.layer.putTileAt(LIGHT, x, 1);
     // Doors created above
 
+    // 中央大廳視覺安檢線（僅視覺，不設碰撞）
+    const hubX = this.hubX; // 中央
+    for (let y = 4; y <= 6; y++) this.layer.putTileAt(STRIPE, hubX, y);
     // Collisions with borders/facade
     this.layer.setCollision([BORDER, FACADE], true);
 
@@ -243,7 +251,9 @@ export class ConcourseScene extends Phaser.Scene {
     const spr = this.player as unknown as Phaser.GameObjects.Sprite;
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     body.setVelocity(0);
-    const speed = 70;
+    const baseSpeed = CONFIG.controls.baseSpeed;
+    const runMul = CONFIG.controls.runMultiplier;
+    const speed = (this.keys as any).SHIFT?.isDown ? Math.round(baseSpeed * runMul) : baseSpeed;
     if (this.cursors.left?.isDown || this.keys.A.isDown) body.setVelocityX(-speed);
     else if (this.cursors.right?.isDown || this.keys.D.isDown) body.setVelocityX(speed);
     if (this.cursors.up?.isDown || this.keys.W.isDown) body.setVelocityY(-speed);
@@ -301,6 +311,15 @@ export class ConcourseScene extends Phaser.Scene {
         lbl.setVisible(false);
       }
     }
+    // 根據玩家位置更新地點（中央/ A 廊 / B 廊）
+    const hubX = this.hubX || 70;
+    const px = this.player.x;
+    let zone = '大廳'; let ltype = 'concourse';
+    if (px < hubX * 16 - 80) { zone = 'A 廊'; ltype = 'concourse-A'; }
+    else if (px > hubX * 16 + 80) { zone = 'B 廊'; ltype = 'concourse-B'; }
+    this.registry.set('location', zone);
+    this.registry.set('locationType', ltype);
+
     if (nearest && nd < 18) {
       this.registry.set('hint', `${nearest.label}｜${t('concourse.hintEnter')}｜ESC 購物籃`);
       if (Phaser.Input.Keyboard.JustDown(this.keys.E)) {
