@@ -11,6 +11,9 @@ const dict: Record<Locale, any> = {
       sign: '大廳',
       hintMoveEnter: '使用 WASD/方向鍵移動，按 E 進入',
       hintEnter: '按 E 進入商店',
+      dutyfree: '昇恆昌 大廳',
+      bankFx: '銀行外幣兌換',
+      bank: '銀行服務台',
     },
     store: {
       title: { cosmetics: '化妝品', liquor: '酒類', snacks: '零食', tobacco: '菸草', perfume: '香水', electronics: '電子產品', fashion: '時尚配件', books: '書籍', souvenirs: '紀念品', food: '美食' },

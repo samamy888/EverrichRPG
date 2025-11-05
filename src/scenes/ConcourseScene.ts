@@ -75,8 +75,8 @@ export class ConcourseScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys('W,A,S,D,E,SHIFT') as any;
 
-    // Build tilemap: 140x11 tiles，中央大廳＋A/B 兩翼走廊（T1 風格）
-    const map = this.make.tilemap({ width: 140, height: 11, tileWidth: 16, tileHeight: 16 });
+    // Build tilemap: 140x22（工字形：上=A 區，中=大廳豎走道，下=B 區）
+    const map = this.make.tilemap({ width: 140, height: 22, tileWidth: 16, tileHeight: 16 });
     this.hubX = Math.floor(map.width / 2);
     const tiles = map.addTilesetImage('df-tiles');
     this.layer = map.createBlankLayer('floor', tiles!, 0, 2);
@@ -85,28 +85,15 @@ export class ConcourseScene extends Phaser.Scene {
     const base = (tiles as any).firstgid ?? 1;
     const FLOOR_A = base + 0, FLOOR_B = base + 1, BORDER = base + 2, STRIPE = base + 3, FACADE = base + 4, GLASS = base + 5, DOOR = base + 6, LIGHT = base + 7;
     // Checker floor（全圖）
-    for (let y = 0; y < 11; y++) {
+    for (let y = 0; y < map.height; y++) {
       for (let x = 0; x < 140; x++) {
         this.layer.putTileAt(((x + y) % 2 === 0) ? FLOOR_A : FLOOR_B, x, y);
       }
     }
-    // Borders top/bottom and stripe
+    // Borders top/bottom and stripe（置於最上/最下）
     this.layer.fill(BORDER, 0, 0, 140, 1);
-    this.layer.fill(BORDER, 0, 10, 140, 1);
-    this.layer.fill(STRIPE, 0, 9, 140, 1);
-    // 工字形結構：在第3列與第7列鋪一條可碰撞的橫向隔牆，只在中央豎向走道留缺口
-    const hubX = this.hubX; // 中央 X（tile）
-    this.layer.fill(FACADE, 0, 3, 140, 1);
-    this.layer.fill(FACADE, 0, 7, 140, 1);
-    // 開豎向走道 3 格寬的開口
-    for (let dx = -1; dx <= 1; dx++) {
-      const cx = hubX + dx;
-      // 用地板覆蓋掉隔牆，恢復可通行
-      const topTile = ((cx + 3) % 2 === 0) ? FLOOR_A : FLOOR_B;
-      const botTile = ((cx + 7) % 2 === 0) ? FLOOR_A : FLOOR_B;
-      this.layer.putTileAt(topTile, cx, 3);
-      this.layer.putTileAt(botTile, cx, 7);
-    }
+    this.layer.fill(BORDER, 0, map.height - 1, 140, 1);
+    this.layer.fill(STRIPE, 0, map.height - 2, 140, 1);
     // Ensure small icon textures for door signage
     this.ensureDoorIcons();
     // Multiple store facades（工字型）：
@@ -128,10 +115,9 @@ export class ConcourseScene extends Phaser.Scene {
     ];
     for (const e of entries) {
       // 完全貼牆且店面高度 3x2：
-      // 上側使用列 [1,2]（1=貼牆立面、2=靠走道玻璃，門在 2）；
-      // 下側貼到底邊：使用列 [8,9]（9=貼牆立面緊貼底邊、8=靠走道玻璃，門在 8）。
-      const facadeRow = e.side === 'top' ? 1 : 9;
-      const glassRow = e.side === 'top' ? 2 : 8;
+      // 上：列 [1,2]（門在 2）；下：列 [20,19]（門在 19）
+      const facadeRow = e.side === 'top' ? 1 : 20;
+      const glassRow = e.side === 'top' ? 2 : 19;
       const doorRow = glassRow;
       // 橫向三格（x-1..x+1）
       for (let cx = e.x - 1; cx <= e.x + 1; cx++) {
@@ -179,15 +165,12 @@ export class ConcourseScene extends Phaser.Scene {
     };
     gate(14, 'Gate A1', 'top'); gate(22, 'Gate A2', 'bottom'); gate(34, 'Gate A3', 'top'); gate(46, 'Gate A4', 'bottom');
     gate(102, 'Gate B1', 'bottom'); gate(114, 'Gate B2', 'top'); gate(126, 'Gate B3', 'bottom');
-    // Light panels on top（中央＋左右翼）
-    for (let x = 2; x <= 20; x += 7) this.layer.putTileAt(LIGHT, x, 1);
-    for (let x = 96; x <= 136; x += 7) this.layer.putTileAt(LIGHT, x, 1);
+    // Light panels on top rows（上方帶狀）
+    for (let x = 2; x <= 136; x += 7) this.layer.putTileAt(LIGHT, x, 1);
     // Doors created above
 
     // 中央大廳視覺安檢線（僅視覺，不設碰撞）
-    // 中央視覺安檢線
-    // 注意：上方已使用 hubX 變數
-    for (let y = 4; y <= 6; y++) this.layer.putTileAt(STRIPE, hubX, y);
+    for (let y = Math.floor(map.height / 2) - 1; y <= Math.floor(map.height / 2) + 1; y++) this.layer.putTileAt(STRIPE, hubX, y);
     // Collisions with borders/facade
     this.layer.setCollision([BORDER, FACADE], true);
 
@@ -225,8 +208,8 @@ export class ConcourseScene extends Phaser.Scene {
       const chosen = pick(8);
       this.crowd = createCrowd(this, {
         count: chosen.length,
-        // 中央豎向走道範圍：以 hubX 為中心，寬約 3 格，貫通 A/B 之間
-        area: { xMin: this.hubX * 16 - 24, xMax: this.hubX * 16 + 24, yMin: 2 * 16 + 2, yMax: 8 * 16 + 14 },
+        // 中央豎向走道範圍：以 hubX 為中心，寬約 3 格，貫通 A/B 之間（擴高後）
+        area: { xMin: this.hubX * 16 - 24, xMax: this.hubX * 16 + 24, yMin: 4 * 16, yMax: 18 * 16 },
         texture: 'sprite-npc',
         tint: 0xffffff,
         layer: this.layer,
@@ -241,8 +224,8 @@ export class ConcourseScene extends Phaser.Scene {
     // 初始提示交由全域 UIOverlay 顯示
     this.registry.set('hint', `${t('concourse.hintMoveEnter')}｜ESC 購物籃`);
 
-    // 物理世界使用設計解析度，視圖大小由相機 zoom 控制
-    this.physics.world.setBounds(0, 0, map.width * 16, GAME_HEIGHT);
+    // 物理世界使用設計解析度，覆蓋整張地圖高度
+    this.physics.world.setBounds(0, 0, map.width * 16, map.height * 16);
     this.cameras.main.setRoundPixels(true);
     this.cameras.main.startFollow(this.player, true, 1, 1, 0, 0);
     // 重新套用全域相機縮放於喚醒/恢復時
@@ -358,7 +341,7 @@ export class ConcourseScene extends Phaser.Scene {
     const py = this.player.y;
     let zone = '大廳'; let ltype = 'concourse';
     if (py <= 3 * 16 + 8) { zone = 'A 區'; ltype = 'concourse-A'; }
-    else if (py >= 7 * 16 + 8) { zone = 'B 區'; ltype = 'concourse-B'; }
+    else if (py >= 19 * 16 - 8) { zone = 'B 區'; ltype = 'concourse-B'; }
     this.registry.set('location', zone);
     this.registry.set('locationType', ltype);
 
