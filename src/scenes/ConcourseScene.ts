@@ -94,23 +94,37 @@ export class ConcourseScene extends Phaser.Scene {
     this.layer.fill(BORDER, 0, 0, 140, 1);
     this.layer.fill(BORDER, 0, 10, 140, 1);
     this.layer.fill(STRIPE, 0, 9, 140, 1);
+    // 工字形結構：在第3列與第7列鋪一條可碰撞的橫向隔牆，只在中央豎向走道留缺口
+    const hubX = this.hubX; // 中央 X（tile）
+    this.layer.fill(FACADE, 0, 3, 140, 1);
+    this.layer.fill(FACADE, 0, 7, 140, 1);
+    // 開豎向走道 3 格寬的開口
+    for (let dx = -1; dx <= 1; dx++) {
+      const cx = hubX + dx;
+      // 用地板覆蓋掉隔牆，恢復可通行
+      const topTile = ((cx + 3) % 2 === 0) ? FLOOR_A : FLOOR_B;
+      const botTile = ((cx + 7) % 2 === 0) ? FLOOR_A : FLOOR_B;
+      this.layer.putTileAt(topTile, cx, 3);
+      this.layer.putTileAt(botTile, cx, 7);
+    }
     // Ensure small icon textures for door signage
     this.ensureDoorIcons();
-    // Multiple store facades（A/B 兩翼）
-    // A 廊（左翼）靠牆：上側/下側交錯，門在靠走道的列
+    // Multiple store facades（工字型）：
+    // A 區（上方橫向長廊，貼牆第1-2列，門在第2列）
+    // B 區（下方橫向長廊，貼牆第9-8列，門在第8列）
     const entries: { x: number; id: string; label: string; side: 'top' | 'bottom'; wing: 'A' | 'B' }[] = [
-      // A Wing (top/bottom alternating)
-      { x: 18, id: 'cosmetics',   label: t('store.title.cosmetics'),   side: 'top',    wing: 'A' },
-      { x: 30, id: 'liquor',      label: t('store.title.liquor'),      side: 'bottom', wing: 'A' },
+      // A（上）五家，避開中央豎道（hubX）附近
+      { x: 14, id: 'cosmetics',   label: t('store.title.cosmetics'),   side: 'top',    wing: 'A' },
+      { x: 28, id: 'liquor',      label: t('store.title.liquor'),      side: 'top',    wing: 'A' },
       { x: 42, id: 'snacks',      label: t('store.title.snacks'),      side: 'top',    wing: 'A' },
-      { x: 54, id: 'electronics', label: t('store.title.electronics'), side: 'bottom', wing: 'A' },
-      { x: 66, id: 'fashion',     label: t('store.title.fashion'),     side: 'top',    wing: 'A' },
-      // B Wing (top/bottom alternating)
-      { x: 86,  id: 'books',      label: t('store.title.books'),       side: 'bottom', wing: 'B' },
-      { x: 98,  id: 'tobacco',    label: t('store.title.tobacco'),     side: 'top',    wing: 'B' },
-      { x: 110, id: 'perfume',    label: t('store.title.perfume'),     side: 'bottom', wing: 'B' },
-      { x: 122, id: 'souvenirs',  label: t('store.title.souvenirs'),   side: 'top',    wing: 'B' },
-      { x: 134, id: 'food',       label: t('store.title.food'),        side: 'bottom', wing: 'B' },
+      { x: 96, id: 'electronics', label: t('store.title.electronics'), side: 'top',    wing: 'A' },
+      { x: 110, id: 'fashion',    label: t('store.title.fashion'),     side: 'top',    wing: 'A' },
+      // B（下）五家
+      { x: 18,  id: 'books',      label: t('store.title.books'),       side: 'bottom', wing: 'B' },
+      { x: 32,  id: 'tobacco',    label: t('store.title.tobacco'),     side: 'bottom', wing: 'B' },
+      { x: 46,  id: 'perfume',    label: t('store.title.perfume'),     side: 'bottom', wing: 'B' },
+      { x: 100, id: 'souvenirs',  label: t('store.title.souvenirs'),   side: 'bottom', wing: 'B' },
+      { x: 114, id: 'food',       label: t('store.title.food'),        side: 'bottom', wing: 'B' },
     ];
     for (const e of entries) {
       // 完全貼牆且店面高度 3x2：
@@ -171,7 +185,8 @@ export class ConcourseScene extends Phaser.Scene {
     // Doors created above
 
     // 中央大廳視覺安檢線（僅視覺，不設碰撞）
-    const hubX = this.hubX; // 中央
+    // 中央視覺安檢線
+    // 注意：上方已使用 hubX 變數
     for (let y = 4; y <= 6; y++) this.layer.putTileAt(STRIPE, hubX, y);
     // Collisions with borders/facade
     this.layer.setCollision([BORDER, FACADE], true);
@@ -203,15 +218,15 @@ export class ConcourseScene extends Phaser.Scene {
     // Collide with walls
     this.physics.add.collider(this.player, this.layer);
 
-    // Crowd NPCs（從名單隨機抽人；只在中央走道活動）
+    // Crowd NPCs（從名單隨機抽人；僅在中央豎向走道活動）
     fetchTravelers().then((list) => {
       const pool = list.slice();
       const pick = (n: number) => { const out: any[] = []; for (let i=0;i<n && pool.length;i++){ out.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]); } return out; };
       const chosen = pick(8);
       this.crowd = createCrowd(this, {
         count: chosen.length,
-        // 中央走道範圍：第 4~6 列（避開上下店面）
-        area: { xMin: 40, xMax: GAME_WIDTH * 2, yMin: 4 * 16 + 2 + 4, yMax: 6 * 16 + 2 + 12 },
+        // 中央豎向走道範圍：以 hubX 為中心，寬約 3 格，貫通 A/B 之間
+        area: { xMin: this.hubX * 16 - 24, xMax: this.hubX * 16 + 24, yMin: 2 * 16 + 2, yMax: 8 * 16 + 14 },
         texture: 'sprite-npc',
         tint: 0xffffff,
         layer: this.layer,
@@ -339,12 +354,11 @@ export class ConcourseScene extends Phaser.Scene {
         lbl.setVisible(false);
       }
     }
-    // 根據玩家位置更新地點（中央/ A 廊 / B 廊）
-    const hubX = this.hubX || 70;
-    const px = this.player.x;
+    // 根據玩家位置更新地點（A 區 / 大廳 / B 區），以 y 軸判定
+    const py = this.player.y;
     let zone = '大廳'; let ltype = 'concourse';
-    if (px < hubX * 16 - 80) { zone = 'A 廊'; ltype = 'concourse-A'; }
-    else if (px > hubX * 16 + 80) { zone = 'B 廊'; ltype = 'concourse-B'; }
+    if (py <= 3 * 16 + 8) { zone = 'A 區'; ltype = 'concourse-A'; }
+    else if (py >= 7 * 16 + 8) { zone = 'B 區'; ltype = 'concourse-B'; }
     this.registry.set('location', zone);
     this.registry.set('locationType', ltype);
 
