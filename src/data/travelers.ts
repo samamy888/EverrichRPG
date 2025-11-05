@@ -48,4 +48,9 @@ export const clerksByStore: Record<string, Traveler> = {
   snacks:    { id: 'c_sna', name: '米米', gender: 'F', job: 'clerk', storeId: 'snacks' },
   tobacco:   { id: 'c_tob', name: '老周', gender: 'M', job: 'clerk', storeId: 'tobacco' },
   perfume:   { id: 'c_per', name: '香奈', gender: 'F', job: 'clerk', storeId: 'perfume' },
+  electronics:{ id: 'c_ele', name: '小田', gender: 'M', job: 'clerk', storeId: 'electronics' },
+  fashion:   { id: 'c_fas', name: '小晴', gender: 'F', job: 'clerk', storeId: 'fashion' },
+  books:     { id: 'c_bok', name: '阿章', gender: 'M', job: 'clerk', storeId: 'books' },
+  souvenirs: { id: 'c_sou', name: '艾琳', gender: 'F', job: 'clerk', storeId: 'souvenirs' },
+  food:      { id: 'c_fod', name: '阿豪', gender: 'M', job: 'clerk', storeId: 'food' },
 };

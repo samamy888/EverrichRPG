@@ -99,13 +99,18 @@ export class ConcourseScene extends Phaser.Scene {
     // Multiple store facades（A/B 兩翼）
     // A 廊（左翼）靠牆：上側/下側交錯，門在靠走道的列
     const entries: { x: number; id: string; label: string; side: 'top' | 'bottom'; wing: 'A' | 'B' }[] = [
-      { x: 18, id: 'cosmetics', label: t('store.title.cosmetics'), side: 'top', wing: 'A' },
-      { x: 30, id: 'liquor',    label: t('store.title.liquor'),    side: 'bottom', wing: 'A' },
-      { x: 42, id: 'snacks',    label: t('store.title.snacks'),    side: 'top', wing: 'A' },
-      // B 廊（右翼）
-      { x: 98,  id: 'tobacco',  label: t('store.title.tobacco'),   side: 'bottom', wing: 'B' },
-      { x: 110, id: 'perfume',  label: t('store.title.perfume'),   side: 'top', wing: 'B' },
-      { x: 122, id: 'liquor',   label: t('store.title.liquor'),    side: 'bottom', wing: 'B' },
+      // A Wing (top/bottom alternating)
+      { x: 18, id: 'cosmetics',   label: t('store.title.cosmetics'),   side: 'top',    wing: 'A' },
+      { x: 30, id: 'liquor',      label: t('store.title.liquor'),      side: 'bottom', wing: 'A' },
+      { x: 42, id: 'snacks',      label: t('store.title.snacks'),      side: 'top',    wing: 'A' },
+      { x: 54, id: 'electronics', label: t('store.title.electronics'), side: 'bottom', wing: 'A' },
+      { x: 66, id: 'fashion',     label: t('store.title.fashion'),     side: 'top',    wing: 'A' },
+      // B Wing (top/bottom alternating)
+      { x: 86,  id: 'books',      label: t('store.title.books'),       side: 'bottom', wing: 'B' },
+      { x: 98,  id: 'tobacco',    label: t('store.title.tobacco'),     side: 'top',    wing: 'B' },
+      { x: 110, id: 'perfume',    label: t('store.title.perfume'),     side: 'bottom', wing: 'B' },
+      { x: 122, id: 'souvenirs',  label: t('store.title.souvenirs'),   side: 'top',    wing: 'B' },
+      { x: 134, id: 'food',       label: t('store.title.food'),        side: 'bottom', wing: 'B' },
     ];
     for (const e of entries) {
       // 完全貼牆且店面高度 3x2：
@@ -137,6 +142,29 @@ export class ConcourseScene extends Phaser.Scene {
       frame.strokeRect(x0 + 0.5, y0 + 0.5, w - 1, h - 1);
       frame.setDepth(6);
     }
+    // Central hub signage & facilities
+    {
+      const hub = this.hubX;
+      const sign = this.add.graphics();
+      sign.fillStyle(0x0b111a, 0.85).fillRect((hub - 3) * 16 + 2, 2 + 1 * 16, 6 * 16 - 4, 12).setDepth(7);
+      this.add.text(hub * 16, 2 + 1 * 16 + 2, 'A | B', { fontSize: '10px', color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' })
+        .setOrigin(0.5, 0).setDepth(8).setStroke('#24424e', 1);
+      // Info / WC icons
+      this.add.image((hub - 6) * 16, 2 + 2 * 16, 'icon-info').setOrigin(0.5).setDepth(8);
+      this.add.image((hub + 6) * 16, 2 + 2 * 16, 'icon-wc').setOrigin(0.5).setDepth(8);
+      // Security arches
+      const s = this.add.graphics(); s.lineStyle(1, 0x375a7f, 1).setDepth(6);
+      for (let x = hub - 4; x <= hub + 4; x += 2) s.strokeRoundedRect(x * 16 + 4, 2 + 5 * 16 - 10, 12, 10, 3);
+    }
+    // Gate signage along wings (visual)
+    const gate = (tx: number, label: string, side: 'top'|'bottom') => {
+      const y = side === 'top' ? 2 + 2 * 16 : 2 + 8 * 16;
+      this.add.text(tx * 16, y, label, { fontSize: '9px', color: '#243b53', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' })
+        .setOrigin(0.5, side === 'top' ? 1 : 0).setDepth(8).setStroke('#ffffff', 2);
+      this.add.image(tx * 16, y + (side === 'top' ? -10 : 10), 'icon-gate').setOrigin(0.5, side === 'top' ? 1 : 0).setDepth(8);
+    };
+    gate(14, 'Gate A1', 'top'); gate(22, 'Gate A2', 'bottom'); gate(34, 'Gate A3', 'top'); gate(46, 'Gate A4', 'bottom');
+    gate(102, 'Gate B1', 'bottom'); gate(114, 'Gate B2', 'top'); gate(126, 'Gate B3', 'bottom');
     // Light panels on top（中央＋左右翼）
     for (let x = 2; x <= 20; x += 7) this.layer.putTileAt(LIGHT, x, 1);
     for (let x = 96; x <= 136; x += 7) this.layer.putTileAt(LIGHT, x, 1);

@@ -13,7 +13,7 @@ const dict: Record<Locale, any> = {
       hintEnter: '按 E 進入商店',
     },
     store: {
-      title: { cosmetics: '化妝品', liquor: '酒類', snacks: '零食', tobacco: '菸草', perfume: '香水' },
+      title: { cosmetics: '化妝品', liquor: '酒類', snacks: '零食', tobacco: '菸草', perfume: '香水', electronics: '電子產品', fashion: '時尚配件', books: '書籍', souvenirs: '紀念品', food: '美食' },
       listTitle: '商品',
       hint: '上下選擇，按 E 選擇（購買/結束對話）',
       hintApproach: '靠近店員按 E 對話，或前往出口',
@@ -33,7 +33,7 @@ const dict: Record<Locale, any> = {
       hintEnter: 'Press E to enter store',
     },
     store: {
-      title: { cosmetics: 'Cosmetics', liquor: 'Liquor', snacks: 'Snacks', tobacco: 'Tobacco', perfume: 'Perfume' },
+      title: { cosmetics: 'Cosmetics', liquor: 'Liquor', snacks: 'Snacks', tobacco: 'Tobacco', perfume: 'Perfume', electronics: 'Electronics', fashion: 'Fashion', books: 'Books', souvenirs: 'Souvenirs', food: 'Food' },
       listTitle: 'Items',
       hint: 'Up/Down select, press E (buy/exit dialog)',
       hintApproach: 'Approach clerk and press E; door to exit',
