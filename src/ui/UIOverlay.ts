@@ -66,6 +66,8 @@ export class UIOverlay extends Phaser.Scene {
 
   create() {
     // 透明背景，不覆蓋主場景；相機本身維持可見
+    // 將常用工具掛到場景實例，便於外部模組（若以 any 取用）
+    ;(this as any).CONFIG = CONFIG; (this as any).t = t;
     this.cameras.main.setBackgroundColor('rgba(0,0,0,0)');
     this.cameras.main.setAlpha(1);
     this.cameras.main.setRoundPixels(true);

@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { CONFIG } from '../../config';
 
 // 將 UIOverlay 之迷你地圖相關行為拆出，避免主檔案過大
 
@@ -9,10 +10,10 @@ export function ensureMinimap(scene: any) {
   }
   if (!scene.minimapBox) {
     const { w } = scene.getViewSize();
-    const pad = scene.CONFIG?.ui?.minimap?.pad ?? 6;
-    const boxW = scene.CONFIG?.ui?.minimap?.maxWidth ?? 120;
-    const boxH = scene.CONFIG?.ui?.minimap?.maxHeight ?? 80;
-    scene.minimapBox = scene.add.rectangle(w - boxW - pad, scene.hintBox.height + pad, boxW, boxH, 0x000000, scene.CONFIG?.ui?.minimap?.backgroundAlpha ?? 0.6)
+    const pad = CONFIG.ui.minimap.pad;
+    const boxW = CONFIG.ui.minimap.maxWidth;
+    const boxH = CONFIG.ui.minimap.maxHeight;
+    scene.minimapBox = scene.add.rectangle(w - boxW - pad, scene.hintBox.height + pad, boxW, boxH, 0x000000, CONFIG.ui.minimap.backgroundAlpha)
       .setOrigin(0, 0).setScrollFactor(0).setDepth(1200);
     scene.minimapGfx = scene.add.graphics().setScrollFactor(0).setDepth(1201);
   }
@@ -24,9 +25,9 @@ export function positionMinimap(scene: any) {
   scene.minimapBox.setVisible(show); scene.minimapGfx.setVisible(show);
   if (!show) return;
   const { w } = scene.getViewSize();
-  const pad = scene.CONFIG?.ui?.minimap?.pad ?? 6;
-  const boxW = scene.CONFIG?.ui?.minimap?.maxWidth ?? 120;
-  const boxH = scene.CONFIG?.ui?.minimap?.maxHeight ?? 80;
+  const pad = CONFIG.ui.minimap.pad;
+  const boxW = CONFIG.ui.minimap.maxWidth;
+  const boxH = CONFIG.ui.minimap.maxHeight;
   scene.minimapBox.setPosition(w - boxW - pad, scene.hintBox.height + pad).setSize(boxW, boxH);
   scene.minimapGfx.setPosition(w - boxW - pad, scene.hintBox.height + pad);
 }
@@ -44,17 +45,17 @@ export function renderMinimap(scene: any) {
   const mw = map.width || (layer.layer?.width ?? 0);
   const mh = map.height || (layer.layer?.height ?? 0);
   if (!mw || !mh) { scene.minimapGfx.clear(); return; }
-  const desiredSX = Math.max(1, scene.CONFIG?.ui?.minimap?.tileScaleX || 1);
-  const desiredSY = Math.max(1, scene.CONFIG?.ui?.minimap?.tileScaleY || 1);
-  const sX = Math.min(desiredSX, scene.CONFIG?.ui?.minimap?.maxWidth / mw);
-  const sY = Math.min(desiredSY, scene.CONFIG?.ui?.minimap?.maxHeight / mh);
+  const desiredSX = Math.max(1, CONFIG.ui.minimap.tileScaleX || 1);
+  const desiredSY = Math.max(1, CONFIG.ui.minimap.tileScaleY || 1);
+  const sX = Math.min(desiredSX, CONFIG.ui.minimap.maxWidth / mw);
+  const sY = Math.min(desiredSY, CONFIG.ui.minimap.maxHeight / mh);
   scene.minimapScaleX = sX;
   scene.minimapScaleY = sY;
   try {
     const contentW = Math.max(1, Math.round(mw * sX));
     const contentH = Math.max(1, Math.round(mh * sY));
     const { w } = scene.getViewSize();
-    const pad = scene.CONFIG?.ui?.minimap?.pad ?? 6;
+    const pad = CONFIG.ui.minimap.pad;
     const posX = w - contentW - pad;
     const posY = scene.hintBox.height + pad;
     scene.minimapBox.setPosition(posX, posY).setSize(contentW, contentH);
@@ -125,4 +126,3 @@ export function renderMinimap(scene: any) {
     }
   } catch {}
 }
-
