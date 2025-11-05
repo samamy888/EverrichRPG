@@ -56,17 +56,18 @@ export class ConcourseScene extends Phaser.Scene {
     g.generateTexture('df-tiles', TILE * 8, TILE);
     g.destroy();
 
-    // Player/NPC tiny sprites
+    // Player/NPC placeholder sprites (16x16)
     const pg = this.make.graphics({ x: 0, y: 0, add: false });
-    // player: body
-    pg.fillStyle(0xebb35e, 1); pg.fillRect(2, 3, 4, 7); // torso
-    pg.fillStyle(0x3a2a1a, 1); pg.fillRect(2, 10, 1, 2); pg.fillRect(5, 10, 1, 2); // shoes
-    pg.fillStyle(0x5a3a2a, 1); pg.fillRect(2, 2, 4, 1); // hair band
-    pg.generateTexture('sprite-player', 8, 12); pg.clear();
-    // npc simple
-    pg.fillStyle(0xaec6cf, 1); pg.fillRect(2, 3, 4, 7);
-    pg.fillStyle(0x2a3a4a, 1); pg.fillRect(2, 10, 1, 2); pg.fillRect(5, 10, 1, 2);
-    pg.generateTexture('sprite-npc', 8, 12); pg.destroy();
+    // player: simple 16x16 figure (torso/shoes/headband)
+    pg.clear();
+    pg.fillStyle(0xebb35e, 1); pg.fillRect(6, 5, 4, 8); // torso
+    pg.fillStyle(0x3a2a1a, 1); pg.fillRect(6, 13, 2, 2); pg.fillRect(8, 13, 2, 2); // shoes
+    pg.fillStyle(0x5a3a2a, 1); pg.fillRect(6, 4, 4, 1); // hair band
+    pg.generateTexture('sprite-player', 16, 16); pg.clear();
+    // npc simple (cooler palette)
+    pg.fillStyle(0xaec6cf, 1); pg.fillRect(6, 5, 4, 8);
+    pg.fillStyle(0x2a3a4a, 1); pg.fillRect(6, 13, 2, 2); pg.fillRect(8, 13, 2, 2);
+    pg.generateTexture('sprite-npc', 16, 16); pg.destroy();
   }
 
   create() {
@@ -144,10 +145,13 @@ export class ConcourseScene extends Phaser.Scene {
     this.registry.set('locationType', 'concourse');
 
     // Player
-    const p = this.add.image(0, 0, 'sprite-player');
-    this.physics.add.existing(p);
-    this.player = p as unknown as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+    const idleKey = this.textures.exists('player_idle') ? 'player_idle' : 'sprite-player';
+    const ps = this.add.sprite(0, 0, idleKey, 0).setOrigin(0.5, 1);
+    this.physics.add.existing(ps);
+    this.player = ps as unknown as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     this.player.body.setCollideWorldBounds(true);
+    // 32x32 幀中，實際角色 16x16，腳底碰撞盒縮小貼地
+    try { (this.player.body as any).setSize(12, 8).setOffset(10, 24); } catch {}
     // 主人公出生在大廳正中央
     this.player.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2);
 
@@ -227,6 +231,7 @@ export class ConcourseScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number) {
+    const spr = this.player as unknown as Phaser.GameObjects.Sprite;
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     body.setVelocity(0);
     const speed = 70;
@@ -234,6 +239,26 @@ export class ConcourseScene extends Phaser.Scene {
     else if (this.cursors.right?.isDown || this.keys.D.isDown) body.setVelocityX(speed);
     if (this.cursors.up?.isDown || this.keys.W.isDown) body.setVelocityY(-speed);
     else if (this.cursors.down?.isDown || this.keys.S.isDown) body.setVelocityY(speed);
+    // 動畫播放（方向）：down/up/side，side 以 flipX 控左右
+    try {
+      const moving = Math.abs(body.velocity.x) + Math.abs(body.velocity.y) > 0;
+      const ax = body.velocity.x; const ay = body.velocity.y;
+      const absx = Math.abs(ax), absy = Math.abs(ay);
+      let facing: 'down' | 'up' | 'side' = (spr.getData('facing') as any) || 'down';
+      let flipX = spr.flipX;
+      if (moving) {
+        if (absx >= absy) { facing = 'side'; flipX = ax < 0; }
+        else { facing = ay < 0 ? 'up' : 'down'; }
+        spr.setData('facing', facing);
+        spr.setFlipX(facing === 'side' ? flipX : false);
+        const key = this.anims.exists(`player-walk-${facing}`) ? `player-walk-${facing}` : undefined;
+        if (key) (spr as any).anims.play(key, true); else (spr as any).anims.stop();
+      } else {
+        const key = this.anims.exists(`player-idle-${facing}`) ? `player-idle-${facing}` : undefined;
+        spr.setFlipX(facing === 'side' ? flipX : false);
+        if (key) (spr as any).anims.play(key, true); else (spr as any).anims.stop();
+      }
+    } catch {}
     updateCrowd(this, this.crowd);
     // 縮短名牌觸發距離，需更接近才顯示
     updateNameplates(this, this.crowd, this.player as any, 22);

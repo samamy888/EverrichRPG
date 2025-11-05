@@ -78,16 +78,18 @@ export class StoreScene extends Phaser.Scene {
       g.destroy();
     }
 
-    // Tiny sprites (player/NPC)
+    // Placeholder tiny sprites (16x16)
     if (!this.textures.exists('sprite-player')) {
       const pg = this.make.graphics({ x: 0, y: 0, add: false });
-      pg.fillStyle(0xebb35e, 1); pg.fillRect(2, 3, 4, 7); // body
-      pg.fillStyle(0x3a2a1a, 1); pg.fillRect(2, 10, 1, 2); pg.fillRect(5, 10, 1, 2); // shoes
-      pg.fillStyle(0x5a3a2a, 1); pg.fillRect(2, 2, 4, 1); // hair band
-      pg.generateTexture('sprite-player', 8, 12); pg.clear();
-      pg.fillStyle(0xaec6cf, 1); pg.fillRect(2, 3, 4, 7);
-      pg.fillStyle(0x2a3a4a, 1); pg.fillRect(2, 10, 1, 2); pg.fillRect(5, 10, 1, 2);
-      pg.generateTexture('sprite-npc', 8, 12); pg.destroy();
+      // player
+      pg.fillStyle(0xebb35e, 1); pg.fillRect(6, 5, 4, 8);
+      pg.fillStyle(0x3a2a1a, 1); pg.fillRect(6, 13, 2, 2); pg.fillRect(8, 13, 2, 2);
+      pg.fillStyle(0x5a3a2a, 1); pg.fillRect(6, 4, 4, 1);
+      pg.generateTexture('sprite-player', 16, 16); pg.clear();
+      // npc
+      pg.fillStyle(0xaec6cf, 1); pg.fillRect(6, 5, 4, 8);
+      pg.fillStyle(0x2a3a4a, 1); pg.fillRect(6, 13, 2, 2); pg.fillRect(8, 13, 2, 2);
+      pg.generateTexture('sprite-npc', 16, 16); pg.destroy();
     }
   }
 
@@ -127,9 +129,12 @@ export class StoreScene extends Phaser.Scene {
     this.registry.set('hint', `${t('store.hintApproach')}｜ESC 購物籃`);
 
     // Player & cashier
-    this.player = this.add.image(16, 16 * 9, 'sprite-player');
-    this.physics.add.existing(this.player);
-    this.pBody = this.player.body as Phaser.Physics.Arcade.Body;
+    const idleKey = this.textures.exists('player_idle') ? 'player_idle' : 'sprite-player';
+    const ps = this.add.sprite(16, 16 * 9, idleKey, 0).setOrigin(0.5, 1);
+    this.physics.add.existing(ps);
+    this.player = ps as any;
+    this.pBody = (this.player as any).body as Phaser.Physics.Arcade.Body;
+    try { this.pBody.setSize(12, 8).setOffset(10, 24); } catch {}
     this.pBody.setCollideWorldBounds(true);
     this.layer.setCollision([WALL, SHELF], true);
     this.physics.add.collider(this.player, this.layer);
@@ -233,6 +238,7 @@ export class StoreScene extends Phaser.Scene {
   }
 
   update() {
+    const spr = this.player as unknown as Phaser.GameObjects.Sprite;
     const speed = 70;
     if (this.pBody) {
       this.pBody.setVelocity(0);
@@ -243,6 +249,26 @@ export class StoreScene extends Phaser.Scene {
         if (this.cursor.up?.isDown || (this.keys as any).W.isDown) this.pBody.setVelocityY(-speed);
         else if (this.cursor.down?.isDown || (this.keys as any).S.isDown) this.pBody.setVelocityY(speed);
       }
+      // 動畫播放（方向）：down/up/side，side 以 flipX 控左右
+      try {
+        const moving = Math.abs(this.pBody.velocity.x) + Math.abs(this.pBody.velocity.y) > 0;
+        const ax = this.pBody.velocity.x; const ay = this.pBody.velocity.y;
+        const absx = Math.abs(ax), absy = Math.abs(ay);
+        let facing: 'down' | 'up' | 'side' = (spr.getData('facing') as any) || 'down';
+        let flipX = spr.flipX;
+        if (moving) {
+          if (absx >= absy) { facing = 'side'; flipX = ax < 0; }
+          else { facing = ay < 0 ? 'up' : 'down'; }
+          spr.setData('facing', facing);
+          spr.setFlipX(facing === 'side' ? flipX : false);
+          const key = this.anims.exists(`player-walk-${facing}`) ? `player-walk-${facing}` : undefined;
+          if (key) (spr as any).anims.play(key, true); else (spr as any).anims.stop();
+        } else {
+          const key = this.anims.exists(`player-idle-${facing}`) ? `player-idle-${facing}` : undefined;
+          spr.setFlipX(facing === 'side' ? flipX : false);
+          if (key) (spr as any).anims.play(key, true); else (spr as any).anims.stop();
+        }
+      } catch {}
     }
 
 
