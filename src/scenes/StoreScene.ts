@@ -5,6 +5,8 @@ import { fetchTravelers } from '../api/travelers';
 import { t } from '../i18n';
 import { CONFIG } from '../config';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
+import { getClient } from '../net/ws';
+import { attachOthers } from '../net/others';
 
 type StoreData = { storeId: string; returnTo?: string };
 
@@ -34,6 +36,8 @@ export class StoreScene extends Phaser.Scene {
   private layer!: Phaser.Tilemaps.TilemapLayer;
   private pBody!: Phaser.Physics.Arcade.Body;
   private exitWorld!: Phaser.Math.Vector2;
+  private nameplate?: Phaser.GameObjects.Text;
+  private lastMoveSent = 0;
 
   constructor() { super('StoreScene'); }
 
@@ -129,7 +133,12 @@ export class StoreScene extends Phaser.Scene {
     this.registry.set('locationType', this.storeId);
 
     // Player & cashier
-    const idleKey = this.textures.exists('player_idle') ? 'player_idle' : 'sprite-player';
+    let gender: 'M' | 'F' = 'M';
+    try { gender = ((localStorage.getItem('pgender') || 'M').toUpperCase() === 'F') ? 'F' : 'M'; } catch {}
+    const baseKey = gender === 'F'
+      ? (this.textures.exists('player_f') ? 'player_f' : undefined)
+      : (this.textures.exists('player_m') ? 'player_m' : undefined);
+    const idleKey = baseKey || 'sprite-player';
     const ps = this.add.sprite(16, 16 * 9, idleKey, 0).setOrigin(0.5, 1).setDepth(100);
     this.physics.add.existing(ps);
     this.player = ps as any;
@@ -147,6 +156,21 @@ export class StoreScene extends Phaser.Scene {
     this.pBody.setCollideWorldBounds(true);
     this.layer.setCollision([WALL, SHELF], true);
     this.physics.add.collider(this.player, this.layer);
+    // 初始動畫：根據性別播放 idle-down
+    try {
+      const pref = gender === 'F' ? 'player-f' : 'player-m';
+      const k = `${pref}-idle-down`;
+      if ((this.anims as any).exists?.(k)) (this.player as any).anims?.play?.(k);
+    } catch {}
+    // 自己名牌（與大廳一致樣式）
+    try {
+      const nm = (localStorage.getItem('pname') || '').trim();
+      if (nm) {
+        this.nameplate = this.add.text(this.player.x, this.player.y - 22, nm, { fontSize: `${CONFIG.ui.small}px`, color: '#243b53', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' })
+          .setOrigin(0.5, 1).setDepth(101).setScrollFactor(1);
+        try { this.nameplate.setStroke('#ffffff', 2); } catch {}
+      }
+    } catch {}
 
     const clerkKey = this.textures.exists('clerk_idle') ? 'clerk_idle' : 'sprite-npc';
     const clerk = this.add.sprite(16 * 10, 16 * 3, clerkKey, 0).setOrigin(0.5, 1).setDepth(10);
@@ -191,6 +215,10 @@ export class StoreScene extends Phaser.Scene {
     this.exitWorld = new Phaser.Math.Vector2(16 * 1 + 8, 2 + 16 * 9 + 8);
     this.add.rectangle(this.exitWorld.x, this.exitWorld.y - 6, 10, 12, 0x2e8b57).setOrigin(0.5, 1);
     this.add.rectangle(this.exitWorld.x, this.exitWorld.y - 6, 12, 14).setStrokeStyle(1, 0x4a5668).setOrigin(0.5, 1);
+    // 先送出位置（帶入商店區域），並接上他人顯示（僅同店）
+    try { getClient().sendMove(this.player.x, this.player.y, `store:${this.storeId}`); } catch {}
+    try { attachOthers(this, { getArea: () => `store:${this.storeId}`, crossArea: false }); } catch {}
+
 
     // 對話框改由 UIOverlay 顯示，這裡不建立本地對話 UI
   }
@@ -273,17 +301,20 @@ export class StoreScene extends Phaser.Scene {
         const absx = Math.abs(ax), absy = Math.abs(ay);
         let facing: 'down' | 'up' | 'side' = (spr.getData('facing') as any) || 'down';
         let flipX = spr.flipX;
+        const g = ((localStorage.getItem('pgender') || 'M').toUpperCase() === 'F') ? 'F' : 'M';
+        const pref = g === 'F' ? 'player-f' : 'player-m';
+        const current = ((spr as any).anims?.currentAnim?.key) || '';
         if (moving) {
           if (absx >= absy) { facing = 'side'; flipX = ax < 0; }
           else { facing = ay < 0 ? 'up' : 'down'; }
           spr.setData('facing', facing);
           spr.setFlipX(facing === 'side' ? flipX : false);
-          const key = this.anims.exists(`player-walk-${facing}`) ? `player-walk-${facing}` : undefined;
-          if (key) (spr as any).anims.play(key, true); else (spr as any).anims.stop();
+          const key = this.anims.exists(`${pref}-walk-${facing}`) ? `${pref}-walk-${facing}` : undefined;
+          if (key && current !== key) (spr as any).anims.play(key, true); else (spr as any).anims.stop();
         } else {
-          const key = this.anims.exists(`player-idle-${facing}`) ? `player-idle-${facing}` : undefined;
+          const key = this.anims.exists(`${pref}-idle-${facing}`) ? `${pref}-idle-${facing}` : undefined;
           spr.setFlipX(facing === 'side' ? flipX : false);
-          if (key) (spr as any).anims.play(key, true); else (spr as any).anims.stop();
+          if (key && current !== key) (spr as any).anims.play(key, true); else (spr as any).anims.stop();
         }
       } catch {}
     }
@@ -294,7 +325,17 @@ export class StoreScene extends Phaser.Scene {
     // 名牌接觸點比照對話：向下偏移 10，且更接近才顯示
     updateNameplates(this, this.customers, this.player as any, 20, 10);
     updateNameplateForSprite(this, this.cashier as any, this.player as any, 20, 10);
+    try { if (this.nameplate) this.nameplate.setPosition(this.player.x, this.player.y - 22); } catch {}
     try { this.registry.set('playerPos', { x: this.player.x, y: this.player.y }); } catch {}
+    // 週期性上報位置（放在任何 early-return 前）
+    try {
+      const now = performance.now();
+      if (now - this.lastMoveSent >= (CONFIG.network.moveIntervalMs || 80)) {
+        const area = this.currentArea ? this.currentArea() : `store:${this.storeId}`;
+        getClient().sendMove(this.player.x, this.player.y, area);
+        this.lastMoveSent = now;
+      }
+    } catch {}
 
     // 取消 ESC 強制返回大廳（改由清單的「離開」或出口互動離開）
 
@@ -393,6 +434,14 @@ export class StoreScene extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) { this.leaveStore(); return; }
       }
     }
+    // 週期性上報位置（讓其他玩家看到你在商店內移動）
+    try {
+      const now = performance.now();
+      if (now - this.lastMoveSent >= (CONFIG.network.moveIntervalMs || 80)) {
+        getClient().sendMove(this.player.x, this.player.y, `store:${this.storeId}`);
+        this.lastMoveSent = now;
+      }
+    } catch {}
   }
 
   private leaveStore() {
