@@ -42,6 +42,25 @@ export function initChat(game: Phaser.Game) {
   document.body.appendChild(panel);
   // 對外提供清空函數
   (window as any).__chatClear = () => { try { if (listEl) listEl.innerHTML = ''; } catch {} };
+  // 顯示/隱藏控制（帶持久化）
+  const setVisible = (show: boolean) => {
+    try {
+      (window as any).__chatVisible = !!show;
+      if (panel) panel.style.display = show ? '' : 'none';
+      try { localStorage.setItem('chatVisible', show ? '1' : '0'); } catch {}
+    } catch {}
+  };
+  const getSavedVisible = () => {
+    try {
+      const s = localStorage.getItem('chatVisible');
+      if (s === null) return true; // 預設顯示
+      return s === '1';
+    } catch { return true; }
+  };
+  (window as any).__chatSetVisible = (v: boolean) => setVisible(!!v);
+  (window as any).__chatToggle = () => setVisible(!((window as any).__chatVisible !== false));
+  // 初始遵循保存狀態
+  setVisible(getSavedVisible());
 
   const lockInput = (on: boolean) => { try { (game as any).registry?.set('inputLocked', !!on); } catch {} };
   const toggleKeyboard = (disable: boolean) => {

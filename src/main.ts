@@ -132,6 +132,7 @@ function createZoomControls() {
   const btnMinus = document.createElement('button');
   const btnPlus = document.createElement('button');
   const btnCrowd = document.createElement('button');
+  const btnChat = document.createElement('button');
   const btnReset = document.createElement('button');
   const btnClearChat = document.createElement('button');
   const dot = document.createElement('span');
@@ -139,7 +140,7 @@ function createZoomControls() {
     'cursor:pointer','padding:2px 6px','border-radius:6px',
     'border:1px solid #4a5668','background:#1a2330','color:#e6f0ff'
   ].join(';');
-  styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus); styleBtn(btnCrowd); styleBtn(btnReset); styleBtn(btnClearChat);
+  styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus); styleBtn(btnCrowd); styleBtn(btnChat); styleBtn(btnReset); styleBtn(btnClearChat);
   // WS 燈號樣式
   dot.style.cssText = [
     'display:inline-block','width:8px','height:8px','border-radius:50%',
@@ -160,6 +161,8 @@ function createZoomControls() {
     btnMinus.textContent = '−';
     btnPlus.textContent = '+';
     btnClearChat.textContent = '清空訊息';
+    const chatVisible = (window as any).__chatVisible !== false;
+    btnChat.textContent = chatVisible ? 'Chat: ON' : 'Chat: OFF';
     const crowdOn = (window as any).__minimapCrowd !== false;
     btnCrowd.textContent = crowdOn ? 'Crowd: ON' : 'Crowd: OFF';
     const connected = (window as any).__netConnected === true;
@@ -174,6 +177,18 @@ function createZoomControls() {
     const cur = (window as any).__minimapCrowd !== false;
     (window as any).__minimapCrowd = !cur;
     try { localStorage.setItem('minimapCrowd', ((window as any).__minimapCrowd ? '1' : '0')); } catch {}
+    updateLabel();
+  });
+  btnChat.addEventListener('click', () => {
+    try {
+      if ((window as any).__chatToggle) (window as any).__chatToggle();
+      else {
+        // 尚未初始化聊天室時，先切換預設並保存，下次 initChat 會套用
+        const cur = ((window as any).__chatVisible !== false);
+        (window as any).__chatVisible = !cur;
+        try { localStorage.setItem('chatVisible', (!cur ? '1' : '0')); } catch {}
+      }
+    } catch {}
     updateLabel();
   });
   btnClearChat.addEventListener('click', () => {
@@ -197,7 +212,7 @@ function createZoomControls() {
   const dotWrap = document.createElement('span');
   dotWrap.textContent = 'WS';
   dotWrap.style.cssText = 'opacity:.8;margin-left:4px;margin-right:2px;';
-  panel.append(label, btnSnap, btnMinus, btnPlus, btnCrowd, btnClearChat, btnReset, dotWrap, dot);
+  panel.append(label, btnSnap, btnMinus, btnPlus, btnCrowd, btnChat, btnClearChat, btnReset, dotWrap, dot);
   document.body.appendChild(panel);
   updateLabel();
   // 提供全域更新介面給連線事件呼叫
