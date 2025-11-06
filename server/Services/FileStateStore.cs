@@ -42,6 +42,8 @@ public class FileStateStore : IStateStore
         lock (_gate)
         {
             _online.Remove(id);
+            _genderByConn.Remove(id);
+            _aidByConn.Remove(id);
         }
     }
 
@@ -50,6 +52,12 @@ public class FileStateStore : IStateStore
         lock (_gate)
         {
             _chat.AddLast(msg);
+            // 時效：只保留 30 分鐘內的訊息，且最多 200 筆
+            var cutoff = DateTimeOffset.UtcNow.AddMinutes(-30);
+            while (_chat.First != null && _chat.First.Value.Ts < cutoff)
+            {
+                _chat.RemoveFirst();
+            }
             while (_chat.Count > 200) _chat.RemoveFirst();
         }
     }
@@ -178,14 +186,5 @@ public class FileStateStore : IStateStore
         lock (_gate) return _aidByConn.TryGetValue(connId, out var v) ? v : null;
     }
 
-    // Ensure metadata cleared when player leaves
-    public new void RemovePlayer(string id)
-    {
-        lock (_gate)
-        {
-            _online.Remove(id);
-            _genderByConn.Remove(id);
-            _aidByConn.Remove(id);
-        }
-    }
+    
 }

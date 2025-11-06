@@ -6,6 +6,8 @@ import { BootScene } from './scenes/BootScene';
 import { LoginScene } from './scenes/LoginScene';
 import { CONFIG } from './config';
 import { initConnection } from './net/ws';
+import { initChat } from './ui/chat';
+import { getApiBase } from './net/http';
 
 export const GAME_WIDTH = 320;
 export const GAME_HEIGHT = 180;
@@ -205,11 +207,29 @@ function createZoomControls() {
 }
 
 window.addEventListener('load', () => { createZoomControls(); });
+// 啟用聊天室（底部輸入框 + 歷史 + 即時）
+try {
+  (window as any).addEventListener('load', () => {
+    try { initChat(game as any); } catch {}
+  });
+} catch {}
 
 // 延後 WebSocket 連線：若本地尚無名稱，等待登入場景後再連線
 try {
   const hasName = (() => { try { return !!localStorage.getItem('pname'); } catch { return false; } })();
   if (hasName) {
+    // 同步一次個人資料到後端（避免沿用舊資料）
+    try {
+      const pid = localStorage.getItem('pid') || '';
+      const email = localStorage.getItem('pemail') || '';
+      const name = localStorage.getItem('pname') || '';
+      const gender = (localStorage.getItem('pgender') || 'M').toUpperCase() === 'F' ? 'F' : 'M';
+      const base = getApiBase();
+      fetch(`${base}/profile`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Id: pid, Email: email, Name: name, Gender: gender, Ts: new Date().toISOString() })
+      }).catch(() => {});
+    } catch {}
     const conn = initConnection();
     try {
       (conn as any).on?.('status', (s: any) => {
