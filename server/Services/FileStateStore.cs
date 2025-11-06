@@ -8,6 +8,9 @@ public class FileStateStore : IStateStore
     private readonly object _gate = new();
     private readonly Dictionary<string, PlayerState> _online = new();
     private readonly LinkedList<ChatMessage> _chat = new();
+    private readonly Dictionary<string, PlayerProfile> _profiles = new();
+    private readonly Dictionary<string, string> _genderByConn = new();
+    private readonly Dictionary<string, string> _aidByConn = new();
     private readonly string _snapshotPath;
 
     public FileStateStore(IHostEnvironment env)
@@ -61,6 +64,9 @@ public class FileStateStore : IStateStore
                 {
                     players = _online.Values,
                     chat = _chat.ToArray(),
+                    profiles = _profiles.Values,
+                    genders = _genderByConn,
+                    aids = _aidByConn,
                     ts = DateTimeOffset.UtcNow,
                 };
                 File.WriteAllText(_snapshotPath, JsonSerializer.Serialize(payload));
@@ -107,9 +113,79 @@ public class FileStateStore : IStateStore
                             DateTimeOffset.Parse(c.GetProperty("Ts").GetString()!)));
                     }
                 }
+                _profiles.Clear();
+                if (root.TryGetProperty("profiles", out var profiles))
+                {
+                    foreach (var p in profiles.EnumerateArray())
+                    {
+                        var pr = new PlayerProfile(
+                            p.GetProperty("Id").GetString()!,
+                            p.GetProperty("Email").GetString()!,
+                            p.GetProperty("Name").GetString()!,
+                            p.GetProperty("Gender").GetString()!,
+                            DateTimeOffset.Parse(p.GetProperty("Ts").GetString()!));
+                        _profiles[pr.Id] = pr;
+                    }
+                }
+                _genderByConn.Clear();
+                if (root.TryGetProperty("genders", out var genders))
+                {
+                    foreach (var kv in genders.EnumerateObject())
+                    {
+                        _genderByConn[kv.Name] = kv.Value.GetString() ?? "M";
+                    }
+                }
+                _aidByConn.Clear();
+                if (root.TryGetProperty("aids", out var aids))
+                {
+                    foreach (var kv in aids.EnumerateObject())
+                    {
+                        _aidByConn[kv.Name] = kv.Value.GetString() ?? kv.Name;
+                    }
+                }
             }
         }
         catch { }
     }
-}
 
+    public void UpsertProfile(PlayerProfile p)
+    {
+        lock (_gate) { _profiles[p.Id] = p with { Ts = DateTimeOffset.UtcNow }; }
+    }
+
+    public PlayerProfile? GetProfile(string id)
+    {
+        lock (_gate) return _profiles.TryGetValue(id, out var v) ? v : null;
+    }
+
+    public void SetGender(string connId, string gender)
+    {
+        lock (_gate) _genderByConn[connId] = string.IsNullOrWhiteSpace(gender) ? "M" : gender.ToUpperInvariant();
+    }
+
+    public string? GetGender(string connId)
+    {
+        lock (_gate) return _genderByConn.TryGetValue(connId, out var v) ? v : null;
+    }
+
+    public void SetAid(string connId, string aid)
+    {
+        lock (_gate) _aidByConn[connId] = string.IsNullOrWhiteSpace(aid) ? connId : aid;
+    }
+
+    public string? GetAid(string connId)
+    {
+        lock (_gate) return _aidByConn.TryGetValue(connId, out var v) ? v : null;
+    }
+
+    // Ensure metadata cleared when player leaves
+    public new void RemovePlayer(string id)
+    {
+        lock (_gate)
+        {
+            _online.Remove(id);
+            _genderByConn.Remove(id);
+            _aidByConn.Remove(id);
+        }
+    }
+}

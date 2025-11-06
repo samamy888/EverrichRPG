@@ -22,3 +22,8 @@ C:\Users\30364\Desktop\Program\Demo\EverrichRPG\server\obj\Debug\net8.0\refint\E
 C:\Users\30364\Desktop\Program\Demo\EverrichRPG\server\obj\Debug\net8.0\EverrichRpg.Server.pdb
 C:\Users\30364\Desktop\Program\Demo\EverrichRPG\server\obj\Debug\net8.0\EverrichRpg.Server.genruntimeconfig.cache
 C:\Users\30364\Desktop\Program\Demo\EverrichRPG\server\obj\Debug\net8.0\ref\EverrichRpg.Server.dll
+C:\Users\30364\Desktop\Program\Demo\EverrichRPG\server\bin\Debug\net8.0\data-snapshot.json
+C:\Users\30364\Desktop\Program\Demo\EverrichRPG\server\bin\Debug\net8.0\pub\web.config
+C:\Users\30364\Desktop\Program\Demo\EverrichRPG\server\bin\Debug\net8.0\pub\data-snapshot.json
+C:\Users\30364\Desktop\Program\Demo\EverrichRPG\server\bin\Debug\net8.0\pub\EverrichRpg.Server.deps.json
+C:\Users\30364\Desktop\Program\Demo\EverrichRPG\server\bin\Debug\net8.0\pub\EverrichRpg.Server.runtimeconfig.json

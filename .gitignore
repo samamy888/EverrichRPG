@@ -1,2 +1,9 @@
 node_modules/
 dist/
+/.vs/
+**/.vs/
+**/bin/
+**/obj/
+**/pub/
+server/bin/
+server/obj/

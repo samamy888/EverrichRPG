@@ -3,6 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 import { CONFIG } from '../config';
 import { t } from '../i18n';
 import { createCrowd, updateCrowd, updateNameplates } from '../actors/NpcCrowd';
+import { getClient } from '../net/ws';
 
 type Door = { world: Phaser.Math.Vector2; id: string; label: string };
 
@@ -16,6 +17,14 @@ export class AirportScene extends Phaser.Scene {
   private crowd?: Phaser.Physics.Arcade.Group;
   private crowds: Phaser.Physics.Arcade.Group[] = [];
   private hubX!: number;
+  private others?: Phaser.GameObjects.Group;
+  private othersMap: Map<string, Phaser.GameObjects.Sprite> = new Map();
+  private othersMeta: Map<string, { name: string; gender: 'M'|'F'; lastX: number; lastY: number; facing?: 'down'|'up'|'side'; locked?: boolean } > = new Map();
+  private othersNameplate: Map<string, Phaser.GameObjects.Text> = new Map();
+  private othersPending: Map<string, boolean> = new Map();
+  private lastMoveSent = 0;
+  private nameplate?: Phaser.GameObjects.Text;
+  private gender: 'M' | 'F' = 'M';
 
   // Layout (tiles)
   private MAP_W = 120; // 稍微加寬全域，讓 A/B 更寬敞
@@ -150,7 +159,11 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
     this.layer.setCollision([FACADE, BORDER, STRIPE, GLASS, LIGHT], true);
 
     // Player
-    const idleKey = this.textures.exists('player_idle') ? 'player_idle' : undefined;
+    // 性別：登入時存入 localStorage 的 pgender（M/F）
+    try { this.gender = ((localStorage.getItem('pgender') || 'M').toUpperCase() === 'F') ? 'F' : 'M'; } catch { this.gender = 'M'; }
+    const idleKey = this.gender === 'F'
+      ? (this.textures.exists('player_f') ? 'player_f' : undefined)
+      : (this.textures.exists('player_m') ? 'player_m' : undefined);
     const spawnX = this.hubX * 16;
     const spawnY = Math.floor((H_Y0 + H_Y1) / 2) * 16 + 8;
     const ps = idleKey ? this.add.sprite(spawnX, spawnY, idleKey, 0).setOrigin(0.5, 1) : this.add.rectangle(spawnX, spawnY, 8, 12, 0xebb35e) as any;
@@ -159,7 +172,21 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
     this.player = ps as any;
     const pBody = (this.player as any).body as Phaser.Physics.Arcade.Body;
     try { pBody.setSize(10, 10).setOffset(3, 20).setCollideWorldBounds(true); } catch {}
-    try { (this.player as any).setData?.('facing', 'down'); (this.player as any).anims?.play?.('player-idle-down'); } catch {}
+    try {
+      (this.player as any).setData?.('facing', 'down');
+      const pref = this.gender === 'F' ? 'player-f' : 'player-m';
+      const k = (this.anims as any).exists?.(`${pref}-idle-down`) ? `${pref}-idle-down` : undefined;
+      if (k) (this.player as any).anims?.play?.(k);
+    } catch {}
+    // 自己的名牌
+    try {
+      const nm = (localStorage.getItem('pname') || '').trim();
+      if (nm) {
+        this.nameplate = this.add.text(this.player.x, this.player.y - 22, nm, { fontSize: `${CONFIG.ui.small}px`, color: '#243b53', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' })
+          .setOrigin(0.5, 1).setDepth(101).setScrollFactor(1);
+        try { this.nameplate.setStroke('#ffffff', 2); } catch {}
+      }
+    } catch {}
     // Collide player with blocked tiles
     try { this.physics.add.collider(this.player, this.layer); } catch {}
 
@@ -169,6 +196,23 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
     this.cameras.main.setBounds(0, 0, worldW, worldH);
     this.physics.world.setBounds(0, 0, worldW, worldH);
     try { this.cameras.main.startFollow(this.player, true, 0.08, 0.08); } catch {}
+
+    // Multiplayer: other players container and WebSocket hooks
+    this.others = this.add.group();
+    (this.others as any).runChildUpdate = false;
+    try {
+      const ws = getClient();
+      ws.on('welcome', (d: any) => {
+        try { (d.players || []).forEach((p: any) => this.ensureOther(p.id, p.x, p.y, p.name, (String(p.gender||'M').toUpperCase()==='F'?'F':'M'))); } catch {}
+      });
+      ws.on('player-joined', (d: any) => { this.ensureOther(d.id, 0, 0, d.name, (String(d.gender||'M').toUpperCase()==='F'?'F':'M')); });
+      ws.on('player-moved', (d: any) => {
+        const g = (String(d.gender||'M').toUpperCase()==='F'?'F':'M') as 'M'|'F';
+        if (!this.othersMap?.has?.(d.id)) this.ensureOther(d.id, d.x, d.y, d.name, g);
+        else this.moveOther(d.id, d.x, d.y);
+      });
+      ws.on('player-left', (d: any) => { this.removeOther(d.id); });
+    } catch {}
 
     // Crowds in A / Hall / B (even distribution)
     this.time.delayedCall(0, () => {
@@ -247,13 +291,14 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
       const spr: any = this.player as any;
       const ax = pBody.velocity.x, ay = pBody.velocity.y; const moving = Math.abs(ax) + Math.abs(ay) > 0;
       let facing: 'down' | 'up' | 'side' = (spr.getData?.('facing') as any) || 'down'; let flipX = spr.flipX;
+      const pref = this.gender === 'F' ? 'player-f' : 'player-m';
       if (moving) {
         if (Math.abs(ax) >= Math.abs(ay)) { facing = 'side'; flipX = ax < 0; }
         else { facing = ay < 0 ? 'up' : 'down'; }
         spr.setData?.('facing', facing); spr.setFlipX?.(facing === 'side' ? flipX : false);
-        const key = (this.anims as any).exists?.(`player-walk-${facing}`) ? `player-walk-${facing}` : undefined; if (key) spr.anims.play(key, true); else spr.anims.stop();
+        const key = (this.anims as any).exists?.(`${pref}-walk-${facing}`) ? `${pref}-walk-${facing}` : undefined; if (key) spr.anims.play(key, true); else spr.anims.stop();
       } else {
-        const key = (this.anims as any).exists?.(`player-idle-${facing}`) ? `player-idle-${facing}` : undefined; spr.setFlipX?.(facing === 'side' ? flipX : false); if (key) spr.anims.play(key, true); else spr.anims.stop();
+        const key = (this.anims as any).exists?.(`${pref}-idle-${facing}`) ? `${pref}-idle-${facing}` : undefined; spr.setFlipX?.(facing === 'side' ? flipX : false); if (key) spr.anims.play(key, true); else spr.anims.stop();
       }
     } catch {}
 
@@ -266,6 +311,8 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
 
     // Location bands (A / Hall / B)
     const y = this.player.y;
+    // 名牌跟隨（世界座標，隨相機捲動）
+    try { if (this.nameplate) this.nameplate.setPosition(this.player.x, this.player.y - 22); } catch {}
     const A_END = this.A_H * 16; const H_END = (this.A_H + this.H_H) * 16;
     if (y < A_END) { this.registry.set('location', 'A 區'); this.registry.set('locationType', 'concourse-A'); }
     else if (y < H_END) { this.registry.set('location', '大廳'); this.registry.set('locationType', 'concourse'); }
@@ -273,6 +320,17 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
 
     // 互動在輸入未鎖定時才處理（避免購物籃/對話時誤觸）
     const inputLocked2 = !!this.registry.get('inputLocked');
+    // 傳送自己的位置（節流）
+    try {
+      const now = performance.now();
+      if (now - this.lastMoveSent >= (CONFIG.network.moveIntervalMs || 80)) {
+        const ws = getClient();
+        const area = y < A_END ? 'A' : (y < H_END ? 'hall' : 'B');
+        ws.sendMove(this.player.x, this.player.y, area);
+        this.lastMoveSent = now;
+      }
+    } catch {}
+
     // Enter nearest door
     let nearest: Door | null = null; let nd = 1e9;
     for (const d of this.doors) { const dx = d.world.x - this.player.x, dy = d.world.y - this.player.y; const dd = Math.hypot(dx, dy); if (dd < nd) { nd = dd; nearest = d; } }
@@ -318,7 +376,139 @@ try {
   }
 }
 
+// --- Multiplayer helpers ---
+export function ensureTexture(scene: Phaser.Scene, gender?: 'M'|'F') {
+  // 使用玩家素材而非佔位符：優先 male，其次舊版 player_idle
+  // 若都不存在，退回產生的簡易方塊
+  const anims: any = (scene as any).anims;
+  const okF = gender === 'F' && scene.textures.exists('player_f') && anims?.exists?.('player-f-idle-down');
+  if (okF) return 'player_f';
+  const okM = scene.textures.exists('player_m') && anims?.exists?.('player-m-idle-down');
+  if (okM) return 'player_m';
+  // 不再使用預設 png，避免先顯示錯誤性別再切換
+  return undefined as any;
+}
+
+export function areaDepthFor(y: number) {
+  return 9; // 簡單固定 depth，避免遮擋主角（主角 depth=100）
+}
+
+export function createOther(scene: AirportScene, id: string, x: number, y: number, name?: string, gender: 'M'|'F'='M') {
+  const texKey = ensureTexture(scene, gender) as string | undefined;
+  if (!texKey) {
+    // 素材尚未可用，延遲重試一次
+    scene.time.delayedCall(50, () => {
+      const key2 = ensureTexture(scene, gender) as string | undefined;
+      if (!key2) return;
+      createOther(scene, id, x, y, name, gender);
+    });
+    return;
+  }
+  const spr = scene.add.sprite(x, y, texKey);
+  spr.setOrigin(0.5, 1);
+  spr.setDepth(areaDepthFor(y));
+  scene.others?.add(spr);
+  scene.othersMap.set(id, spr);
+  scene.othersMeta.set(id, { name: name || '', gender, lastX: x, lastY: y, facing: 'down', locked: true });
+  try {
+    // 嘗試播放對應性別的 idle 動畫（若存在），避免跨性別切換
+    const pref = gender === 'F' ? 'player-f' : 'player-m';
+    const k = `${pref}-idle-down`;
+    if ((scene.anims as any).exists?.(k)) (spr as any).anims?.play?.(k);
+  } catch {}
+  // 名牌（常駐）
+  try {
+    const nm = (name || '').trim();
+    if (nm) {
+      const plate = scene.add.text(x, y - 20, nm, { fontSize: `${CONFIG.ui.small}px`, color: '#243b53', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' })
+        .setOrigin(0.5, 1).setDepth(10).setScrollFactor(1);
+      try { plate.setStroke('#ffffff', 2); } catch {}
+      scene.othersNameplate.set(id, plate);
+    }
+  } catch {}
+}
+
+export function moveOtherImpl(scene: AirportScene, id: string, x: number, y: number) {
+  const spr = scene.othersMap.get(id);
+  if (!spr) return;
+  spr.setPosition(x, y);
+  spr.setDepth(areaDepthFor(y));
+  // 動畫（根據上一個位置推算方向與面向）
+  try {
+    const meta = scene.othersMeta.get(id);
+    const gender = (meta?.gender || 'M') as 'M'|'F';
+    const pref = gender === 'F' ? 'player-f' : 'player-m';
+    const dx = (meta ? x - meta.lastX : 0);
+    const dy = (meta ? y - meta.lastY : 0);
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+    let facing: 'down'|'up'|'side' = meta?.facing || 'down';
+    let flipX = (spr as any).flipX || false;
+    const moving = (adx + ady) > 0.1;
+    const current = ((spr as any).anims?.currentAnim?.key) || '';
+    if (moving) {
+      if (adx >= ady) { facing = 'side'; flipX = dx < 0; }
+      else { facing = dy < 0 ? 'up' : 'down'; }
+      (spr as any).setFlipX?.(facing === 'side' ? flipX : false);
+      const key = (scene.anims as any).exists?.(`${pref}-walk-${facing}`) ? `${pref}-walk-${facing}` : undefined;
+      if (key && current !== key) (spr as any).anims?.play?.(key, true);
+    } else {
+      const key = (scene.anims as any).exists?.(`${pref}-idle-${facing}`) ? `${pref}-idle-${facing}` : undefined;
+      (spr as any).setFlipX?.(facing === 'side' ? flipX : false);
+      if (key && current !== key) (spr as any).anims?.play?.(key, true);
+    }
+    if (meta) { meta.lastX = x; meta.lastY = y; meta.facing = facing; scene.othersMeta.set(id, meta); }
+  } catch {}
+  // 名牌跟隨（世界座標）
+  try { const plate = scene.othersNameplate.get(id); if (plate) plate.setPosition(x, y - 20); } catch {}
+}
+
+export function removeOtherImpl(scene: AirportScene, id: string) {
+  const spr = scene.othersMap.get(id);
+  if (!spr) return;
+  try { spr.destroy(); } catch {}
+  scene.othersMap.delete(id);
+  try { const pl = scene.othersNameplate.get(id); if (pl) pl.destroy(); } catch {}
+  scene.othersNameplate.delete(id);
+}
+
+// 綁定到 class 方法
+(AirportScene.prototype as any).ensureOther = function(id: string, x: number, y: number, name?: string, gender?: 'M'|'F') {
+  const selfId = getClient().getId(); if (id === selfId) return;
+  const g = (gender||this.othersMeta.get(id)?.gender||'M') as 'M'|'F';
+  const nm = name || (this.othersMeta.get(id)?.name || '');
+  const existing = this.othersMeta.get(id);
+  const meta = existing || { name: nm, gender: g, lastX: x, lastY: y, facing: 'down' as const, locked: false };
+  meta.name = nm;
+  if (!meta.locked) meta.gender = g; // 一旦鎖定後不再被後續事件覆蓋，避免性別跳動
+  meta.lastX = x; meta.lastY = y;
+  this.othersMeta.set(id, meta as any);
+  if (this.othersMap.has(id)) { moveOtherImpl(this, id, x, y); return; }
+  if (this.othersPending.get(id)) return; // 避免重複建立導致殘留
+  this.othersPending.set(id, true);
+  // 若紋理未備好，延遲建立，避免用錯誤預設
+  const tryCreate = () => {
+    // 已建立則停止重試
+    if (this.othersMap.has(id)) { this.othersPending.delete(id); return; }
+    const texKey = ensureTexture(this, g) as string | undefined;
+    if (!texKey) { this.time.delayedCall(50, tryCreate); return; }
+    this.othersPending.delete(id);
+    // 再次確認避免競態重建
+    if (this.othersMap.has(id)) return;
+    createOther(this, id, x, y, nm, meta.gender as 'M'|'F');
+  };
+  tryCreate();
+};
+(AirportScene.prototype as any).moveOther = function(id: string, x: number, y: number) {
+  const selfId = getClient().getId(); if (id === selfId) return;
+  moveOtherImpl(this, id, x, y);
+};
+(AirportScene.prototype as any).removeOther = function(id: string) {
+  const selfId = getClient().getId(); if (id === selfId) return;
+  removeOtherImpl(this, id);
+};
 
 
 
 
+
+    

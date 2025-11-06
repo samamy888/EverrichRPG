@@ -3,7 +3,9 @@ import { AirportScene } from './scenes/AirportScene';
 import { StoreScene } from './scenes/StoreScene';
 import { UIOverlay } from './ui/UIOverlay';
 import { BootScene } from './scenes/BootScene';
+import { LoginScene } from './scenes/LoginScene';
 import { CONFIG } from './config';
+import { initConnection } from './net/ws';
 
 export const GAME_WIDTH = 320;
 export const GAME_HEIGHT = 180;
@@ -21,7 +23,7 @@ const config: Phaser.Types.Core.GameConfig = {
   render: { antialias: false, pixelArt: true, roundPixels: true },
   physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.NO_CENTER },
-  scene: [BootScene, AirportScene, StoreScene, UIOverlay],
+  scene: [BootScene, LoginScene, AirportScene, StoreScene, UIOverlay],
 };
 
 const game = new Phaser.Game(config);
@@ -109,6 +111,8 @@ window.addEventListener('keydown', (e) => {
 
 // 預設：迷你地圖人群黑點關閉（可由面板開啟）
 (window as any).__minimapCrowd = false;
+// 預設：WebSocket 連線狀態（啟動時視為未連線）
+(window as any).__netConnected = false;
 
 // 介面：右下角縮放面板（Snap 整數）
 function createZoomControls() {
@@ -126,11 +130,18 @@ function createZoomControls() {
   const btnMinus = document.createElement('button');
   const btnPlus = document.createElement('button');
   const btnCrowd = document.createElement('button');
+  const btnReset = document.createElement('button');
+  const dot = document.createElement('span');
   const styleBtn = (b: HTMLButtonElement) => b.style.cssText = [
     'cursor:pointer','padding:2px 6px','border-radius:6px',
     'border:1px solid #4a5668','background:#1a2330','color:#e6f0ff'
   ].join(';');
-  styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus); styleBtn(btnCrowd);
+  styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus); styleBtn(btnCrowd); styleBtn(btnReset);
+  // WS 燈號樣式
+  dot.style.cssText = [
+    'display:inline-block','width:8px','height:8px','border-radius:50%',
+    'border:1px solid #223042','box-shadow:0 0 0 1px rgba(0,0,0,0.2) inset'
+  ].join(';');
 
   // Minimap crowd toggle (persist in localStorage)
   try {
@@ -147,6 +158,9 @@ function createZoomControls() {
     btnPlus.textContent = '+';
     const crowdOn = (window as any).__minimapCrowd !== false;
     btnCrowd.textContent = crowdOn ? 'Crowd: ON' : 'Crowd: OFF';
+    const connected = (window as any).__netConnected === true;
+    dot.style.background = connected ? '#21c064' : '#d04444';
+    dot.title = connected ? 'WS: Connected' : 'WS: Disconnected';
   }
   btnSnap.addEventListener('click', () => { integerZoom = !integerZoom; applyCameraZoom(); updateLabel(); });
   btnMinus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.max(CONFIG.scale.minZoom, (preferredIntZoom ?? (CONFIG.scale.minZoom + 1)) - 1); applyCameraZoom(); updateLabel(); });
@@ -159,12 +173,53 @@ function createZoomControls() {
     updateLabel();
   });
 
-  panel.append(label, btnSnap, btnMinus, btnPlus, btnCrowd);
+  // Reset identity/storage button (dev helper)
+  btnReset.textContent = 'Reset ID';
+  btnReset.title = '清除 pid/sid/名稱/性別 並重新載入';
+  btnReset.addEventListener('click', () => {
+    try {
+      localStorage.removeItem('pid');
+      localStorage.removeItem('pname');
+      localStorage.removeItem('pgender');
+    } catch {}
+    try { sessionStorage.removeItem('sid'); } catch {}
+    try { (window as any).__netConnected = false; (window as any).__updateWsDot?.(false); } catch {}
+    try { location.reload(); } catch {}
+  });
+
+  const dotWrap = document.createElement('span');
+  dotWrap.textContent = 'WS';
+  dotWrap.style.cssText = 'opacity:.8;margin-left:4px;margin-right:2px;';
+  panel.append(label, btnSnap, btnMinus, btnPlus, btnCrowd, btnReset, dotWrap, dot);
   document.body.appendChild(panel);
   updateLabel();
+  // 提供全域更新介面給連線事件呼叫
+  (window as any).__updateWsDot = (state: boolean) => {
+    try {
+      (window as any).__netConnected = !!state;
+      const connected = (window as any).__netConnected === true;
+      dot.style.background = connected ? '#21c064' : '#d04444';
+      dot.title = connected ? 'WS: Connected' : 'WS: Disconnected';
+    } catch {}
+  };
 }
 
 window.addEventListener('load', () => { createZoomControls(); });
+
+// 延後 WebSocket 連線：若本地尚無名稱，等待登入場景後再連線
+try {
+  const hasName = (() => { try { return !!localStorage.getItem('pname'); } catch { return false; } })();
+  if (hasName) {
+    const conn = initConnection();
+    try {
+      (conn as any).on?.('status', (s: any) => {
+        try { game.registry.set('netConnected', !!s?.connected); } catch {}
+        try { (window as any).__netConnected = !!s?.connected; } catch {}
+        try { (window as any).__updateWsDot?.((window as any).__netConnected); } catch {}
+      });
+    } catch {}
+  }
+} catch {}
 
 
 

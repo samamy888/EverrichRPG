@@ -39,8 +39,23 @@ public class WebSocketHub : IWebSocketHub
 
         lock (_gate) _sockets[id] = ws;
         _store.UpsertPlayer(id, name, 0, 0, "hall");
-        await BroadcastAsync(new { type = "player-joined", id, name });
-        await SendAsync(ws, new { type = "welcome", id, name, players = _store.GetOnline() });
+        var genderParam = q["gender"].FirstOrDefault();
+        var aidParam = q["aid"].FirstOrDefault();
+        if (!string.IsNullOrWhiteSpace(aidParam)) _store.SetAid(id, aidParam!);
+        var profile = _store.GetProfile(id);
+        // 優先使用連線參數，其次為 Aid 對應的 Profile，最後預設 M
+        var gender = !string.IsNullOrWhiteSpace(genderParam) ? genderParam! : (!string.IsNullOrWhiteSpace(profile?.Gender) ? profile!.Gender : "M");
+        _store.SetGender(id, gender);
+        await BroadcastAsync(new { type = "player-joined", id, name, gender });
+        var online = _store.GetOnline().Select(p => new {
+            id = p.Id,
+            name = p.Name,
+            gender = _store.GetGender(p.Id) ?? (_store.GetProfile(_store.GetAid(p.Id) ?? p.Id)?.Gender ?? "M"),
+            x = p.X,
+            y = p.Y,
+            area = p.Area
+        }).ToList();
+        await SendAsync(ws, new { type = "welcome", id, name, players = online });
 
         var buffer = new byte[8192];
         try
@@ -77,14 +92,15 @@ public class WebSocketHub : IWebSocketHub
             switch (type)
             {
                 case "move":
-                {
-                    var x = root.GetProperty("x").GetSingle();
-                    var y = root.GetProperty("y").GetSingle();
-                    var area = root.TryGetProperty("area", out var a) ? a.GetString() ?? "hall" : "hall";
-                    _store.UpsertPlayer(id, name, x, y, area);
-                    BroadcastAsync(new { type = "player-moved", id, x, y, area, ts = DateTimeOffset.UtcNow }).Forget();
-                    break;
-                }
+                    {
+                        var x = root.GetProperty("x").GetSingle();
+                        var y = root.GetProperty("y").GetSingle();
+                        var area = root.TryGetProperty("area", out var a) ? a.GetString() ?? "hall" : "hall";
+                        _store.UpsertPlayer(id, name, x, y, area);
+                        var gender = _store.GetGender(id) ?? (_store.GetProfile(_store.GetAid(id) ?? id)?.Gender ?? "M");
+                        BroadcastAsync(new { type = "player-moved", id, name, gender, x, y, area, ts = DateTimeOffset.UtcNow }).Forget();
+                        break;
+                    }
                 case "chat":
                 {
                     var text = root.GetProperty("text").GetString() ?? string.Empty;
@@ -120,4 +136,3 @@ public class WebSocketHub : IWebSocketHub
 }
 
 static class TaskExt { public static void Forget(this Task t) { } }
-

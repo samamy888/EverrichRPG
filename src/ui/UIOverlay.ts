@@ -239,7 +239,9 @@ export class UIOverlay extends Phaser.Scene {
     const text = localized && localized !== 'ui.status'
       ? localized
       : `Money $${money} | Basket ${itemsCount} items $${basketTotal}`;
-    this.statusText.setText(text);
+    const net = !!this.registry.get('netConnected');
+    const finalText = `${text} | WS ${net ? '連線' : '中斷'}`;
+    this.statusText.setText(finalText);
     this.layoutHUD();
   }
 

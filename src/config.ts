@@ -17,6 +17,8 @@ export const CONFIG = {
   },
   player: {
     initialMoney: 5000,
+    // 可自訂玩家顯示名稱（預設使用瀏覽器暱稱或隨機）
+    name: '' as string,
   },
   ui: {
     // 唯一需要人工調整的值：其他皆為衍生值
@@ -39,6 +41,26 @@ export const CONFIG = {
       tileScaleX: 1,
       tileScaleY: 3,
     }
+  },
+  network: {
+    // WebSocket 伺服器位址
+    // 留空表示自動依據目前頁面位置組合（避免部署時連到用戶端 localhost）
+    wsUrl: '',
+    // 自動模式參數：協定/路徑/埠（null=沿用目前頁面埠）
+    wsPath: '/ws',
+    wsPort: null as number | null,
+    // 協定：auto=依據 http/https 選擇 ws/wss；always=一律 wss；never=一律 ws
+    secure: 'auto' as 'auto' | 'always' | 'never',
+    // 依執行環境（dev/build）選擇預設 WS URL（當 wsUrl 未設定時）
+    useEnvDefault: true,
+    devUrl: 'ws://localhost:5000/ws',
+    prodUrl: 'wss://www.biudream.com/ws',
+    // REST API base
+    apiBase: '',
+    apiDev: 'http://localhost:5000/api',
+    apiProd: 'https://www.biudream.com/api',
+    // 位置同步頻率（毫秒）
+    moveIntervalMs: 60,
   },
   npc: {
     // 人潮預設數量配置（可依偏好調整分佈）
