@@ -57,8 +57,7 @@ if (!scene.basketBox) {
 }
   try { scene.basketRows?.forEach((r: any) => { try { r.destroy(); } catch {} }); } catch {}
   scene.basketRows = [];
-  const startY = boxY + pad;
-  const startX = boxX + 6;
+  const startY = boxY + pad;`r`n  const startX = boxX + 6;
   const title = scene.add.text(startX, startY, t('store.listTitle') || '商品', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
   scene.basketRows.push(title);
   // 文字測量小工具
