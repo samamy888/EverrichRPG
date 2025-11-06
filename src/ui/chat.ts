@@ -41,9 +41,23 @@ export function initChat(game: Phaser.Game) {
   document.body.appendChild(panel);
 
   const lockInput = (on: boolean) => { try { (game as any).registry?.set('inputLocked', !!on); } catch {} };
+  const toggleKeyboard = (disable: boolean) => {
+    try { const kb = (game as any).input?.keyboard; if (kb) kb.enabled = !disable; } catch {}
+  };
+  const swallow = (e: KeyboardEvent) => {
+    try {
+      const key = (e.key || '').toLowerCase();
+      if (key === 'enter' || key === 'esc' || key === 'escape') return;
+      e.stopPropagation();
+    } catch {}
+  };
 
-  inputEl.addEventListener('focus', () => lockInput(true));
-  inputEl.addEventListener('blur',  () => lockInput(false));
+  inputEl.addEventListener('focus', () => { lockInput(true); toggleKeyboard(true); });
+  inputEl.addEventListener('blur',  () => { lockInput(false); toggleKeyboard(false); });
+  // 阻擋事件往 Phaser 傳遞，避免打字時觸發移動/操作
+  inputEl.addEventListener('keydown', swallow, true);
+  inputEl.addEventListener('keyup', swallow, true);
+  inputEl.addEventListener('keypress', swallow, true);
   inputEl.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       const v = inputEl!.value.trim(); if (!v) return;
@@ -52,6 +66,17 @@ export function initChat(game: Phaser.Game) {
     }
     if (e.key === 'Escape') { (e.target as HTMLInputElement).blur(); }
   });
+
+  // 點擊畫面（非聊天室）切回可移動；點擊聊天室則進入打字模式
+  const clickSwitch = (ev: MouseEvent) => {
+    try {
+      const target = ev.target as HTMLElement | null;
+      const inChat = !!(panel && target && panel.contains(target));
+      if (inChat) { lockInput(true); toggleKeyboard(true); inputEl?.focus(); }
+      else { lockInput(false); toggleKeyboard(false); try { inputEl?.blur(); } catch {} }
+    } catch {}
+  };
+  window.addEventListener('mousedown', clickSwitch, true);
 
   // 初始載入歷史
   try {
