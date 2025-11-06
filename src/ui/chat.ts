@@ -20,9 +20,10 @@ export function initChat(game: Phaser.Game) {
     'pointer-events:auto','user-select:text'
   ].join(';');
   const box = document.createElement('div');
+  // 固定顯示約 10 筆訊息高度（14px 字 × 1.4 行高 × 10 行 ≈ 196px），再多就捲動
   box.style.cssText = [
     'background:rgba(15,22,30,0.75)','border:1px solid #3a4558','border-radius:10px',
-    'padding:8px','max-height:30vh','overflow:auto','color:#dbe7ff',
+    'padding:8px','max-height:196px','overflow:auto','color:#dbe7ff',
     'font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif'
   ].join(';');
   listEl = document.createElement('div');
@@ -78,10 +79,10 @@ export function initChat(game: Phaser.Game) {
   };
   window.addEventListener('mousedown', clickSwitch, true);
 
-  // 初始載入歷史
+  // 初始載入歷史：由舊到新（最舊在上、最新在下）
   try {
     fetch(`${getApiBase()}/chat?limit=100`).then(r => r.json()).then((arr: ChatMessage[]) => {
-      (arr || []).forEach(renderMessage);
+      (arr || []).slice().reverse().forEach(renderMessage);
       scrollBottom();
     }).catch(() => {});
   } catch {}
