@@ -37,12 +37,13 @@ export function renderBasket(scene: any) {
   const total = lines.reduce((s: number, b: any) => s + (b.price || 0), 0);
   const maxLines = Math.max(3, Math.min(7, lines.length + 2));
   const hBox = Math.max(CONFIG.ui.dialogHeight, pad * 2 + maxLines * (FS + 2));
+  // 顯示在頂部訊息列之下：y 取置頂 HUD 高度再加間距
   const HUD = CONFIG.ui.hudHeight;
-  const y = viewH - HUD - hBox - 2;
+  const y = HUD + 2;
   if (!scene.basketBox) {
-    scene.basketBox = scene.add.rectangle(0, y, viewW, hBox, 0x000000, 0.8).setOrigin(0).setDepth(2000).setScrollFactor(0);
+    scene.basketBox = scene.add.rectangle(0, y, viewW, hBox, 0x000000, 0.8).setOrigin(0).setDepth(1500).setScrollFactor(0);
   } else {
-    scene.basketBox.setPosition(0, y).setSize(viewW, hBox).setDepth(2000).setVisible(true).setScrollFactor(0);
+    scene.basketBox.setPosition(0, y).setSize(viewW, hBox).setDepth(1500).setVisible(true).setScrollFactor(0);
   }
   try { scene.basketRows?.forEach((r: any) => { try { r.destroy(); } catch {} }); } catch {}
   scene.basketRows = [];
