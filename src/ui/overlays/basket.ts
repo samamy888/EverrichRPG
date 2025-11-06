@@ -57,15 +57,46 @@ if (!scene.basketBox) {
 }
   try { scene.basketRows?.forEach((r: any) => { try { r.destroy(); } catch {} }); } catch {}
   scene.basketRows = [];
-  const startY = boxY + pad;`r`n  const startX = boxX + 6;
+  const startY = boxY + pad;
+  const startX = boxX + 6;
   const title = scene.add.text(startX, startY, t('store.listTitle') || '商品', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
   scene.basketRows.push(title);
+  // 文字測量小工具
+  const measure = (text: string, color: string = '#e6f0ff') => {
+    const m = scene.add.text(-9999, -9999, text, { fontSize: `${FS}px`, color, resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setVisible(false);
+    const w = m.width; try { m.destroy(); } catch {}
+    return w;
+  };
+  const availWidth = Math.max(40, boxW - pad * 2 - 6);
+
   lines.forEach((it: any, idx: number) => {
-    const prefix = idx === scene.basketSelected ? '>' : ' ';
-    const line = `${prefix} ${it.name}  $${it.price}`;
+    const selected = idx === scene.basketSelected;
+    const prefix = selected ? '> ' : '  ';
+    const priceStr = `$${it.price}`;
     const ty = startY + (idx + 1) * (FS + 2);
-    const txt = scene.add.text(startX, ty, line, { fontSize: `${FS}px`, color: idx === scene.basketSelected ? '#ffffff' : '#c0c8d0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
-    scene.basketRows.push(txt);
+    const color = selected ? '#ffffff' : '#c0c8d0';
+    // 計算右側價格寬度，並截斷名稱
+    const priceW = measure(priceStr, color);
+    const gap = 8;
+    const maxNameW = Math.max(20, availWidth - priceW - gap);
+    let name = String(it.name || '');
+    // 逐步截斷直到寬度符合
+    if (measure(prefix + name, color) > maxNameW) {
+      const ell = '…';
+      let lo = 0, hi = name.length; // 二分截斷以提升效能
+      while (lo < hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        const test = name.slice(0, mid) + ell;
+        if (measure(prefix + test, color) <= maxNameW) lo = mid + 1; else hi = mid;
+      }
+      const cut = Math.max(0, lo - 1);
+      name = (cut > 0 ? name.slice(0, cut) + ell : ell);
+    }
+    // 繪製名稱（左）、價格（右）
+    const nameText = scene.add.text(startX, ty, prefix + name, { fontSize: `${FS}px`, color, resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
+    const priceX = boxX + boxW - pad - priceW;
+    const priceText = scene.add.text(priceX, ty, priceStr, { fontSize: `${FS}px`, color, resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
+    scene.basketRows.push(nameText, priceText);
   });
   const sum = scene.add.text(startX, startY + (lines.length + 1) * (FS + 2), `合計 $${total}`, { fontSize: `${FS}px`, color: '#ffd966', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
   scene.basketRows.push(sum);
