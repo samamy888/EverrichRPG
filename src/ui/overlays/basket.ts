@@ -75,7 +75,12 @@ export function pickBasket(scene: any) {
   const list = ((scene.registry.get('basket') as any[]) ?? []).slice();
   if (!list.length) return;
   const idx = scene.basketSelected;
-  list.splice(idx, 1);
+  const removed = list.splice(idx, 1)[0];
+  try {
+    const curMoney = Number(scene.registry.get('money') || 0);
+    const refund = Number((removed && removed.price) || 0);
+    scene.registry.set('money', curMoney + (isFinite(refund) ? refund : 0));
+  } catch {}
   scene.registry.set('basket', list);
   if (idx >= list.length) scene.basketSelected = Math.max(0, list.length - 1);
   renderBasket(scene);
