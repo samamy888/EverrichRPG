@@ -39,16 +39,25 @@ export function renderBasket(scene: any) {
   const hBox = Math.max(CONFIG.ui.dialogHeight, pad * 2 + maxLines * (FS + 2));
   // 顯示在頂部訊息列之下：y 取置頂 HUD 高度再加間距
   const HUD = CONFIG.ui.hudHeight;
-  const y = HUD + 2;
-  if (!scene.basketBox) {
-    scene.basketBox = scene.add.rectangle(0, y, viewW, hBox, 0x000000, 0.8).setOrigin(0).setDepth(1500).setScrollFactor(0);
-  } else {
-    scene.basketBox.setPosition(0, y).setSize(viewW, hBox).setDepth(1500).setVisible(true).setScrollFactor(0);
-  }
+const uiPad = (CONFIG.ui?.minimap?.pad ?? 4);
+let boxX = Math.max(0, viewW - (CONFIG.ui.minimap.maxWidth || 140) - uiPad);
+let boxY = HUD + uiPad;
+let boxW = (CONFIG.ui.minimap.maxWidth || 140);
+if (scene.minimapBox && scene.minimapBox.visible) {
+  try {
+    boxX = Number(scene.minimapBox.x) || boxX;
+    boxY = (Number(scene.minimapBox.y) || boxY) + (Number(scene.minimapBox.height) || 0) + uiPad;
+    boxW = Number(scene.minimapBox.width) || boxW;
+  } catch {}
+}
+if (!scene.basketBox) {
+  scene.basketBox = scene.add.rectangle(boxX, boxY, boxW, hBox, 0x000000, 0.8).setOrigin(0).setDepth(1500).setScrollFactor(0);
+} else {
+  scene.basketBox.setPosition(boxX, boxY).setSize(boxW, hBox).setDepth(1500).setVisible(true).setScrollFactor(0);
+}
   try { scene.basketRows?.forEach((r: any) => { try { r.destroy(); } catch {} }); } catch {}
   scene.basketRows = [];
-  const startY = y + pad;
-  const startX = 6;
+  const startY = boxY + pad;`r`n  const startX = boxX + 6;
   const title = scene.add.text(startX, startY, t('store.listTitle') || '商品', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
   scene.basketRows.push(title);
   lines.forEach((it: any, idx: number) => {
