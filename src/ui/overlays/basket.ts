@@ -53,6 +53,17 @@ if (scene.minimapBox && scene.minimapBox.visible) {
   }
   // 不超出畫面右側
   boxW = Math.min(boxW, Math.max(40, viewW - uiPad - 4));
+  {
+    let rightEdge = (viewW - uiPad);
+    if (scene.minimapBox && scene.minimapBox.visible) {
+      try {
+        const mmX = Number(scene.minimapBox.x) || 0;
+        const mmW = Number(scene.minimapBox.width) || baseW;
+        rightEdge = mmX + mmW;
+      } catch {}
+    }
+    boxX = Math.max(0, Math.round(rightEdge - boxW));
+  }
 if (!scene.basketBox) {
   scene.basketBox = scene.add.rectangle(boxX, boxY, boxW, hBox, 0x000000, 0.8).setOrigin(0).setDepth(1500).setScrollFactor(0);
 } else {
