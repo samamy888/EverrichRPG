@@ -1,5 +1,6 @@
 import { getApiBase } from '../net/http';
 import { getClient } from '../net/ws';
+import { CONFIG } from '../config';
 
 type ChatMessage = { id: string; playerId: string; name: string; text: string; ts: string };
 
@@ -12,8 +13,9 @@ export function initChat(game: Phaser.Game) {
   if (inited) return; inited = true;
   panel = document.createElement('div');
   panel.id = 'chat-panel';
+  const bottomPadding = (CONFIG.ui.hudHeight || 40) + 8; // 放在置底狀態欄之上
   panel.style.cssText = [
-    'position:fixed','left:8px','right:8px','bottom:8px','z-index:2147483600',
+    'position:fixed','left:8px','right:8px',`bottom:${bottomPadding}px`,'z-index:2147483600',
     'display:flex','flex-direction:column','gap:6px',
     'pointer-events:auto','user-select:text'
   ].join(';');
@@ -82,4 +84,3 @@ function renderMessage(m: ChatMessage) {
 }
 
 function scrollBottom() { try { listEl!.parentElement!.scrollTop = listEl!.parentElement!.scrollHeight; } catch {} }
-
