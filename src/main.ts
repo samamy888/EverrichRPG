@@ -161,7 +161,14 @@ function createZoomControls() {
     btnMinus.textContent = '−';
     btnPlus.textContent = '+';
     btnClearChat.textContent = '清空訊息';
-    const chatVisible = (window as any).__chatVisible !== false;
+    let chatVisible = false;
+    try {
+      if ((window as any).__chatGetVisible) chatVisible = !!(window as any).__chatGetVisible();
+      else {
+        const s = localStorage.getItem('chatVisible');
+        chatVisible = (s === null) ? true : (s === '1');
+      }
+    } catch { chatVisible = true; }
     btnChat.textContent = chatVisible ? 'Chat: ON' : 'Chat: OFF';
     const crowdOn = (window as any).__minimapCrowd !== false;
     btnCrowd.textContent = crowdOn ? 'Crowd: ON' : 'Crowd: OFF';
@@ -179,6 +186,8 @@ function createZoomControls() {
     try { localStorage.setItem('minimapCrowd', ((window as any).__minimapCrowd ? '1' : '0')); } catch {}
     updateLabel();
   });
+  // 讓 chat 模組可以回呼更新按鈕文字
+  ;(window as any).__updateChatButton = (v: boolean) => { try { btnChat.textContent = v ? 'Chat: ON' : 'Chat: OFF'; } catch {} };
   btnChat.addEventListener('click', () => {
     try {
       if ((window as any).__chatToggle) (window as any).__chatToggle();

@@ -11,6 +11,9 @@ class WSClient {
   private maxBackoff = 8000;
   private selfId: string | null = null;
   private selfName: string | null = null;
+  private hbTimer: any = null;
+  private lastPong = 0;
+  private connId: string | null = null;
 
   constructor(url: string) {
     this.url = url;
@@ -69,8 +72,11 @@ class WSClient {
     // 先清空查詢參數，確保每次都從乾淨狀態開始
     try { url.search = ''; } catch {}
     const connId = `${this.selfId}-${sid}`;
-    try { console.debug('[ws] ids', { selfId: this.selfId, sid, connId }); } catch {}
-    url.searchParams.set('id', connId);
+    // 使用更隨機的 connection id，避免伺服器沿用舊連線狀態
+    const cid = `${this.selfId}-${Date.now().toString(36)}${Math.random().toString(36).slice(2,6)}`;
+    this.connId = cid;
+    try { console.debug('[ws] ids', { selfId: this.selfId, sid, connId, cid }); } catch {}
+    url.searchParams.set('id', cid);
     url.searchParams.set('aid', this.selfId!); // 帳號 Id（後端可用於關聯 Profile）
     url.searchParams.set('name', this.selfName!);
     try {
@@ -89,10 +95,30 @@ class WSClient {
       try { console.info('[ws] connected:', url.toString()); } catch {}
       this.emit('status', { connected: true });
       this.backoff = 1000;
+      // 啟動心跳（client -> server），避免被中間代理關閉
+      try { if (this.hbTimer) clearInterval(this.hbTimer); } catch {}
+      this.lastPong = Date.now();
+      this.hbTimer = setInterval(() => {
+        try {
+          if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+          this.send({ type: 'ping', t: Date.now() });
+          // 若 45 秒內未收到任何 pong/訊息，判定斷線，主動關閉觸發重連
+          if (Date.now() - this.lastPong > 45000) {
+            try { this.ws.close(); } catch {}
+          }
+        } catch {}
+      }, 15000);
+      // announce profile once connected to keep server in sync
+      try {
+        const g = (localStorage.getItem('pgender') || 'M').toUpperCase() === 'F' ? 'F' : 'M';
+        const n = (this.selfName || localStorage.getItem('pname') || '').toString();
+        this.send({ type: 'profile', name: n, gender: g });
+      } catch {}
     };
     this.ws.onclose = (ev) => {
       try { console.warn('[ws] disconnected', { code: ev.code, reason: ev.reason, clean: ev.wasClean }); } catch {}
       this.emit('status', { connected: false });
+      try { if (this.hbTimer) clearInterval(this.hbTimer); this.hbTimer = null; } catch {}
       this.scheduleReconnect();
     };
     this.ws.onerror = (ev) => {
@@ -102,6 +128,8 @@ class WSClient {
     this.ws.onmessage = (ev) => {
       try {
         const data = JSON.parse(ev.data);
+        // 任意訊息都視為活躍，更新 lastPong
+        this.lastPong = Date.now();
         if (data?.type === 'welcome' && data.id) this.selfId = data.id;
         try { if (data?.type) console.debug('[ws] <=', data.type, data); } catch {}
         this.emit(data?.type || 'message', data);
@@ -198,6 +226,8 @@ class WSClient {
 
   getId() { return this.selfId; }
   getName() { return this.selfName; }
+  getCid() { return this.connId; }
+  getAid() { return this.selfId; }
 }
 
 let client: WSClient | null = null;

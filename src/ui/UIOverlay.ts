@@ -4,6 +4,7 @@ import { CONFIG } from '../config';
 import { t } from '../i18n';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 import { ensureMinimap, positionMinimap, renderMinimap } from './overlays/minimap';
+import { initChat } from './chat';
 import { openBasket as extOpenBasket, closeBasket as extCloseBasket, renderBasket as extRenderBasket, moveBasket as extMoveBasket, pickBasket as extPickBasket } from './overlays/basket';
 
 export class UIOverlay extends Phaser.Scene {
@@ -130,6 +131,8 @@ export class UIOverlay extends Phaser.Scene {
     this.ensureMinimap();
     this.ensureMinimap();
     this.renderMinimap();
+    // 確保登入後初始化聊天室並依儲存狀態顯示
+    try { initChat(this.game as any); } catch {}
     // 以下一幀再套用一次縮放，避免初次啟動時場景尚未完成建立導致比例不正確
     try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
     // 當視窗大小或比例變化時，確保覆蓋層也一起更新
@@ -239,9 +242,7 @@ export class UIOverlay extends Phaser.Scene {
     const text = localized && localized !== 'ui.status'
       ? localized
       : `Money $${money} | Basket ${itemsCount} items $${basketTotal}`;
-    const net = !!this.registry.get('netConnected');
-    const finalText = `${text} | WS ${net ? '連線' : '中斷'}`;
-    this.statusText.setText(finalText);
+    this.statusText.setText(text);
     this.layoutHUD();
   }
 

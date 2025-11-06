@@ -54,11 +54,11 @@ export const CONFIG = {
     // 依執行環境（dev/build）選擇預設 WS URL（當 wsUrl 未設定時）
     useEnvDefault: true,
     devUrl: 'ws://localhost:5000/ws',
-    prodUrl: 'wss://www.biudream.com/ws',
+    prodUrl: 'wss://www.biudream.com:5050/ws',
     // REST API base
     apiBase: '',
     apiDev: 'http://localhost:5000/api',
-    apiProd: 'https://www.biudream.com/api',
+    apiProd: 'https://www.biudream.com:5050/api',
     // 位置同步頻率（毫秒）
     moveIntervalMs: 60,
   },

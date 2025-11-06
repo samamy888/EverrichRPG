@@ -109,6 +109,11 @@ public class WebSocketHub : IWebSocketHub
                     BroadcastAsync(new { type = "chat", id = msg.Id, playerId = id, name, text = msg.Text, ts = msg.Ts }).Forget();
                     break;
                 }
+                case "ping":
+                {
+                    BroadcastAsync(new { type = "pong", id, ts = DateTimeOffset.UtcNow }).Forget();
+                    break;
+                }
             }
         }
         catch { }

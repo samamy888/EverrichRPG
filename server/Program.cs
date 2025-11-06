@@ -22,7 +22,11 @@ builder.Services.AddSingleton<IWebSocketHub, WebSocketHub>();
 var app = builder.Build();
 
 app.UseCors("Frontend");
-app.UseWebSockets();
+app.UseWebSockets(new WebSocketOptions
+{
+    // 定期送 Ping，避免中間代理視為閒置而關閉（例：60s）
+    KeepAliveInterval = TimeSpan.FromSeconds(15)
+});
 
 // WebSocket endpoint
 app.Map("/ws", async (HttpContext ctx, IWebSocketHub hub) => { await hub.AcceptAsync(ctx); });

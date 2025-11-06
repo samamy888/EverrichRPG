@@ -48,6 +48,7 @@ export function initChat(game: Phaser.Game) {
       (window as any).__chatVisible = !!show;
       if (panel) panel.style.display = show ? '' : 'none';
       try { localStorage.setItem('chatVisible', show ? '1' : '0'); } catch {}
+      try { (window as any).__updateChatButton?.(!!show); } catch {}
     } catch {}
   };
   const getSavedVisible = () => {
@@ -59,6 +60,7 @@ export function initChat(game: Phaser.Game) {
   };
   (window as any).__chatSetVisible = (v: boolean) => setVisible(!!v);
   (window as any).__chatToggle = () => setVisible(!((window as any).__chatVisible !== false));
+  (window as any).__chatGetVisible = () => ((window as any).__chatVisible !== false);
   // 初始遵循保存狀態
   setVisible(getSavedVisible());
 

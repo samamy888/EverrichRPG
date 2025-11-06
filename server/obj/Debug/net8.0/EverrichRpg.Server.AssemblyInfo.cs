@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EverrichRpg.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc259001f7e19630b9a5e3733d238ada33c2009f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d73b545dcb8fcd5eac9ecd665919d4af2d9911f4")]
 [assembly: System.Reflection.AssemblyProductAttribute("EverrichRpg.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EverrichRpg.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

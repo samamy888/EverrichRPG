@@ -112,19 +112,23 @@ export function attachOthers(scene: Phaser.Scene, opts: AttachOthersOptions) {
         (spr as any).setTexture(expectedTex);
       }
     } catch {}
-    const dx = meta ? x - meta.lastX : 0; const dy = meta ? y - meta.lastY : 0; const adx = Math.abs(dx), ady = Math.abs(dy);
-    const moving = (adx + ady) > 0.1; let facing: Facing = meta?.facing || 'down'; let flipX = (spr as any).flipX || false;
+    const dx = meta ? x - meta.lastX : 0; const dy = meta ? y - meta.lastY : 0;
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+    const speed = adx + ady;
+    const EPS = 0.9;   // 小於此位移視為靜止，避免抖動
+    const BIAS = 1.6;  // 軸向切換滯後，降低來回切換
+    let facing: Facing = meta?.facing || 'down'; let flipX = (spr as any).flipX || false;
     const current = ((spr as any).anims?.currentAnim?.key) || '';
-    if (moving) {
-      if (adx >= ady) { facing = 'side'; flipX = dx < 0; }
-      else { facing = dy < 0 ? 'up' : 'down'; }
+    if (speed > EPS) {
+      if (adx > (ady + BIAS)) { facing = 'side'; flipX = dx < 0; }
+      else if (ady > (adx + BIAS)) { facing = dy < 0 ? 'up' : 'down'; }
       (spr as any).setFlipX?.(facing === 'side' ? flipX : false);
       const key = (scene.anims as any).exists?.(`${pref}-walk-${facing}`) ? `${pref}-walk-${facing}` : undefined;
-      if (key && current !== key) (spr as any).anims?.play?.(key, true);
+      if (key && current !== key) (spr as any).anims?.play?.(key, true); else if (!key) (spr as any).anims?.stop?.();
     } else {
       const key = (scene.anims as any).exists?.(`${pref}-idle-${facing}`) ? `${pref}-idle-${facing}` : undefined;
       (spr as any).setFlipX?.(facing === 'side' ? flipX : false);
-      if (key && current !== key) (spr as any).anims?.play?.(key, true);
+      if (key && current !== key) (spr as any).anims?.play?.(key, true); else if (!key) (spr as any).anims?.stop?.();
     }
     if (meta) { meta.lastX = x; meta.lastY = y; meta.facing = facing; state.meta.set(id, meta); }
     try { const plate = state.names.get(id); if (plate) plate.setPosition(x, y - 20); } catch {}

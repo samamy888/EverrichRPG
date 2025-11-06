@@ -4,6 +4,7 @@ import { CONFIG } from '../config';
 import { t } from '../i18n';
 import { createCrowd, updateCrowd, updateNameplates } from '../actors/NpcCrowd';
 import { getClient } from '../net/ws';
+import { attachOthers } from '../net/others';
 
 type Door = { world: Phaser.Math.Vector2; id: string; label: string };
 
@@ -197,22 +198,8 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
     this.physics.world.setBounds(0, 0, worldW, worldH);
     try { this.cameras.main.startFollow(this.player, true, 0.08, 0.08); } catch {}
 
-    // Multiplayer: other players container and WebSocket hooks
-    this.others = this.add.group();
-    (this.others as any).runChildUpdate = false;
-    try {
-      const ws = getClient();
-      ws.on('welcome', (d: any) => {
-        try { (d.players || []).forEach((p: any) => this.ensureOther(p.id, p.x, p.y, p.name, (String(p.gender||'M').toUpperCase()==='F'?'F':'M'))); } catch {}
-      });
-      ws.on('player-joined', (d: any) => { this.ensureOther(d.id, 0, 0, d.name, (String(d.gender||'M').toUpperCase()==='F'?'F':'M')); });
-      ws.on('player-moved', (d: any) => {
-        const g = (String(d.gender||'M').toUpperCase()==='F'?'F':'M') as 'M'|'F';
-        if (!this.othersMap?.has?.(d.id)) this.ensureOther(d.id, d.x, d.y, d.name, g);
-        else this.moveOther(d.id, d.x, d.y);
-      });
-      ws.on('player-left', (d: any) => { this.removeOther(d.id); });
-    } catch {}
+    // Multiplayer: attach shared others logic（大廳跨區顯示）
+    attachOthers(this, { getArea: () => 'hall', crossArea: true });
 
     // Crowds in A / Hall / B (even distribution)
     this.time.delayedCall(0, () => {
@@ -359,7 +346,7 @@ try {
     this.registry.set('playerPos', { x: this.player.x, y: this.player.y });
     if (!inputLocked2) {
       if (nearest && nd < 22) {
-        this.registry.set('interactOptions', ['進入']);
+        this.registry.set('interactOptions', ['按 E 進入']);
         this.registry.set('interactOpen', true);
         this.registry.set('hintLarge', true);
         this.registry.set('hint', nearest.label + ' | ' + t('concourse.hintEnter') + ' | ESC 購物籃');
