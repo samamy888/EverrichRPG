@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { CONFIG } from '../config';
 import { initConnection } from '../net/ws';
+import { initChat } from '../ui/chat';
 import { getApiBase } from '../net/http';
 
 export class LoginScene extends Phaser.Scene {
@@ -67,6 +68,7 @@ export class LoginScene extends Phaser.Scene {
       try { document.body.removeChild(form); } catch {}
       this.scene.start('AirportScene');
       this.scene.launch('UIOverlay');
+      try { initChat(this.game as any); } catch {}
       try { (window as any).__applyCameraZoom?.(); } catch {}
     };
     (box.querySelector('#lg-ok') as HTMLButtonElement).onclick = () => { start(); };

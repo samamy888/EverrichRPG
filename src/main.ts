@@ -207,12 +207,6 @@ function createZoomControls() {
 }
 
 window.addEventListener('load', () => { createZoomControls(); });
-// 啟用聊天室（底部輸入框 + 歷史 + 即時）
-try {
-  (window as any).addEventListener('load', () => {
-    try { initChat(game as any); } catch {}
-  });
-} catch {}
 
 // 延後 WebSocket 連線：若本地尚無名稱，等待登入場景後再連線
 try {
