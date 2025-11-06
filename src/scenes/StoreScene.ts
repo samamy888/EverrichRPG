@@ -350,20 +350,21 @@ export class StoreScene extends Phaser.Scene {
     const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, talkTargetX, talkTargetY);
     // 出口互動（全階段檢查）：靠近門口按 E 離開（僅在未鎖定時處理，避免干擾對話/清單）
     // 出口與對話互動提示
-    if (!inputLocked2) {
-      if (this.exitWorld) {
-        const distExitEarly = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.exitWorld.x, this.exitWorld.y);
-        if (distExitEarly < 18) {
-          this.registry.set('hintLarge', true);
-          this.registry.set('hint', t('store.hintExitDoor') + ' | ESC 購物籃');
-          this.registry.set('interactOptions', [t('store.hintExitDoor') || '離開']);
-          this.registry.set('interactOpen', true);
-          if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) { this.leaveStore(); return; }
-        }
+    let nearExit = false;
+    if (!inputLocked2 && this.exitWorld) {
+      const distExitEarly = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.exitWorld.x, this.exitWorld.y);
+      if (distExitEarly < 18) {
+        nearExit = true;
+        this.registry.set('hintLarge', true);
+        this.registry.set('hint', (t('store.hintExitDoor') || '按 E 離開') + ' | ESC 購物籃');
+        this.registry.set('interactOptions', [t('store.hintExitDoor') || '離開']);
+        this.registry.set('interactOpen', true);
+        if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) { this.leaveStore(); return; }
       }
     }
 
     if (this.phase === 'browse') {
+      if (nearExit) return;
       // 瀏覽狀態下才提供店員互動提示；若鎖定則不顯示互動面板
       if (dist < 24) {
         this.registry.set('hintLarge', true);
