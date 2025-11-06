@@ -40,16 +40,19 @@ export function renderBasket(scene: any) {
   // 顯示在頂部訊息列之下：y 取置頂 HUD 高度再加間距
   const HUD = CONFIG.ui.hudHeight;
 const uiPad = (CONFIG.ui?.minimap?.pad ?? 4);
-let boxX = Math.max(0, viewW - (CONFIG.ui.minimap.maxWidth || 140) - uiPad);
-let boxY = HUD + uiPad;
-let boxW = (CONFIG.ui.minimap.maxWidth || 140);
+  let boxX = Math.max(0, viewW - (CONFIG.ui.minimap.maxWidth || 140) - uiPad);
+  let boxY = HUD + uiPad;
+  const baseW = (CONFIG.ui.minimap.maxWidth || 140);
+  let boxW = baseW * 2; // 寬度加倍顯示完整名稱
 if (scene.minimapBox && scene.minimapBox.visible) {
   try {
     boxX = Number(scene.minimapBox.x) || boxX;
     boxY = (Number(scene.minimapBox.y) || boxY) + (Number(scene.minimapBox.height) || 0) + uiPad;
-    boxW = Number(scene.minimapBox.width) || boxW;
-  } catch {}
-}
+      boxW = (Number(scene.minimapBox.width) || baseW) * 2;
+    } catch {}
+  }
+  // 不超出畫面右側
+  boxW = Math.min(boxW, Math.max(40, viewW - uiPad - 4));
 if (!scene.basketBox) {
   scene.basketBox = scene.add.rectangle(boxX, boxY, boxW, hBox, 0x000000, 0.8).setOrigin(0).setDepth(1500).setScrollFactor(0);
 } else {
