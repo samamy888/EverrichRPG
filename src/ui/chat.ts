@@ -40,6 +40,8 @@ export function initChat(game: Phaser.Game) {
   row.appendChild(inputEl);
   panel.appendChild(box); panel.appendChild(row);
   document.body.appendChild(panel);
+  // 對外提供清空函數
+  (window as any).__chatClear = () => { try { if (listEl) listEl.innerHTML = ''; } catch {} };
 
   const lockInput = (on: boolean) => { try { (game as any).registry?.set('inputLocked', !!on); } catch {} };
   const toggleKeyboard = (disable: boolean) => {

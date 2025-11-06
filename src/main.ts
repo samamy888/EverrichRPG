@@ -133,12 +133,13 @@ function createZoomControls() {
   const btnPlus = document.createElement('button');
   const btnCrowd = document.createElement('button');
   const btnReset = document.createElement('button');
+  const btnClearChat = document.createElement('button');
   const dot = document.createElement('span');
   const styleBtn = (b: HTMLButtonElement) => b.style.cssText = [
     'cursor:pointer','padding:2px 6px','border-radius:6px',
     'border:1px solid #4a5668','background:#1a2330','color:#e6f0ff'
   ].join(';');
-  styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus); styleBtn(btnCrowd); styleBtn(btnReset);
+  styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus); styleBtn(btnCrowd); styleBtn(btnReset); styleBtn(btnClearChat);
   // WS 燈號樣式
   dot.style.cssText = [
     'display:inline-block','width:8px','height:8px','border-radius:50%',
@@ -158,6 +159,7 @@ function createZoomControls() {
     btnSnap.textContent = integerZoom ? 'Snap: ON' : 'Snap: OFF';
     btnMinus.textContent = '−';
     btnPlus.textContent = '+';
+    btnClearChat.textContent = '清空訊息';
     const crowdOn = (window as any).__minimapCrowd !== false;
     btnCrowd.textContent = crowdOn ? 'Crowd: ON' : 'Crowd: OFF';
     const connected = (window as any).__netConnected === true;
@@ -173,6 +175,9 @@ function createZoomControls() {
     (window as any).__minimapCrowd = !cur;
     try { localStorage.setItem('minimapCrowd', ((window as any).__minimapCrowd ? '1' : '0')); } catch {}
     updateLabel();
+  });
+  btnClearChat.addEventListener('click', () => {
+    try { (window as any).__chatClear?.(); } catch {}
   });
 
   // Reset identity/storage button (dev helper)
@@ -192,7 +197,7 @@ function createZoomControls() {
   const dotWrap = document.createElement('span');
   dotWrap.textContent = 'WS';
   dotWrap.style.cssText = 'opacity:.8;margin-left:4px;margin-right:2px;';
-  panel.append(label, btnSnap, btnMinus, btnPlus, btnCrowd, btnReset, dotWrap, dot);
+  panel.append(label, btnSnap, btnMinus, btnPlus, btnCrowd, btnClearChat, btnReset, dotWrap, dot);
   document.body.appendChild(panel);
   updateLabel();
   // 提供全域更新介面給連線事件呼叫
