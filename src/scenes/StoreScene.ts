@@ -296,25 +296,28 @@ export class StoreScene extends Phaser.Scene {
       }
       // 動畫播放（方向）：down/up/side，side 以 flipX 控左右
       try {
-        const moving = Math.abs(this.pBody.velocity.x) + Math.abs(this.pBody.velocity.y) > 0;
         const ax = this.pBody.velocity.x; const ay = this.pBody.velocity.y;
         const absx = Math.abs(ax), absy = Math.abs(ay);
+        const speed = absx + absy;
+        const EPS = 1;            // 極低速視為靜止，避免抖動
+        const BIAS = 2;           // 軸向切換的滯後閾值，降低左右/上下抖動
         let facing: 'down' | 'up' | 'side' = (spr.getData('facing') as any) || 'down';
         let flipX = spr.flipX;
         const g = ((localStorage.getItem('pgender') || 'M').toUpperCase() === 'F') ? 'F' : 'M';
         const pref = g === 'F' ? 'player-f' : 'player-m';
         const current = ((spr as any).anims?.currentAnim?.key) || '';
-        if (moving) {
-          if (absx >= absy) { facing = 'side'; flipX = ax < 0; }
-          else { facing = ay < 0 ? 'up' : 'down'; }
+        if (speed > EPS) {
+          if (absx > (absy + BIAS)) { facing = 'side'; flipX = ax < 0; }
+          else if (absy > (absx + BIAS)) { facing = ay < 0 ? 'up' : 'down'; }
+          // 若差異很小，維持原 facing，避免在邊界抖動
           spr.setData('facing', facing);
           spr.setFlipX(facing === 'side' ? flipX : false);
           const key = this.anims.exists(`${pref}-walk-${facing}`) ? `${pref}-walk-${facing}` : undefined;
-          if (key && current !== key) (spr as any).anims.play(key, true); else (spr as any).anims.stop();
+          if (key && current !== key) (spr as any).anims.play(key, true); else if (!key) (spr as any).anims.stop();
         } else {
           const key = this.anims.exists(`${pref}-idle-${facing}`) ? `${pref}-idle-${facing}` : undefined;
           spr.setFlipX(facing === 'side' ? flipX : false);
-          if (key && current !== key) (spr as any).anims.play(key, true); else (spr as any).anims.stop();
+          if (key && current !== key) (spr as any).anims.play(key, true); else if (!key) (spr as any).anims.stop();
         }
       } catch {}
     }
