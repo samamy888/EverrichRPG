@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 import { CONFIG } from '../config';
 import { getClient } from '../net/ws';
+import { spawnPlayer, updatePlayer } from '../actors/Player';
 
 type EnterData = { spawnX?: number; spawnY?: number };
 
@@ -12,6 +13,7 @@ export class TPE01Scene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: { [k: string]: Phaser.Input.Keyboard.Key };
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  private controls!: { cursors: Phaser.Types.Input.Keyboard.CursorKeys; keys: any };
   public layer!: Phaser.Tilemaps.TilemapLayer; // dummy layer for minimap
   private lastMoveSent = 0;
   private collidersGroup?: Phaser.Physics.Arcade.StaticGroup;
@@ -44,6 +46,7 @@ export class TPE01Scene extends Phaser.Scene {
   create(data: EnterData) {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys('W,A,S,D,E,SHIFT,C') as any;
+    this.controls = { cursors: this.cursors, keys: this.keys } as any;
 
     // Background image and world bounds
     const bg = this.add.image(0, 0, 'tpe01').setOrigin(0, 0).setDepth(0);
@@ -68,11 +71,7 @@ export class TPE01Scene extends Phaser.Scene {
     const defY = Math.round(worldH / 2);
     const px = typeof data?.spawnX === 'number' ? data!.spawnX : Math.min(worldW - 8, Math.max(8, defX));
     const py = typeof data?.spawnY === 'number' ? data!.spawnY : Math.min(worldH - 8, Math.max(8, defY));
-    const ps = this.add.rectangle(px, py, 8, 12, 0xebb35e) as any;
-    (ps as any).setOrigin?.(0.5, 1).setDepth?.(100);
-    this.physics.add.existing(ps as any);
-    this.player = ps as any;
-    try { (this.player.body as Phaser.Physics.Arcade.Body).setSize(10, 10).setOffset(3, 20).setCollideWorldBounds(true); } catch {}
+    this.player = spawnPlayer(this, px, py);
     try { this.cameras.main.startFollow(this.player, true, 0.08, 0.08); } catch {}
 
     // Optional: load colliders JSON if provided
@@ -121,15 +120,7 @@ export class TPE01Scene extends Phaser.Scene {
 
   update() {
     if (!this.player) return;
-    const pBody = (this.player.body as Phaser.Physics.Arcade.Body);
-    const base = CONFIG.controls.baseSpeed;
-    const run = CONFIG.controls.runMultiplier;
-    const speed = (this.keys as any).SHIFT?.isDown ? Math.round(base * run) : base;
-    pBody.setVelocity(0);
-    if (this.cursors.left?.isDown || (this.keys as any).A.isDown) pBody.setVelocityX(-speed);
-    else if (this.cursors.right?.isDown || (this.keys as any).D.isDown) pBody.setVelocityX(speed);
-    if (this.cursors.up?.isDown || (this.keys as any).W.isDown) pBody.setVelocityY(-speed);
-    else if (this.cursors.down?.isDown || (this.keys as any).S.isDown) pBody.setVelocityY(speed);
+    updatePlayer(this, this.player, this.controls as any);
 
     // Location for HUD + enable minimap
     this.registry.set('location', 'TPE-01');

@@ -3,6 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 import { CONFIG } from '../config';
 import { getClient } from '../net/ws';
 import { createCrowd, updateCrowd, updateNameplates } from '../actors/NpcCrowd';
+import { spawnPlayer, updatePlayer } from '../actors/Player';
 import { fetchTravelers } from '../api/travelers';
 
 type EnterData = { spawnX?: number; spawnY?: number };
@@ -13,6 +14,7 @@ export class TaoyuanF2Scene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: { [k: string]: Phaser.Input.Keyboard.Key };
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  private controls!: { cursors: Phaser.Types.Input.Keyboard.CursorKeys; keys: any };
   public layer!: Phaser.Tilemaps.TilemapLayer;
   private doors: Door[] = [];
   private crowd?: Phaser.Physics.Arcade.Group;
@@ -41,6 +43,7 @@ export class TaoyuanF2Scene extends Phaser.Scene {
   create(data: EnterData) {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys('W,A,S,D,E,SHIFT') as any;
+    this.controls = { cursors: this.cursors, keys: this.keys } as any;
 
     const MAP_W = 100, MAP_H = 50;
     const map = this.make.tilemap({ width: MAP_W, height: MAP_H, tileWidth: 16, tileHeight: 16 });
@@ -76,11 +79,7 @@ export class TaoyuanF2Scene extends Phaser.Scene {
     // 玩家
     const px = typeof data?.spawnX === 'number' ? data!.spawnX : (GAME_WIDTH / 2);
     const py = typeof data?.spawnY === 'number' ? data!.spawnY : (GAME_HEIGHT / 2 + 40);
-    const ps = this.add.rectangle(px, py, 8, 12, 0xebb35e) as any;
-    (ps as any).setOrigin?.(0.5, 1).setDepth?.(100);
-    this.physics.add.existing(ps as any);
-    this.player = ps as any;
-    try { (this.player.body as Phaser.Physics.Arcade.Body).setSize(10, 10).setOffset(3, 20).setCollideWorldBounds(true); } catch {}
+    this.player = spawnPlayer(this, px, py);
 
     const worldW = map.width * 16; const worldH = map.height * 16 + 2;
     this.cameras.main.setBounds(0, 0, worldW, worldH);
@@ -108,15 +107,7 @@ export class TaoyuanF2Scene extends Phaser.Scene {
 
   update() {
     if (!this.player) return;
-    const pBody = (this.player.body as Phaser.Physics.Arcade.Body);
-    const base = CONFIG.controls.baseSpeed;
-    const run = CONFIG.controls.runMultiplier;
-    const speed = (this.keys as any).SHIFT?.isDown ? Math.round(base * run) : base;
-    pBody.setVelocity(0);
-    if (this.cursors.left?.isDown || (this.keys as any).A.isDown) pBody.setVelocityX(-speed);
-    else if (this.cursors.right?.isDown || (this.keys as any).D.isDown) pBody.setVelocityX(speed);
-    if (this.cursors.up?.isDown || (this.keys as any).W.isDown) pBody.setVelocityY(-speed);
-    else if (this.cursors.down?.isDown || (this.keys as any).S.isDown) pBody.setVelocityY(speed);
+    updatePlayer(this, this.player, this.controls as any);
 
     if (this.crowd) updateCrowd(this, this.crowd);
     try { updateNameplates(this, this.crowd, this.player, 42, 0); } catch {}

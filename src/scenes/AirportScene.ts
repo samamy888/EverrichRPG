@@ -5,6 +5,7 @@ import { t } from '../i18n';
 import { createCrowd, updateCrowd, updateNameplates } from '../actors/NpcCrowd';
 import { getClient } from '../net/ws';
 import { attachOthers } from '../net/others';
+import { spawnPlayer, updatePlayer } from '../actors/Player';
 
 type Door = { world: Phaser.Math.Vector2; id: string; label: string };
 
@@ -239,23 +240,9 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
     // Player
     // 性別：登入時存入 localStorage 的 pgender（M/F）
     try { this.gender = ((localStorage.getItem('pgender') || 'M').toUpperCase() === 'F') ? 'F' : 'M'; } catch { this.gender = 'M'; }
-    const idleKey = this.gender === 'F'
-      ? (this.textures.exists('player_f') ? 'player_f' : undefined)
-      : (this.textures.exists('player_m') ? 'player_m' : undefined);
     const spawnX = this.hubX * 16;
     const spawnY = Math.floor((H_Y0 + H_Y1) / 2) * 16 + 8;
-    const ps = idleKey ? this.add.sprite(spawnX, spawnY, idleKey, 0).setOrigin(0.5, 1) : this.add.rectangle(spawnX, spawnY, 8, 12, 0xebb35e) as any;
-    (ps as any).setDepth?.(100);
-    this.physics.add.existing(ps as any);
-    this.player = ps as any;
-    const pBody = (this.player as any).body as Phaser.Physics.Arcade.Body;
-    try { pBody.setSize(10, 10).setOffset(3, 20).setCollideWorldBounds(true); } catch {}
-    try {
-      (this.player as any).setData?.('facing', 'down');
-      const pref = this.gender === 'F' ? 'player-f' : 'player-m';
-      const k = (this.anims as any).exists?.(`${pref}-idle-down`) ? `${pref}-idle-down` : undefined;
-      if (k) (this.player as any).anims?.play?.(k);
-    } catch {}
+    this.player = spawnPlayer(this, spawnX, spawnY);
     // 自己的名牌
     try {
       const nm = (localStorage.getItem('pname') || '').trim();
@@ -338,33 +325,7 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
 
   update() {
     if (!this.player) return;
-    const pBody = (this.player as any).body as Phaser.Physics.Arcade.Body;
-    const base = CONFIG.controls.baseSpeed; const run = CONFIG.controls.runMultiplier;
-    const speed = (this.keys as any).SHIFT?.isDown ? Math.round(base * run) : base;
-    pBody.setVelocity(0);
-    const inputLocked = !!this.registry.get('inputLocked');
-    if (!inputLocked) {
-      if (this.cursors.left?.isDown || (this.keys as any).A.isDown) pBody.setVelocityX(-speed);
-      else if (this.cursors.right?.isDown || (this.keys as any).D.isDown) pBody.setVelocityX(speed);
-      if (this.cursors.up?.isDown || (this.keys as any).W.isDown) pBody.setVelocityY(-speed);
-      else if (this.cursors.down?.isDown || (this.keys as any).S.isDown) pBody.setVelocityY(speed);
-    }
-
-    // Player anims
-    try {
-      const spr: any = this.player as any;
-      const ax = pBody.velocity.x, ay = pBody.velocity.y; const moving = Math.abs(ax) + Math.abs(ay) > 0;
-      let facing: 'down' | 'up' | 'side' = (spr.getData?.('facing') as any) || 'down'; let flipX = spr.flipX;
-      const pref = this.gender === 'F' ? 'player-f' : 'player-m';
-      if (moving) {
-        if (Math.abs(ax) >= Math.abs(ay)) { facing = 'side'; flipX = ax < 0; }
-        else { facing = ay < 0 ? 'up' : 'down'; }
-        spr.setData?.('facing', facing); spr.setFlipX?.(facing === 'side' ? flipX : false);
-        const key = (this.anims as any).exists?.(`${pref}-walk-${facing}`) ? `${pref}-walk-${facing}` : undefined; if (key) spr.anims.play(key, true); else spr.anims.stop();
-      } else {
-        const key = (this.anims as any).exists?.(`${pref}-idle-${facing}`) ? `${pref}-idle-${facing}` : undefined; spr.setFlipX?.(facing === 'side' ? flipX : false); if (key) spr.anims.play(key, true); else spr.anims.stop();
-      }
-    } catch {}
+    updatePlayer(this, this.player as any, { cursors: this.cursors, keys: this.keys } as any);
 
     if (this.crowd) updateCrowd(this, this.crowd as any);
     try { if (this.crowds && this.crowds.length) this.crowds.forEach(g => updateCrowd(this, g)); } catch {}
