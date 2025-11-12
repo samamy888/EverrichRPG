@@ -102,11 +102,88 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
     // B: inverse-T bottom band
     putFloor(0, B_Y1 - (2 + (A_BAND_H - 1)), map.width, A_BAND_H);
 
-    // Borders & lights (cosmetic)
+    // Borders (cosmetic)
     this.layer.fill(BORDER, 0, 0, map.width, 1);
     this.layer.fill(BORDER, 0, map.height - 1, map.width, 1);
     this.layer.fill(STRIPE, 0, map.height - 2, map.width, 1);
-    for (let y = H_Y0 + 3; y <= H_Y1 - 3; y += 6) this.layer.putTileAt(LIGHT, this.hubX, y);
+    // 取消中央立柱/造景避免視覺干擾
+    // for (let y = H_Y0 + 3; y <= H_Y1 - 3; y += 6) this.layer.putTileAt(LIGHT, this.hubX, y);
+
+    // Hall props: two ATMs and three sofas (decorations, non-colliding)
+    try {
+      const g = this.make.graphics({ x: 0, y: 0, add: false });
+      // ATM texture (12x16)
+      if (!this.textures.exists('tex-atm')) {
+        g.clear();
+        g.fillStyle(0x1f3552, 1); g.fillRect(0, 0, 12, 16);
+        g.fillStyle(0x2b4d76, 1); g.fillRect(1, 1, 10, 9);
+        g.fillStyle(0x93c5fd, 1); g.fillRect(2, 2, 8, 5);
+        g.fillStyle(0x0b1220, 1); g.fillRect(3, 8, 6, 2);
+        g.fillStyle(0xcbd5e1, 1); g.fillRect(2, 11, 8, 1);
+        g.generateTexture('tex-atm', 12, 16);
+      }
+      // Sofa texture (24x12)
+      if (!this.textures.exists('tex-sofa')) {
+        g.clear();
+        g.fillStyle(0x334155, 1); g.fillRect(0, 0, 24, 12);
+        g.fillStyle(0x1f2937, 1); g.fillRect(0, 9, 24, 3);
+        g.fillStyle(0x0f172a, 1); g.fillRect(1, 1, 22, 6);
+        g.fillStyle(0x475569, 1); g.fillRect(2, 7, 20, 2);
+        g.generateTexture('tex-sofa', 24, 12);
+      }
+      // Plant texture (12x14)
+      if (!this.textures.exists('tex-plant')) {
+        g.clear();
+        // pot
+        g.fillStyle(0x8b5a2b, 1); g.fillRect(2, 8, 8, 6);
+        g.fillStyle(0x5e3a1a, 1); g.fillRect(2, 12, 8, 2);
+        // leaves
+        g.fillStyle(0x2f855a, 1); g.fillRect(5, 2, 2, 6);
+        g.fillRect(3, 4, 2, 4); g.fillRect(7, 4, 2, 4);
+        g.generateTexture('tex-plant', 12, 14);
+      }
+      g.destroy();
+
+      const toPx = (cx: number, cy: number) => ({ x: cx * 16 + 8, y: 2 + cy * 16 + 8 });
+      // Place ATMs near hall left/right inner walls, but offset vertically to be farther from plants
+      const hallRow = Math.floor((H_Y0 + H_Y1) / 2);
+      const atmRowTop = Math.max(H_Y0 + 3, hallRow - 4);
+      const atmRowBot = Math.min(H_Y1 - 3, hallRow + 4);
+      const atmL = toPx(hallX0 + 1, atmRowTop);
+      const atmR = toPx(hallX0 + H_W - 2, atmRowBot);
+      this.add.image(atmL.x, atmL.y, 'tex-atm').setOrigin(0.5, 1).setDepth(7);
+      this.add.image(atmR.x, atmR.y, 'tex-atm').setOrigin(0.5, 1).setDepth(7).setFlipX(true);
+
+      // Place three sofas vertically centered (top -> middle -> bottom)
+      const sofaColX = this.hubX;
+      const srTop = Math.max(H_Y0 + 3, hallRow - 3);
+      const srMid = hallRow;
+      const srBot = Math.min(H_Y1 - 3, hallRow + 3);
+      const s0 = toPx(sofaColX, srTop);
+      const s1 = toPx(sofaColX, srMid);
+      const s2 = toPx(sofaColX, srBot);
+      this.add.image(s0.x, s0.y, 'tex-sofa').setOrigin(0.5, 1).setDepth(7);
+      this.add.image(s1.x, s1.y, 'tex-sofa').setOrigin(0.5, 1).setDepth(7);
+      this.add.image(s2.x, s2.y, 'tex-sofa').setOrigin(0.5, 1).setDepth(7);
+
+      // Place potted plants around the hall perimeter (inside edges)
+      const plantRowTop = H_Y0 + 3;
+      const plantRowBot = H_Y1 - 3;
+      const plantXLeft = hallX0 + 2;
+      const plantXRight = hallX0 + H_W - 3;
+      const plantMidY = Math.floor((H_Y0 + H_Y1) / 2);
+      const plantMidX = this.hubX;
+      const plantMidL = toPx(plantXLeft, plantMidY);
+      const plantMidR = toPx(plantXRight, plantMidY);
+      const pTL = toPx(plantXLeft, plantRowTop);
+      const pTR = toPx(plantXRight, plantRowTop);
+      const pBL = toPx(plantXLeft, plantRowBot);
+      const pBR = toPx(plantXRight, plantRowBot);
+      // 移除上下置中兩盆以免擋住出入口（僅保留四角與左右中點）
+      [pTL, pTR, pBL, pBR, plantMidL, plantMidR].forEach(p => {
+        this.add.image(p.x, p.y, 'tex-plant').setOrigin(0.5, 1).setDepth(7);
+      });
+    } catch {}
 
     // 單一外框：沿著 walkable 與非 walkable 的邊界繪製，不重疊
     const isWalkable = (x: number, y: number): boolean => {
@@ -349,12 +426,12 @@ try {
         this.registry.set('interactOptions', ['按 E 進入']);
         this.registry.set('interactOpen', true);
         this.registry.set('hintLarge', true);
-        this.registry.set('hint', nearest.label + ' | ' + t('concourse.hintEnter') + ' | ESC 購物籃');
+        this.registry.set('hint', nearest.label + ' | ' + t('concourse.hintEnter') + ' | ESC 選單');
         if (Phaser.Input.Keyboard.JustDown(this.keys.E)) { this.scene.pause(); this.scene.launch('StoreScene', { storeId: nearest.id, returnTo: this.scene.key }); return; }
       } else {
         this.registry.set('interactOpen', false);
         this.registry.set('hintLarge', false);
-        this.registry.set('hint', t('concourse.hintMoveEnter') + ' | ESC 購物籃');
+        this.registry.set('hint', t('concourse.hintMoveEnter') + ' | ESC 選單');
       }
     } else {
       // 鎖定輸入時隱藏互動面板，不覆蓋提示（讓購物籃提示顯示）

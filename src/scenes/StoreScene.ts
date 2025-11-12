@@ -340,7 +340,7 @@ export class StoreScene extends Phaser.Scene {
       }
     } catch {}
 
-    // 取消 ESC 強制返回大廳（改由清單的「離開」或出口互動離開）
+    // 取消 ESC 強制返回大廳（改為 ESC 打開主選單）
 
     // 若輸入鎖定（購物籃/對話/清單開啟）則隱藏互動面板，但仍允許對話/清單邏輯在下方執行
     const inputLocked2 = !!this.registry.get('inputLocked');
@@ -359,7 +359,7 @@ export class StoreScene extends Phaser.Scene {
       if (distExitEarly < 18) {
         nearExit = true;
         this.registry.set('hintLarge', true);
-        this.registry.set('hint', (t('store.hintExitDoor') || '按 E 離開') + ' | ESC 購物籃');
+        this.registry.set('hint', (t('store.hintExitDoor') || '按 E 離開') + ' | ESC 選單');
         this.registry.set('interactOptions', [t('store.hintExitDoor') || '離開']);
         this.registry.set('interactOpen', true);
         if (Phaser.Input.Keyboard.JustDown((this.keys as any).E)) { this.leaveStore(); return; }
@@ -371,7 +371,7 @@ export class StoreScene extends Phaser.Scene {
       // 瀏覽狀態下才提供店員互動提示；若鎖定則不顯示互動面板
       if (dist < 24) {
         this.registry.set('hintLarge', true);
-        this.registry.set('hint', t('store.hintTalk') + ' | ESC 購物籃');
+        this.registry.set('hint', t('store.hintTalk') + ' | ESC 選單');
         if (!inputLocked2) {
           this.registry.set('interactOptions', [t('store.hintTalk') || '對話']);
           this.registry.set('interactOpen', true);

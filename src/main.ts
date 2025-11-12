@@ -1,13 +1,17 @@
 import Phaser from 'phaser';
 import { AirportScene } from './scenes/AirportScene';
+import { TaoyuanF1Scene } from './scenes/TaoyuanF1Scene';
+import { TaoyuanF2Scene } from './scenes/TaoyuanF2Scene';
 import { StoreScene } from './scenes/StoreScene';
 import { UIOverlay } from './ui/UIOverlay';
 import { BootScene } from './scenes/BootScene';
 import { LoginScene } from './scenes/LoginScene';
 import { CONFIG } from './config';
 import { initConnection } from './net/ws';
+import { initClientLogging } from './utils/logger';
 import { initChat } from './ui/chat';
 import { getApiBase } from './net/http';
+import { TPE01Scene } from './scenes/TPE01Scene';
 
 export const GAME_WIDTH = 320;
 export const GAME_HEIGHT = 180;
@@ -25,7 +29,8 @@ const config: Phaser.Types.Core.GameConfig = {
   render: { antialias: false, pixelArt: true, roundPixels: true },
   physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.NO_CENTER },
-  scene: [BootScene, LoginScene, AirportScene, StoreScene, UIOverlay],
+  // AirportScene 為桃園 3F；新增 1F/2F 場景供樓層切換；TPE01Scene 使用位圖地圖 TPE-01.png
+  scene: [BootScene, LoginScene, TaoyuanF1Scene, TaoyuanF2Scene, AirportScene, TPE01Scene, StoreScene, UIOverlay],
 };
 
 const game = new Phaser.Game(config);
@@ -108,6 +113,24 @@ window.addEventListener('keydown', (e) => {
     if (!integerZoom) integerZoom = true;
     preferredIntZoom = Math.max(CONFIG.scale.minZoom, (preferredIntZoom ?? (CONFIG.scale.minZoom + 1)) - 1);
     applyCameraZoom();
+  }
+  // 開發快捷：Ctrl+Alt+T 切換到 TPE-01 位圖地圖
+  if (e.ctrlKey && e.altKey && e.code === 'KeyT') {
+    try { game.scene.stop('AirportScene'); game.scene.stop('TaoyuanF1Scene'); game.scene.stop('TaoyuanF2Scene'); } catch {}
+    try { game.scene.start('TPE01Scene'); } catch {}
+  }
+  // 開發快捷：Ctrl+Alt+1/2/3 切換樓層場景（桃園 1F/2F/3F）
+  if (e.ctrlKey && e.altKey && e.code === 'Digit1') {
+    try { game.scene.stop('AirportScene'); game.scene.stop('TaoyuanF2Scene'); } catch {}
+    try { game.scene.start('TaoyuanF1Scene'); } catch {}
+  }
+  if (e.ctrlKey && e.altKey && e.code === 'Digit2') {
+    try { game.scene.stop('AirportScene'); game.scene.stop('TaoyuanF1Scene'); } catch {}
+    try { game.scene.start('TaoyuanF2Scene'); } catch {}
+  }
+  if (e.ctrlKey && e.altKey && e.code === 'Digit3') {
+    try { game.scene.stop('TaoyuanF1Scene'); game.scene.stop('TaoyuanF2Scene'); } catch {}
+    try { game.scene.start('AirportScene'); } catch {}
   }
 });
 
@@ -236,6 +259,9 @@ function createZoomControls() {
 }
 
 window.addEventListener('load', () => { createZoomControls(); });
+
+// 初始化客戶端日誌收集（未捕捉錯誤、自訂上報）
+try { initClientLogging(); } catch {}
 
 // 延後 WebSocket 連線：若本地尚無名稱，等待登入場景後再連線
 try {

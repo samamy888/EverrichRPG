@@ -132,7 +132,7 @@ export class ConcourseScene extends Phaser.Scene {
     const py = this.player.y; let zone = '大廳'; let ltype = 'concourse'; if (py <= 3 * 16 + 8) { zone = 'A 區'; ltype = 'concourse-A'; } else if (py >= 19 * 16 - 8) { zone = 'B 區'; ltype = 'concourse-B'; }
     this.registry.set('location', zone); this.registry.set('locationType', ltype);
 
-    if (nearest && nd < 18) { this.registry.set('hint', `${nearest.label}｜${t('concourse.hintEnter')}｜ESC 購物籃`); if (Phaser.Input.Keyboard.JustDown(this.keys.E)) { this.scene.pause(); this.scene.launch('StoreScene', { storeId: nearest.id }); } return; }
-    else { this.registry.set('hint', `${t('concourse.hintMoveEnter')}｜ESC 購物籃`); return; }
+    if (nearest && nd < 18) { this.registry.set('hint', `${nearest.label}｜${t('concourse.hintEnter')}｜ESC 選單`); if (Phaser.Input.Keyboard.JustDown(this.keys.E)) { this.scene.pause(); this.scene.launch('StoreScene', { storeId: nearest.id }); } return; }
+    else { this.registry.set('hint', `${t('concourse.hintMoveEnter')}｜ESC 選單`); return; }
   }
 }

@@ -173,7 +173,7 @@ export class ConcourseBScene extends Phaser.Scene {
     this.registry.set('location', 'B 區');
     this.registry.set('locationType', 'concourse-B');
 
-    if (nearest && nd < 18) { this.registry.set('hint', `${nearest.label}｜${t('concourse.hintEnter')}｜ESC 購物籃`); if (Phaser.Input.Keyboard.JustDown(this.keys.E)) { this.scene.pause(); this.scene.launch('StoreScene', { storeId: nearest.id, returnTo: this.scene.key }); } return; }
-    else { this.registry.set('hint', `${t('concourse.hintMoveEnter')}｜ESC 購物籃`); return; }
+    if (nearest && nd < 18) { this.registry.set('hint', `${nearest.label}｜${t('concourse.hintEnter')}｜ESC 選單`); if (Phaser.Input.Keyboard.JustDown(this.keys.E)) { this.scene.pause(); this.scene.launch('StoreScene', { storeId: nearest.id, returnTo: this.scene.key }); } return; }
+    else { this.registry.set('hint', `${t('concourse.hintMoveEnter')}｜ESC 選單`); return; }
   }
 }

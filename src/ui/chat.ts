@@ -49,6 +49,12 @@ export function initChat(game: Phaser.Game) {
       if (panel) panel.style.display = show ? '' : 'none';
       try { localStorage.setItem('chatVisible', show ? '1' : '0'); } catch {}
       try { (window as any).__updateChatButton?.(!!show); } catch {}
+      // 若剛顯示，確保內容滾到最底（延後一幀以取得正確高度）
+      if (show) {
+        try {
+          requestAnimationFrame(() => { try { scrollBottom(); } catch {} });
+        } catch {}
+      }
     } catch {}
   };
   const getSavedVisible = () => {

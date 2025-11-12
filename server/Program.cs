@@ -18,6 +18,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSingleton<IStateStore, FileStateStore>();
 builder.Services.AddSingleton<IWebSocketHub, WebSocketHub>();
+builder.Services.AddSingleton<ILogSink, FileLogSink>();
 
 var app = builder.Build();
 
@@ -48,6 +49,52 @@ app.MapPost("/api/profile", async (IStateStore store, HttpRequest req) =>
         return Results.Ok(new { ok = true });
     }
     catch { return Results.BadRequest(); }
+});
+
+// REST: logs intake (accept single object or array). Writes JSON Lines per day
+app.MapPost("/api/logs", async (HttpRequest req, ILogSink sink, ILoggerFactory lf) =>
+{
+    try
+    {
+        using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
+        var root = doc.RootElement;
+        var ua = req.Headers["User-Agent"].ToString();
+        var referer = req.Headers["Referer"].ToString();
+        var ip = req.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
+        if (root.ValueKind == System.Text.Json.JsonValueKind.Array)
+        {
+            foreach (var item in root.EnumerateArray())
+            {
+                var logObj = new
+                {
+                    ts = DateTimeOffset.UtcNow,
+                    ip,
+                    ua,
+                    referer,
+                    payload = item
+                };
+                sink.Write(logObj);
+            }
+        }
+        else
+        {
+            var logObj = new
+            {
+                ts = DateTimeOffset.UtcNow,
+                ip,
+                ua,
+                referer,
+                payload = root
+            };
+            sink.Write(logObj);
+        }
+        return Results.Ok(new { ok = true });
+    }
+    catch (System.Exception ex)
+    {
+        try { lf.CreateLogger("Logs").LogWarning(ex, "log intake failed"); } catch { }
+        return Results.BadRequest();
+    }
 });
 
 app.MapGet("/health", () => Results.Ok(new { ok = true }));

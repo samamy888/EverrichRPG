@@ -9,7 +9,15 @@ export class LoginScene extends Phaser.Scene {
 
   create() {
     this.cameras.main.setBackgroundColor('#0d1220');
-    this.add.text(16, 16, '登入', { fontSize: `${CONFIG.ui.fontSize}px`, color: '#e6f0ff' });
+    // 頁面上方標題（使用 DOM，確保覆蓋表單之上且不受場景縮放影響）
+    const titleEl = document.createElement('div');
+    titleEl.textContent = '一起來逛免稅店';
+    titleEl.style.cssText = [
+      'position:fixed','top:12px','left:50%','transform:translateX(-50%)',
+      'z-index:2147483648','color:#e6f0ff',
+      `font:${Math.max(12,(CONFIG.ui.fontSize||12)+6)}px/1.2 HanPixel,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif`,
+      'text-shadow:0 1px 0 rgba(0,0,0,0.4)'
+    ].join(';');
     // 使用簡單的 DOM 覆蓋表單
     const form = document.createElement('div');
     form.id = 'login-panel';
@@ -33,21 +41,33 @@ export class LoginScene extends Phaser.Scene {
         <label><input type="radio" name="lg-g" value="M"> 男</label>
         <label style="margin-left:12px"><input type="radio" name="lg-g" value="F"> 女</label>
       </div>
+      <label style="display:block;margin:10px 0 2px">起始場景</label>
+      <select id="lg-scene" style="width:100%;padding:6px;border-radius:8px;border:1px solid #405065;background:#0e1622;color:#e6f0ff">
+        <option value="TPE01Scene">TPE-01 地圖</option>
+        <option value="TaoyuanF1Scene">桃園 1F 大廳</option>
+        <option value="TaoyuanF2Scene">桃園 2F 商場</option>
+        <option value="AirportScene">桃園 3F（現有）</option>
+      </select>
       <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
         <button id="lg-ok" style="padding:6px 10px;border-radius:8px;border:1px solid #4a5668;background:#1a2330;color:#e6f0ff;cursor:pointer">開始遊戲</button>
       </div>
     `;
-    form.appendChild(box); document.body.appendChild(form);
+    form.appendChild(box);
+    try { form.appendChild(titleEl); } catch {}
+    document.body.appendChild(form);
 
     // 預填值
     try {
       const em = localStorage.getItem('pemail') || '';
       const nm = localStorage.getItem('pname') || '';
       const gd = localStorage.getItem('pgender') || '';
+      const ss = localStorage.getItem('startScene') || 'TPE01Scene';
       (box.querySelector('#lg-email') as HTMLInputElement).value = em;
       (box.querySelector('#lg-name') as HTMLInputElement).value = nm;
       const r = box.querySelector(`input[name="lg-g"][value="${gd}"]`) as HTMLInputElement | null;
       if (r) r.checked = true;
+      const sel = box.querySelector('#lg-scene') as HTMLSelectElement | null;
+      if (sel) sel.value = ss;
     } catch {}
 
     const start = async () => {
@@ -58,6 +78,8 @@ export class LoginScene extends Phaser.Scene {
       let pid = '';
       try { pid = localStorage.getItem('pid') || ''; if (!pid) { pid = Math.random().toString(36).slice(2); localStorage.setItem('pid', pid); } } catch {}
       try { localStorage.setItem('pemail', email); localStorage.setItem('pname', name); localStorage.setItem('pgender', gender); } catch {}
+      const selectedScene = (box.querySelector('#lg-scene') as HTMLSelectElement | null)?.value || 'TPE01Scene';
+      try { localStorage.setItem('startScene', selectedScene); } catch {}
       // 後端存檔
       try {
         const base = getApiBase();
@@ -66,7 +88,7 @@ export class LoginScene extends Phaser.Scene {
       // 啟動連線與主場景
       try { initConnection(); } catch {}
       try { document.body.removeChild(form); } catch {}
-      this.scene.start('AirportScene');
+      this.scene.start(selectedScene);
       this.scene.launch('UIOverlay');
       try { initChat(this.game as any); } catch {}
       try { (window as any).__applyCameraZoom?.(); } catch {}

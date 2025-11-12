@@ -41,6 +41,13 @@ export class UIOverlay extends Phaser.Scene {
   private listingRows: Phaser.GameObjects.Text[] = [];
   private listingForceFrames = 0;
   private listingMeasure?: Phaser.GameObjects.Text;
+  // Main menu overlay (ESC)
+  private menuOpen = false;
+  private menuLevel: 1 | 2 = 1; // 1=主選單, 2=地點清單
+  private menuBox?: Phaser.GameObjects.Graphics;
+  private menuRows: Phaser.GameObjects.Text[] = [];
+  private menuSelected = 0;
+  private menuSavedHint: string | null = null;
   // Interact overlay state (context options near player)
   private interactOpen = false;
   private interactBox?: Phaser.GameObjects.Graphics;
@@ -143,17 +150,28 @@ export class UIOverlay extends Phaser.Scene {
         try { this.renderMinimap(); } catch {}
       });
     } catch {}
-    // Global basket toggle and navigation
+    // Global ESC menu and navigation
     this.input.keyboard.on('keydown-ESC', () => {
-      // 對話或清單開啟時，ESC 不打開購物籃以避免衝突
+      // 對話或清單開啟時，不處理主選單
       if (this.dialogOpen || this.listingOpen) return;
-      if (this.basketOpen) this.closeBasket(); else this.openBasket();
+      if (this.menuOpen) {
+        // 2 級返回到 1 級；1 級關閉
+        if (this.menuLevel === 2) { this.menuLevel = 1; this.menuSelected = 0; this.renderMenu(); }
+        else this.closeMenu();
+      } else {
+        this.openMenu();
+      }
     });
-    this.input.keyboard.on('keydown-W', () => this.moveBasket(-1));
-    this.input.keyboard.on('keydown-UP', () => this.moveBasket(-1));
-    this.input.keyboard.on('keydown-S', () => this.moveBasket(1));
-    this.input.keyboard.on('keydown-DOWN', () => this.moveBasket(1));
-    this.input.keyboard.on('keydown-E', () => this.pickBasket());
+    // 導覽（根據當前狀態切換行為：主選單 or 購物籃）
+    const navUp = () => { if (this.menuOpen) this.moveMenu(-1); else this.moveBasket(-1); };
+    const navDown = () => { if (this.menuOpen) this.moveMenu(1); else this.moveBasket(1); };
+    this.input.keyboard.on('keydown-W', navUp);
+    this.input.keyboard.on('keydown-UP', navUp);
+    this.input.keyboard.on('keydown-S', navDown);
+    this.input.keyboard.on('keydown-DOWN', navDown);
+    const confirm = () => { if (this.menuOpen) this.pickMenu(); else this.pickBasket(); };
+    this.input.keyboard.on('keydown-E', confirm);
+    this.input.keyboard.on('keydown-ENTER', confirm);
   }
 
   private onDataChanged(_parent: any, key: string, value: any) {
@@ -201,7 +219,9 @@ export class UIOverlay extends Phaser.Scene {
 
     const hint = (this.registry.get('hint') as string) ?? '';
     const hintLarge = !!this.registry.get('hintLarge');
-    if (this.basketOpen) {
+    if (this.menuOpen) {
+      this.hintText.setText(this.menuTip());
+    } else if (this.basketOpen) {
       const bh = (t('ui.basketHint') as string) || '';
       this.hintText.setText(bh && bh !== 'ui.basketHint' ? bh : '購物籃：W/S 選擇，E 移除，ESC 關閉');
     } else if (this.dialogOpen) {
@@ -365,7 +385,7 @@ export class UIOverlay extends Phaser.Scene {
 
   // 根據當前覆蓋層狀態，鎖定或解鎖玩家移動輸入
   private updateInputLock() {
-    const lock = !!(this.basketOpen || this.dialogOpen || this.listingOpen);
+    const lock = !!(this.basketOpen || this.dialogOpen || this.listingOpen || this.menuOpen);
     try { this.registry.set('inputLocked', lock); } catch {}
   }
 
@@ -443,6 +463,106 @@ export class UIOverlay extends Phaser.Scene {
   private positionMinimap() { positionMinimap(this); }
 
   private renderMinimap() { renderMinimap(this); }
+
+  // ===== ESC 主選單（一級：功能；二級：地點）=====
+  private getMenuItems(): { label: string; value: string }[] {
+    if (this.menuLevel === 1) return [
+      { label: '購物籃', value: 'basket' },
+      { label: '地點', value: 'locations' },
+    ];
+    // level 2: locations
+    return [
+      { label: 'TPE-01 地圖', value: 'TPE01Scene' },
+      { label: '桃園 1F 大廳', value: 'TaoyuanF1Scene' },
+      { label: '桃園 2F 商場', value: 'TaoyuanF2Scene' },
+      { label: '桃園 3F（現有）', value: 'AirportScene' },
+    ];
+  }
+  private renderMenu() {
+    // 清理舊元素
+    try { this.menuRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
+    this.menuRows = [];
+    const pad = 8;
+    const FS = CONFIG.ui.fontSize;
+    const HUD = CONFIG.ui.hudHeight;
+    const { w: viewW, h: viewH } = this.getViewSize();
+    const items = this.getMenuItems();
+    // 簡單估算寬度（避免不同平台 make.text 行為差異造成錯誤）
+    const maxChars = Math.max(6, ...items.map(i => i.label.length));
+    const textW = Math.max(120, Math.ceil(maxChars * FS * 0.62));
+    const rowH = FS + 8;
+    let panelW = Math.min(viewW - pad * 2, textW + pad * 2 + 20);
+    const panelH = Math.min(viewH - HUD * 2, items.length * rowH + pad * 2 + FS + 6);
+    const x = Math.round((viewW - panelW) / 2);
+    const y = Math.round((viewH - panelH) / 2);
+
+    if (!this.menuBox) this.menuBox = this.add.graphics().setDepth(2100).setScrollFactor(0);
+    const g = this.menuBox; g.clear();
+    g.fillStyle(0x000000, 0.85).fillRect(x, y, panelW, panelH);
+    g.lineStyle(1, 0x3a4558, 1).strokeRect(x + 0.5, y + 0.5, panelW - 1, panelH - 1);
+
+    // 標題與提示
+    const title = (this.menuLevel === 1) ? '選單' : '地點';
+    const titleObj = this.add.text(x + pad, y + pad - Math.max(0, Math.round(FS * 0.2)), title, { fontSize: `${FS}px`, color: '#cfe2f3', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2101).setScrollFactor(0);
+    this.menuRows.push(titleObj as any);
+
+    // 列表項
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      const rowY = y + pad + FS + 6 + i * rowH; // 留出標題區塊高度
+      const row = this.add.text(x + pad, rowY, it.label, { fontSize: `${FS}px`, color: i === this.menuSelected ? '#ffd17a' : '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2101).setScrollFactor(0);
+      this.menuRows.push(row);
+    }
+    this.scene.bringToTop();
+  }
+  private moveMenu(dir: 1 | -1) {
+    if (!this.menuOpen) return;
+    const items = this.getMenuItems();
+    const max = items.length;
+    if (!max) return;
+    this.menuSelected = (this.menuSelected + (dir === 1 ? 1 : -1) + max) % max;
+    this.renderMenu();
+  }
+  private pickMenu() {
+    if (!this.menuOpen) return;
+    const items = this.getMenuItems();
+    if (!items.length) return;
+    const chosen = items[this.menuSelected];
+    if (this.menuLevel === 1) {
+      if (chosen.value === 'basket') { this.closeMenu(); this.openBasket(); return; }
+      if (chosen.value === 'locations') { this.menuLevel = 2; this.menuSelected = 0; this.renderMenu(); return; }
+      return;
+    }
+    // level 2: switch scene — stop all non-UIOverlay scenes to ensure a clean switch
+    const key = chosen.value;
+    this.closeMenu();
+    try {
+      const actives = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key && s.scene.key !== 'UIOverlay');
+      for (const s of actives) {
+        if (s.scene.key !== key) { try { this.game.scene.stop(s.scene.key); } catch {} }
+      }
+    } catch {}
+    try { this.game.scene.start(key); } catch {}
+  }
+
+  // 覆寫頂部提示為選單提示，並在關閉時恢復
+  private menuTip(): string { return 'W/S 選擇｜Enter 確認｜ESC 返回'; }
+  private setTopHint(text: string) {
+    try { this.hintText.setText(text); } catch {}
+  }
+  private openMenu() {
+    this.menuOpen = true; this.menuLevel = 1; this.menuSelected = 0; this.updateInputLock();
+    try { this.menuSavedHint = (this.hintText?.text as any) || (this.registry.get('hint') as string) || ''; } catch { this.menuSavedHint = null; }
+    this.setTopHint(this.menuTip());
+    this.renderMenu();
+  }
+  private closeMenu() {
+    this.menuOpen = false; this.menuLevel = 1; this.menuSelected = 0; this.updateInputLock();
+    try { this.menuBox?.clear(); this.menuBox?.destroy(); } catch {}
+    try { this.menuRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
+    this.menuRows = []; this.menuBox = undefined;
+    if (this.menuSavedHint !== null) this.setTopHint(this.menuSavedHint || ''); else this.refresh();
+  }
 
   // Render small interaction options panel near player (right side)
   private renderInteract() {
