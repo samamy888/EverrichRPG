@@ -42,7 +42,8 @@ export function renderMinimap(scene: any) {
   const imgW: number | undefined = (top as any)?.__minimapW;
   const imgH: number | undefined = (top as any)?.__minimapH;
   // If scene provides an image-based map, render true thumbnail
-  if (imgKey && imgW && imgH) {
+  const texMgr: any = (scene as any).textures;
+  if (imgKey && imgW && imgH && texMgr?.exists?.(imgKey)) {
     const maxW = CONFIG.ui.minimap.maxWidth;
     const maxH = CONFIG.ui.minimap.maxHeight;
     const s = Math.min(maxW / imgW, maxH / imgH);
@@ -80,7 +81,7 @@ export function renderMinimap(scene: any) {
     } catch {}
     return;
   }
-  // Hide image sprite when using tile-based minimap
+  // Hide image sprite when using tile-based minimap (or when image not ready yet)
   try { scene.minimapImg?.setVisible(false); } catch {}
   if (!layer) { scene.minimapGfx.clear(); return; }
   const map: any = layer.tilemap;
