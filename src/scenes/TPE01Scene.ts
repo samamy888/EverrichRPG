@@ -55,6 +55,7 @@ export class TPE01Scene extends Phaser.Scene {
     ;(this as any).__minimapTex = 'tpe01';
     ;(this as any).__minimapW = worldW;
     ;(this as any).__minimapH = worldH;
+    try { (window as any).__rerenderMinimap?.(); } catch {}
     this.cameras.main.setBounds(0, 0, worldW, worldH);
     this.physics.world.setBounds(0, 0, worldW, worldH);
 
@@ -79,6 +80,7 @@ export class TPE01Scene extends Phaser.Scene {
     // Ensure integer snap zoom (e.g., 3x) applies immediately on scene start
     try { (window as any).__applyCameraZoom?.(); } catch {}
     try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
+    try { this.time.delayedCall(0, () => { try { (window as any).__rerenderMinimap?.(); } catch {} }); } catch {}
 
     // Optional: load colliders JSON if provided
     this.loadColliders('/map/TPE/TPE-01.colliders.json');

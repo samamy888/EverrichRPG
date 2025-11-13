@@ -58,6 +58,7 @@ export class UIOverlay extends Phaser.Scene {
   public minimapGfx?: Phaser.GameObjects.Graphics;
   public minimapScaleX = 1;
   public minimapScaleY = 1;
+  public minimapImg?: Phaser.GameObjects.Image;
   private shouldShowMinimap(): boolean {
     try {
       if (!CONFIG.ui.minimap.enabled) return false;
@@ -153,6 +154,18 @@ export class UIOverlay extends Phaser.Scene {
         try { this.renderMinimap(); } catch {}
       });
     } catch {}
+    // Global scene lifecycle hooks to keep minimap in sync when switching maps
+    try {
+      const ge: any = (this.game.scene as any).events;
+      const rerender = () => { try { this.ensureMinimap(); this.positionMinimap(); this.renderMinimap(); } catch {} };
+      ge.on('start', rerender);
+      ge.on('transitioncomplete', rerender);
+      ge.on('wake', rerender);
+      ge.on('resume', rerender);
+      // 提供全域重新渲染介面給各內容場景在 create 後呼叫
+      (window as any).__rerenderMinimap = () => { try { rerender(); this.time.delayedCall(0, rerender); requestAnimationFrame(rerender); } catch {} };
+    } catch {}
+
     // Global ESC menu and navigation
     this.input.keyboard.on('keydown-ESC', () => {
       // 對話或清單開啟時，不處理主選單
