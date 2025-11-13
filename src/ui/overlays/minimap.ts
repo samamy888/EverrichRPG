@@ -37,7 +37,13 @@ export function renderMinimap(scene: any) {
   ensureMinimap(scene);
   if (!scene.shouldShowMinimap() || !scene.minimapGfx || !scene.minimapBox) return;
   const activeScenes = scene.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
-  const top = activeScenes[activeScenes.length - 1] as any;
+  const top = activeScenes.length ? (activeScenes[activeScenes.length - 1] as any) : null;
+  const dbgOn = (() => { try { const u = new URL(window.location.href); return u.searchParams.get('debugMinimap') === '1' || (window as any).__debugMinimap === true; } catch { return false; } })();
+  if (!top) {
+    if (dbgOn) try { console.debug('[minimap] no active top scene; retry later'); } catch {}
+    try { (window as any).__rerenderMinimap?.(); } catch {}
+    return; // keep previous minimap content visible
+  }
   const layer = top?.layer as Phaser.Tilemaps.TilemapLayer;
   const imgKey: string | undefined = (top as any)?.__minimapTex;
   const imgW: number | undefined = (top as any)?.__minimapW;
@@ -87,7 +93,13 @@ export function renderMinimap(scene: any) {
     } catch {}
     return;
   }
-  // Hide image sprite when using tile-based minimap (or when image not ready yet)
+  // If neither image nor layer is ready, keep last content and retry later
+  if (!layer) {
+    if (dbgOn) try { console.debug('[minimap] neither image nor layer ready; keep previous and retry'); } catch {}
+    try { (window as any).__rerenderMinimap?.(); } catch {}
+    return;
+  }
+  // Tile-based fallback: hide image and draw tiles
   try { scene.minimapImg?.setVisible(false); } catch {}
   if (dbgOn) try { console.debug('[minimap] tile mode'); } catch {}
   if (!layer) { scene.minimapGfx.clear(); return; }
