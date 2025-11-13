@@ -33,6 +33,7 @@ export function positionMinimap(scene: any) {
 }
 
 export function renderMinimap(scene: any) {
+  const dbgOn = (() => { try { const u = new URL(window.location.href); return u.searchParams.get('debugMinimap') === '1' || (window as any).__debugMinimap === true; } catch { return false; } })();
   ensureMinimap(scene);
   if (!scene.shouldShowMinimap() || !scene.minimapGfx || !scene.minimapBox) return;
   const activeScenes = scene.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
@@ -43,7 +44,11 @@ export function renderMinimap(scene: any) {
   const imgH: number | undefined = (top as any)?.__minimapH;
   // If scene provides an image-based map, render true thumbnail
   const texMgr: any = (scene as any).textures;
-  if (imgKey && imgW && imgH && texMgr?.exists?.(imgKey)) {
+  const imgReady = !!(imgKey && imgW && imgH && texMgr?.exists?.(imgKey));
+  if (dbgOn) {
+    try { console.debug('[minimap] render', { topKey: top?.scene?.key, hasLayer: !!layer, imgKey, imgW, imgH, imgReady }); } catch {}
+  }
+  if (imgReady) {
     const maxW = CONFIG.ui.minimap.maxWidth;
     const maxH = CONFIG.ui.minimap.maxHeight;
     const s = Math.min(maxW / imgW, maxH / imgH);
@@ -62,6 +67,7 @@ export function renderMinimap(scene: any) {
     try {
       if (scene.minimapImg.texture?.key !== imgKey) scene.minimapImg.setTexture(imgKey);
       scene.minimapImg.setPosition(posX, posY).setDisplaySize(contentW, contentH).setVisible(true);
+      if (dbgOn) try { console.debug('[minimap] image mode', { posX, posY, contentW, contentH, s }); } catch {}
     } catch {}
     // Overlays: player dot and camera viewport
     try {
@@ -83,6 +89,7 @@ export function renderMinimap(scene: any) {
   }
   // Hide image sprite when using tile-based minimap (or when image not ready yet)
   try { scene.minimapImg?.setVisible(false); } catch {}
+  if (dbgOn) try { console.debug('[minimap] tile mode'); } catch {}
   if (!layer) { scene.minimapGfx.clear(); return; }
   const map: any = layer.tilemap;
   const tw = map.tileWidth || 16;

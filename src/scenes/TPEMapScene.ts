@@ -56,6 +56,7 @@ export class TPEMapScene extends Phaser.Scene {
     const bg = this.add.image(0, 0, texKey).setOrigin(0, 0).setDepth(0);
     const worldW = bg.width; const worldH = bg.height;
     ;(this as any).__minimapTex = texKey; (this as any).__minimapW = worldW; (this as any).__minimapH = worldH;
+    try { if (new URL(window.location.href).searchParams.get('debugMinimap') === '1' || (window as any).__debugMinimap) console.debug('[minimap] TPEMapScene set tex', { texKey, worldW, worldH }); } catch {}
     try { (window as any).__rerenderMinimap?.(); } catch {}
     this.cameras.main.setBounds(0, 0, worldW, worldH);
     this.physics.world.setBounds(0, 0, worldW, worldH);
@@ -79,6 +80,7 @@ export class TPEMapScene extends Phaser.Scene {
     try { (window as any).__applyCameraZoom?.(); } catch {}
     try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
     try { this.time.delayedCall(0, () => { try { (window as any).__rerenderMinimap?.(); } catch {} }); } catch {}
+    try { this.time.delayedCall(50, () => { try { (window as any).__rerenderMinimap?.(); } catch {} }); } catch {}
 
     // Optional colliders
     this.loadColliders(`/map/TPE/TPE-${this.mapId}.colliders.json`);

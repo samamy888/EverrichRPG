@@ -157,13 +157,14 @@ export class UIOverlay extends Phaser.Scene {
     // Global scene lifecycle hooks to keep minimap in sync when switching maps
     try {
       const ge: any = (this.game.scene as any).events;
-      const rerender = () => { try { this.ensureMinimap(); this.positionMinimap(); this.renderMinimap(); } catch {} };
-      ge.on('start', rerender);
-      ge.on('transitioncomplete', rerender);
-      ge.on('wake', rerender);
-      ge.on('resume', rerender);
+      const log = (...args: any[]) => { try { if (new URL(window.location.href).searchParams.get('debugMinimap') === '1' || (window as any).__debugMinimap) console.debug('[minimap]', ...args); } catch {} };
+      const rerender = (evt?: string) => { log('rerender', evt || ''); try { this.ensureMinimap(); this.positionMinimap(); this.renderMinimap(); } catch (e) { log('rerender error', e); } };
+      ge.on('start', () => rerender('start'));
+      ge.on('transitioncomplete', () => rerender('transitioncomplete'));
+      ge.on('wake', () => rerender('wake'));
+      ge.on('resume', () => rerender('resume'));
       // 提供全域重新渲染介面給各內容場景在 create 後呼叫
-      (window as any).__rerenderMinimap = () => { try { rerender(); this.time.delayedCall(0, rerender); requestAnimationFrame(rerender); } catch {} };
+      (window as any).__rerenderMinimap = () => { try { rerender('manual'); this.time.delayedCall(0, () => rerender('manual-next')); requestAnimationFrame(() => rerender('manual-raf')); } catch (e) { log('manual error', e); } };
     } catch {}
 
     // Global ESC menu and navigation
