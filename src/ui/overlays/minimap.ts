@@ -38,7 +38,6 @@ export function renderMinimap(scene: any) {
   if (!scene.shouldShowMinimap() || !scene.minimapGfx || !scene.minimapBox) return;
   const activeScenes = scene.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
   const top = activeScenes.length ? (activeScenes[activeScenes.length - 1] as any) : null;
-  const dbgOn = (() => { try { const u = new URL(window.location.href); return u.searchParams.get('debugMinimap') === '1' || (window as any).__debugMinimap === true; } catch { return false; } })();
   if (!top) {
     if (dbgOn) try { console.debug('[minimap] no active top scene; retry later'); } catch {}
     try { (window as any).__rerenderMinimap?.(); } catch {}
