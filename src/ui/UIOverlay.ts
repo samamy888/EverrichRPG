@@ -556,11 +556,17 @@ export class UIOverlay extends Phaser.Scene {
     const val = chosen.value;
     const startClean = (key: string, data?: any) => {
       this.closeMenu();
+      // 先啟動目標場景，避免在空窗期沒有 top scene（導致小地圖清空）
+      try { this.game.scene.start(key, data); } catch {}
+      // 觸發小地圖重新渲染（多次保險）
+      try { (window as any).__rerenderMinimap?.(); } catch {}
+      try { this.time.delayedCall(0, () => { try { (window as any).__rerenderMinimap?.(); } catch {} }); } catch {}
+      try { this.time.delayedCall(80, () => { try { (window as any).__rerenderMinimap?.(); } catch {} }); } catch {}
+      // 再停止其他非 UIOverlay、且非目標場景的內容場景
       try {
         const actives = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key && s.scene.key !== 'UIOverlay');
         for (const s of actives) { if (s.scene.key !== key) { try { this.game.scene.stop(s.scene.key); } catch {} } }
       } catch {}
-      try { this.game.scene.start(key, data); } catch {}
     };
     if (val.startsWith('TPE:')) {
       const id = val.split(':')[1] || '01';
