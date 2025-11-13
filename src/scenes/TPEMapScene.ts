@@ -56,6 +56,7 @@ export class TPEMapScene extends Phaser.Scene {
     const bg = this.add.image(0, 0, texKey).setOrigin(0, 0).setDepth(0);
     const worldW = bg.width; const worldH = bg.height;
     ;(this as any).__minimapTex = texKey; (this as any).__minimapW = worldW; (this as any).__minimapH = worldH;
+    try { (window as any).__minimapLast = { key: texKey, w: worldW, h: worldH }; } catch {}
     try { if (new URL(window.location.href).searchParams.get('debugMinimap') === '1' || (window as any).__debugMinimap) console.debug('[minimap] TPEMapScene set tex', { texKey, worldW, worldH }); } catch {}
     try { (window as any).__rerenderMinimap?.(); } catch {}
     this.cameras.main.setBounds(0, 0, worldW, worldH);

@@ -55,6 +55,7 @@ export class TPE01Scene extends Phaser.Scene {
     ;(this as any).__minimapTex = 'tpe01';
     ;(this as any).__minimapW = worldW;
     ;(this as any).__minimapH = worldH;
+    try { (window as any).__minimapLast = { key: 'tpe01', w: worldW, h: worldH }; } catch {}
     try { if (new URL(window.location.href).searchParams.get('debugMinimap') === '1' || (window as any).__debugMinimap) console.debug('[minimap] TPE01 set tex', { texKey: 'tpe01', worldW, worldH }); } catch {}
     try { (window as any).__rerenderMinimap?.(); } catch {}
     this.cameras.main.setBounds(0, 0, worldW, worldH);

@@ -38,15 +38,23 @@ export function renderMinimap(scene: any) {
   if (!scene.shouldShowMinimap() || !scene.minimapGfx || !scene.minimapBox) return;
   const activeScenes = scene.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
   const top = activeScenes.length ? (activeScenes[activeScenes.length - 1] as any) : null;
+  let layer = top?.layer as Phaser.Tilemaps.TilemapLayer;
+  let imgKey: string | undefined = (top as any)?.__minimapTex;
+  let imgW: number | undefined = (top as any)?.__minimapW;
+  let imgH: number | undefined = (top as any)?.__minimapH;
   if (!top) {
-    if (dbgOn) try { console.debug('[minimap] no active top scene; retry later'); } catch {}
-    try { (window as any).__rerenderMinimap?.(); } catch {}
-    return; // keep previous minimap content visible
+    // Fallback to last known minimap data from window when no active content scene
+    try {
+      const last = (window as any).__minimapLast as { key: string; w: number; h: number } | undefined;
+      if (last) { imgKey = last.key; imgW = last.w; imgH = last.h; }
+    } catch {}
+    if (!imgKey || !imgW || !imgH) {
+      if (dbgOn) try { console.debug('[minimap] no active top scene and no fallback; retry later'); } catch {}
+      setTimeout(() => { try { (window as any).__rerenderMinimap?.(); } catch {} }, 32);
+      return;
+    }
+    if (dbgOn) try { console.debug('[minimap] using fallback minimapLast'); } catch {}
   }
-  const layer = top?.layer as Phaser.Tilemaps.TilemapLayer;
-  const imgKey: string | undefined = (top as any)?.__minimapTex;
-  const imgW: number | undefined = (top as any)?.__minimapW;
-  const imgH: number | undefined = (top as any)?.__minimapH;
   // If scene provides an image-based map, render true thumbnail
   const texMgr: any = (scene as any).textures;
   const imgReady = !!(imgKey && imgW && imgH && texMgr?.exists?.(imgKey));
