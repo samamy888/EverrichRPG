@@ -60,13 +60,16 @@ export class UIOverlay extends Phaser.Scene {
   public minimapScaleY = 1;
   private shouldShowMinimap(): boolean {
     try {
-      // 若頂層為商店，強制隱藏
+      if (!CONFIG.ui.minimap.enabled) return false;
       const active = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
-      const topKey: string | undefined = (active[active.length - 1] as any)?.scene?.key;
+      const top: any = active[active.length - 1];
+      const topKey: string | undefined = top?.scene?.key;
       if (topKey === 'StoreScene') return false;
+      // 若頂層場景提供 tilemap layer，則一律顯示（支援位圖地圖生成的虛擬層）
+      if (top && top.layer && typeof top.layer.getTileAt === 'function') return true;
+      // 後備：依 locationType 判定
       const locType = (this.registry.get('locationType') as string) || '';
-      // 只在大廳/走廊顯示迷你地圖；商店（storeId）時隱藏
-      return !!CONFIG.ui.minimap.enabled && (locType.startsWith('concourse'));
+      return locType.startsWith('concourse');
     } catch { return !!CONFIG.ui.minimap.enabled; }
   }
 

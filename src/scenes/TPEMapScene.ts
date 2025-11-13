@@ -55,6 +55,7 @@ export class TPEMapScene extends Phaser.Scene {
     const texKey = `tpe-${this.mapId}`;
     const bg = this.add.image(0, 0, texKey).setOrigin(0, 0).setDepth(0);
     const worldW = bg.width; const worldH = bg.height;
+    ;(this as any).__minimapTex = texKey; (this as any).__minimapW = worldW; (this as any).__minimapH = worldH;
     this.cameras.main.setBounds(0, 0, worldW, worldH);
     this.physics.world.setBounds(0, 0, worldW, worldH);
 
@@ -123,4 +124,3 @@ export class TPEMapScene extends Phaser.Scene {
 }
 
 export default TPEMapScene;
-

@@ -52,6 +52,9 @@ export class TPE01Scene extends Phaser.Scene {
     const bg = this.add.image(0, 0, 'tpe01').setOrigin(0, 0).setDepth(0);
     const worldW = bg.width;
     const worldH = bg.height;
+    ;(this as any).__minimapTex = 'tpe01';
+    ;(this as any).__minimapW = worldW;
+    ;(this as any).__minimapH = worldH;
     this.cameras.main.setBounds(0, 0, worldW, worldH);
     this.physics.world.setBounds(0, 0, worldW, worldH);
 

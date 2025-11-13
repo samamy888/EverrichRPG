@@ -38,6 +38,50 @@ export function renderMinimap(scene: any) {
   const activeScenes = scene.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
   const top = activeScenes[activeScenes.length - 1] as any;
   const layer = top?.layer as Phaser.Tilemaps.TilemapLayer;
+  const imgKey: string | undefined = (top as any)?.__minimapTex;
+  const imgW: number | undefined = (top as any)?.__minimapW;
+  const imgH: number | undefined = (top as any)?.__minimapH;
+  // If scene provides an image-based map, render true thumbnail
+  if (imgKey && imgW && imgH) {
+    const maxW = CONFIG.ui.minimap.maxWidth;
+    const maxH = CONFIG.ui.minimap.maxHeight;
+    const s = Math.min(maxW / imgW, maxH / imgH);
+    const contentW = Math.max(1, Math.round(imgW * s));
+    const contentH = Math.max(1, Math.round(imgH * s));
+    const { w } = scene.getViewSize();
+    const pad = CONFIG.ui.minimap.pad;
+    const posX = w - contentW - pad;
+    const posY = scene.hintBox.height + pad;
+    scene.minimapBox.setPosition(posX, posY).setSize(contentW, contentH).setVisible(true);
+    scene.minimapGfx.setPosition(posX, posY).setVisible(true).clear();
+    // Prepare or update minimap image sprite
+    if (!scene.minimapImg) {
+      try { scene.minimapImg = scene.add.image(posX, posY, imgKey).setOrigin(0, 0).setScrollFactor(0).setDepth(1201); } catch {}
+    }
+    try {
+      if (scene.minimapImg.texture?.key !== imgKey) scene.minimapImg.setTexture(imgKey);
+      scene.minimapImg.setPosition(posX, posY).setDisplaySize(contentW, contentH).setVisible(true);
+    } catch {}
+    // Overlays: player dot and camera viewport
+    try {
+      const cam: any = top?.cameras?.main;
+      const vw = (typeof cam.worldView?.width === 'number' ? cam.worldView.width : cam.width || 0) * s;
+      const vh = (typeof cam.worldView?.height === 'number' ? cam.worldView.height : cam.height || 0) * s;
+      const vx = (typeof cam.worldView?.x === 'number' ? cam.worldView.x : cam.scrollX || 0) * s;
+      const vy = (typeof cam.worldView?.y === 'number' ? cam.worldView.y : cam.scrollY || 0) * s;
+      scene.minimapGfx.lineStyle(1, 0xffcc00, 1);
+      scene.minimapGfx.strokeRect(vx, vy, Math.max(1, vw), Math.max(1, vh));
+    } catch {}
+    try {
+      const px = Math.max(0, Math.min(imgW, Number(top?.player?.x || 0))) * s;
+      const py = Math.max(0, Math.min(imgH, Number(top?.player?.y || 0))) * s;
+      scene.minimapGfx.fillStyle(0x000000, 1);
+      scene.minimapGfx.fillRect(Math.round(px) - 1, Math.round(py) - 1, 2, 2);
+    } catch {}
+    return;
+  }
+  // Hide image sprite when using tile-based minimap
+  try { scene.minimapImg?.setVisible(false); } catch {}
   if (!layer) { scene.minimapGfx.clear(); return; }
   const map: any = layer.tilemap;
   const tw = map.tileWidth || 16;
