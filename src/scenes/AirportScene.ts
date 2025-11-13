@@ -261,6 +261,8 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
     this.cameras.main.setBounds(0, 0, worldW, worldH);
     this.physics.world.setBounds(0, 0, worldW, worldH);
     try { this.cameras.main.startFollow(this.player, true, 0.08, 0.08); } catch {}
+    try { (window as any).__applyCameraZoom?.(); } catch {}
+    try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
 
     // Multiplayer: attach shared others logic（大廳跨區顯示）
     attachOthers(this, { getArea: () => 'hall', crossArea: true });

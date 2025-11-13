@@ -12,8 +12,8 @@ export const CONFIG = {
     maxZoom: 8,
   },
   controls: {
-    baseSpeed: 80,
-    runMultiplier: 1.9,
+    baseSpeed: 200,
+    runMultiplier: 3.0,
   },
   player: {
     initialMoney: 5000,

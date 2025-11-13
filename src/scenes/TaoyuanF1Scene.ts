@@ -80,6 +80,8 @@ export class TaoyuanF1Scene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, worldW, worldH);
     this.physics.world.setBounds(0, 0, worldW, worldH);
     try { this.cameras.main.startFollow(this.player, true, 0.08, 0.08); } catch {}
+    try { (window as any).__applyCameraZoom?.(); } catch {}
+    try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
 
     // 零散人潮
     fetchTravelers().then((list) => {

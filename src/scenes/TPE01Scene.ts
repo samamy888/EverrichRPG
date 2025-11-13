@@ -73,6 +73,9 @@ export class TPE01Scene extends Phaser.Scene {
     const py = typeof data?.spawnY === 'number' ? data!.spawnY : Math.min(worldH - 8, Math.max(8, defY));
     this.player = spawnPlayer(this, px, py);
     try { this.cameras.main.startFollow(this.player, true, 0.08, 0.08); } catch {}
+    // Ensure integer snap zoom (e.g., 3x) applies immediately on scene start
+    try { (window as any).__applyCameraZoom?.(); } catch {}
+    try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
 
     // Optional: load colliders JSON if provided
     this.loadColliders('/map/TPE/TPE-01.colliders.json');
