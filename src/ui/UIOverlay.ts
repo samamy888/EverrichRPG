@@ -470,9 +470,11 @@ export class UIOverlay extends Phaser.Scene {
       { label: '購物籃', value: 'basket' },
       { label: '地點', value: 'locations' },
     ];
-    // level 2: locations
+    // level 2: locations（動態列出 TPE-01 ~ TPE-12）
+    const tpeIds = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+    const tpeItems = tpeIds.map(id => ({ label: `TPE-${id} 地圖`, value: `TPE:${id}` }));
     return [
-      { label: 'TPE-01 地圖', value: 'TPE01Scene' },
+      ...tpeItems,
       { label: '桃園 1F 大廳', value: 'TaoyuanF1Scene' },
       { label: '桃園 2F 商場', value: 'TaoyuanF2Scene' },
       { label: '桃園 3F（現有）', value: 'AirportScene' },
@@ -533,16 +535,22 @@ export class UIOverlay extends Phaser.Scene {
       if (chosen.value === 'locations') { this.menuLevel = 2; this.menuSelected = 0; this.renderMenu(); return; }
       return;
     }
-    // level 2: switch scene — stop all non-UIOverlay scenes to ensure a clean switch
-    const key = chosen.value;
-    this.closeMenu();
-    try {
-      const actives = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key && s.scene.key !== 'UIOverlay');
-      for (const s of actives) {
-        if (s.scene.key !== key) { try { this.game.scene.stop(s.scene.key); } catch {} }
-      }
-    } catch {}
-    try { this.game.scene.start(key); } catch {}
+    // level 2: switch scene — stop others then start target
+    const val = chosen.value;
+    const startClean = (key: string, data?: any) => {
+      this.closeMenu();
+      try {
+        const actives = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key && s.scene.key !== 'UIOverlay');
+        for (const s of actives) { if (s.scene.key !== key) { try { this.game.scene.stop(s.scene.key); } catch {} } }
+      } catch {}
+      try { this.game.scene.start(key, data); } catch {}
+    };
+    if (val.startsWith('TPE:')) {
+      const id = val.split(':')[1] || '01';
+      startClean('TPEMapScene', { id });
+      return;
+    }
+    startClean(val);
   }
 
   // 覆寫頂部提示為選單提示，並在關閉時恢復

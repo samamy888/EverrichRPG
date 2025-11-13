@@ -12,6 +12,7 @@ import { initClientLogging } from './utils/logger';
 import { initChat } from './ui/chat';
 import { getApiBase } from './net/http';
 import { TPE01Scene } from './scenes/TPE01Scene';
+import { TPEMapScene } from './scenes/TPEMapScene';
 
 export const GAME_WIDTH = 320;
 export const GAME_HEIGHT = 180;
@@ -29,8 +30,9 @@ const config: Phaser.Types.Core.GameConfig = {
   render: { antialias: false, pixelArt: true, roundPixels: true },
   physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.NO_CENTER },
-  // AirportScene 為桃園 3F；新增 1F/2F 場景供樓層切換；TPE01Scene 使用位圖地圖 TPE-01.png
-  scene: [BootScene, LoginScene, TaoyuanF1Scene, TaoyuanF2Scene, AirportScene, TPE01Scene, StoreScene, UIOverlay],
+  // AirportScene 為桃園 3F；新增 1F/2F 場景供樓層切換；
+  // TPE01Scene 與通用 TPEMapScene（依 id 載入 TPE-XX.png）
+  scene: [BootScene, LoginScene, TaoyuanF1Scene, TaoyuanF2Scene, AirportScene, TPE01Scene, TPEMapScene, StoreScene, UIOverlay],
 };
 
 const game = new Phaser.Game(config);
