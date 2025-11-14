@@ -62,6 +62,10 @@ export const CONFIG = {
     // 位置同步頻率（毫秒）
     moveIntervalMs: 60,
   },
+  maps: {
+    // 縮放 TPE 位圖地圖的比例（1 = 原尺寸；<1 縮小，>1 放大）
+    tpeScale: 1,
+  },
   npc: {
     // 人潮預設數量配置（可依偏好調整分佈）
     crowdCounts: { a: 6, hall: 8, b: 6 },

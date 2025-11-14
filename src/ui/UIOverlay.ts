@@ -59,6 +59,8 @@ export class UIOverlay extends Phaser.Scene {
   public minimapScaleX = 1;
   public minimapScaleY = 1;
   public minimapImg?: Phaser.GameObjects.Image;
+  // Track last known top (content) scene key to help minimap during transitions
+  private currentTopKey: string | null = null;
   private shouldShowMinimap(): boolean {
     try {
       if (!CONFIG.ui.minimap.enabled) return false;
@@ -158,11 +160,17 @@ export class UIOverlay extends Phaser.Scene {
     try {
       const ge: any = (this.game.scene as any).events;
       const log = (...args: any[]) => { try { if (new URL(window.location.href).searchParams.get('debugMinimap') === '1' || (window as any).__debugMinimap) console.debug('[minimap]', ...args); } catch {} };
-      const rerender = (evt?: string) => { log('rerender', evt || ''); try { this.ensureMinimap(); this.positionMinimap(); this.renderMinimap(); } catch (e) { log('rerender error', e); } };
-      ge.on('start', () => rerender('start'));
-      ge.on('transitioncomplete', () => rerender('transitioncomplete'));
-      ge.on('wake', () => rerender('wake'));
-      ge.on('resume', () => rerender('resume'));
+      const noteTop = (key?: string, sc?: any, tag?: string) => {
+        const k = (typeof key === 'string' && key) ? key : (sc?.scene?.key || sc?.key);
+        if (k && k !== 'UIOverlay') {
+          this.currentTopKey = k; (window as any).__minimapTopKey = k; log('top:=', k, tag || '');
+        }
+      };
+      const rerender = (evt?: string) => { log('rerender', evt || '', 'top=', this.currentTopKey); try { this.ensureMinimap(); this.positionMinimap(); this.renderMinimap(); } catch (e) { log('rerender error', e); } };
+      ge.on('start', (key: any, sc: any) => { noteTop(key, sc, 'start'); rerender('start'); });
+      ge.on('transitioncomplete', (key: any, sc: any) => { noteTop(key, sc, 'transitioncomplete'); rerender('transitioncomplete'); });
+      ge.on('wake', (sc: any) => { noteTop(undefined as any, sc, 'wake'); rerender('wake'); });
+      ge.on('resume', (sc: any) => { noteTop(undefined as any, sc, 'resume'); rerender('resume'); });
       // 提供全域重新渲染介面給各內容場景在 create 後呼叫
       (window as any).__rerenderMinimap = () => { try { rerender('manual'); this.time.delayedCall(0, () => rerender('manual-next')); requestAnimationFrame(() => rerender('manual-raf')); } catch (e) { log('manual error', e); } };
     } catch {}
@@ -556,6 +564,13 @@ export class UIOverlay extends Phaser.Scene {
     const val = chosen.value;
     const startClean = (key: string, data?: any) => {
       this.closeMenu();
+      // 記錄目前場景的小地圖縮圖資訊作為過渡備援
+      try {
+        const actives0 = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key && s.scene.key !== 'UIOverlay');
+        const curTop: any = actives0.length ? actives0[actives0.length - 1] : null;
+        const k = (curTop as any)?.__minimapTex, w = (curTop as any)?.__minimapW, h = (curTop as any)?.__minimapH;
+        if (k && w && h) (window as any).__minimapLast = { key: k, w, h };
+      } catch {}
       // 先啟動目標場景，避免在空窗期沒有 top scene（導致小地圖清空）
       try { this.game.scene.start(key, data); } catch {}
       // 觸發小地圖重新渲染（多次保險）

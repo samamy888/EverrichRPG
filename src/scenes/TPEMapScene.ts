@@ -54,7 +54,16 @@ export class TPEMapScene extends Phaser.Scene {
     // Background image and world bounds
     const texKey = `tpe-${this.mapId}`;
     const bg = this.add.image(0, 0, texKey).setOrigin(0, 0).setDepth(0);
-    const worldW = bg.width; const worldH = bg.height;
+    // Apply runtime map scale if configured or provided via URL (?mapScale=0.5)
+    let mapScale = 1;
+    try {
+      const u = new URL(window.location.href);
+      const q = parseFloat(u.searchParams.get('mapScale') || '');
+      if (!isNaN(q) && q > 0.05 && q <= 4) mapScale = q; else mapScale = (CONFIG as any)?.maps?.tpeScale || 1;
+    } catch { mapScale = (CONFIG as any)?.maps?.tpeScale || 1; }
+    try { bg.setScale(mapScale); } catch {}
+    const worldW = Math.max(1, Math.round(bg.displayWidth));
+    const worldH = Math.max(1, Math.round(bg.displayHeight));
     ;(this as any).__minimapTex = texKey; (this as any).__minimapW = worldW; (this as any).__minimapH = worldH;
     try { (window as any).__minimapLast = { key: texKey, w: worldW, h: worldH }; } catch {}
     try { if (new URL(window.location.href).searchParams.get('debugMinimap') === '1' || (window as any).__debugMinimap) console.debug('[minimap] TPEMapScene set tex', { texKey, worldW, worldH }); } catch {}

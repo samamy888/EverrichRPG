@@ -50,8 +50,16 @@ export class TPE01Scene extends Phaser.Scene {
 
     // Background image and world bounds
     const bg = this.add.image(0, 0, 'tpe01').setOrigin(0, 0).setDepth(0);
-    const worldW = bg.width;
-    const worldH = bg.height;
+    // Apply runtime map scale if configured or provided via URL (?mapScale=0.5)
+    let mapScale = 1;
+    try {
+      const u = new URL(window.location.href);
+      const q = parseFloat(u.searchParams.get('mapScale') || '');
+      if (!isNaN(q) && q > 0.05 && q <= 4) mapScale = q; else mapScale = (CONFIG as any)?.maps?.tpeScale || 1;
+    } catch { mapScale = (CONFIG as any)?.maps?.tpeScale || 1; }
+    try { bg.setScale(mapScale); } catch {}
+    const worldW = Math.max(1, Math.round(bg.displayWidth));
+    const worldH = Math.max(1, Math.round(bg.displayHeight));
     ;(this as any).__minimapTex = 'tpe01';
     ;(this as any).__minimapW = worldW;
     ;(this as any).__minimapH = worldH;

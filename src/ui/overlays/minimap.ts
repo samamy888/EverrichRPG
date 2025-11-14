@@ -55,11 +55,48 @@ export function renderMinimap(scene: any) {
     }
     if (dbgOn) try { console.debug('[minimap] using fallback minimapLast'); } catch {}
   }
+  // 若有 active top 但其縮圖資訊尚未就緒，嘗試使用備援
+  if ((!imgKey || !imgW || !imgH) && (window as any).__minimapLast) {
+    try {
+      const last = (window as any).__minimapLast as { key: string; w: number; h: number };
+      imgKey = imgKey || last.key; imgW = imgW || last.w; imgH = imgH || last.h;
+      if (dbgOn) try { console.debug('[minimap] using last fallback with active top'); } catch {}
+    } catch {}
+  }
   // If scene provides an image-based map, render true thumbnail
   const texMgr: any = (scene as any).textures;
   const imgReady = !!(imgKey && imgW && imgH && texMgr?.exists?.(imgKey));
   if (dbgOn) {
     try { console.debug('[minimap] render', { topKey: top?.scene?.key, hasLayer: !!layer, imgKey, imgW, imgH, imgReady }); } catch {}
+  }
+  // If we have image info but texture not yet in cache, keep previous image visible and prep for swap
+  if (!imgReady && imgKey && imgW && imgH) {
+    const maxW = CONFIG.ui.minimap.maxWidth;
+    const maxH = CONFIG.ui.minimap.maxHeight;
+    const s = Math.min(maxW / imgW, maxH / imgH);
+    const contentW = Math.max(1, Math.round(imgW * s));
+    const contentH = Math.max(1, Math.round(imgH * s));
+    const { w } = scene.getViewSize();
+    const pad = CONFIG.ui.minimap.pad;
+    const posX = w - contentW - pad;
+    const posY = scene.hintBox.height + pad;
+    try { scene.minimapBox.setPosition(posX, posY).setSize(contentW, contentH).setVisible(true); } catch {}
+    try { scene.minimapGfx.setPosition(posX, posY).setVisible(true).clear(); } catch {}
+    if (scene.minimapImg) {
+      try { scene.minimapImg.setPosition(posX, posY).setDisplaySize(contentW, contentH).setVisible(true); } catch {}
+    }
+    try {
+      const ev = (texMgr && (texMgr.events || texMgr));
+      ev?.once?.('addtexture', (key: string) => {
+        if (key === imgKey) {
+          try { scene.minimapImg?.setTexture(imgKey).setPosition(posX, posY).setDisplaySize(contentW, contentH).setVisible(true); } catch {}
+          try { (window as any).__rerenderMinimap?.(); } catch {}
+        }
+      });
+    } catch {}
+    // Try again shortly
+    try { setTimeout(() => { try { (window as any).__rerenderMinimap?.(); } catch {} }, 32); } catch {}
+    return;
   }
   if (imgReady) {
     const maxW = CONFIG.ui.minimap.maxWidth;
