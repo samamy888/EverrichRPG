@@ -11,6 +11,12 @@ export class LoginScene extends Phaser.Scene {
     this.cameras.main.fadeIn(250, 0, 0, 0);
     this.cameras.main.setBackgroundColor('#0d1220');
 
+    // 清理舊的面板 (防範多次進入 LoginScene)
+    try { 
+        const old = document.getElementById('login-panel');
+        if (old) old.remove();
+    } catch {}
+
     // 頁面上方標題
     const titleEl = document.createElement('div');
     titleEl.textContent = '一起來逛免稅店';
@@ -47,9 +53,8 @@ export class LoginScene extends Phaser.Scene {
       </div>
       <label style="display:block;margin:10px 0 2px">起始場景</label>
       <select id="lg-scene" style="width:100%;padding:6px;border-radius:8px;border:1px solid #405065;background:#0e1622;color:#e6f0ff">
-        <option value="TPE2LobbyScene">桃園 T2 大廳 (NEW)</option>
+        <option value="TPE2LobbyScene">桃園 T2 大廳</option>
         <option value="TPE01Scene">TPE-01 地圖</option>
-        <option value="AirportScene">桃園 3F（現有）</option>
       </select>
       <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
         <button id="lg-ok" style="padding:6px 10px;border-radius:8px;border:1px solid #4a5668;background:#1a2330;color:#e6f0ff;cursor:pointer">開始遊戲</button>

@@ -126,6 +126,21 @@ export function initChat(game: Phaser.Game) {
   } catch {}
 }
 
+export function destroyChat() {
+  inited = false;
+  if (panel) {
+    try { panel.remove(); } catch {}
+    panel = null;
+  }
+  listEl = null;
+  inputEl = null;
+  // 清理全域方法
+  (window as any).__chatClear = null;
+  (window as any).__chatSetVisible = null;
+  (window as any).__chatToggle = null;
+  (window as any).__chatGetVisible = null;
+}
+
 function renderMessage(m: ChatMessage) {
   if (!listEl) return;
   const time = new Date(m.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

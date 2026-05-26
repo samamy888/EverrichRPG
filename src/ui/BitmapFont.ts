@@ -55,35 +55,46 @@ export function registerTinyBitmapFont(scene: Phaser.Scene, key = 'tiny5x7') {
   const texH = glyphH;
   const keyImage = `${key}-image`;
 
-  const canvas = scene.textures.createCanvas(keyImage, texW, texH);
-  const ctx = canvas!.getContext();
-  ctx.clearRect(0, 0, texW, texH);
-  ctx.imageSmoothingEnabled = false as any;
-  ctx.fillStyle = '#ffffff';
+  // 1. 處理紋理 (Texture)
+  let canvas: Phaser.Textures.CanvasTexture | null = null;
+  if (scene.textures.exists(keyImage)) {
+    canvas = scene.textures.get(keyImage) as Phaser.Textures.CanvasTexture;
+  } else {
+    canvas = scene.textures.createCanvas(keyImage, texW, texH);
+    if (canvas) {
+      const ctx = canvas.getContext();
+      ctx.clearRect(0, 0, texW, texH);
+      (ctx as any).imageSmoothingEnabled = false;
+      ctx.fillStyle = '#ffffff';
 
-  for (let i = 0; i < chars.length; i++) {
-    const ch = chars[i];
-    const bmp = bitmaps[ch];
-    const ox = i * (glyphW + spacingX);
-    if (!bmp) continue;
-    for (let y = 0; y < glyphH; y++) {
-      const row = bmp[y];
-      for (let x = 0; x < glyphW; x++) {
-        if (row[x] === '1') ctx.fillRect(ox + x, y, 1, 1);
+      for (let i = 0; i < chars.length; i++) {
+        const ch = chars[i];
+        const bmp = bitmaps[ch];
+        const ox = i * (glyphW + spacingX);
+        if (!bmp) continue;
+        for (let y = 0; y < glyphH; y++) {
+          const row = bmp[y];
+          for (let x = 0; x < glyphW; x++) {
+            if (row[x] === '1') ctx.fillRect(ox + x, y, 1, 1);
+          }
+        }
       }
+      canvas.refresh();
     }
   }
-  canvas!.refresh();
 
-  const config: any = {
-    image: keyImage,
-    width: glyphW,
-    height: glyphH,
-    chars,
-    charsPerRow: cols,
-    spacing: { x: spacingX, y: 0 },
-  };
-  const data = (Phaser.GameObjects as any).RetroFont.Parse(scene, config);
-  scene.cache.bitmapFont.add(key, data);
+  // 2. 處理字型快取 (Cache)
+  if (!scene.cache.bitmapFont.exists(key)) {
+    const config: any = {
+      image: keyImage,
+      width: glyphW,
+      height: glyphH,
+      chars,
+      charsPerRow: cols,
+      spacing: { x: spacingX, y: 0 },
+    };
+    const data = (Phaser.GameObjects as any).RetroFont.Parse(scene, config);
+    scene.cache.bitmapFont.add(key, data);
+  }
 }
 

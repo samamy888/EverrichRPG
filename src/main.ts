@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { AirportScene } from './scenes/AirportScene';
 import { StoreScene } from './scenes/StoreScene';
 import { UIOverlay } from './ui/UIOverlay';
 import { BootScene } from './scenes/BootScene';
@@ -29,8 +28,8 @@ const config: Phaser.Types.Core.GameConfig = {
   render: { antialias: false, pixelArt: true, roundPixels: true },
   physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.NO_CENTER },
-  // AirportScene 為桃園 3F；TPE01Scene 與通用 TPEMapScene（依 id 載入 TPE-XX.png）
-  scene: [BootScene, LoginScene, AirportScene, TPE01Scene, TPEMapScene, TPE2LobbyScene, StoreScene, UIOverlay],
+  // TPE01Scene 與通用 TPEMapScene（依 id 載入 TPE-XX.png）
+  scene: [BootScene, LoginScene, TPE01Scene, TPEMapScene, TPE2LobbyScene, StoreScene, UIOverlay],
 };
 
 const game = new Phaser.Game(config);
@@ -116,9 +115,10 @@ if (e.code === 'BracketLeft') { // [ decrease int zoom
 }
 // 開發快捷：Ctrl+Alt+T 切換到 TPE-01 位圖地圖
 if (e.ctrlKey && e.altKey && e.code === 'KeyT') {
-  try { game.scene.stop('AirportScene'); } catch {}
+  try { game.scene.stop('TPE2LobbyScene'); } catch {}
   try { game.scene.start('TPE01Scene'); } catch {}
 }
+
 });
 // 預設：迷你地圖人群黑點關閉（可由面板開啟）
 (window as any).__minimapCrowd = false;

@@ -4,7 +4,7 @@ import { CONFIG } from '../config';
 import { t } from '../i18n';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 import { ensureMinimap, positionMinimap, renderMinimap } from './overlays/minimap';
-import { initChat } from './chat';
+import { initChat, destroyChat } from './chat';
 import { openBasket as extOpenBasket, closeBasket as extCloseBasket, renderBasket as extRenderBasket, moveBasket as extMoveBasket, pickBasket as extPickBasket } from './overlays/basket';
 import { openDialog as extOpenDialog, advanceDialog as extAdvanceDialog, closeDialog as extCloseDialog } from './overlays/dialog';
 
@@ -86,7 +86,13 @@ export class UIOverlay extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('rgba(0,0,0,0)');
     this.cameras.main.setAlpha(1);
     this.cameras.main.setRoundPixels(true);
-    // 重新套用全域相機縮放於喚醒/恢復時
+
+    // 註冊清理邏輯
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.registry.events.off('changedata', this.onDataChanged, this);
+      // 徹底清理聊天室
+      try { destroyChat(); } catch {}
+    });
     this.events.on(Phaser.Scenes.Events.WAKE, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
     this.events.on(Phaser.Scenes.Events.RESUME, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
     try { (window as any).__applyCameraZoom?.(); } catch {}
@@ -500,6 +506,7 @@ export class UIOverlay extends Phaser.Scene {
     if (this.menuLevel === 1) return [
       { label: '購物籃', value: 'basket' },
       { label: '地點', value: 'locations' },
+      { label: '回到主畫面', value: 'logout' },
     ];
     // level 2: locations（動態列出 TPE-01 ~ TPE-12）
     const tpeIds = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
@@ -507,7 +514,6 @@ export class UIOverlay extends Phaser.Scene {
     return [
       ...tpeItems,
       { label: '桃園 T2 大廳', value: 'TPE2LobbyScene' },
-      { label: '桃園 3F（現有）', value: 'AirportScene' },
     ];
   }
   private renderMenu() {
@@ -563,6 +569,17 @@ export class UIOverlay extends Phaser.Scene {
     if (this.menuLevel === 1) {
       if (chosen.value === 'basket') { this.closeMenu(); this.openBasket(); return; }
       if (chosen.value === 'locations') { this.menuLevel = 2; this.menuSelected = 0; this.renderMenu(); return; }
+      if (chosen.value === 'logout') {
+        this.closeMenu();
+        // 停止所有場景並回到登入畫面
+        this.game.scene.getScenes(true).forEach(s => {
+          if (s.scene.key !== 'UIOverlay') {
+            try { this.game.scene.stop(s.scene.key); } catch {}
+          }
+        });
+        this.game.scene.start('LoginScene');
+        return;
+      }
       return;
     }
     // level 2: switch scene — stop others then start target

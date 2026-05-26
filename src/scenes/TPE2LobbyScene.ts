@@ -17,18 +17,8 @@ export class TPE2LobbyScene extends BaseScene {
   constructor() { super('TPE2LobbyScene'); }
 
   preload() {
-    // 1. 建立高對比程序化瓦片
-    if (!this.textures.exists('clean-airport-tiles')) {
-      const g = this.make.graphics({ x: 0, y: 0 });
-      const TILE = 16;
-      // Index 0: Floor (Light Gray with Grid)
-      g.fillStyle(0xf0f4f8, 1); g.fillRect(0, 0, TILE, TILE);
-      g.lineStyle(1, 0xccd5db, 1); g.strokeRect(0, 0, TILE, TILE);
-      // Index 1: Wall (Dark Steel Gray)
-      g.fillStyle(0x2d3748, 1); g.fillRect(TILE, 0, TILE, TILE);
-      g.fillStyle(0x1a202c, 1); g.fillRect(TILE, TILE-2, TILE, 2);
-      g.generateTexture('clean-airport-tiles', TILE * 2, TILE); g.destroy();
-    }
+    // 1. 載入清理過的 Tileset 圖片
+    this.load.image('airport-tiles', 'map/TPE2/airport_tileset_clean.png');
 
     // 2. 載入高品質物件 (Props)
     const props = [
@@ -44,11 +34,12 @@ export class TPE2LobbyScene extends BaseScene {
   create(data: BaseSceneData) {
     this.fadeIn();
     this.initInputs();
-    this.cameras.main.setBackgroundColor('#1a202c'); 
+    this.cameras.main.setBackgroundColor('#2d3748'); 
 
-    // 建立 16x16 的 Tilemap (120x80 格，仿照 3F 的寬度)
+    // 建立 Tilemap (120x80 格)
     const map = this.make.tilemap({ width: 120, height: 80, tileWidth: 16, tileHeight: 16 });
-    const tileset = map.addTilesetImage('clean-airport-tiles', 'clean-airport-tiles', 16, 16, 0, 0);
+    // 使用實際的 Tileset 圖片
+    const tileset = map.addTilesetImage('airport-tiles', 'airport-tiles', 16, 16, 0, 0);
     this.layer = map.createBlankLayer('BaseArchitecture', tileset!)!;
     this.layer.setDepth(-1); 
     
@@ -56,7 +47,10 @@ export class TPE2LobbyScene extends BaseScene {
     this.worldH = map.heightInPixels;
 
     // --- 鋪設「工」字型地圖 ---
-    const FLOOR = 1; const WALL = 2;
+    // 1768: 乾淨地磚, 1000: 純色灰色填充 (牆壁)
+    const FLOOR = 1768 + 1; 
+    const WALL = 1000 + 1;
+    
     // 先填滿牆壁
     this.layer.fill(WALL, 0, 0, map.width, map.height);
 
@@ -64,11 +58,11 @@ export class TPE2LobbyScene extends BaseScene {
         this.layer.fill(FLOOR, x, y, w, h);
     };
 
-    // 1. 上方橫向走廊 (A 區)
+    // 1. 上方橫向走廊
     putFloor(0, 5, map.width, 12);
-    // 2. 下方橫向走廊 (B 區)
+    // 2. 下方橫向走廊
     putFloor(0, map.height - 17, map.width, 12);
-    // 3. 中央垂直大廳 (H 區)
+    // 3. 中央垂直大廳
     const hallW = 30;
     const midX = Math.floor(map.width / 2);
     putFloor(midX - Math.floor(hallW / 2), 17, hallW, map.height - 34);
@@ -136,7 +130,7 @@ export class TPE2LobbyScene extends BaseScene {
 
     attachOthers(this, { getArea: () => 't2_lobby', crossArea: false });
 
-    this.setLocation('T2 大廳 (工字型)', 'concourse');
+    this.setLocation('桃園 T2 大廳', 'concourse');
     this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);
     this.physics.world.setBounds(0, 0, this.worldW, this.worldH);
     
