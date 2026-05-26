@@ -5,6 +5,7 @@ import { CONFIG } from '../config';
 import { createCrowd, updateCrowd, updateNameplates } from '../actors/NpcCrowd';
 import { fetchTravelers } from '../api/travelers';
 import { attachOthers } from '../net/others';
+import { T2_FACILITIES, Facility } from '../data/facilities';
 
 export class TPE2LobbyScene extends BaseScene {
   public layer!: Phaser.Tilemaps.TilemapLayer;
@@ -17,16 +18,18 @@ export class TPE2LobbyScene extends BaseScene {
   constructor() { super('TPE2LobbyScene'); }
 
   preload() {
-    // 1. 載入清理過的 Tileset 圖片
-    this.load.image('airport-tiles', 'map/TPE2/airport_tileset_clean.png');
+    // 1. 載入自動生成的 Tilemap JSON 與高品質 Tileset V2
+    this.load.tilemapTiledJSON('t2-lobby-map', 'map/TPE2/tpe2_lobby.json');
+    this.load.image('pro-tiles-v2', 'map/TPE2/pro_tiles_v2.png');
 
-    // 2. 載入高品質物件 (Props)
-    const props = [
-      'curved-info-desk', 'security-partition', 'airport-chairs', 
-      'flight-board', 'checkin-kiosk', 'potted-palm', 
-      'trash-bin', 'airport-atm', 'signage-pillar'
-    ];
-    props.forEach(p => {
+    // 2. 載入對齊參考圖 (TPE-11)
+    this.load.image('alignment-ref', 'map/TPE/TPE-11.png');
+
+    // 3. 載入設施 (從數據庫動態讀取需要的素材)
+    const uniqueProps = Array.from(new Set(T2_FACILITIES.map(f => f.texture.replace('prop-', ''))));
+    ['airport-chairs', 'trash-bin', 'potted-palm'].forEach(p => { if(!uniqueProps.includes(p)) uniqueProps.push(p); });
+    
+    uniqueProps.forEach(p => {
       this.load.image(`prop-${p}`, `map/TPE2/props/${p}/prop.png`);
     });
   }
@@ -36,69 +39,44 @@ export class TPE2LobbyScene extends BaseScene {
     this.initInputs();
     this.cameras.main.setBackgroundColor('#2d3748'); 
 
-    // 建立 Tilemap (120x80 格)
-    const map = this.make.tilemap({ width: 120, height: 80, tileWidth: 16, tileHeight: 16 });
-    // 使用實際的 Tileset 圖片
-    const tileset = map.addTilesetImage('airport-tiles', 'airport-tiles', 16, 16, 0, 0);
-    this.layer = map.createBlankLayer('BaseArchitecture', tileset!)!;
-    this.layer.setDepth(-1); 
+    // --- 0. 建立對齊參考圖 (預設隱藏，按 V 開關) ---
+    const ref = this.add.image(0, 0, 'alignment-ref').setOrigin(0, 0).setAlpha(0.5).setDepth(20000).setVisible(false);
+    (this as any).refOverlay = ref;
+
+    // --- 1. 建立 Tilemap ---
+    const map = this.make.tilemap({ key: 't2-lobby-map' });
+    const tileset = map.addTilesetImage('pro-tiles-v2', 'pro-tiles-v2');
+    this.layer = map.createLayer('BaseArchitecture', tileset!)!;
     
     this.worldW = map.widthInPixels;
     this.worldH = map.heightInPixels;
 
-    // --- 鋪設「工」字型地圖 ---
-    // 1768: 乾淨地磚, 1000: 純色灰色填充 (牆壁)
-    const FLOOR = 1768 + 1; 
-    const WALL = 1000 + 1;
+    // 設定碰撞 (GID 3:建築, 4:窗戶/戶外, 5:店面, 6:柱子)
+    this.layer.setCollision([3, 4, 5, 6]);
     
-    // 先填滿牆壁
-    this.layer.fill(WALL, 0, 0, map.width, map.height);
+    // 初始化除錯繪圖
+    this.physics.world.createDebugGraphic();
+    this.physics.world.drawDebug = false;
+    (this as any).tileDebugGraphics = this.add.graphics().setDepth(20000).setVisible(false);
 
-    const putFloor = (x: number, y: number, w: number, h: number) => {
-        this.layer.fill(FLOOR, x, y, w, h);
-    };
+    // 註冊 V 鍵切換對齊參考圖
+    // (已移至 update 循環偵測，避免重複觸發)
 
-    // 1. 上方橫向走廊
-    putFloor(0, 5, map.width, 12);
-    // 2. 下方橫向走廊
-    putFloor(0, map.height - 17, map.width, 12);
-    // 3. 中央垂直大廳
-    const hallW = 30;
-    const midX = Math.floor(map.width / 2);
-    putFloor(midX - Math.floor(hallW / 2), 17, hallW, map.height - 34);
-
-    this.layer.setCollision(WALL);
-
-    // --- 建立物件群組 ---
+    // --- 2. 自動化設施放置 (Data-Driven) ---
     this.propsGroup = this.physics.add.staticGroup();
 
-    // 在中央大廳放置高品質物件
-    const centerX = midX * 16;
-    const centerY = (map.height / 2) * 16;
+    T2_FACILITIES.forEach(fac => {
+        this.addFacility(fac);
+    });
 
-    this.addInteractable(centerX, centerY, 'curved-info-desk', '服務台', () => {
-      this.setHint('歡迎來到桃園機場 T2！');
-    }, true);
-    
-    this.addInteractable(centerX, 18 * 16, 'flight-board', '大螢幕看板', () => {
-      this.setHint('顯示全航站班機資訊。');
-    }, true);
-
-    // 在橫向走廊佈置椅子
-    for (let x = 200; x < this.worldW - 200; x += 300) {
-        this.addProp(x, 15 * 16, 'airport-chairs', true);
-        this.addProp(x, (map.height - 15) * 16, 'airport-chairs', true);
+    // 隨機裝飾：在走廊放椅子
+    for (let x = 500; x < this.worldW - 500; x += 1200) {
+        this.addProp(x, this.worldH - 400, 'airport-chairs', true);
     }
-    
-    // 大廳角落裝飾
-    this.addProp(centerX - 200, centerY - 100, 'airport-atm', true);
-    this.addProp(centerX + 200, centerY - 100, 'checkin-kiosk', true);
-    this.addProp(centerX - 200, centerY + 100, 'potted-palm', true);
-    this.addProp(centerX + 200, centerY + 100, 'potted-palm', true);
 
-    // 玩家重生點 (大廳中央下方)
-    const px = data?.spawnX ?? centerX;
-    const py = data?.spawnY ?? centerY + 100;
+    // 玩家重生點
+    const px = data?.spawnX ?? this.worldW / 2;
+    const py = data?.spawnY ?? (this.worldH - 300);
     this.setupPlayer(px, py); 
     this.physics.add.collider(this.player, this.layer);
     this.physics.add.collider(this.player, this.propsGroup);
@@ -113,7 +91,7 @@ export class TPE2LobbyScene extends BaseScene {
       }
     } catch {}
 
-    // NPC (分散在工字型區域)
+    // NPC
     fetchTravelers().then((list) => {
       this.crowd = createCrowd(this, {
         count: 15,
@@ -140,40 +118,37 @@ export class TPE2LobbyScene extends BaseScene {
     try { (window as any).__rerenderMinimap?.(); } catch {}
   }
 
+  private addFacility(fac: Facility) {
+    const p = this.addProp(fac.x, fac.y, fac.texture.replace('prop-', ''), true);
+    if (fac.scale) p.setScale(fac.scale);
+    
+    this.interactables.push({ 
+        world: new Phaser.Math.Vector2(fac.x, fac.y), 
+        label: fac.name, 
+        action: () => {
+            if (fac.targetScene) {
+                this.changeScene(fac.targetScene);
+            } else if (fac.hint) {
+                this.setHint(fac.hint);
+            }
+        } 
+    });
+  }
+
   private addProp(x: number, y: number, key: string, collide: boolean) {
-    // 1. 先建立圖片並縮放
     const p = this.add.image(x, y, `prop-${key}`).setOrigin(0.5, 1);
     p.setScale(0.18); 
 
     if (collide) {
-      // 2. 加入物理引擎 (靜態)
       this.physics.add.existing(p, true);
       const body = p.body as Phaser.Physics.Arcade.StaticBody;
-
-      // 3. 關鍵：refreshBody 會根據目前的 displayWidth/Height 重設物理箱
-      // 我們先呼叫它，然後再手動縮小碰撞箱到「腳下」
       body.updateFromGameObject(); 
-      
-      // 獲取縮放後的尺寸
       const sw = p.displayWidth;
-      const sh = p.displayHeight;
-
-      // 設定極小的碰撞面積（只佔物件底部的 10 像素高，且寬度稍微收縮）
-      // 注意：StaticBody 的 setSize 是以「像素」為單位，不受 scale 影響
       body.setSize(sw * 0.6, 12);
       body.setOffset((p.width - (sw * 0.6) / 0.18) / 2, p.height - 12 / 0.18);
-      
-      // 再次刷新確保位置正確
       body.updateFromGameObject();
-      
       this.propsGroup.add(p);
     }
-    return p;
-  }
-
-  private addInteractable(x: number, y: number, key: string, label: string, action: () => void, collide: boolean) {
-    const p = this.addProp(x, y, key, collide);
-    this.interactables.push({ world: new Phaser.Math.Vector2(x, y), label, action });
     return p;
   }
 
@@ -181,11 +156,40 @@ export class TPE2LobbyScene extends BaseScene {
     if (!this.player) return;
     this.updatePlayerMovement();
     this.updateNetworkMovement('t2_lobby');
+
+    // 1. 切換對齊參考圖 (按 V)
+    if (Phaser.Input.Keyboard.JustDown(this.keys.V)) {
+        const ref = (this as any).refOverlay;
+        if (ref) {
+            ref.setVisible(!ref.visible);
+            this.setHint(`對齊模式: ${ref.visible ? '開啟' : '關閉'}`);
+        }
+    }
+
+    // 2. 切換物理除錯 (按 C)
+    if (Phaser.Input.Keyboard.JustDown(this.keys.C)) {
+        this.physics.world.drawDebug = !this.physics.world.drawDebug;
+        if (!this.physics.world.debugGraphic) this.physics.world.createDebugGraphic();
+        this.physics.world.debugGraphic.setVisible(this.physics.world.drawDebug);
+        
+        // 同步切換 Tilemap 除錯顯示
+        const tg = (this as any).tileDebugGraphics;
+        if (tg) {
+            tg.setVisible(this.physics.world.drawDebug);
+            if (tg.visible) {
+                tg.clear();
+                this.layer.renderDebug(tg, {
+                    tileColor: null, // 非碰撞瓦片不畫
+                    collidingTileColor: new Phaser.Display.Color(243, 134, 48, 128), // 碰撞瓦片用橘色
+                    faceColor: new Phaser.Display.Color(40, 39, 37, 255) // 邊緣
+                });
+            }
+        }
+    }
     
     // Y-sorting
     this.children.each((child: any) => {
-      // 確保只對有紋理且不是底層 Layer 的物件進行深度排序
-      if (child === this.layer) return; 
+      if (child === this.layer || (this as any).refOverlay === child) return; 
       if (child.texture && (child.texture.key.startsWith('prop-') || child.texture.key === 'characters' || child.texture.key === 'sprite-npc')) {
         child.setDepth(child.y);
       }

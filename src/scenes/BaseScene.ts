@@ -22,7 +22,7 @@ export class BaseScene extends Phaser.Scene {
 
   protected initInputs() {
     this.cursors = this.input.keyboard!.createCursorKeys();
-    this.keys = this.input.keyboard!.addKeys('W,A,S,D,E,SHIFT,ESC,C') as any;
+    this.keys = this.input.keyboard!.addKeys('W,A,S,D,E,SHIFT,ESC,C,V') as any;
     this.controls = { cursors: this.cursors, keys: this.keys };
   }
 
