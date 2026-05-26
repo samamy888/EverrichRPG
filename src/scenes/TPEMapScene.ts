@@ -1,19 +1,14 @@
-import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '../main';
+import { BaseScene, BaseSceneData } from './BaseScene';
 import { CONFIG } from '../config';
 import { getClient } from '../net/ws';
-import { spawnPlayer, updatePlayer } from '../actors/Player';
 
-type EnterData = { id?: string; spawnX?: number; spawnY?: number };
+type EnterData = BaseSceneData & { id?: string };
 type RectCollider = { type: 'rect'; x: number; y: number; width: number; height: number };
 type CollidersFile = { version?: number; colliders: RectCollider[] };
 
-export class TPEMapScene extends Phaser.Scene {
+export class TPEMapScene extends BaseScene {
   private mapId: string = '01';
-  private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  private controls!: { cursors: Phaser.Types.Input.Keyboard.CursorKeys; keys: any };
   public layer!: Phaser.Tilemaps.TilemapLayer; // dummy minimap layer
-  private lastMoveSent = 0;
   private collidersGroup?: Phaser.Physics.Arcade.StaticGroup;
   private collidersGfx?: Phaser.GameObjects.Graphics;
 
@@ -30,7 +25,7 @@ export class TPEMapScene extends Phaser.Scene {
       this.load.image(texKey, `/map/TPE/TPE-${this.mapId}.png`);
     }
     if (!this.textures.exists('df-tiles')) {
-      const g = this.make.graphics({ x: 0, y: 0, add: false });
+      const g = this.make.graphics({ x: 0, y: 0 });
       const TILE = 16;
       const palette = { floorA: 0xeaf2f9, floorB: 0xdfeaf5, border: 0xbdcfe1, stripe: 0xb3d4f0, facade: 0xe4f1fa, glass: 0x8ad4ff, door: 0x8bc34a, light: 0xfff7cc } as const;
       g.fillStyle(palette.floorA, 1); g.fillRect(0 * TILE, 0, TILE, TILE);
@@ -47,26 +42,20 @@ export class TPEMapScene extends Phaser.Scene {
   }
 
   create(data: EnterData) {
-    const cursors = this.input.keyboard.createCursorKeys();
-    const keys = this.input.keyboard.addKeys('W,A,S,D,E,SHIFT,C') as any;
-    this.controls = { cursors, keys } as any;
+    this.fadeIn();
+    this.initInputs();
 
     // Background image and world bounds
     const texKey = `tpe-${this.mapId}`;
     const bg = this.add.image(0, 0, texKey).setOrigin(0, 0).setDepth(0);
-    // Apply runtime map scale if configured or provided via URL (?mapScale=0.5)
-    let mapScale = 1;
-    try {
-      const u = new URL(window.location.href);
-      const q = parseFloat(u.searchParams.get('mapScale') || '');
-      if (!isNaN(q) && q > 0.05 && q <= 4) mapScale = q; else mapScale = (CONFIG as any)?.maps?.tpeScale || 1;
-    } catch { mapScale = (CONFIG as any)?.maps?.tpeScale || 1; }
+    let mapScale = (CONFIG as any)?.maps?.tpeScale || 1;
+    let natW = Number(bg.width) || 0, natH = Number(bg.height) || 0;
+    try { const t: any = this.textures.get(texKey); const img: any = t?.getSourceImage?.(); if (img) { natW = Number(img.naturalWidth || img.width || natW); natH = Number(img.naturalHeight || img.height || natH); } } catch {}
     try { bg.setScale(mapScale); } catch {}
     const worldW = Math.max(1, Math.round(bg.displayWidth));
     const worldH = Math.max(1, Math.round(bg.displayHeight));
     ;(this as any).__minimapTex = texKey; (this as any).__minimapW = worldW; (this as any).__minimapH = worldH;
-    try { (window as any).__minimapLast = { key: texKey, w: worldW, h: worldH }; } catch {}
-    try { if (new URL(window.location.href).searchParams.get('debugMinimap') === '1' || (window as any).__debugMinimap) console.debug('[minimap] TPEMapScene set tex', { texKey, worldW, worldH }); } catch {}
+    ;(this as any).__minimapNatW = natW; (this as any).__minimapNatH = natH; (this as any).__mapScale = mapScale;
     try { (window as any).__rerenderMinimap?.(); } catch {}
     this.cameras.main.setBounds(0, 0, worldW, worldH);
     this.physics.world.setBounds(0, 0, worldW, worldH);
@@ -76,28 +65,21 @@ export class TPEMapScene extends Phaser.Scene {
     const mapH = Math.max(1, Math.ceil(worldH / 16));
     const map = this.make.tilemap({ width: mapW, height: mapH, tileWidth: 16, tileHeight: 16 });
     const tiles = map.addTilesetImage('df-tiles');
-    this.layer = map.createBlankLayer('floor', tiles!, 0, 0);
+    this.layer = map.createBlankLayer('floor', tiles!, 0, 0)!;
     const base = (tiles as any).firstgid ?? 1; const FLOOR_A = base + 0, FLOOR_B = base + 1;
     for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) this.layer.putTileAt(((x + y) % 2 === 0) ? FLOOR_A : FLOOR_B, x, y);
     this.layer.setAlpha(0);
 
-    // Player at center by default
+    // Player
     const defX = Math.round(worldW / 2); const defY = Math.round(worldH / 2);
     const px = typeof data?.spawnX === 'number' ? data!.spawnX : Math.min(worldW - 8, Math.max(8, defX));
     const py = typeof data?.spawnY === 'number' ? data!.spawnY : Math.min(worldH - 8, Math.max(8, defY));
-    this.player = spawnPlayer(this, px, py);
-    try { this.cameras.main.startFollow(this.player, true, 0.08, 0.08); } catch {}
-    try { (window as any).__applyCameraZoom?.(); } catch {}
-    try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
-    try { this.time.delayedCall(0, () => { try { (window as any).__rerenderMinimap?.(); } catch {} }); } catch {}
-    try { this.time.delayedCall(50, () => { try { (window as any).__rerenderMinimap?.(); } catch {} }); } catch {}
+    this.setupPlayer(px, py);
 
     // Optional colliders
     this.loadColliders(`/map/TPE/TPE-${this.mapId}.colliders.json`);
 
-    // HUD location
-    this.registry.set('location', `TPE-${this.mapId}`);
-    this.registry.set('locationType', 'concourse');
+    this.setLocation(`TPE-${this.mapId}`, 'concourse');
 
     // Pointer helper
     this.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
@@ -120,7 +102,7 @@ export class TPEMapScene extends Phaser.Scene {
     // Debug draw (hold C)
     this.collidersGfx = this.add.graphics().setDepth(999);
     this.events.on(Phaser.Scenes.Events.UPDATE, () => {
-      if ((this.controls.keys as any).C?.isDown) {
+      if (this.keys.C?.isDown) {
         this.collidersGfx!.clear(); this.collidersGfx!.lineStyle(1, 0xff3366, 1);
         const list: any[] = []; try { (group as any).children?.each?.((o: any) => list.push(o)); } catch {}
         for (const o of list) { const w = (o.width || 0), h = (o.height || 0); const x = (o.x || 0) - w / 2, y = (o.y || 0) - h / 2; this.collidersGfx!.strokeRect(x + 0.5, y + 0.5, Math.max(1, w - 1), Math.max(1, h - 1)); }
@@ -130,10 +112,17 @@ export class TPEMapScene extends Phaser.Scene {
 
   update() {
     if (!this.player) return;
-    updatePlayer(this, this.player, this.controls as any);
-    // Network move
-    const now = Date.now();
-    if (now - this.lastMoveSent >= (CONFIG.network.moveIntervalMs || 120)) { try { getClient().sendMove(this.player.x, this.player.y, `tpe:${this.mapId}`); } catch {} this.lastMoveSent = now; }
+    this.updatePlayerMovement();
+    this.updateNetworkMovement(`tpe:${this.mapId}`);
+    
+    // Expose last known player pos for minimap
+    try {
+      const b = this.physics.world?.bounds as any;
+      const ww = Number(b?.width) || Number(this.cameras?.main?.width) || 0;
+      const hh = Number(b?.height) || Number(this.cameras?.main?.height) || 0;
+      const sc = Number((this as any).__mapScale) || 1;
+      (window as any).__playerLast = { x: this.player.x, y: this.player.y, w: ww, h: hh, scale: sc };
+    } catch {}
   }
 }
 

@@ -6,120 +6,93 @@ export class BootScene extends Phaser.Scene {
   preload() {
     // 嘗試載入中文字型（位圖字）
     // 將字型檔放在 public/fonts/han.fnt 與 public/fonts/han.png
-    // 若不存在，載入會失敗，但不影響後續流程（採用系統字/高解析 Text 作為後備）
-    // 僅在 URL 顯式要求時載入位圖字型，避免沒有檔案時噴錯
     const url = new URL(window.location.href);
     const wantBitmap = url.searchParams.get('useBitmapFont') === '1' || url.hash.includes('useBitmapFont');
     if (wantBitmap) {
-      // 注意順序：先貼圖 PNG，再 XML/FNT
       this.load.bitmapFont('han', 'fonts/han.png', 'fonts/han.fnt');
     }
 
-    // 載入玩家 16x16 精靈圖（你放在 public/sprites/character/）
-    try {
-      // 玩家 spritesheet：每幀為 32x32（圖內角色為 16x16）
-      // 男女各自的素材（若不存在則後續用舊有 player_* 作為後備）
-      this.load.spritesheet('player_m', 'sprites/character/player_m.png', { frameWidth: 32, frameHeight: 32 });
-      this.load.spritesheet('player_m_walk', 'sprites/character/player_m_walk.png', { frameWidth: 32, frameHeight: 32 });
-      this.load.spritesheet('player_f', 'sprites/character/player_f.png', { frameWidth: 32, frameHeight: 32 });
-      this.load.spritesheet('player_f_walk', 'sprites/character/player_f_walk.png', { frameWidth: 32, frameHeight: 32 });
-      // 旅客（男/女）與店員（每幀 32x32）
-      this.load.spritesheet('trav_m_idle', 'sprites/character/travelers_m.png', { frameWidth: 32, frameHeight: 32 });
-      this.load.spritesheet('trav_m_walk', 'sprites/character/travelers_m_walk.png', { frameWidth: 32, frameHeight: 32 });
-      this.load.spritesheet('trav_f_idle', 'sprites/character/travelers_f.png', { frameWidth: 32, frameHeight: 32 });
-      this.load.spritesheet('trav_f_walk', 'sprites/character/travelers_f_walk.png', { frameWidth: 32, frameHeight: 32 });
-      this.load.spritesheet('clerk_idle', 'sprites/character/clerk.png', { frameWidth: 32, frameHeight: 32 });
-      this.load.spritesheet('clerk_walk', 'sprites/character/clerk_walk.png', { frameWidth: 32, frameHeight: 32 });
-    } catch {}
+    // 載入角色 Texture Atlas
+    this.load.atlas('characters', 'sprites/characters_atlas.png', 'sprites/characters_atlas.json');
+    
+    // 載入新角色（獨立加載作為展示）
+    this.load.spritesheet('clerk_new', 'sprites/clerk_new/sheet-transparent.png', { frameWidth: 96, frameHeight: 96 });
   }
 
   create() {
-    // 等待 WebFont（HanPixel）就緒，避免初次顯示/切換時字體跳動
+    // 等待 WebFont（HanPixel）就緒
     const waitWebFont = async () => {
       try {
         const fonts: any = (document as any).fonts;
-        const ready = fonts?.ready;
-        // 最多等 1200ms，超時就先啟動場景
         if (fonts?.load) { await fonts.load("12px \"HanPixel\""); } if (fonts?.ready) { await fonts.ready; }
       } catch {}
     };
 
     (async () => {
       await waitWebFont();
-      // 建立方向動畫（若素材存在）
-      try {
-        const FW = 32;
-        const buildRow = (texKey: string, row: number) => {
-          const tex: any = this.textures.get(texKey);
-          const img: HTMLImageElement | undefined = tex?.getSourceImage?.();
-          const w = Number(img?.naturalWidth || img?.width || 0);
-          const cols = w ? Math.floor(w / FW) : 0;
-          if (!cols) return { start: 0, end: 0 };
-          const start = row * cols;
-          const end = start + cols - 1;
-          return { start, end };
-        };
-        // 男女各自動畫
-        const buildIdle = (base: string, prefix: string) => {
-          if (!this.textures.exists(base)) return;
-          const d = buildRow(base, 0); const u = buildRow(base, 1); const s = buildRow(base, 2);
-          this.anims.create({ key: `${prefix}-idle-down`, frames: [{ key: base, frame: d.start }], frameRate: 1, repeat: -1 });
-          this.anims.create({ key: `${prefix}-idle-up`, frames: [{ key: base, frame: u.start }], frameRate: 1, repeat: -1 });
-          this.anims.create({ key: `${prefix}-idle-side`, frames: [{ key: base, frame: s.start }], frameRate: 1, repeat: -1 });
-        };
-        const buildWalk = (base: string, prefix: string) => {
-          if (!this.textures.exists(base)) return;
-          const d = buildRow(base, 0); const u = buildRow(base, 1); const s = buildRow(base, 2);
-          this.anims.create({ key: `${prefix}-walk-down`, frames: this.anims.generateFrameNumbers(base, { start: d.start, end: d.end }), frameRate: 8, repeat: -1 });
-          this.anims.create({ key: `${prefix}-walk-up`, frames: this.anims.generateFrameNumbers(base, { start: u.start, end: u.end }), frameRate: 8, repeat: -1 });
-          this.anims.create({ key: `${prefix}-walk-side`, frames: this.anims.generateFrameNumbers(base, { start: s.start, end: s.end }), frameRate: 8, repeat: -1 });
-        };
-        buildIdle('player_m', 'player-m'); buildWalk('player_m_walk', 'player-m');
-        buildIdle('player_f', 'player-f'); buildWalk('player_f_walk', 'player-f');
+      
+      // 建立動畫集
+      const buildAnimations = () => {
+        const anims = this.anims;
+        const keys = [
+          { prefix: 'player-m', sheet: 'player_m' },
+          { prefix: 'player-f', sheet: 'player_f' },
+          { prefix: 'npc-m', sheet: 'travelers_m' },
+          { prefix: 'npc-f', sheet: 'travelers_f' },
+          { prefix: 'clerk', sheet: 'clerk' },
+          { prefix: 'clerk-new', sheet: 'clerk_new' }
+        ];
 
-        // 旅客（男）
-        if (this.textures.exists('trav_m_idle')) {
-          const d = buildRow('trav_m_idle', 0), u = buildRow('trav_m_idle', 1), s = buildRow('trav_m_idle', 2);
-          this.anims.create({ key: 'npc-m-idle-down', frames: [{ key: 'trav_m_idle', frame: d.start }], frameRate: 1, repeat: -1 });
-          this.anims.create({ key: 'npc-m-idle-up', frames: [{ key: 'trav_m_idle', frame: u.start }], frameRate: 1, repeat: -1 });
-          this.anims.create({ key: 'npc-m-idle-side', frames: [{ key: 'trav_m_idle', frame: s.start }], frameRate: 1, repeat: -1 });
-        }
-        if (this.textures.exists('trav_m_walk')) {
-          const d = buildRow('trav_m_walk', 0), u = buildRow('trav_m_walk', 1), s = buildRow('trav_m_walk', 2);
-          this.anims.create({ key: 'npc-m-walk-down', frames: this.anims.generateFrameNumbers('trav_m_walk', { start: d.start, end: d.end }), frameRate: 8, repeat: -1 });
-          this.anims.create({ key: 'npc-m-walk-up', frames: this.anims.generateFrameNumbers('trav_m_walk', { start: u.start, end: u.end }), frameRate: 8, repeat: -1 });
-          this.anims.create({ key: 'npc-m-walk-side', frames: this.anims.generateFrameNumbers('trav_m_walk', { start: s.start, end: s.end }), frameRate: 8, repeat: -1 });
-        }
-        // 旅客（女）
-        if (this.textures.exists('trav_f_idle')) {
-          const d = buildRow('trav_f_idle', 0), u = buildRow('trav_f_idle', 1), s = buildRow('trav_f_idle', 2);
-          this.anims.create({ key: 'npc-f-idle-down', frames: [{ key: 'trav_f_idle', frame: d.start }], frameRate: 1, repeat: -1 });
-          this.anims.create({ key: 'npc-f-idle-up', frames: [{ key: 'trav_f_idle', frame: u.start }], frameRate: 1, repeat: -1 });
-          this.anims.create({ key: 'npc-f-idle-side', frames: [{ key: 'trav_f_idle', frame: s.start }], frameRate: 1, repeat: -1 });
-        }
-        if (this.textures.exists('trav_f_walk')) {
-          const d = buildRow('trav_f_walk', 0), u = buildRow('trav_f_walk', 1), s = buildRow('trav_f_walk', 2);
-          this.anims.create({ key: 'npc-f-walk-down', frames: this.anims.generateFrameNumbers('trav_f_walk', { start: d.start, end: d.end }), frameRate: 8, repeat: -1 });
-          this.anims.create({ key: 'npc-f-walk-up', frames: this.anims.generateFrameNumbers('trav_f_walk', { start: u.start, end: u.end }), frameRate: 8, repeat: -1 });
-          this.anims.create({ key: 'npc-f-walk-side', frames: this.anims.generateFrameNumbers('trav_f_walk', { start: s.start, end: s.end }), frameRate: 8, repeat: -1 });
-        }
-        // 店員
-        if (this.textures.exists('clerk_idle')) {
-          const d = buildRow('clerk_idle', 0), u = buildRow('clerk_idle', 1), s = buildRow('clerk_idle', 2);
-          this.anims.create({ key: 'clerk-idle-down', frames: [{ key: 'clerk_idle', frame: d.start }], frameRate: 1, repeat: -1 });
-          this.anims.create({ key: 'clerk-idle-up', frames: [{ key: 'clerk_idle', frame: u.start }], frameRate: 1, repeat: -1 });
-          this.anims.create({ key: 'clerk-idle-side', frames: [{ key: 'clerk_idle', frame: s.start }], frameRate: 1, repeat: -1 });
-        }
-        if (this.textures.exists('clerk_walk')) {
-          const d = buildRow('clerk_walk', 0), u = buildRow('clerk_walk', 1), s = buildRow('clerk_walk', 2);
-          this.anims.create({ key: 'clerk-walk-down', frames: this.anims.generateFrameNumbers('clerk_walk', { start: d.start, end: d.end }), frameRate: 8, repeat: -1 });
-          this.anims.create({ key: 'clerk-walk-up', frames: this.anims.generateFrameNumbers('clerk_walk', { start: u.start, end: u.end }), frameRate: 8, repeat: -1 });
-          this.anims.create({ key: 'clerk-walk-side', frames: this.anims.generateFrameNumbers('clerk_walk', { start: s.start, end: s.end }), frameRate: 8, repeat: -1 });
-        }
-      } catch {}
+        keys.forEach(({ prefix, sheet }) => {
+          const directions = ['down', 'up', 'side'];
+          directions.forEach((dir, row) => {
+            // Idle
+            if (sheet === 'clerk_new') {
+              anims.create({
+                key: `${prefix}-idle-${dir}`,
+                frames: [{ key: 'clerk_new', frame: row * 4 }],
+                frameRate: 1,
+                repeat: -1
+              });
+            } else {
+              anims.create({
+                key: `${prefix}-idle-${dir}`,
+                frames: [{ key: 'characters', frame: `${sheet}_${row}_0` }],
+                frameRate: 1,
+                repeat: -1
+              });
+            }
+
+            // Walk
+            const walkFrames = [];
+            if (sheet === 'clerk_new') {
+              for (let c = 0; c < 4; c++) walkFrames.push({ key: 'clerk_new', frame: row * 4 + c });
+            } else {
+              const walkSheet = `${sheet}_walk`;
+              for(let c = 0; c < 4; c++) {
+                const frameName = `${walkSheet}_${row}_${c}`;
+                if (this.textures.get('characters').has(frameName)) {
+                  walkFrames.push({ key: 'characters', frame: frameName });
+                }
+              }
+            }
+            
+            if (walkFrames.length > 0) {
+              anims.create({
+                key: `${prefix}-walk-${dir}`,
+                frames: walkFrames,
+                frameRate: 8,
+                repeat: -1
+              });
+            }
+          });
+        });
+      };
+
+      try { buildAnimations(); } catch (e) { console.error('Failed to build animations', e); }
+      
       this.scene.start('LoginScene');
       try { (window as any).__applyCameraZoom?.(); } catch {}
     })();
   }
 }
-

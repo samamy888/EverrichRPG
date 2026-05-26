@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\EverrichRpg.Server.props" />
-</Project>

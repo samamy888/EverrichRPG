@@ -51,20 +51,19 @@ export function createCrowd(
     const x = rnd(opts.area.xMin, opts.area.xMax);
     const y = rnd(opts.area.yMin, opts.area.yMax);
     const tv = pickTraveler();
-    // 選擇動畫前綴與 idle 素材鍵
+    // 選擇動畫前綴與 idle 幀名稱
     let prefix = 'npc-m';
-    let idleKey = 'trav_m_idle';
-    if (tv?.job === 'clerk') { prefix = 'clerk'; idleKey = 'clerk_idle'; }
-    else if (tv?.gender === 'F') { prefix = 'npc-f'; idleKey = 'trav_f_idle'; }
-    else { prefix = 'npc-m'; idleKey = 'trav_m_idle'; }
+    let frameKey = 'travelers_m_0_0';
+    if (tv?.job === 'clerk') { prefix = 'clerk'; frameKey = 'clerk_0_0'; }
+    else if (tv?.gender === 'F') { prefix = 'npc-f'; frameKey = 'travelers_f_0_0'; }
+    else { prefix = 'npc-m'; frameKey = 'travelers_m_0_0'; }
+    
     let npc: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image;
-    if (scene.textures.exists(idleKey)) {
-      npc = scene.add.sprite(x, y, idleKey, 0).setOrigin(0.5, 1);
+    if (scene.textures.get('characters').has(frameKey)) {
+      npc = scene.add.sprite(x, y, 'characters', frameKey).setOrigin(0.5, 1);
     } else {
-      // 後備：使用單貼圖 + tint 區分
-      const chosenTexture = tv ? (opts.texturesByGender?.[tv.gender as 'M' | 'F' | 'O'] || opts.texturesByGender?.default || tex) : tex;
-      const chosenTint = tv ? (tv.gender === 'F' ? 0xcfa8ff : tv.gender === 'M' ? 0xa8d1ff : 0xa8ffc6) : tint;
-      npc = scene.add.image(x, y, chosenTexture).setTint(chosenTint).setOrigin(0.5, 1);
+      // 後備
+      npc = scene.add.image(x, y, tex).setOrigin(0.5, 1);
     }
     group.add(npc);
     physics.add.existing(npc);

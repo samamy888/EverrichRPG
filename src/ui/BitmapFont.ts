@@ -56,7 +56,7 @@ export function registerTinyBitmapFont(scene: Phaser.Scene, key = 'tiny5x7') {
   const keyImage = `${key}-image`;
 
   const canvas = scene.textures.createCanvas(keyImage, texW, texH);
-  const ctx = canvas.getContext();
+  const ctx = canvas!.getContext();
   ctx.clearRect(0, 0, texW, texH);
   ctx.imageSmoothingEnabled = false as any;
   ctx.fillStyle = '#ffffff';
@@ -73,7 +73,7 @@ export function registerTinyBitmapFont(scene: Phaser.Scene, key = 'tiny5x7') {
       }
     }
   }
-  canvas.refresh();
+  canvas!.refresh();
 
   const config: any = {
     image: keyImage,

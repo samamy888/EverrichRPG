@@ -1,30 +1,25 @@
-import Phaser from 'phaser';
+import { BaseScene } from './BaseScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 import { CONFIG } from '../config';
 import { t } from '../i18n';
 import { createCrowd, updateCrowd, updateNameplates } from '../actors/NpcCrowd';
 import { getClient } from '../net/ws';
 import { attachOthers } from '../net/others';
-import { spawnPlayer, updatePlayer } from '../actors/Player';
 
 type Door = { world: Phaser.Math.Vector2; id: string; label: string };
 
-export class AirportScene extends Phaser.Scene {
+export class AirportScene extends BaseScene {
   private doorLabels: Map<string, Phaser.GameObjects.Text> = new Map();
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private keys!: { [k: string]: Phaser.Input.Keyboard.Key };
-  private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   public layer!: Phaser.Tilemaps.TilemapLayer;
   private doors: Door[] = [];
   private crowd?: Phaser.Physics.Arcade.Group;
   private crowds: Phaser.Physics.Arcade.Group[] = [];
   private hubX!: number;
-  private others?: Phaser.GameObjects.Group;
-  private othersMap: Map<string, Phaser.GameObjects.Sprite> = new Map();
-  private othersMeta: Map<string, { name: string; gender: 'M'|'F'; lastX: number; lastY: number; facing?: 'down'|'up'|'side'; locked?: boolean } > = new Map();
-  private othersNameplate: Map<string, Phaser.GameObjects.Text> = new Map();
+  public others?: Phaser.GameObjects.Group;
+  public othersMap: Map<string, Phaser.GameObjects.Sprite> = new Map();
+  public othersMeta: Map<string, { name: string; gender: 'M'|'F'; lastX: number; lastY: number; facing?: 'down'|'up'|'side'; locked?: boolean } > = new Map();
+  public othersNameplate: Map<string, Phaser.GameObjects.Text> = new Map();
   private othersPending: Map<string, boolean> = new Map();
-  private lastMoveSent = 0;
   private nameplate?: Phaser.GameObjects.Text;
   private gender: 'M' | 'F' = 'M';
 
@@ -38,7 +33,7 @@ export class AirportScene extends Phaser.Scene {
 
   preload() {
     if (!this.textures.exists('df-tiles')) {
-      const g = this.make.graphics({ x: 0, y: 0, add: false });
+      const g = this.make.graphics({ x: 0, y: 0 });
       const TILE = 16;
       const palette = { floorA: 0xeaf2f9, floorB: 0xdfeaf5, border: 0xbdcfe1, stripe: 0xb3d4f0, facade: 0xe4f1fa, glass: 0x8ad4ff, door: 0x8bc34a, light: 0xfff7cc } as const;
       g.fillStyle(palette.floorA, 1); g.fillRect(0 * TILE, 0, TILE, TILE);
@@ -55,14 +50,14 @@ export class AirportScene extends Phaser.Scene {
   }
 
   create() {
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.keys = this.input.keyboard.addKeys('W,A,S,D,E,SHIFT') as any;
+    this.fadeIn();
+    this.initInputs();
 
     const MAP_H = this.A_H + this.H_H + this.B_H;
     const map = this.make.tilemap({ width: this.MAP_W, height: MAP_H, tileWidth: 16, tileHeight: 16 });
     this.hubX = Math.floor(map.width / 2);
     const tiles = map.addTilesetImage('df-tiles');
-    this.layer = map.createBlankLayer('floor', tiles!, 0, 2);
+    this.layer = map.createBlankLayer('floor', tiles!, 0, 2)!;
     const base = (tiles as any).firstgid ?? 1;
     const FLOOR_A = base + 0, FLOOR_B = base + 1, BORDER = base + 2, STRIPE = base + 3, FACADE = base + 4, GLASS = base + 5, DOOR = base + 6, LIGHT = base + 7;
 
@@ -107,12 +102,10 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
     this.layer.fill(BORDER, 0, 0, map.width, 1);
     this.layer.fill(BORDER, 0, map.height - 1, map.width, 1);
     this.layer.fill(STRIPE, 0, map.height - 2, map.width, 1);
-    // 取消中央立柱/造景避免視覺干擾
-    // for (let y = H_Y0 + 3; y <= H_Y1 - 3; y += 6) this.layer.putTileAt(LIGHT, this.hubX, y);
 
     // Hall props: two ATMs and three sofas (decorations, non-colliding)
     try {
-      const g = this.make.graphics({ x: 0, y: 0, add: false });
+      const g = this.make.graphics({ x: 0, y: 0 });
       // ATM texture (12x16)
       if (!this.textures.exists('tex-atm')) {
         g.clear();
@@ -186,7 +179,7 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
       });
     } catch {}
 
-    // 單一外框：沿著 walkable 與非 walkable 的邊界繪製，不重疊
+    // 單一外框
     const isWalkable = (x: number, y: number): boolean => {
       const t = this.layer.getTileAt(x, y);
       if (!t) return false;
@@ -200,19 +193,15 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
       for (let x = 0; x < map.width; x++) {
         if (!isWalkable(x, y)) continue;
         const px = x * 16; const py = 2 + y * 16;
-        // left edge
         if (!isWalkable(x - 1, y)) { og.moveTo(px + 0.5, py + 0.5); og.lineTo(px + 0.5, py + 16 - 0.5); }
-        // right edge
         if (!isWalkable(x + 1, y)) { og.moveTo(px + 16 - 0.5, py + 0.5); og.lineTo(px + 16 - 0.5, py + 16 - 0.5); }
-        // top edge
         if (!isWalkable(x, y - 1)) { og.moveTo(px + 0.5, py + 0.5); og.lineTo(px + 16 - 0.5, py + 0.5); }
-        // bottom edge
         if (!isWalkable(x, y + 1)) { og.moveTo(px + 0.5, py + 16 - 0.5); og.lineTo(px + 16 - 0.5, py + 16 - 0.5); }
       }
     }
     og.strokePath();
 
-    // Doors: A side (top band) and B side (bottom band)
+    // Doors
     const doorA = [14, 28, 42, 96, 110];
     const doorB = [18, 32, 46, 100, 114];
     const addDoor = (cx: number, row: number, id: string, label: string) => {
@@ -234,15 +223,14 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
       addDoor(x, B_DOOR_ROW, id, t('store.title.' + id));
     });
 
-    // Collisions: block FACADE; allow movement on floor tiles
+    // Collisions
     this.layer.setCollision([FACADE, BORDER, STRIPE, GLASS, LIGHT], true);
 
     // Player
-    // 性別：登入時存入 localStorage 的 pgender（M/F）
     try { this.gender = ((localStorage.getItem('pgender') || 'M').toUpperCase() === 'F') ? 'F' : 'M'; } catch { this.gender = 'M'; }
     const spawnX = this.hubX * 16;
     const spawnY = Math.floor((H_Y0 + H_Y1) / 2) * 16 + 8;
-    this.player = spawnPlayer(this, spawnX, spawnY);
+    this.setupPlayer(spawnX, spawnY);
     // 自己的名牌
     try {
       const nm = (localStorage.getItem('pname') || '').trim();
@@ -260,14 +248,11 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
     this.cameras.main.setBackgroundColor('#eef4fb');
     this.cameras.main.setBounds(0, 0, worldW, worldH);
     this.physics.world.setBounds(0, 0, worldW, worldH);
-    try { this.cameras.main.startFollow(this.player, true, 0.08, 0.08); } catch {}
-    try { (window as any).__applyCameraZoom?.(); } catch {}
-    try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
 
-    // Multiplayer: attach shared others logic（大廳跨區顯示）
+    // Multiplayer: attach shared others logic
     attachOthers(this, { getArea: () => 'hall', crossArea: true });
 
-    // Crowds in A / Hall / B (even distribution)
+    // Crowds
     this.time.delayedCall(0, () => {
       import('../api/travelers')
         .then(({ fetchTravelers }) => fetchTravelers())
@@ -297,29 +282,9 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
             this.crowds.push(g);
           };
 
-          // Hall area (central rectangle)
-          add(hallTrav.length, {
-            xMin: hallX0 * 16,
-            xMax: (hallX0 + H_W) * 16,
-            yMin: (H_Y0 + 2) * 16,
-            yMax: (H_Y1 - 2) * 16,
-          }, hallTrav);
-
-          // A corridor (top band)
-          add(aTrav.length, {
-            xMin: 16 * 2,
-            xMax: 16 * (map.width - 2),
-            yMin: (A_Y0 + 2) * 16,
-            yMax: (A_Y0 + 2 + A_BAND_H - 1) * 16,
-          }, aTrav);
-
-          // B corridor (bottom band)
-          add(bTrav.length, {
-            xMin: 16 * 2,
-            xMax: 16 * (map.width - 2),
-            yMin: (B_Y1 - (2 + (A_BAND_H - 1))) * 16,
-            yMax: (B_Y1 - (2)) * 16,
-          }, bTrav);
+          add(hallTrav.length, { xMin: hallX0 * 16, xMax: (hallX0 + H_W) * 16, yMin: (H_Y0 + 2) * 16, yMax: (H_Y1 - 2) * 16, }, hallTrav);
+          add(aTrav.length, { xMin: 16 * 2, xMax: 16 * (map.width - 2), yMin: (A_Y0 + 2) * 16, yMax: (A_Y0 + 2 + A_BAND_H - 1) * 16, }, aTrav);
+          add(bTrav.length, { xMin: 16 * 2, xMax: 16 * (map.width - 2), yMin: (B_Y1 - (2 + (A_BAND_H - 1))) * 16, yMax: (B_Y1 - (2)) * 16, }, bTrav);
         })
         .catch(() => {});
     });
@@ -327,7 +292,7 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
 
   update() {
     if (!this.player) return;
-    updatePlayer(this, this.player as any, { cursors: this.cursors, keys: this.keys } as any);
+    this.updatePlayerMovement();
 
     if (this.crowd) updateCrowd(this, this.crowd as any);
     try { if (this.crowds && this.crowds.length) this.crowds.forEach(g => updateCrowd(this, g)); } catch {}
@@ -336,28 +301,19 @@ putFloor(this.hubX - Math.floor(STEM_W / 2), stemY0b, STEM_W, stemHb);
       if (this.crowds && this.crowds.length) this.crowds.forEach(g => updateNameplates(this, g as any, { x: this.player.x, y: this.player.y }, 42, 0));
     } catch {}
 
-    // Location bands (A / Hall / B)
+    // Location bands
     const y = this.player.y;
-    // 名牌跟隨（世界座標，隨相機捲動）
     try { if (this.nameplate) this.nameplate.setPosition(this.player.x, this.player.y - 22); } catch {}
     const A_END = this.A_H * 16; const H_END = (this.A_H + this.H_H) * 16;
-    if (y < A_END) { this.registry.set('location', 'A 區'); this.registry.set('locationType', 'concourse-A'); }
-    else if (y < H_END) { this.registry.set('location', '大廳'); this.registry.set('locationType', 'concourse'); }
-    else { this.registry.set('location', 'B 區'); this.registry.set('locationType', 'concourse-B'); }
+    if (y < A_END) { this.setLocation('A 區', 'concourse-A'); }
+    else if (y < H_END) { this.setLocation('大廳', 'concourse'); }
+    else { this.setLocation('B 區', 'concourse-B'); }
 
-    // 互動在輸入未鎖定時才處理（避免購物籃/對話時誤觸）
-    const inputLocked2 = !!this.registry.get('inputLocked');
     // 傳送自己的位置（節流）
-    try {
-      const now = performance.now();
-      if (now - this.lastMoveSent >= (CONFIG.network.moveIntervalMs || 80)) {
-        const ws = getClient();
-        const area = y < A_END ? 'A' : (y < H_END ? 'hall' : 'B');
-        ws.sendMove(this.player.x, this.player.y, area);
-        this.lastMoveSent = now;
-      }
-    } catch {}
+    const area = y < A_END ? 'A' : (y < H_END ? 'hall' : 'B');
+    this.updateNetworkMovement(area);
 
+    const inputLocked2 = !!this.registry.get('inputLocked');
     // Enter nearest door
     let nearest: Door | null = null; let nd = 1e9;
     for (const d of this.doors) { const dx = d.world.x - this.player.x, dy = d.world.y - this.player.y; const dd = Math.hypot(dx, dy); if (dd < nd) { nd = dd; nearest = d; } }
@@ -382,22 +338,20 @@ try {
     }
   }
 } catch {}
-    // Provide interact options panel near player
     this.registry.set('playerPos', { x: this.player.x, y: this.player.y });
     if (!inputLocked2) {
       if (nearest && nd < 22) {
         this.registry.set('interactOptions', ['按 E 進入']);
         this.registry.set('interactOpen', true);
         this.registry.set('hintLarge', true);
-        this.registry.set('hint', nearest.label + ' | ' + t('concourse.hintEnter') + ' | ESC 選單');
+        this.setHint(nearest.label + ' | ' + t('concourse.hintEnter') + ' | ESC 選單');
         if (Phaser.Input.Keyboard.JustDown(this.keys.E)) { this.scene.pause(); this.scene.launch('StoreScene', { storeId: nearest.id, returnTo: this.scene.key }); return; }
       } else {
         this.registry.set('interactOpen', false);
         this.registry.set('hintLarge', false);
-        this.registry.set('hint', t('concourse.hintMoveEnter') + ' | ESC 選單');
+        this.setHint(t('concourse.hintMoveEnter') + ' | ESC 選單');
       }
     } else {
-      // 鎖定輸入時隱藏互動面板，不覆蓋提示（讓購物籃提示顯示）
       this.registry.set('interactOpen', false);
     }
   }

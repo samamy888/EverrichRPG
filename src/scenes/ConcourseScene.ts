@@ -18,7 +18,7 @@ export class ConcourseScene extends Phaser.Scene {
   constructor() { super('ConcourseScene'); }
 
   preload() {
-    const g = this.make.graphics({ x: 0, y: 0, add: false });
+    const g = this.make.graphics({ x: 0, y: 0 });
     const TILE = 16;
     const palette = { floorA: 0xeaf2f9, floorB: 0xdfeaf5, border: 0xbdcfe1, stripe: 0xb3d4f0, facade: 0xe4f1fa, glass: 0x8ad4ff, door: 0x8bc34a, light: 0xfff7cc } as const;
     g.fillStyle(palette.floorA, 1); g.fillRect(0 * TILE, 0, TILE, TILE);
@@ -34,14 +34,14 @@ export class ConcourseScene extends Phaser.Scene {
   }
 
   create() {
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.keys = this.input.keyboard.addKeys('W,A,S,D,E,SHIFT') as any;
+    this.cursors = this.input.keyboard!.createCursorKeys();
+    this.keys = this.input.keyboard!.addKeys('W,A,S,D,E,SHIFT') as any;
 
     // 擴高：工字形（上=A 區，中央=大廳豎走道，下=B 區）
     const map = this.make.tilemap({ width: 140, height: 22, tileWidth: 16, tileHeight: 16 });
     this.hubX = Math.floor(map.width / 2);
     const tiles = map.addTilesetImage('df-tiles');
-    this.layer = map.createBlankLayer('floor', tiles!, 0, 2);
+    this.layer = map.createBlankLayer('floor', tiles!, 0, 2)!;
 
     const base = (tiles as any).firstgid ?? 1;
     const FLOOR_A = base + 0, FLOOR_B = base + 1, BORDER = base + 2, STRIPE = base + 3, FACADE = base + 4, GLASS = base + 5, DOOR = base + 6, LIGHT = base + 7;
@@ -102,7 +102,7 @@ export class ConcourseScene extends Phaser.Scene {
   }
 
   private ensureDoorIcons() {
-    const make = (key: string, draw: (g: Phaser.GameObjects.Graphics) => void) => { if (this.textures.exists(key)) return; const g = this.add.graphics({ x: 0, y: 0, add: false }); draw(g); g.generateTexture(key, 12, 12); g.destroy(); };
+    const make = (key: string, draw: (g: Phaser.GameObjects.Graphics) => void) => { if (this.textures.exists(key)) return; const g = this.add.graphics({ x: 0, y: 0 }); draw(g); g.generateTexture(key, 12, 12); g.destroy(); };
     make('icon-cosmetics', (g) => { g.fillStyle(0xff6fae, 1); g.fillRect(6, 2, 2, 5); g.fillStyle(0x333333, 1); g.fillRect(5, 7, 4, 3); });
     make('icon-liquor', (g) => { g.fillStyle(0x2e8b57, 1); g.fillRect(4, 3, 4, 6); g.fillStyle(0xcce8ff, 1); g.fillRect(5, 2, 2, 1); });
     make('icon-snacks', (g) => { g.fillStyle(0xf4b183, 1); g.fillRect(3, 4, 6, 5); g.fillStyle(0xc55a11, 1); g.fillRect(3, 3, 6, 1); });

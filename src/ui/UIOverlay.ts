@@ -6,6 +6,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 import { ensureMinimap, positionMinimap, renderMinimap } from './overlays/minimap';
 import { initChat } from './chat';
 import { openBasket as extOpenBasket, closeBasket as extCloseBasket, renderBasket as extRenderBasket, moveBasket as extMoveBasket, pickBasket as extPickBasket } from './overlays/basket';
+import { openDialog as extOpenDialog, advanceDialog as extAdvanceDialog, closeDialog as extCloseDialog } from './overlays/dialog';
 
 export class UIOverlay extends Phaser.Scene {
   private timeLabelText?: Phaser.GameObjects.Text;
@@ -175,8 +176,13 @@ export class UIOverlay extends Phaser.Scene {
       (window as any).__rerenderMinimap = () => { try { rerender('manual'); this.time.delayedCall(0, () => rerender('manual-next')); requestAnimationFrame(() => rerender('manual-raf')); } catch (e) { log('manual error', e); } };
     } catch {}
 
+    // 週期性重繪：確保相機與玩家移動時，小地圖持續更新（避免僅靠事件重繪不及）
+    try {
+      this.time.addEvent({ delay: 120, loop: true, callback: () => { try { if (this.shouldShowMinimap()) { (window as any).__rerenderMinimap?.(); } } catch {} } });
+    } catch {}
+
     // Global ESC menu and navigation
-    this.input.keyboard.on('keydown-ESC', () => {
+    this.input.keyboard!.on('keydown-ESC', () => {
       // 對話或清單開啟時，不處理主選單
       if (this.dialogOpen || this.listingOpen) return;
       if (this.menuOpen) {
@@ -190,13 +196,13 @@ export class UIOverlay extends Phaser.Scene {
     // 導覽（根據當前狀態切換行為：主選單 or 購物籃）
     const navUp = () => { if (this.menuOpen) this.moveMenu(-1); else this.moveBasket(-1); };
     const navDown = () => { if (this.menuOpen) this.moveMenu(1); else this.moveBasket(1); };
-    this.input.keyboard.on('keydown-W', navUp);
-    this.input.keyboard.on('keydown-UP', navUp);
-    this.input.keyboard.on('keydown-S', navDown);
-    this.input.keyboard.on('keydown-DOWN', navDown);
+    this.input.keyboard!.on('keydown-W', navUp);
+    this.input.keyboard!.on('keydown-UP', navUp);
+    this.input.keyboard!.on('keydown-S', navDown);
+    this.input.keyboard!.on('keydown-DOWN', navDown);
     const confirm = () => { if (this.menuOpen) this.pickMenu(); else this.pickBasket(); };
-    this.input.keyboard.on('keydown-E', confirm);
-    this.input.keyboard.on('keydown-ENTER', confirm);
+    this.input.keyboard!.on('keydown-E', confirm);
+    this.input.keyboard!.on('keydown-ENTER', confirm);
   }
 
   private onDataChanged(_parent: any, key: string, value: any) {
@@ -404,9 +410,9 @@ export class UIOverlay extends Phaser.Scene {
   }
 
   // 公開 API：由遊戲場景直接控制對話（避免事件時序競態）
-  public openDialog(lines: string[], step = 0) { const { openDialog } = require('./overlays/dialog'); openDialog(this, lines, step); }
-  public advanceDialog(): boolean { const { advanceDialog } = require('./overlays/dialog'); return advanceDialog(this); }
-  public closeDialog() { const { closeDialog } = require('./overlays/dialog'); closeDialog(this); }
+  public openDialog(lines: string[], step = 0) { extOpenDialog(this, lines, step); }
+  public advanceDialog(): boolean { return extAdvanceDialog(this); }
+  public closeDialog() { extCloseDialog(this); }
 
   // 根據當前覆蓋層狀態，鎖定或解鎖玩家移動輸入
   private updateInputLock() {
@@ -417,7 +423,7 @@ export class UIOverlay extends Phaser.Scene {
   private ensureLocationIcons() {
     const makeIcon = (key: string, draw: (g: Phaser.GameObjects.Graphics) => void) => {
       if (this.textures.exists(key)) return;
-      const g = this.add.graphics({ x: 0, y: 0, add: false });
+      const g = this.add.graphics({ x: 0, y: 0 });
       g.clear();
       draw(g);
       g.generateTexture(key, 12, 12);
@@ -500,8 +506,7 @@ export class UIOverlay extends Phaser.Scene {
     const tpeItems = tpeIds.map(id => ({ label: `TPE-${id} 地圖`, value: `TPE:${id}` }));
     return [
       ...tpeItems,
-      { label: '桃園 1F 大廳', value: 'TaoyuanF1Scene' },
-      { label: '桃園 2F 商場', value: 'TaoyuanF2Scene' },
+      { label: '桃園 T2 大廳', value: 'TPE2LobbyScene' },
       { label: '桃園 3F（現有）', value: 'AirportScene' },
     ];
   }
@@ -571,6 +576,8 @@ export class UIOverlay extends Phaser.Scene {
         const k = (curTop as any)?.__minimapTex, w = (curTop as any)?.__minimapW, h = (curTop as any)?.__minimapH;
         if (k && w && h) (window as any).__minimapLast = { key: k, w, h };
       } catch {}
+      // 提前告知目標場景 key，讓小地圖可以抓到欲啟動的場景
+      try { this.currentTopKey = key; (window as any).__minimapTopKey = key; } catch {}
       // 先啟動目標場景，避免在空窗期沒有 top scene（導致小地圖清空）
       try { this.game.scene.start(key, data); } catch {}
       // 觸發小地圖重新渲染（多次保險）

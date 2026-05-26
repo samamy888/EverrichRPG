@@ -7,3 +7,7 @@ dist/
 **/pub/
 server/bin/
 server/obj/
+/server/.vs
+/server/obj
+/server/bin
+/server/logs

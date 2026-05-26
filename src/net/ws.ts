@@ -1,5 +1,13 @@
 import { CONFIG } from '../config';
 
+// Runtime 開關：關閉 [ws] 噪音日誌（網址加 ?wsdebug=1 或 window.__wsDebug=true 可開啟）
+const WS_DEBUG: boolean = (() => { try { const u = new URL(window.location.href); return u.searchParams.get('wsdebug') === '1' || (window as any).__wsDebug === true; } catch { return false; } })();
+const WS_LOG = {
+  info: (...args: any[]) => { try { if (WS_DEBUG) console.info(...args); } catch {} },
+  debug: (...args: any[]) => { try { if (WS_DEBUG) console.debug(...args); } catch {} },
+  error: (...args: any[]) => { try { if (WS_DEBUG) console.error(...args); } catch {} },
+};
+
 type Handler = (data: any) => void;
 
 class WSClient {
@@ -67,7 +75,7 @@ class WSClient {
     }
     const raw = this.resolveUrl();
     const baseOnly = raw.split('?')[0]; // 確保不繼承舊的查詢參數，避免越連越長
-    try { console.info('[ws] connecting to', baseOnly); } catch {}
+    WS_LOG.info('[ws] connecting to', baseOnly);
     const url = new URL(baseOnly);
     // 先清空查詢參數，確保每次都從乾淨狀態開始
     try { url.search = ''; } catch {}
@@ -75,7 +83,7 @@ class WSClient {
     // 使用更隨機的 connection id，避免伺服器沿用舊連線狀態
     const cid = `${this.selfId}-${Date.now().toString(36)}${Math.random().toString(36).slice(2,6)}`;
     this.connId = cid;
-    try { console.debug('[ws] ids', { selfId: this.selfId, sid, connId, cid }); } catch {}
+    WS_LOG.debug('[ws] ids', { selfId: this.selfId, sid, connId, cid });
     url.searchParams.set('id', cid);
     url.searchParams.set('aid', this.selfId!); // 帳號 Id（後端可用於關聯 Profile）
     url.searchParams.set('name', this.selfName!);
@@ -86,13 +94,13 @@ class WSClient {
 
     try { if (this.ws) { try { this.ws.close(); } catch {} } } catch {}
     try { this.ws = new WebSocket(url.toString()); } catch (err) {
-      try { console.error('[ws] construct failed', err); } catch {}
+      WS_LOG.error('[ws] construct failed', err);
       this.emit('status', { connected: false });
       this.scheduleReconnect();
       return;
     }
     this.ws.onopen = () => {
-      try { console.info('[ws] connected:', url.toString()); } catch {}
+      WS_LOG.info('[ws] connected:', url.toString());
       this.emit('status', { connected: true });
       this.backoff = 1000;
       // 啟動心跳（client -> server），避免被中間代理關閉
@@ -130,7 +138,7 @@ class WSClient {
         const data = JSON.parse(ev.data);
         // 任意訊息都視為活躍，更新 lastPong
         this.lastPong = Date.now();
-        if (data?.type === 'welcome' && data.id) this.selfId = data.id;
+        // 不要覆蓋 selfId (Account ID)，server 傳回來的 id 其實是本次連線的 cid
         try { if (data?.type) console.debug('[ws] <=', data.type, data); } catch {}
         this.emit(data?.type || 'message', data);
       } catch {}

@@ -37,10 +37,27 @@ export function attachOthers(scene: Phaser.Scene, opts: AttachOthersOptions) {
   };
 
   const ensure = (id: string, x: number, y: number, name?: string, gender?: 'M'|'F', aid?: string) => {
-    // 避免把自己當成「他人」建立：比對 aid 或連線 cid
+    // 避免把自己當成「他人」建立：比對 aid、cid 或 localStorage 中的 pid
     try {
       const c = getClient();
-      const isSelf = (aid && c.getAid && c.getAid() === aid) || (c.getCid && c.getCid() === id) || (c.getId && c.getId() === id);
+      const myPid = (localStorage.getItem('pid') || '').toLowerCase();
+      const selfCid = (c.getCid ? c.getCid() : '').toLowerCase();
+      const selfAid = (c.getAid ? c.getAid() : '').toLowerCase();
+      const selfId = (c.getId ? c.getId() : '').toLowerCase();
+
+      const incId = (id || '').toLowerCase();
+      const incAid = (aid || '').toLowerCase();
+
+      const myName = (localStorage.getItem('pname') || '').toLowerCase();
+      
+      const isSelf = (incAid && selfAid.includes(incAid)) || 
+                     (incAid && myPid.includes(incAid)) ||
+                     (incId && selfCid.includes(incId)) || 
+                     (incId && selfId.includes(incId)) ||
+                     (incId && incId.includes(myPid)) ||
+                     (incAid && incAid.includes(myPid)) ||
+                     (name && myName === name.toLowerCase());
+      
       if (isSelf) return;
     } catch {}
     // 僅在有提供性別時更新，避免預設成 M 造成誤建
@@ -159,7 +176,23 @@ export function attachOthers(scene: Phaser.Scene, opts: AttachOthersOptions) {
       // 避免把自己建立進來
       try {
         const c = getClient();
-        const isSelf = (d.aid && c.getAid && c.getAid() === d.aid) || (c.getCid && c.getCid() === d.id) || (c.getId && c.getId() === d.id);
+        const myPid = (localStorage.getItem('pid') || '').toLowerCase();
+        const selfCid = (c.getCid ? c.getCid() : '').toLowerCase();
+        const selfAid = (c.getAid ? c.getAid() : '').toLowerCase();
+        const selfId = (c.getId ? c.getId() : '').toLowerCase();
+        
+        const incId = (d.id || '').toLowerCase();
+        const incAid = (d.aid || '').toLowerCase();
+        const myName = (localStorage.getItem('pname') || '').toLowerCase();
+
+        const isSelf = (incAid && selfAid.includes(incAid)) || 
+                       (incAid && myPid.includes(incAid)) ||
+                       (incId && selfCid.includes(incId)) || 
+                       (incId && selfId.includes(incId)) ||
+                       (incId && incId.includes(myPid)) ||
+                       (incAid && incAid.includes(myPid)) ||
+                       (d.name && myName === d.name.toLowerCase());
+
         if (isSelf) return;
       } catch {}
       if (!state.map?.has?.(d.id)) ensure(d.id, d.x, d.y, d.name, g, d.aid); else move(d.id, d.x, d.y, d.aid);

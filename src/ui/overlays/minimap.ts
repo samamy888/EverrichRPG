@@ -11,11 +11,13 @@ export function ensureMinimap(scene: any) {
   if (!scene.minimapBox) {
     const { w } = scene.getViewSize();
     const pad = CONFIG.ui.minimap.pad;
-    const boxW = CONFIG.ui.minimap.maxWidth;
-    const boxH = CONFIG.ui.minimap.maxHeight;
-    scene.minimapBox = scene.add.rectangle(w - boxW - pad, scene.hintBox.height + pad, boxW, boxH, 0x000000, CONFIG.ui.minimap.backgroundAlpha)
-      .setOrigin(0, 0).setScrollFactor(0).setDepth(1200);
-    scene.minimapGfx = scene.add.graphics().setScrollFactor(0).setDepth(1201);
+    // 初始建立時先用 1x1，實際尺寸在 renderMinimap 計算後設定，避免看到固定灰底
+    scene.minimapBox = scene.add.rectangle(w - 1 - pad, scene.hintBox.height + pad, 1, 1, 0x000000, CONFIG.ui.minimap.backgroundAlpha)
+      .setOrigin(0, 0).setScrollFactor(0).setDepth(1200)
+      .setStrokeStyle(1, 0x000000, 1);
+    // 將繪圖層設為比影像更高的深度，讓外框可見
+    scene.minimapGfx = scene.add.graphics().setScrollFactor(0).setDepth(1202);
+    scene.minimapContentW = 1; scene.minimapContentH = 1;
   }
 }
 
@@ -26,18 +28,27 @@ export function positionMinimap(scene: any) {
   if (!show) return;
   const { w } = scene.getViewSize();
   const pad = CONFIG.ui.minimap.pad;
-  const boxW = CONFIG.ui.minimap.maxWidth;
-  const boxH = CONFIG.ui.minimap.maxHeight;
-  scene.minimapBox.setPosition(w - boxW - pad, scene.hintBox.height + pad).setSize(boxW, boxH);
-  scene.minimapGfx.setPosition(w - boxW - pad, scene.hintBox.height + pad);
+  const cw = Math.max(1, Math.round(scene.minimapContentW || 1));
+  const ch = Math.max(1, Math.round(scene.minimapContentH || 1));
+  scene.minimapBox.setPosition(w - cw - pad, scene.hintBox.height + pad).setSize(cw, ch);
+  scene.minimapGfx.setPosition(w - cw - pad, scene.hintBox.height + pad);
 }
 
 export function renderMinimap(scene: any) {
   const dbgOn = (() => { try { const u = new URL(window.location.href); return u.searchParams.get('debugMinimap') === '1' || (window as any).__debugMinimap === true; } catch { return false; } })();
+  const log = (...args: any[]) => { try { if (dbgOn) console.log('[minimap]', ...args); } catch {} };
   ensureMinimap(scene);
   if (!scene.shouldShowMinimap() || !scene.minimapGfx || !scene.minimapBox) return;
   const activeScenes = scene.game.scene.getScenes(true).filter((s: any) => s.scene?.key !== 'UIOverlay');
-  const top = activeScenes.length ? (activeScenes[activeScenes.length - 1] as any) : null;
+  let top = activeScenes.length ? (activeScenes[activeScenes.length - 1] as any) : null;
+  // 若 UIOverlay 先記錄了目標場景 key，優先以此尋找場景參考
+  try {
+    const savedKey = (scene as any).currentTopKey || (window as any).__minimapTopKey;
+    if ((!top || !top.scene?.key) && savedKey) {
+      const ref = scene.game.scene.getScene(savedKey);
+      if (ref) top = ref as any;
+    }
+  } catch {}
   let layer = top?.layer as Phaser.Tilemaps.TilemapLayer;
   let imgKey: string | undefined = (top as any)?.__minimapTex;
   let imgW: number | undefined = (top as any)?.__minimapW;
@@ -49,11 +60,17 @@ export function renderMinimap(scene: any) {
       if (last) { imgKey = last.key; imgW = last.w; imgH = last.h; }
     } catch {}
     if (!imgKey || !imgW || !imgH) {
-      if (dbgOn) try { console.debug('[minimap] no active top scene and no fallback; retry later'); } catch {}
+      log('no active top scene and no fallback; retry later');
       setTimeout(() => { try { (window as any).__rerenderMinimap?.(); } catch {} }, 32);
       return;
     }
-    if (dbgOn) try { console.debug('[minimap] using fallback minimapLast'); } catch {}
+    log('using fallback minimapLast');
+    // 在使用備援時再安排數次重繪嘗試，等待新場景就緒
+    try {
+      setTimeout(() => { try { (window as any).__rerenderMinimap?.(); } catch {} }, 0);
+      setTimeout(() => { try { (window as any).__rerenderMinimap?.(); } catch {} }, 64);
+      setTimeout(() => { try { (window as any).__rerenderMinimap?.(); } catch {} }, 120);
+    } catch {}
   }
   // 若有 active top 但其縮圖資訊尚未就緒，嘗試使用備援
   if ((!imgKey || !imgW || !imgH) && (window as any).__minimapLast) {
@@ -65,17 +82,19 @@ export function renderMinimap(scene: any) {
   }
   // If scene provides an image-based map, render true thumbnail
   const texMgr: any = (scene as any).textures;
-  const imgReady = !!(imgKey && imgW && imgH && texMgr?.exists?.(imgKey));
-  if (dbgOn) {
-    try { console.debug('[minimap] render', { topKey: top?.scene?.key, hasLayer: !!layer, imgKey, imgW, imgH, imgReady }); } catch {}
-  }
+  const worldW = Math.max(1, Number((top as any)?.__minimapW) || 1);
+  const worldH = Math.max(1, Number((top as any)?.__minimapH) || 1);
+  const natW = Math.max(1, Number((top as any)?.__minimapNatW) || Number(imgW) || worldW);
+  const natH = Math.max(1, Number((top as any)?.__minimapNatH) || Number(imgH) || worldH);
+  const imgReady = !!(imgKey && natW && natH && texMgr?.exists?.(imgKey));
+  log('render', { topKey: top?.scene?.key, hasLayer: !!layer, imgKey, imgW, imgH, imgReady, worldW, worldH });
   // If we have image info but texture not yet in cache, keep previous image visible and prep for swap
-  if (!imgReady && imgKey && imgW && imgH) {
+  if (!imgReady && imgKey && natW && natH) {
     const maxW = CONFIG.ui.minimap.maxWidth;
     const maxH = CONFIG.ui.minimap.maxHeight;
-    const s = Math.min(maxW / imgW, maxH / imgH);
-    const contentW = Math.max(1, Math.round(imgW * s));
-    const contentH = Math.max(1, Math.round(imgH * s));
+    const s = Math.min(maxW / natW, maxH / natH);
+    const contentW = Math.max(1, Math.round(natW * s));
+    const contentH = Math.max(1, Math.round(natH * s));
     const { w } = scene.getViewSize();
     const pad = CONFIG.ui.minimap.pad;
     const posX = w - contentW - pad;
@@ -85,6 +104,33 @@ export function renderMinimap(scene: any) {
     if (scene.minimapImg) {
       try { scene.minimapImg.setPosition(posX, posY).setDisplaySize(contentW, contentH).setVisible(true); } catch {}
     }
+    // 在影像尚未 ready 時也先繪製視野框與玩家點（以世界比例對應縮圖尺寸）
+    try {
+      const cam: any = top?.cameras?.main;
+      const cw = (typeof cam.worldView?.width === 'number' ? cam.worldView.width : cam.width || 0);
+      const ch = (typeof cam.worldView?.height === 'number' ? cam.worldView.height : cam.height || 0);
+      const cx = (typeof cam.worldView?.x === 'number' ? cam.worldView.x : cam.scrollX || 0);
+      const cy = (typeof cam.worldView?.y === 'number' ? cam.worldView.y : cam.scrollY || 0);
+      const vw = Math.max(1, (cw / worldW) * contentW);
+      const vh = Math.max(1, (ch / worldH) * contentH);
+      const vx = Math.max(0, (cx / worldW) * contentW);
+      const vy = Math.max(0, (cy / worldH) * contentH);
+      scene.minimapGfx.lineStyle(1, 0xffcc00, 1);
+      scene.minimapGfx.strokeRect(vx, vy, Math.max(1, vw), Math.max(1, vh));
+      log('camRect(pendingTex)', { vx, vy, vw, vh, worldW, worldH, contentW, contentH });
+    } catch {}
+    try {
+      const player: any = (top as any)?.player;
+      let worldX = Number(player?.x), worldY = Number(player?.y);
+      if (!isFinite(worldX) || !isFinite(worldY)) {
+        const last: any = (window as any).__playerLast;
+        if (last && isFinite(last.x) && isFinite(last.y)) { worldX = last.x; worldY = last.y; } else { worldX = 0; worldY = 0; }
+      }
+      let px = Math.max(0, Math.min(worldW, worldX)) / worldW * contentW;
+      let py = Math.max(0, Math.min(worldH, worldY)) / worldH * contentH;
+      scene.minimapGfx.fillStyle(0x000000, 1).fillRect(Math.round(px) - 1, Math.round(py) - 1, 2, 2);
+      log('dot(pendingTex)', { worldX, worldY, px, py, worldW, worldH, contentW, contentH });
+    } catch {}
     try {
       const ev = (texMgr && (texMgr.events || texMgr));
       ev?.once?.('addtexture', (key: string) => {
@@ -101,39 +147,59 @@ export function renderMinimap(scene: any) {
   if (imgReady) {
     const maxW = CONFIG.ui.minimap.maxWidth;
     const maxH = CONFIG.ui.minimap.maxHeight;
-    const s = Math.min(maxW / imgW, maxH / imgH);
-    const contentW = Math.max(1, Math.round(imgW * s));
-    const contentH = Math.max(1, Math.round(imgH * s));
+    const s = Math.min(maxW / natW, maxH / natH);
+    const contentW = Math.max(1, Math.round(natW * s));
+    const contentH = Math.max(1, Math.round(natH * s));
     const { w } = scene.getViewSize();
     const pad = CONFIG.ui.minimap.pad;
     const posX = w - contentW - pad;
     const posY = scene.hintBox.height + pad;
     scene.minimapBox.setPosition(posX, posY).setSize(contentW, contentH).setVisible(true);
     scene.minimapGfx.setPosition(posX, posY).setVisible(true).clear();
+    scene.minimapContentW = contentW; scene.minimapContentH = contentH;
+    // 外框（黑邊）
+    try { scene.minimapGfx.lineStyle(1, 0x000000, 1).strokeRect(0, 0, contentW, contentH); } catch {}
     // Prepare or update minimap image sprite
     if (!scene.minimapImg) {
       try { scene.minimapImg = scene.add.image(posX, posY, imgKey).setOrigin(0, 0).setScrollFactor(0).setDepth(1201); } catch {}
     }
     try {
       if (scene.minimapImg.texture?.key !== imgKey) scene.minimapImg.setTexture(imgKey);
-      scene.minimapImg.setPosition(posX, posY).setDisplaySize(contentW, contentH).setVisible(true);
-      if (dbgOn) try { console.debug('[minimap] image mode', { posX, posY, contentW, contentH, s }); } catch {}
+      scene.minimapImg.setPosition(posX, posY).setDisplaySize(contentW, contentH).setVisible(true).setDepth(1201);
+    log('image mode', { posX, posY, contentW, contentH, s });
     } catch {}
     // Overlays: player dot and camera viewport
     try {
       const cam: any = top?.cameras?.main;
-      const vw = (typeof cam.worldView?.width === 'number' ? cam.worldView.width : cam.width || 0) * s;
-      const vh = (typeof cam.worldView?.height === 'number' ? cam.worldView.height : cam.height || 0) * s;
-      const vx = (typeof cam.worldView?.x === 'number' ? cam.worldView.x : cam.scrollX || 0) * s;
-      const vy = (typeof cam.worldView?.y === 'number' ? cam.worldView.y : cam.scrollY || 0) * s;
+      const cw = (typeof cam.worldView?.width === 'number' ? cam.worldView.width : cam.width || 0);
+      const ch = (typeof cam.worldView?.height === 'number' ? cam.worldView.height : cam.height || 0);
+      const cx = (typeof cam.worldView?.x === 'number' ? cam.worldView.x : cam.scrollX || 0);
+      const cy = (typeof cam.worldView?.y === 'number' ? cam.worldView.y : cam.scrollY || 0);
+      const vw = Math.max(1, (cw / worldW) * contentW);
+      const vh = Math.max(1, (ch / worldH) * contentH);
+      const vx = Math.max(0, (cx / worldW) * contentW);
+      const vy = Math.max(0, (cy / worldH) * contentH);
       scene.minimapGfx.lineStyle(1, 0xffcc00, 1);
       scene.minimapGfx.strokeRect(vx, vy, Math.max(1, vw), Math.max(1, vh));
+      log('camRect', { vx, vy, vw, vh, worldW, worldH, contentW, contentH });
     } catch {}
     try {
-      const px = Math.max(0, Math.min(imgW, Number(top?.player?.x || 0))) * s;
-      const py = Math.max(0, Math.min(imgH, Number(top?.player?.y || 0))) * s;
+      let worldX = Number((top as any)?.player?.x);
+      let worldY = Number((top as any)?.player?.y);
+      if (!isFinite(worldX) || !isFinite(worldY)) {
+        const last: any = (window as any).__playerLast;
+        if (last && isFinite(last.x) && isFinite(last.y) && isFinite(last.w) && isFinite(last.h)) {
+          const mapScale = (CONFIG as any)?.maps?.tpeScale || 1;
+          const ls = Number(last.scale) || mapScale;
+          worldX = last.x; worldY = last.y;
+        } else { worldX = 0; worldY = 0; }
+      }
+      let px = Math.max(0, Math.min(worldW, worldX)) / worldW * contentW;
+      let py = Math.max(0, Math.min(worldH, worldY)) / worldH * contentH;
+      if (!isFinite(px) || !isFinite(py)) { px = 0; py = 0; }
       scene.minimapGfx.fillStyle(0x000000, 1);
       scene.minimapGfx.fillRect(Math.round(px) - 1, Math.round(py) - 1, 2, 2);
+      log('dot', { worldX, worldY, px, py, worldW, worldH, contentW, contentH });
     } catch {}
     return;
   }
@@ -143,9 +209,9 @@ export function renderMinimap(scene: any) {
     try { (window as any).__rerenderMinimap?.(); } catch {}
     return;
   }
-  // Tile-based fallback: hide image and draw tiles
+  // Tile-based fallback: hide image and draw tiles（使用等比縮放，避免背景灰底外溢）
   try { scene.minimapImg?.setVisible(false); } catch {}
-  if (dbgOn) try { console.debug('[minimap] tile mode'); } catch {}
+  log('tile mode');
   if (!layer) { scene.minimapGfx.clear(); return; }
   const map: any = layer.tilemap;
   const tw = map.tileWidth || 16;
@@ -153,12 +219,11 @@ export function renderMinimap(scene: any) {
   const mw = map.width || (layer.layer?.width ?? 0);
   const mh = map.height || (layer.layer?.height ?? 0);
   if (!mw || !mh) { scene.minimapGfx.clear(); return; }
-  const desiredSX = Math.max(1, CONFIG.ui.minimap.tileScaleX || 1);
-  const desiredSY = Math.max(1, CONFIG.ui.minimap.tileScaleY || 1);
-  const sX = Math.min(desiredSX, CONFIG.ui.minimap.maxWidth / mw);
-  const sY = Math.min(desiredSY, CONFIG.ui.minimap.maxHeight / mh);
-  scene.minimapScaleX = sX;
-  scene.minimapScaleY = sY;
+  const maxW = CONFIG.ui.minimap.maxWidth;
+  const maxH = CONFIG.ui.minimap.maxHeight;
+  const s = Math.min(maxW / mw, maxH / mh); // 等比縮放
+  const sX = s, sY = s;
+  scene.minimapScaleX = sX; scene.minimapScaleY = sY;
   try {
     const contentW = Math.max(1, Math.round(mw * sX));
     const contentH = Math.max(1, Math.round(mh * sY));
@@ -168,6 +233,7 @@ export function renderMinimap(scene: any) {
     const posY = scene.hintBox.height + pad;
     scene.minimapBox.setPosition(posX, posY).setSize(contentW, contentH);
     scene.minimapGfx.setPosition(posX, posY);
+    scene.minimapContentW = contentW; scene.minimapContentH = contentH;
   } catch {}
   scene.minimapGfx.clear();
   // 背景：以 collides 畫出可走/不可走
@@ -179,6 +245,8 @@ export function renderMinimap(scene: any) {
       scene.minimapGfx.fillRect(x * sX, y * sY, Math.max(1, sX), Math.max(1, sY));
     }
   }
+  // 外框（黑邊）
+  try { scene.minimapGfx.lineStyle(1, 0x000000, 1).strokeRect(0, 0, Math.round(mw * sX), Math.round(mh * sY)); } catch {}
   // 商店門（藍）
   try {
     const doors: any[] = (top as any)?.doors || [];
@@ -217,8 +285,14 @@ export function renderMinimap(scene: any) {
   }
   // 玩家（黑點）＋ 視野框（黃）
   try {
-    const px = (top.player?.x ?? 0) / tw;
-    const py = (top.player?.y ?? 0) / th;
+    let wx = Number((top as any)?.player?.x);
+    let wy = Number((top as any)?.player?.y);
+    if (!isFinite(wx) || !isFinite(wy)) {
+      const last: any = (window as any).__playerLast;
+      if (last && isFinite(last.x) && isFinite(last.y)) { wx = last.x; wy = last.y; } else { wx = 0; wy = 0; }
+    }
+    const px = wx / tw;
+    const py = wy / th;
     scene.minimapGfx.fillStyle(0x000000, 1);
     scene.minimapGfx.fillRect(px * sX - 1, py * sY - 1, Math.max(2, sX), Math.max(2, sY));
   } catch {}
