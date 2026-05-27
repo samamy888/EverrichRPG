@@ -1,42 +1,63 @@
 # Repository Guidelines
 
-本文件為此專案的貢獻者指南，請在提交程式碼或文件前先閱讀。內容精簡直接，涵蓋專案結構、開發流程、風格規範與常見作業指引。
+本文件為本專案的代理人（Codex/其他 AI coding agent）工作指引。  
+若子目錄有更深層 `AGENTS.md`，以更深層檔案優先。
 
-## 專案結構與模組
+## 專案結構
+
 - 根目錄：`index.html`、`vite.config.ts`、`tsconfig.json`、`package.json`
 - 原始碼：`src/`
-  - `src/scenes/` — Phaser 場景（如 `TerminalScene.ts`、`StoreScene.ts`）
-  - `src/ui/` — 介面元件（如 `UIOverlay.ts`）
-  - `src/data/` — 靜態資料/設定（如 `items.ts`）
-- 靜態資產：`public/`（字型、圖片、web.config 等）
-- 產出目錄：`dist/`（已忽略）
+  - `src/scenes/`：Phaser 場景
+  - `src/ui/`：介面元件與 overlay（含 `UIOverlay.ts`）
+  - `src/data/`：靜態資料/設定
+- 靜態資產：`public/`
+- 產物：`dist/`（可重建）
 
-## 建置、開發與預覽
-- `npm ci`：依 lockfile 安裝依賴（建議 Node.js LTS）
-- `npm run dev`：啟動 Vite 開發伺服器（含 HMR）
-- `npm run build`：生產建置至 `dist/`
-- `npm run preview`：本機預覽 `dist/` 內容
+## 常用指令
 
-## 程式風格與命名
-- 語言：TypeScript（ES modules）；縮排 2 空白；必加分號；匯入請維持排序
-- 命名：Class/Scene/UI 檔案用 PascalCase；變數/函式用 camelCase；常數用 UPPER_SNAKE_CASE；資料/設定檔以小寫（如 `items.ts`）
-- 匯出：偏好具名匯出
-- 格式/靜態檢查：未強制，但若新增請用 Prettier + ESLint（TS）
+- 安裝：`npm ci`
+- 開發：`npm run dev`
+- 建置：`npm run build`
+- 預覽：`npm run preview`
 
-## 測試指引
-- 目前未內建測試框架；若新增，建議使用 Vitest
-- 測試檔路徑：與原始碼同層以 `*.spec.ts` 或放在 `tests/`
-- 原則：快速、可重現；盡量測純函式與工具；互動場景可考慮 Playwright 做 E2E
+## 程式風格
 
-## Commit 與 PR
-- Commit：清楚、聚焦，建議使用 Conventional Commits（如 `feat:`、`fix:`、`refactor:`、`chore:`、`docs:`）
-- PR：說明變更重點、連結議題、提供畫面截圖/GIF（UI 變更時），保持小而專注；新增指令或功能請同步更新 `README.md`
+- TypeScript（ESM）
+- 縮排 2 spaces、使用分號
+- 檔名：
+  - Scene/UI/Class：PascalCase
+  - 變數/函式：camelCase
+  - 常數：UPPER_SNAKE_CASE
+- 盡量使用具名匯出
 
-## 安全與設定
-- 勿提交機密；使用 Vite 環境變數（`VITE_*`），放於 `.env.local` 並避免納入版控
-- 大型資產請最佳化；必要時改以外部託管
+## 協作原則
 
-## Agent/自動化說明
-- 本 `AGENTS.md` 對整個倉庫生效；若子目錄另有 `AGENTS.md`，則以較深層為準
-- 修改程式碼時，避免不相干調整，保持與現有風格一致；必要時更新相關文件
+- 避免不相干的大型重構
+- 優先延續現有架構與命名
+- 修改 UI 時，請附上變更摘要（位置、目的、使用者影響）
 
+## 目前交接狀態（2026-05-27）
+
+### 地圖策略
+
+- 已明確採用「地板/牆體/互動物件/標示」分層設計
+- 不再把櫃台、電梯、店面等互動物件烤進底圖
+
+### HUD/UI 已完成
+
+- 上方改為薄導覽條（主顯示地點）
+- 底部改為 RPG 訊息窗（提示文字）
+- 左下角色框目前只顯示金錢（包包已移除）
+- 右上僅保留小地圖（取消右上狀態框）
+- Debug 控制列預設隱藏，按 `~` 切換
+
+### 主要修改檔案（近期）
+
+- `src/ui/UIOverlay.ts`
+- `src/main.ts`
+
+## 下一位 Agent 建議
+
+1. 依 `debug/` 最新截圖進行 HUD 第二輪精修
+2. 讓左下角色框支援 config 化（欄位可開關）
+3. 持續把場景互動物件改為 runtime props，避免回烤到底圖
