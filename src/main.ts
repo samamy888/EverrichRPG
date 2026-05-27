@@ -8,8 +8,6 @@ import { initConnection } from './net/ws';
 import { initClientLogging } from './utils/logger';
 import { initChat } from './ui/chat';
 import { getApiBase } from './net/http';
-import { TPE01Scene } from './scenes/TPE01Scene';
-import { TPEMapScene } from './scenes/TPEMapScene';
 import { TPE2LobbyScene } from './scenes/TPE2LobbyScene';
 
 export const GAME_WIDTH = 320;
@@ -28,8 +26,7 @@ const config: Phaser.Types.Core.GameConfig = {
   render: { antialias: false, pixelArt: true, roundPixels: true },
   physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.NO_CENTER },
-  // TPE01Scene 與通用 TPEMapScene（依 id 載入 TPE-XX.png）
-  scene: [BootScene, LoginScene, TPE01Scene, TPEMapScene, TPE2LobbyScene, StoreScene, UIOverlay],
+  scene: [BootScene, LoginScene, TPE2LobbyScene, StoreScene, UIOverlay],
 };
 
 const game = new Phaser.Game(config);
@@ -113,12 +110,6 @@ if (e.code === 'BracketLeft') { // [ decrease int zoom
   preferredIntZoom = Math.max(CONFIG.scale.minZoom, (preferredIntZoom ?? (CONFIG.scale.minZoom + 1)) - 1);
   applyCameraZoom();
 }
-// 開發快捷：Ctrl+Alt+T 切換到 TPE-01 位圖地圖
-if (e.ctrlKey && e.altKey && e.code === 'KeyT') {
-  try { game.scene.stop('TPE2LobbyScene'); } catch {}
-  try { game.scene.start('TPE01Scene'); } catch {}
-}
-
 });
 // 預設：迷你地圖人群黑點關閉（可由面板開啟）
 (window as any).__minimapCrowd = false;
@@ -130,11 +121,13 @@ function createZoomControls() {
   const panel = document.createElement('div');
   panel.id = 'zoom-controls';
   panel.style.cssText = [
-    'position:fixed','right:8px','bottom:8px','z-index:2147483647',
+    'position:fixed','left:50%','transform:translateX(-50%)','bottom:8px','z-index:2147483647',
     'display:flex','gap:6px','align-items:center','padding:6px 8px',
-    'border-radius:8px','background:rgba(0,0,0,0.45)','border:1px solid #3a4556',
-    'color:#cce8ff','font:12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif'
+    'border-radius:6px','background:rgba(20,26,40,0.92)','border:1px solid #c59b53',
+    'box-shadow:0 0 0 1px #3f4b64 inset, 0 4px 14px rgba(0,0,0,0.35)',
+    'color:#d6def0','font:12px/1.2 HanPixel,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif'
   ].join(';');
+  panel.style.display = 'none';
 
   const label = document.createElement('span');
   const btnSnap = document.createElement('button');
@@ -146,8 +139,9 @@ function createZoomControls() {
   const btnClearChat = document.createElement('button');
   const dot = document.createElement('span');
   const styleBtn = (b: HTMLButtonElement) => b.style.cssText = [
-    'cursor:pointer','padding:2px 6px','border-radius:6px',
-    'border:1px solid #4a5668','background:#1a2330','color:#e6f0ff'
+    'cursor:pointer','padding:2px 6px','border-radius:4px',
+    'border:1px solid #586a8b','background:linear-gradient(#2a3448,#1b2334)','color:#f2f6ff',
+    'box-shadow:0 0 0 1px rgba(14,18,29,0.9) inset'
   ].join(';');
   styleBtn(btnSnap); styleBtn(btnMinus); styleBtn(btnPlus); styleBtn(btnCrowd); styleBtn(btnChat); styleBtn(btnReset); styleBtn(btnClearChat);
   // WS 燈號樣式
@@ -242,6 +236,13 @@ function createZoomControls() {
       dot.title = connected ? 'WebSocket 已連線' : 'WebSocket 未連線';
     } catch {}
   };
+
+  // Toggle debug panel with backquote (~) key
+  window.addEventListener('keydown', (e) => {
+    if (e.code !== 'Backquote') return;
+    const isHidden = panel.style.display === 'none';
+    panel.style.display = isHidden ? 'flex' : 'none';
+  });
 }
 
 window.addEventListener('load', () => { createZoomControls(); });

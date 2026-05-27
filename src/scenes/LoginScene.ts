@@ -69,7 +69,6 @@ export class LoginScene extends Phaser.Scene {
             <span>起始地點</span>
             <select id="lg-scene">
               <option value="TPE2LobbyScene">桃園 T2 大廳</option>
-              <option value="TPE01Scene">TPE-01 地圖</option>
             </select>
           </label>
 
@@ -85,7 +84,7 @@ export class LoginScene extends Phaser.Scene {
       const em = localStorage.getItem('pemail') || '';
       const nm = localStorage.getItem('pname') || '';
       const gd = localStorage.getItem('pgender') || 'M';
-      const ss = localStorage.getItem('startScene') || 'TPE2LobbyScene';
+      const ss = 'TPE2LobbyScene';
       (box.querySelector('#lg-email') as HTMLInputElement).value = em;
       (box.querySelector('#lg-name') as HTMLInputElement).value = nm;
       const r = box.querySelector(`input[name="lg-g"][value="${gd}"]`) as HTMLInputElement | null;
@@ -119,7 +118,7 @@ export class LoginScene extends Phaser.Scene {
         localStorage.setItem('pgender', gender);
       } catch {}
 
-      const selectedScene = (box.querySelector('#lg-scene') as HTMLSelectElement | null)?.value || 'TPE2LobbyScene';
+      const selectedScene = 'TPE2LobbyScene';
       try { localStorage.setItem('startScene', selectedScene); } catch {}
 
       try {

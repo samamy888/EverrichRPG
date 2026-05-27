@@ -1,34 +1,44 @@
 import * as Phaser from 'phaser';
 import { BaseScene, BaseSceneData } from './BaseScene';
-import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 import { CONFIG } from '../config';
 import { createCrowd, updateCrowd, updateNameplates } from '../actors/NpcCrowd';
 import { fetchTravelers } from '../api/travelers';
 import { attachOthers } from '../net/others';
 import { T2_FACILITIES, Facility } from '../data/facilities';
+import {
+  TPE2_ARCHITECTURE_PROPS,
+  TPE2_BLOCKERS,
+  TPE2_DECOR_PROPS,
+  TPE2_FLOORPLAN_BG_KEY,
+  TPE2_FLOORPLAN_BG_PATH,
+  TPE2_FLOORPLAN_PROP_KEYS,
+  TPE2_FLOORPLAN_PROP_MAP,
+  Tpe2PropPlacement,
+} from '../data/tpe2Layout';
 
 export class TPE2LobbyScene extends BaseScene {
   public layer!: Phaser.Tilemaps.TilemapLayer;
   private crowd?: Phaser.Physics.Arcade.Group;
   private propsGroup!: Phaser.Physics.Arcade.StaticGroup;
-  private interactables: { world: Phaser.Math.Vector2; label: string; action: () => void }[] = [];
+  private interactables: { world: Phaser.Math.Vector2; label: string; radius: number; action: () => void }[] = [];
+  private interactionLocked = false;
   private worldW = 0;
   private worldH = 0;
+  private floorplanSlots: any = null;
 
   constructor() { super('TPE2LobbyScene'); }
 
   preload() {
-    // 1. 載入自動生成的 Tilemap JSON 與高品質 Tileset V2
     this.load.tilemapTiledJSON('t2-lobby-map', 'map/TPE2/tpe2_lobby.json');
+    this.load.json('t2-floorplan-slots', 'map/TPE2/tpe2_floorplan_prop_slots.json');
     this.load.image('pro-tiles-v2', 'map/TPE2/pro_tiles_v2.png');
+    this.load.image(TPE2_FLOORPLAN_BG_KEY, TPE2_FLOORPLAN_BG_PATH);
 
-    // 2. 載入對齊參考圖 (TPE-11)
-    this.load.image('alignment-ref', 'map/TPE/TPE-11.png');
+    const uniqueProps = Array.from(new Set([
+      ...T2_FACILITIES.map(f => this.floorplanPropKey(f.texture.replace('prop-', ''))),
+      ...TPE2_FLOORPLAN_PROP_KEYS,
+    ]));
 
-    // 3. 載入設施 (從數據庫動態讀取需要的素材)
-    const uniqueProps = Array.from(new Set(T2_FACILITIES.map(f => f.texture.replace('prop-', ''))));
-    ['airport-chairs', 'trash-bin', 'potted-palm'].forEach(p => { if(!uniqueProps.includes(p)) uniqueProps.push(p); });
-    
     uniqueProps.forEach(p => {
       this.load.image(`prop-${p}`, `map/TPE2/props/${p}/prop.png`);
     });
@@ -37,65 +47,222 @@ export class TPE2LobbyScene extends BaseScene {
   create(data: BaseSceneData) {
     this.fadeIn();
     this.initInputs();
-    this.cameras.main.setBackgroundColor('#2d3748'); 
+    this.events.off(Phaser.Scenes.Events.RESUME);
+    this.events.on(Phaser.Scenes.Events.RESUME, () => {
+      this.interactionLocked = false;
+      this.fadeIn();
+      try { (window as any).__applyCameraZoom?.(); } catch {}
+    });
+    this.cameras.main.setBackgroundColor('#dceaf4');
+    this.cameras.main.roundPixels = true;
 
-    // --- 0. 建立對齊參考圖 (預設隱藏，按 V 開關) ---
-    const ref = this.add.image(0, 0, 'alignment-ref').setOrigin(0, 0).setAlpha(0.5).setDepth(20000).setVisible(false);
-    (this as any).refOverlay = ref;
-
-    // --- 1. 建立 Tilemap ---
     const map = this.make.tilemap({ key: 't2-lobby-map' });
     const tileset = map.addTilesetImage('pro-tiles-v2', 'pro-tiles-v2');
     this.layer = map.createLayer('BaseArchitecture', tileset!)!;
-    
+
     this.worldW = map.widthInPixels;
     this.worldH = map.heightInPixels;
+    this.floorplanSlots = this.cache.json.get('t2-floorplan-slots') ?? null;
 
-    // 設定碰撞 (GID 3:建築, 4:窗戶/戶外, 5:店面, 6:柱子)
-    this.layer.setCollision([3, 4, 5, 6]);
-    
-    // 初始化除錯繪圖
+    this.add.image(0, 0, TPE2_FLOORPLAN_BG_KEY)
+      .setOrigin(0, 0)
+      .setDisplaySize(this.worldW, this.worldH)
+      .setPosition(Math.round(0), Math.round(0))
+      .setDepth(-100);
+
+    this.layer.setAlpha(0).setDepth(-40);
+
     this.physics.world.createDebugGraphic();
     this.physics.world.drawDebug = false;
     (this as any).tileDebugGraphics = this.add.graphics().setDepth(20000).setVisible(false);
 
-    // 註冊 V 鍵切換對齊參考圖
-    // (已移至 update 循環偵測，避免重複觸發)
-
-    // --- 2. 自動化設施放置 (Data-Driven) ---
     this.propsGroup = this.physics.add.staticGroup();
+    this.addTpe11Blockers();
+    this.addArchitectureDressing();
+    T2_FACILITIES.forEach(fac => this.addFacility(fac));
+    this.addLobbyDressing();
 
-    T2_FACILITIES.forEach(fac => {
-        this.addFacility(fac);
-    });
-
-    // 隨機裝飾：在走廊放椅子
-    for (let x = 500; x < this.worldW - 500; x += 1200) {
-        this.addProp(x, this.worldH - 400, 'airport-chairs', true);
-    }
-
-    // 玩家重生點
     const px = data?.spawnX ?? this.worldW / 2;
-    const py = data?.spawnY ?? (this.worldH - 300);
-    this.setupPlayer(px, py); 
-    this.physics.add.collider(this.player, this.layer);
+    const py = data?.spawnY ?? (this.worldH - 520);
+    this.setupPlayer(px, py);
     this.physics.add.collider(this.player, this.propsGroup);
 
-    // 自己的名牌
+    this.addPlayerNameplate();
+    this.spawnCrowd();
+    attachOthers(this, { getArea: () => 't2_lobby', crossArea: false });
+
+    this.setLocation('桃園 T2 大廳', 'concourse');
+    this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);
+    this.physics.world.setBounds(0, 0, this.worldW, this.worldH);
+
+    (this as any).__minimapTex = TPE2_FLOORPLAN_BG_KEY;
+    (this as any).__minimapW = this.worldW;
+    (this as any).__minimapH = this.worldH;
+    (this as any).__minimapNatW = this.worldW;
+    (this as any).__minimapNatH = this.worldH;
+    try { (window as any).__rerenderMinimap?.(); } catch {}
+    try { (window as any).__t2FloorplanSlots = this.floorplanSlots; } catch {}
+  }
+
+  private addFacility(fac: Facility) {
+    let propHeight = 0;
+    if (fac.renderProp !== false) {
+      const prop = this.addProp({
+        key: fac.texture.replace('prop-', ''),
+        x: fac.x,
+        y: fac.y,
+        scale: fac.scale ?? this.defaultScaleFor(fac.texture.replace('prop-', '')),
+        collide: fac.collide ?? true,
+      });
+      propHeight = prop.displayHeight;
+    }
+    this.addFacilityLabel(fac, propHeight);
+
+    this.interactables.push({
+      world: new Phaser.Math.Vector2(fac.x, fac.y),
+      label: fac.name,
+      radius: fac.radius ?? 50,
+      action: () => {
+        if (fac.targetScene === 'StoreScene' && fac.storeId) {
+          this.openStore(fac.storeId);
+        } else if (fac.hint) {
+          this.setHint(fac.hint);
+        }
+      }
+    });
+  }
+
+  private openStore(storeId: string) {
+    if (this.interactionLocked) return;
+    this.interactionLocked = true;
+    this.registry.set('interactOpen', false);
+    this.registry.set('dialogOpen', false);
+    this.registry.set('listingOpen', false);
+    this.setHint('正在進入商店...');
+
+    this.cameras.main.fadeOut(180, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      try {
+        if (this.scene.isActive('StoreScene') || this.scene.isSleeping('StoreScene') || this.scene.isPaused('StoreScene')) {
+          this.scene.stop('StoreScene');
+        }
+      } catch {}
+
+      this.scene.pause();
+      this.scene.launch('StoreScene', { storeId, returnTo: 'TPE2LobbyScene' });
+    });
+  }
+
+  private addFacilityLabel(fac: Facility, propHeight: number) {
+    if (!fac.shortName) return;
+    const label = this.add.text(fac.x, fac.y - Math.max(22, propHeight * 0.72), fac.shortName, {
+      fontSize: `${CONFIG.ui.small}px`,
+      color: '#102a43',
+      resolution: 2,
+      fontFamily: 'HanPixel, system-ui, sans-serif',
+      backgroundColor: 'rgba(255,255,255,0.82)',
+      padding: { x: 4, y: 2 },
+    }).setOrigin(0.5, 1).setDepth(fac.y + 4);
+    try { label.setStroke('#ffffff', 2); } catch {}
+  }
+
+  private floorplanPropKey(key: string) {
+    return TPE2_FLOORPLAN_PROP_MAP[key] ?? key;
+  }
+
+  private addProp({ key, x, y, scale = this.defaultScaleFor(key), collide = false, bodyMode = 'feet' }: Tpe2PropPlacement) {
+    const visualKey = this.floorplanPropKey(key);
+    const p = this.add.image(x, y, `prop-${visualKey}`).setOrigin(0.5, 1).setScale(scale);
+
+    if (collide) {
+      this.physics.add.existing(p, true);
+      const body = p.body as Phaser.Physics.Arcade.StaticBody;
+      body.updateFromGameObject();
+      const bodyW = bodyMode === 'box'
+        ? Math.max(18, p.displayWidth * 0.82)
+        : Math.max(18, p.displayWidth * 0.62);
+      const bodyH = bodyMode === 'box'
+        ? Math.max(18, p.displayHeight * 0.55)
+        : Math.max(10, Math.min(26, p.displayHeight * 0.12));
+      body.setSize(bodyW, bodyH);
+      const offsetY = bodyMode === 'box'
+        ? p.height - bodyH / scale - Math.max(0, p.height * 0.06)
+        : p.height - bodyH / scale;
+      body.setOffset((p.width - bodyW / scale) / 2, offsetY);
+      body.updateFromGameObject();
+      this.propsGroup.add(p);
+    }
+
+    return p;
+  }
+
+  private addBlocker(x: number, y: number, width: number, height: number) {
+    const blocker = this.add.rectangle(x, y, width, height, 0x000000, 0).setVisible(false);
+    this.physics.add.existing(blocker, true);
+    this.propsGroup.add(blocker);
+  }
+
+  private addTpe11Blockers() {
+    TPE2_BLOCKERS.forEach(r => this.addBlocker(
+      r.x + r.width / 2,
+      r.y + r.height / 2,
+      r.width,
+      r.height
+    ));
+  }
+
+  private defaultScaleFor(key: string) {
+    const scales: Record<string, number> = {
+      'flight-board': 0.28,
+      'curved-info-desk': 0.3,
+      'security-partition': 0.22,
+      'checkin-kiosk': 0.24,
+      'signage-pillar': 0.22,
+      'airport-elevator': 0.3,
+      'info-counter': 0.24,
+      'checkin-counter-module': 0.2,
+      'dutyfree-shop-kiosk': 0.2,
+      'glass-partition': 0.22,
+      'wall-column': 0.22,
+      'short-wall': 0.24,
+      'security-scanner': 0.2,
+      'self-checkin-kiosk': 0.18,
+      'airport-chairs': 0.24,
+      'airport-atm': 0.22,
+      'potted-palm': 0.22,
+      'trash-bin': 0.16,
+    };
+    return scales[key] ?? 0.2;
+  }
+
+  private addArchitectureDressing() {
+    TPE2_ARCHITECTURE_PROPS.forEach(p => this.addProp(p));
+  }
+
+  private addLobbyDressing() {
+    TPE2_DECOR_PROPS.forEach(p => this.addProp(p));
+  }
+
+  private addPlayerNameplate() {
     try {
       const nm = (localStorage.getItem('pname') || '').trim();
       if (nm) {
-        (this as any).nameplate = this.add.text(this.player.x, this.player.y - 22, nm, { fontSize: `${CONFIG.ui.small}px`, color: '#243b53', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' })
-          .setOrigin(0.5, 1).setDepth(20000).setScrollFactor(1);
+        (this as any).nameplate = this.add.text(this.player.x, this.player.y - 22, nm, {
+          fontSize: `${CONFIG.ui.small}px`,
+          color: '#243b53',
+          resolution: 2,
+          fontFamily: 'HanPixel, system-ui, sans-serif'
+        }).setOrigin(0.5, 1).setDepth(20000).setScrollFactor(1);
         try { (this as any).nameplate.setStroke('#ffffff', 2); } catch {}
       }
     } catch {}
+  }
 
-    // NPC
+  private spawnCrowd() {
     fetchTravelers().then((list) => {
       this.crowd = createCrowd(this, {
         count: 15,
-        area: { xMin: 100, xMax: this.worldW - 100, yMin: 100, yMax: this.worldH - 100 },
+        area: { xMin: 180, xMax: this.worldW - 180, yMin: 340, yMax: this.worldH - 360 },
         texture: 'sprite-npc',
         layer: this.layer,
         collideWith: [this.player as any],
@@ -105,51 +272,6 @@ export class TPE2LobbyScene extends BaseScene {
         texturesByGender: { default: 'sprite-npc' }
       });
     });
-
-    attachOthers(this, { getArea: () => 't2_lobby', crossArea: false });
-
-    this.setLocation('桃園 T2 大廳', 'concourse');
-    this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);
-    this.physics.world.setBounds(0, 0, this.worldW, this.worldH);
-    
-    // 小地圖設定
-    ;(this as any).__minimapW = this.worldW;
-    ;(this as any).__minimapH = this.worldH;
-    try { (window as any).__rerenderMinimap?.(); } catch {}
-  }
-
-  private addFacility(fac: Facility) {
-    const p = this.addProp(fac.x, fac.y, fac.texture.replace('prop-', ''), true);
-    if (fac.scale) p.setScale(fac.scale);
-    
-    this.interactables.push({ 
-        world: new Phaser.Math.Vector2(fac.x, fac.y), 
-        label: fac.name, 
-        action: () => {
-            if (fac.targetScene) {
-                this.changeScene(fac.targetScene);
-            } else if (fac.hint) {
-                this.setHint(fac.hint);
-            }
-        } 
-    });
-  }
-
-  private addProp(x: number, y: number, key: string, collide: boolean) {
-    const p = this.add.image(x, y, `prop-${key}`).setOrigin(0.5, 1);
-    p.setScale(0.18); 
-
-    if (collide) {
-      this.physics.add.existing(p, true);
-      const body = p.body as Phaser.Physics.Arcade.StaticBody;
-      body.updateFromGameObject(); 
-      const sw = p.displayWidth;
-      body.setSize(sw * 0.6, 12);
-      body.setOffset((p.width - (sw * 0.6) / 0.18) / 2, p.height - 12 / 0.18);
-      body.updateFromGameObject();
-      this.propsGroup.add(p);
-    }
-    return p;
   }
 
   update() {
@@ -157,39 +279,27 @@ export class TPE2LobbyScene extends BaseScene {
     this.updatePlayerMovement();
     this.updateNetworkMovement('t2_lobby');
 
-    // 1. 切換對齊參考圖 (按 V)
-    if (Phaser.Input.Keyboard.JustDown(this.keys.V)) {
-        const ref = (this as any).refOverlay;
-        if (ref) {
-            ref.setVisible(!ref.visible);
-            this.setHint(`對齊模式: ${ref.visible ? '開啟' : '關閉'}`);
+    if (Phaser.Input.Keyboard.JustDown(this.keys.C)) {
+      this.physics.world.drawDebug = !this.physics.world.drawDebug;
+      if (!this.physics.world.debugGraphic) this.physics.world.createDebugGraphic();
+      this.physics.world.debugGraphic.setVisible(this.physics.world.drawDebug);
+
+      const tg = (this as any).tileDebugGraphics;
+      if (tg) {
+        tg.setVisible(this.physics.world.drawDebug);
+        if (tg.visible) {
+          tg.clear();
+          this.layer.renderDebug(tg, {
+            tileColor: null,
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 128),
+            faceColor: new Phaser.Display.Color(40, 39, 37, 255)
+          });
         }
+      }
     }
 
-    // 2. 切換物理除錯 (按 C)
-    if (Phaser.Input.Keyboard.JustDown(this.keys.C)) {
-        this.physics.world.drawDebug = !this.physics.world.drawDebug;
-        if (!this.physics.world.debugGraphic) this.physics.world.createDebugGraphic();
-        this.physics.world.debugGraphic.setVisible(this.physics.world.drawDebug);
-        
-        // 同步切換 Tilemap 除錯顯示
-        const tg = (this as any).tileDebugGraphics;
-        if (tg) {
-            tg.setVisible(this.physics.world.drawDebug);
-            if (tg.visible) {
-                tg.clear();
-                this.layer.renderDebug(tg, {
-                    tileColor: null, // 非碰撞瓦片不畫
-                    collidingTileColor: new Phaser.Display.Color(243, 134, 48, 128), // 碰撞瓦片用橘色
-                    faceColor: new Phaser.Display.Color(40, 39, 37, 255) // 邊緣
-                });
-            }
-        }
-    }
-    
-    // Y-sorting
     this.children.each((child: any) => {
-      if (child === this.layer || (this as any).refOverlay === child) return; 
+      if (child === this.layer || child.texture?.key === TPE2_FLOORPLAN_BG_KEY) return;
       if (child.texture && (child.texture.key.startsWith('prop-') || child.texture.key === 'characters' || child.texture.key === 'sprite-npc')) {
         child.setDepth(child.y);
       }
@@ -202,17 +312,18 @@ export class TPE2LobbyScene extends BaseScene {
       updateNameplates(this, this.crowd, this.player);
     }
 
-    // 互動
-    let nearest = null; let minDist = 35;
+    let nearest: { world: Phaser.Math.Vector2; label: string; radius: number; action: () => void } | null = null;
+    let minDist = Infinity;
     for (const item of this.interactables) {
       const d = Phaser.Math.Distance.Between(this.player.x, this.player.y, item.world.x, item.world.y);
-      if (d < minDist) { minDist = d; nearest = item; }
+      if (d < item.radius && d < minDist) { minDist = d; nearest = item; }
     }
+
     if (nearest) {
       this.setHint(`${nearest.label}｜按 E 互動｜ESC 選單`);
-      if (Phaser.Input.Keyboard.JustDown(this.keys.E)) nearest.action();
+      if (!this.interactionLocked && Phaser.Input.Keyboard.JustDown(this.keys.E)) nearest.action();
     } else {
-      this.setHint(`WASD/方向鍵移動｜ESC 選單`);
+      this.setHint('WASD/方向鍵移動｜ESC 選單｜C 碰撞偵錯');
     }
 
     try {

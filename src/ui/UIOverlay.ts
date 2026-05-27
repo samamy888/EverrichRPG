@@ -20,11 +20,17 @@ export class UIOverlay extends Phaser.Scene {
   private basketValue!: Phaser.GameObjects.BitmapText;
   private fontDebugText?: Phaser.GameObjects.Text;
   private hintBox!: Phaser.GameObjects.Rectangle;
+  private hintFrame!: Phaser.GameObjects.Graphics;
   private hintText!: Phaser.GameObjects.Text;
   private locationText!: Phaser.GameObjects.Text;
   private locationIcon!: Phaser.GameObjects.Image;
   private statusBox!: Phaser.GameObjects.Rectangle;
+  private statusFrame!: Phaser.GameObjects.Graphics;
   private statusText!: Phaser.GameObjects.Text;
+  private rpgStatusBox!: Phaser.GameObjects.Rectangle;
+  private rpgStatusFrame!: Phaser.GameObjects.Graphics;
+  private moneyIcon!: Phaser.GameObjects.Image;
+  private basketIcon!: Phaser.GameObjects.Image;
   // Basket overlay state
   private basketOpen = false;
   private basketBox?: Phaser.GameObjects.Rectangle;
@@ -108,14 +114,18 @@ export class UIOverlay extends Phaser.Scene {
     const HUD = CONFIG.ui.hudHeight;
     const FS = CONFIG.ui.fontSize;
     const HFS = FS + (((CONFIG.ui as any).hintDelta || 0));
-    this.hintBox = this.add.rectangle(0, 0, GAME_WIDTH, HUD, 0x07131c, 0.88).setOrigin(0).setDepth(999).setScrollFactor(0);
-    this.hintText = this.add.text(4, Math.max(1, Math.floor((HUD - HFS) / 2)), '', { fontSize: `${HFS}px`, resolution: 2, color: '#f4fbff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000).setScrollFactor(0);
-    this.locationText = this.add.text(GAME_WIDTH - 4, Math.max(1, Math.floor((HUD - FS) / 2)), '', { fontSize: `${FS}px`, resolution: 2, color: '#ffd17a', fontFamily: 'HanPixel, system-ui, sans-serif' })
+    this.hintBox = this.add.rectangle(0, 0, GAME_WIDTH, HUD, 0x111420, 0.92).setOrigin(0).setDepth(998).setScrollFactor(0);
+    this.hintFrame = this.add.graphics().setDepth(999).setScrollFactor(0);
+    this.hintText = this.add.text(8, Math.max(1, Math.floor((HUD - HFS) / 2)), '', { fontSize: `${HFS}px`, resolution: 2, color: '#f7f2df', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000).setScrollFactor(0);
+    this.locationText = this.add.text(GAME_WIDTH - 8, Math.max(1, Math.floor((HUD - FS) / 2)), '', { fontSize: `${FS}px`, resolution: 2, color: '#f6c067', fontFamily: 'HanPixel, system-ui, sans-serif' })
       .setOrigin(1, 0)
       .setDepth(1000)
       .setScrollFactor(0);
     this.ensureLocationIcons();
+    this.ensureStatusIcons();
     this.locationIcon = this.add.image(GAME_WIDTH - 4, 3, 'icon-concourse').setOrigin(1, 0).setDepth(1000).setVisible(false).setScrollFactor(0);
+    this.moneyIcon = this.add.image(-9999, -9999, 'icon-money').setDepth(1206).setScrollFactor(0);
+    this.basketIcon = this.add.image(-9999, -9999, 'icon-basket').setDepth(1206).setScrollFactor(0);
 
     const hasHanBitmap = this.cache.bitmapFont.exists('han');
     if (hasHanBitmap) {
@@ -131,14 +141,17 @@ export class UIOverlay extends Phaser.Scene {
 
     // Values (ASCII via bitmap font, very crisp)
     this.timeValue = this.add.bitmapText(-9999, -9999, 'tiny5x7', '', 10).setVisible(false).setScrollFactor(0);
-    this.moneyValue = this.add.bitmapText(-9999, -9999, 'tiny5x7', '', 10).setVisible(false).setScrollFactor(0);
-    this.basketValue = this.add.bitmapText(-9999, -9999, 'tiny5x7', '', 10).setVisible(false).setScrollFactor(0);
+    this.moneyValue = this.add.bitmapText(-9999, -9999, 'tiny5x7', '', 10).setVisible(true).setDepth(1206).setScrollFactor(0);
+    this.basketValue = this.add.bitmapText(-9999, -9999, 'tiny5x7', '', 10).setVisible(true).setDepth(1206).setScrollFactor(0);
 
     this.registry.events.on('changedata', this.onDataChanged, this);
 
     // Bottom status box + text（實際位置在 layoutHUD 中計算）
-    this.statusBox = this.add.rectangle(0, 0, GAME_WIDTH, HUD, 0x07131c, 0.88).setOrigin(0).setDepth(999).setScrollFactor(0);
-    this.statusText = this.add.text(4, 0, '', { fontSize: `${FS}px`, resolution: 2, color: '#d8ecff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000).setScrollFactor(0);
+    this.statusBox = this.add.rectangle(0, 0, GAME_WIDTH, HUD, 0x111420, 0.92).setOrigin(0).setDepth(998).setScrollFactor(0);
+    this.statusFrame = this.add.graphics().setDepth(999).setScrollFactor(0);
+    this.statusText = this.add.text(8, 0, '', { fontSize: `${FS}px`, resolution: 2, color: '#d6def0', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000).setScrollFactor(0);
+    this.rpgStatusBox = this.add.rectangle(0, 0, 1, 1, 0x141a28, 0.94).setOrigin(0).setDepth(1204).setScrollFactor(0);
+    this.rpgStatusFrame = this.add.graphics().setDepth(1205).setScrollFactor(0);
 
     // For webfont, after load the width may change; adjust once fonts are ready
     const fonts: any = (document as any).fonts;
@@ -294,12 +307,7 @@ export class UIOverlay extends Phaser.Scene {
       this.locationText.setPosition(w - 4, 3);
     }
 
-    const itemsCount = basket.length;
-    const localized = t('ui.status', { money, items: itemsCount, total: basketTotal }) as string;
-    const text = localized && localized !== 'ui.status'
-      ? localized
-      : `錢包 $${money}｜購物籃 ${itemsCount} 件｜總金額 $${basketTotal}`;
-    this.statusText.setText(text);
+    this.statusText.setText(this.hintText.text || '');
     this.layoutHUD();
   }
 
@@ -449,6 +457,28 @@ export class UIOverlay extends Phaser.Scene {
     });
   }
 
+  private ensureStatusIcons() {
+    const makeIcon = (key: string, draw: (g: Phaser.GameObjects.Graphics) => void) => {
+      if (this.textures.exists(key)) return;
+      const g = this.add.graphics({ x: 0, y: 0 });
+      g.clear();
+      draw(g);
+      g.generateTexture(key, 12, 12);
+      g.destroy();
+    };
+    makeIcon('icon-money', (g) => {
+      g.fillStyle(0xd4a84b, 1); g.fillRect(2, 3, 8, 6);
+      g.fillStyle(0xf6d98d, 1); g.fillRect(3, 4, 6, 4);
+      g.fillStyle(0x7a5b21, 1); g.fillRect(5, 5, 2, 2);
+    });
+    makeIcon('icon-basket', (g) => {
+      g.fillStyle(0x8b5a2b, 1); g.fillRect(2, 5, 8, 5);
+      g.fillStyle(0xb07a45, 1); g.fillRect(3, 6, 6, 3);
+      g.fillStyle(0xd8b588, 1); g.fillRect(4, 3, 1, 2); g.fillRect(7, 3, 1, 2);
+      g.fillStyle(0x6b4522, 1); g.fillRect(5, 4, 2, 1);
+    });
+  }
+
   // 計算目前可視區大小（以螢幕像素對應的世界座標；UI 相機固定 1x）
   private getViewSize() {
     let w = Number((this.scale as any)?.width) || 0;
@@ -471,28 +501,55 @@ export class UIOverlay extends Phaser.Scene {
     const HUD = CONFIG.ui.hudHeight;
     const FS = CONFIG.ui.fontSize;
     const { w, h } = this.getViewSize();
-    // Top bar
+    // Top thin navigation bar (location only)
     this.hintBox.setPosition(0, 0).setSize(w, HUD);
-    const HFS = CONFIG.ui.fontSize + ((CONFIG.ui as any).hintDelta || 0);
-    this.hintText.setPosition(4, Math.max(1, Math.floor((HUD - HFS) / 2)));
+    this.hintFrame.clear();
+    this.hintFrame.fillStyle(0x0b1019, 0.8).fillRect(0, 0, w, HUD);
+    this.hintFrame.lineStyle(1, 0x3e4a63, 0.95).lineBetween(0, HUD - 0.5, w, HUD - 0.5);
+    this.hintText.setVisible(false);
     // Right-top location
     const hasIcon = this.locationIcon.visible;
     if (hasIcon) {
       const iconW = this.locationIcon.displayWidth || 10;
       this.locationIcon.setPosition(w - 4, 3);
-      this.locationText.setOrigin(1, 0).setPosition(w - 4 - iconW - 4, 3);
+      this.locationText.setOrigin(1, 0).setPosition(w - 8 - iconW - 4, 3);
     } else {
-      this.locationText.setOrigin(1, 0).setPosition(w - 4, 3);
+      this.locationText.setOrigin(1, 0).setPosition(w - 8, 3);
     }
-    // Bottom bar
-    this.statusBox.setPosition(0, h - HUD).setSize(w, HUD);
-    this.statusText.setPosition(4, h - HUD + Math.max(1, Math.floor((HUD - FS) / 2)));
+    // Bottom message window (RPG style)
+    const msgH = Math.max(24, HUD + 4);
+    this.statusBox.setVisible(true).setPosition(0, h - msgH).setSize(w, msgH);
+    this.statusFrame.clear();
+    this.statusFrame.fillStyle(0x0b1019, 0.86).fillRect(0, h - msgH, w, msgH);
+    this.statusFrame.fillStyle(0x1e2635, 0.35).fillRect(2, h - msgH + 2, w - 4, msgH - 4);
+    this.statusFrame.lineStyle(1, 0xc59b53, 0.95).strokeRect(0.5, h - msgH + 0.5, w - 1, msgH - 1);
+    this.statusFrame.lineStyle(1, 0x3e4a63, 0.95).strokeRect(1.5, h - msgH + 1.5, w - 3, msgH - 3);
+    this.statusText.setVisible(true).setPosition(8, h - msgH + Math.max(3, Math.floor((msgH - FS) / 2)));
+
+    // Place minimap first
+    this.positionMinimap();
+
+    // Left-bottom RPG status panel
+    const panelW = 132;
+    const panelH = 30;
+    const panelX = 6;
+    const panelY = h - msgH - panelH - 6;
+    this.rpgStatusBox.setVisible(true).setPosition(panelX, panelY).setSize(panelW, panelH);
+    this.rpgStatusFrame.clear();
+    this.rpgStatusFrame.fillStyle(0x0b1019, 0.4).fillRect(panelX + 2, panelY + 2, panelW - 4, panelH - 4);
+    this.rpgStatusFrame.lineStyle(1, 0xc59b53, 0.95).strokeRect(panelX + 0.5, panelY + 0.5, panelW - 1, panelH - 1);
+    this.rpgStatusFrame.lineStyle(1, 0x3e4a63, 0.95).strokeRect(panelX + 1.5, panelY + 1.5, panelW - 3, panelH - 3);
+
+    const row1Y = panelY + 8;
+    this.moneyIcon.setVisible(true).setPosition(panelX + 10, row1Y + 2).setOrigin(0, 0).setScale(1.15);
+    this.moneyValue.setVisible(true).setPosition(panelX + 30, row1Y + 2);
+    this.basketIcon.setVisible(false);
+    this.basketValue.setVisible(false);
     // 若購物籃或對話框開啟，重繪以符合新尺寸
     if (this.basketOpen) this.renderBasket();
     if (this.dialogOpen) this.renderDialog();
     if (this.listingOpen) this.renderListing();
     this.renderInteract();
-    this.positionMinimap();
   }
 
   private ensureMinimap() { ensureMinimap(this); }
@@ -505,14 +562,9 @@ export class UIOverlay extends Phaser.Scene {
   private getMenuItems(): { label: string; value: string }[] {
     if (this.menuLevel === 1) return [
       { label: '購物籃', value: 'basket' },
-      { label: '地點', value: 'locations' },
       { label: '回到主畫面', value: 'logout' },
     ];
-    // level 2: locations（動態列出 TPE-01 ~ TPE-12）
-    const tpeIds = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
-    const tpeItems = tpeIds.map(id => ({ label: `TPE-${id} 地圖`, value: `TPE:${id}` }));
     return [
-      ...tpeItems,
       { label: '桃園 T2 大廳', value: 'TPE2LobbyScene' },
     ];
   }
@@ -536,19 +588,22 @@ export class UIOverlay extends Phaser.Scene {
 
     if (!this.menuBox) this.menuBox = this.add.graphics().setDepth(2100).setScrollFactor(0);
     const g = this.menuBox; g.clear();
-    g.fillStyle(0x000000, 0.85).fillRect(x, y, panelW, panelH);
-    g.lineStyle(1, 0x3a4558, 1).strokeRect(x + 0.5, y + 0.5, panelW - 1, panelH - 1);
+    g.fillStyle(0x151b28, 0.94).fillRect(x, y, panelW, panelH);
+    g.fillStyle(0x0b1019, 0.45).fillRect(x + 2, y + 2, panelW - 4, panelH - 4);
+    g.lineStyle(1, 0xc59b53, 1).strokeRect(x + 0.5, y + 0.5, panelW - 1, panelH - 1);
+    g.lineStyle(1, 0x3e4a63, 1).strokeRect(x + 1.5, y + 1.5, panelW - 3, panelH - 3);
+    g.lineStyle(1, 0x4f5f7e, 0.8).lineBetween(x + 4, y + FS + 8, x + panelW - 4, y + FS + 8);
 
     // 標題與提示
     const title = (this.menuLevel === 1) ? '選單' : '地點';
-    const titleObj = this.add.text(x + pad, y + pad - Math.max(0, Math.round(FS * 0.2)), title, { fontSize: `${FS}px`, color: '#cfe2f3', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2101).setScrollFactor(0);
+    const titleObj = this.add.text(x + pad, y + pad - Math.max(0, Math.round(FS * 0.2)), title, { fontSize: `${FS}px`, color: '#f6c067', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2101).setScrollFactor(0);
     this.menuRows.push(titleObj as any);
 
     // 列表項
     for (let i = 0; i < items.length; i++) {
       const it = items[i];
       const rowY = y + pad + FS + 6 + i * rowH; // 留出標題區塊高度
-      const row = this.add.text(x + pad, rowY, it.label, { fontSize: `${FS}px`, color: i === this.menuSelected ? '#ffd17a' : '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2101).setScrollFactor(0);
+      const row = this.add.text(x + pad, rowY, it.label, { fontSize: `${FS}px`, color: i === this.menuSelected ? '#ffe39b' : '#d6def0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2101).setScrollFactor(0);
       this.menuRows.push(row);
     }
     this.scene.bringToTop();
@@ -568,7 +623,6 @@ export class UIOverlay extends Phaser.Scene {
     const chosen = items[this.menuSelected];
     if (this.menuLevel === 1) {
       if (chosen.value === 'basket') { this.closeMenu(); this.openBasket(); return; }
-      if (chosen.value === 'locations') { this.menuLevel = 2; this.menuSelected = 0; this.renderMenu(); return; }
       if (chosen.value === 'logout') {
         this.closeMenu();
         // 停止所有場景並回到登入畫面
@@ -607,11 +661,6 @@ export class UIOverlay extends Phaser.Scene {
         for (const s of actives) { if (s.scene.key !== key) { try { this.game.scene.stop(s.scene.key); } catch {} } }
       } catch {}
     };
-    if (val.startsWith('TPE:')) {
-      const id = val.split(':')[1] || '01';
-      startClean('TPEMapScene', { id });
-      return;
-    }
     startClean(val);
   }
 

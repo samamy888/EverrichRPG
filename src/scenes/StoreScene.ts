@@ -1,3 +1,4 @@
+import * as Phaser from 'phaser';
 import { BaseScene, BaseSceneData } from './BaseScene';
 import { items } from '../data/items';
 import { createCrowd, updateCrowd, updateNameplates, updateNameplateForSprite } from '../actors/NpcCrowd';
@@ -137,7 +138,7 @@ export class StoreScene extends BaseScene {
     })();
 
     // 顧客
-    if (['cosmetics','liquor','snacks','tobacco','perfume'].includes(this.storeId)) {
+    if (['cosmetics','liquor','snacks','tobacco','perfume','electronics','fashion','books','souvenirs','food'].includes(this.storeId)) {
       fetchTravelers().then((list) => {
         const pool = list.slice();
         const out: any[] = [];
