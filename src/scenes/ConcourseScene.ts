@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
 import { createCrowd, updateCrowd, updateNameplates } from '../actors/NpcCrowd';
 import { CONFIG } from '../config';

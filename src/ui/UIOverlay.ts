@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { registerTinyBitmapFont } from './BitmapFont';
 import { CONFIG } from '../config';
 import { t } from '../i18n';
@@ -108,9 +108,9 @@ export class UIOverlay extends Phaser.Scene {
     const HUD = CONFIG.ui.hudHeight;
     const FS = CONFIG.ui.fontSize;
     const HFS = FS + (((CONFIG.ui as any).hintDelta || 0));
-    this.hintBox = this.add.rectangle(0, 0, GAME_WIDTH, HUD, 0x000000, 0.55).setOrigin(0).setDepth(999).setScrollFactor(0);
-    this.hintText = this.add.text(4, Math.max(1, Math.floor((HUD - HFS) / 2)), '', { fontSize: `${HFS}px`, resolution: 2, color: '#e6f0ff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000).setScrollFactor(0);
-    this.locationText = this.add.text(GAME_WIDTH - 4, Math.max(1, Math.floor((HUD - FS) / 2)), '', { fontSize: `${FS}px`, resolution: 2, color: '#cfe2f3', fontFamily: 'HanPixel, system-ui, sans-serif' })
+    this.hintBox = this.add.rectangle(0, 0, GAME_WIDTH, HUD, 0x07131c, 0.88).setOrigin(0).setDepth(999).setScrollFactor(0);
+    this.hintText = this.add.text(4, Math.max(1, Math.floor((HUD - HFS) / 2)), '', { fontSize: `${HFS}px`, resolution: 2, color: '#f4fbff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000).setScrollFactor(0);
+    this.locationText = this.add.text(GAME_WIDTH - 4, Math.max(1, Math.floor((HUD - FS) / 2)), '', { fontSize: `${FS}px`, resolution: 2, color: '#ffd17a', fontFamily: 'HanPixel, system-ui, sans-serif' })
       .setOrigin(1, 0)
       .setDepth(1000)
       .setScrollFactor(0);
@@ -137,8 +137,8 @@ export class UIOverlay extends Phaser.Scene {
     this.registry.events.on('changedata', this.onDataChanged, this);
 
     // Bottom status box + text（實際位置在 layoutHUD 中計算）
-    this.statusBox = this.add.rectangle(0, 0, GAME_WIDTH, HUD, 0x000000, 0.55).setOrigin(0).setDepth(999).setScrollFactor(0);
-    this.statusText = this.add.text(4, 0, '', { fontSize: `${FS}px`, resolution: 2, color: '#e6f0ff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000).setScrollFactor(0);
+    this.statusBox = this.add.rectangle(0, 0, GAME_WIDTH, HUD, 0x07131c, 0.88).setOrigin(0).setDepth(999).setScrollFactor(0);
+    this.statusText = this.add.text(4, 0, '', { fontSize: `${FS}px`, resolution: 2, color: '#d8ecff', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000).setScrollFactor(0);
 
     // For webfont, after load the width may change; adjust once fonts are ready
     const fonts: any = (document as any).fonts;
@@ -298,7 +298,7 @@ export class UIOverlay extends Phaser.Scene {
     const localized = t('ui.status', { money, items: itemsCount, total: basketTotal }) as string;
     const text = localized && localized !== 'ui.status'
       ? localized
-      : `Money $${money} | Basket ${itemsCount} items $${basketTotal}`;
+      : `錢包 $${money}｜購物籃 ${itemsCount} 件｜總金額 $${basketTotal}`;
     this.statusText.setText(text);
     this.layoutHUD();
   }
@@ -436,8 +436,8 @@ export class UIOverlay extends Phaser.Scene {
       g.destroy();
     };
     makeIcon('icon-concourse', (g) => {
-      g.fillStyle(0x3aa1bf, 1); g.fillRect(2, 5, 8, 3);
-      g.fillStyle(0x24424e, 1); g.fillRect(1, 3, 10, 2);
+      g.fillStyle(0xffd17a, 1); g.fillRect(2, 5, 8, 3);
+      g.fillStyle(0x1b4f66, 1); g.fillRect(1, 3, 10, 2);
     });
     makeIcon('icon-cosmetics', (g) => {
       g.fillStyle(0xff6fae, 1); g.fillRect(5, 2, 2, 5);

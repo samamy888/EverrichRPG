@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { getClient } from './ws';
 import { getApiBase } from './http';
 import { CONFIG } from '../config';
@@ -41,9 +41,9 @@ export function attachOthers(scene: Phaser.Scene, opts: AttachOthersOptions) {
     try {
       const c = getClient();
       const myPid = (localStorage.getItem('pid') || '').toLowerCase();
-      const selfCid = (c.getCid ? c.getCid() : '').toLowerCase();
-      const selfAid = (c.getAid ? c.getAid() : '').toLowerCase();
-      const selfId = (c.getId ? c.getId() : '').toLowerCase();
+      const selfCid = ((c.getCid ? c.getCid() : '') ?? '').toLowerCase();
+      const selfAid = ((c.getAid ? c.getAid() : '') ?? '').toLowerCase();
+      const selfId = ((c.getId ? c.getId() : '') ?? '').toLowerCase();
 
       const incId = (id || '').toLowerCase();
       const incAid = (aid || '').toLowerCase();
@@ -177,9 +177,9 @@ export function attachOthers(scene: Phaser.Scene, opts: AttachOthersOptions) {
       try {
         const c = getClient();
         const myPid = (localStorage.getItem('pid') || '').toLowerCase();
-        const selfCid = (c.getCid ? c.getCid() : '').toLowerCase();
-        const selfAid = (c.getAid ? c.getAid() : '').toLowerCase();
-        const selfId = (c.getId ? c.getId() : '').toLowerCase();
+        const selfCid = ((c.getCid ? c.getCid() : '') ?? '').toLowerCase();
+        const selfAid = ((c.getAid ? c.getAid() : '') ?? '').toLowerCase();
+        const selfId = ((c.getId ? c.getId() : '') ?? '').toLowerCase();
         
         const incId = (d.id || '').toLowerCase();
         const incAid = (d.aid || '').toLowerCase();

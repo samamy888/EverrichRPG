@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { CONFIG } from '../config';
 import { getClient } from '../net/ws';
 import { spawnPlayer, updatePlayer } from '../actors/Player';

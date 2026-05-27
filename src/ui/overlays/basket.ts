@@ -64,16 +64,16 @@ if (scene.minimapBox && scene.minimapBox.visible) {
     }
     boxX = Math.max(0, Math.round(rightEdge - boxW));
   }
-if (!scene.basketBox) {
-  scene.basketBox = scene.add.rectangle(boxX, boxY, boxW, hBox, 0x000000, 0.8).setOrigin(0).setDepth(1500).setScrollFactor(0);
-} else {
-  scene.basketBox.setPosition(boxX, boxY).setSize(boxW, hBox).setDepth(1500).setVisible(true).setScrollFactor(0);
-}
+  if (!scene.basketBox) {
+    scene.basketBox = scene.add.rectangle(boxX, boxY, boxW, hBox, 0x07131c, 0.92).setOrigin(0).setDepth(1500).setScrollFactor(0);
+  } else {
+    scene.basketBox.setPosition(boxX, boxY).setSize(boxW, hBox).setFillStyle(0x07131c, 0.92).setDepth(1500).setVisible(true).setScrollFactor(0);
+  }
   try { scene.basketRows?.forEach((r: any) => { try { r.destroy(); } catch {} }); } catch {}
   scene.basketRows = [];
   const startY = boxY + pad;
   const startX = boxX + 6;
-  const title = scene.add.text(startX, startY, t('store.listTitle') || '商品', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
+  const title = scene.add.text(startX, startY, t('store.listTitle') || '商品', { fontSize: `${FS}px`, color: '#ffd17a', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
   scene.basketRows.push(title);
   // 文字測量小工具
   const measure = (text: string, color: string = '#e6f0ff') => {

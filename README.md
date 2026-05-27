@@ -1,40 +1,77 @@
 # EverrichRPG
 
-像素風逛免稅店的小品遊戲（Stardew‑like 走動 + 採買）。
+像素風機場免稅店 RPG 原型。玩家可以登入角色，在桃園機場/T2 大廳地圖移動，與設施、店員和商品清單互動，並透過 WebSocket 看見其他玩家與聊天室訊息。
+
+## 專案狀態
+
+- 前端：TypeScript + Vite + Phaser 3
+- 後端：ASP.NET Core 8，提供 REST API、WebSocket、檔案式狀態快照
+- 目前重點：機場導覽、免稅店購物、NPC/旅客、小地圖、多人位置同步與聊天
 
 ## 開發與執行
 
-需求：Node.js 18+
+建議使用 Node.js 20.12+。
 
-- 安裝依賴：`npm ci`
-- 開發模式：`npm run dev`（http://localhost:5173）
-- 打包發布：`npm run build`（輸出 `dist/`）
-- 預覽打包：`npm run preview`
+```powershell
+npm ci
+npm run dev
+```
 
-IIS 部署：將 `dist/` 上傳到站台，專案已提供 `public/web.config`（SPA 回退與常見 MIME）。
+開發伺服器預設在 http://localhost:5173。
 
-## 目前玩法（v0.1）
+其他常用指令：
 
-- 場景與移動
-  - 大廳（Concourse）：WASD/方向鍵移動。靠近左右兩側的門按 `E` 進入商店。
-  - 商店（化妝品/酒類）：店內走動、靠近店員按 `E` 對話 → 顯示商品清單。
-- 商品與購物
-  - 清單導覽：`W/S` 或 方向鍵上下 切換；`E` 選擇（購買）。
-  - 結束對話：清單最後一項「結束對話」，按 `E` 返回走動。
-  - 退出商店：走到左下角出口按 `E` 返回大廳。
-- 全域購物籃（任何場景）
-  - `ESC` 開啟/關閉購物籃面板（底部對話框樣式）。
-  - `W/S` 或 方向鍵上下 選擇；`E` 移除選中的商品；下方顯示合計。
-  - 左上提示會在購物籃開啟時顯示操作說明，關閉後恢復原提示。
-- 縮放與顯示
-  - 視窗自適應（Cover/Fit 切換、整數縮放 Snap）。右下角有縮放控制，預設整數 5x。
-  - 右上角顯示所在位置與小圖示（大廳/化妝品/酒類）。
+```powershell
+npm run build
+npm run preview
+npx tsc --noEmit
+```
 
-## 字型
+後端伺服器：
 
-- WebFont：`public/fonts/han.ttf`（字族名 `HanPixel`）。啟動時會主動載入。
-- BitmapFont（可選）：加上 `?useBitmapFont=1` 會改用位圖字型（需提供 `han.fnt/png`）。
+```powershell
+cd server
+$env:ASPNETCORE_URLS="http://localhost:5000"
+dotnet run
+```
 
-## 技術棧
+前端預設會在開發環境連到 `http://localhost:5000/api` 與 `ws://localhost:5000/ws`。
 
-TypeScript + Vite + Phaser 3。程式架構：`src/scenes/*`（場景）、`src/ui/*`（UI 覆蓋層）、`src/data/*`（靜態資料）。
+## 目前玩法
+
+- 登入畫面：輸入電子郵件、顯示名稱、性別，選擇起始場景。
+- T2 大廳：使用 `WASD` 或方向鍵移動，靠近設施時按 `E` 互動。
+- 地圖場景：可切換 TPE-01 至 TPE-12 等機場平面圖，玩家位置會顯示在小地圖。
+- 商店：靠近店員按 `E` 對話，使用 `W/S` 或方向鍵選商品，按 `E` 購買。
+- 購物籃：透過 ESC 選單開啟，可檢視與移除商品。
+- 聊天/多人：登入後會建立 WebSocket 連線，同步玩家移動與聊天訊息。
+- 縮放工具：右下角可調整 Snap 縮放、聊天、小地圖人群與連線狀態。
+
+## 專案結構
+
+```text
+src/
+  actors/      玩家與 NPC 角色
+  api/         REST API 呼叫
+  data/        商品、旅客、設施等靜態資料
+  i18n/        介面文案
+  net/         WebSocket、HTTP、其他玩家同步
+  scenes/      Phaser 場景
+  ui/          HUD、對話、購物籃、小地圖、聊天 UI
+public/
+  fonts/       HanPixel 字型
+  map/         TPE/TPE2 地圖與道具
+  sprites/     角色圖集與動畫素材
+server/
+  ASP.NET Core 即時同步與 API 伺服器
+```
+
+## 字型與顯示
+
+- WebFont：`public/fonts/han.ttf`，字族名 `HanPixel`。
+- BitmapFont：網址加上 `?useBitmapFont=1` 可改用 `public/fonts/han.fnt/png`。
+- Phaser 以 320x180 為基準解析度，透過整數縮放保持像素風清晰。
+
+## 部署
+
+執行 `npm run build` 後會輸出到 `dist/`。IIS 部署可使用 `public/web.config`，其中包含 SPA fallback 與常見 MIME 設定。

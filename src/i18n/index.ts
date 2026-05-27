@@ -6,6 +6,7 @@ const dict: Record<Locale, any> = {
   'zh-Hant': {
     ui: {
       status: '錢包 ${money}｜購物籃 {items} 件，總金額 ${total}',
+      basketHint: '購物籃：W/S 選擇，E 移除，ESC 關閉',
     },
     concourse: {
       sign: '大廳',
@@ -28,7 +29,8 @@ const dict: Record<Locale, any> = {
   },
   en: {
     ui: {
-      status: 'Money ${money} | Basket ${items} items  ， Total $${total}',
+      status: 'Money ${money} | Basket ${items} items | Total $${total}',
+      basketHint: 'Basket: W/S to select, E to remove, ESC to close',
     },
     concourse: {
       sign: 'Concourse',

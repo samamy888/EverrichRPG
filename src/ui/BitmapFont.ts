@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 
 // Register a tiny 5x7 bitmap font for ASCII numerics and symbols we need
 // Supported: space, 0-9, ':', '$'

@@ -1,7 +1,7 @@
 import { BaseScene, BaseSceneData } from './BaseScene';
 import { items } from '../data/items';
 import { createCrowd, updateCrowd, updateNameplates, updateNameplateForSprite } from '../actors/NpcCrowd';
-import { fetchTravelers } from '../api/travelers';
+import { fetchClerk, fetchTravelers } from '../api/travelers';
 import { t } from '../i18n';
 import { CONFIG } from '../config';
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
@@ -129,7 +129,6 @@ export class StoreScene extends BaseScene {
     // 取得店員資料
     ;(async () => {
       try {
-        const { fetchClerk } = await import('../api/travelers');
         const c = await fetchClerk(this.storeId);
         this.cashier.setData('traveler', c);
         this.cashier.setData('animPrefix', 'clerk');

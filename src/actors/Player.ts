@@ -1,10 +1,12 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { CONFIG } from '../config';
 
 export type PlayerKeys = {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   keys: { [k: string]: Phaser.Input.Keyboard.Key };
 };
+
+type Facing = 'down' | 'up' | 'side';
 
 function getGender(): 'M' | 'F' {
   try {

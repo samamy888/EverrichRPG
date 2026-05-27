@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { StoreScene } from './scenes/StoreScene';
 import { UIOverlay } from './ui/UIOverlay';
 import { BootScene } from './scenes/BootScene';
@@ -164,9 +164,9 @@ function createZoomControls() {
 
   function updateLabel() {
     const baseInt = Math.max(CONFIG.scale.minZoom, Math.floor(Math.max(game.scale.width / GAME_WIDTH, game.scale.height / GAME_HEIGHT)));
-    const snapInfo = integerZoom ? `ON (x${preferredIntZoom ?? baseInt})` : 'OFF';
-    label.textContent = `Snap: ${snapInfo}`;
-    btnSnap.textContent = integerZoom ? 'Snap: ON' : 'Snap: OFF';
+    const snapInfo = integerZoom ? `開 (x${preferredIntZoom ?? baseInt})` : '關';
+    label.textContent = `像素縮放：${snapInfo}`;
+    btnSnap.textContent = integerZoom ? '縮放：開' : '縮放：關';
     btnMinus.textContent = '−';
     btnPlus.textContent = '+';
     btnClearChat.textContent = '清空訊息';
@@ -178,12 +178,12 @@ function createZoomControls() {
         chatVisible = (s === null) ? true : (s === '1');
       }
     } catch { chatVisible = true; }
-    btnChat.textContent = chatVisible ? 'Chat: ON' : 'Chat: OFF';
+    btnChat.textContent = chatVisible ? '聊天：開' : '聊天：關';
     const crowdOn = (window as any).__minimapCrowd !== false;
-    btnCrowd.textContent = crowdOn ? 'Crowd: ON' : 'Crowd: OFF';
+    btnCrowd.textContent = crowdOn ? '人群：開' : '人群：關';
     const connected = (window as any).__netConnected === true;
     dot.style.background = connected ? '#21c064' : '#d04444';
-    dot.title = connected ? 'WS: Connected' : 'WS: Disconnected';
+    dot.title = connected ? 'WebSocket 已連線' : 'WebSocket 未連線';
   }
   btnSnap.addEventListener('click', () => { integerZoom = !integerZoom; applyCameraZoom(); updateLabel(); });
   btnMinus.addEventListener('click', () => { integerZoom = true; preferredIntZoom = Math.max(CONFIG.scale.minZoom, (preferredIntZoom ?? (CONFIG.scale.minZoom + 1)) - 1); applyCameraZoom(); updateLabel(); });
@@ -196,7 +196,7 @@ function createZoomControls() {
     updateLabel();
   });
   // 讓 chat 模組可以回呼更新按鈕文字
-  ;(window as any).__updateChatButton = (v: boolean) => { try { btnChat.textContent = v ? 'Chat: ON' : 'Chat: OFF'; } catch {} };
+  ;(window as any).__updateChatButton = (v: boolean) => { try { btnChat.textContent = v ? '聊天：開' : '聊天：關'; } catch {} };
   btnChat.addEventListener('click', () => {
     try {
       if ((window as any).__chatToggle) (window as any).__chatToggle();
@@ -214,7 +214,7 @@ function createZoomControls() {
   });
 
   // Reset identity/storage button (dev helper)
-  btnReset.textContent = 'Reset ID';
+  btnReset.textContent = '重設玩家';
   btnReset.title = '清除 pid/sid/名稱/性別 並重新載入';
   btnReset.addEventListener('click', () => {
     try {
@@ -228,7 +228,7 @@ function createZoomControls() {
   });
 
   const dotWrap = document.createElement('span');
-  dotWrap.textContent = 'WS';
+  dotWrap.textContent = '連線';
   dotWrap.style.cssText = 'opacity:.8;margin-left:4px;margin-right:2px;';
   panel.append(label, btnSnap, btnMinus, btnPlus, btnCrowd, btnChat, btnClearChat, btnReset, dotWrap, dot);
   document.body.appendChild(panel);
@@ -239,7 +239,7 @@ function createZoomControls() {
       (window as any).__netConnected = !!state;
       const connected = (window as any).__netConnected === true;
       dot.style.background = connected ? '#21c064' : '#d04444';
-      dot.title = connected ? 'WS: Connected' : 'WS: Disconnected';
+      dot.title = connected ? 'WebSocket 已連線' : 'WebSocket 未連線';
     } catch {}
   };
 }

@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { CONFIG } from '../config';
 
 import type { Traveler } from '../api/travelers';

@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { CONFIG } from '../../config';
 
 // 將 UIOverlay 之迷你地圖相關行為拆出，避免主檔案過大
