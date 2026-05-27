@@ -57,12 +57,12 @@ export const TPE2_BLOCKERS: Tpe2Blocker[] = [
   { x: 2368, y: 548, width: 95, height: 2470 },
   { x: 3020, y: 548, width: 118, height: 2470 },
   { x: 3168, y: 560, width: 232, height: 2430 },
-  { x: 2788, y: 2870, width: 300, height: 164 },
 
   // Mid-right structural chunks
   { x: 2880, y: 1680, width: 230, height: 790 },
   { x: 3180, y: 1985, width: 175, height: 260 },
   { x: 3180, y: 2295, width: 175, height: 405 },
+
 ];
 
 export const TPE2_ARCHITECTURE_PROPS: Tpe2PropPlacement[] = [
@@ -82,19 +82,51 @@ export const TPE2_ARCHITECTURE_PROPS: Tpe2PropPlacement[] = [
   { key: 'wall-column', x: 3650, y: 2080, scale: 0.24, collide: true, bodyMode: 'box' },
   { key: 'wall-column', x: 3650, y: 2540, scale: 0.24, collide: true, bodyMode: 'box' },
 
-  { key: 'short-wall', x: 2850, y: 520, scale: 0.26, collide: true, bodyMode: 'box' },
-  { key: 'short-wall', x: 3150, y: 520, scale: 0.26, collide: true, bodyMode: 'box' },
+  { key: 'short-wall', x: 2850, y: 520, scale: 0.26, collide: false, bodyMode: 'box' },
+  { key: 'short-wall', x: 3150, y: 520, scale: 0.26, collide: false, bodyMode: 'box' },
   { key: 'short-wall', x: 2880, y: 2952, scale: 0.28, collide: true, bodyMode: 'box' },
   { key: 'short-wall', x: 3220, y: 2952, scale: 0.28, collide: true, bodyMode: 'box' },
 
-  { key: 'glass-partition', x: 3400, y: 940, scale: 0.28, collide: true, bodyMode: 'box' },
-  { key: 'glass-partition', x: 3400, y: 1180, scale: 0.28, collide: true, bodyMode: 'box' },
-  { key: 'glass-partition', x: 3400, y: 1420, scale: 0.28, collide: true, bodyMode: 'box' },
-  { key: 'glass-partition', x: 3400, y: 1660, scale: 0.28, collide: true, bodyMode: 'box' },
+  { key: 'glass-partition', x: 3400, y: 940, scale: 0.28, collide: false, bodyMode: 'box' },
+  { key: 'glass-partition', x: 3400, y: 1180, scale: 0.28, collide: false, bodyMode: 'box' },
+  { key: 'glass-partition', x: 3400, y: 1420, scale: 0.28, collide: false, bodyMode: 'box' },
+  { key: 'glass-partition', x: 3400, y: 1660, scale: 0.28, collide: false, bodyMode: 'box' },
+  { key: 'glass-partition', x: 2720, y: 980, scale: 0.24, collide: false, bodyMode: 'box' },
+  { key: 'glass-partition', x: 2720, y: 1240, scale: 0.24, collide: false, bodyMode: 'box' },
+  { key: 'glass-partition', x: 2720, y: 1860, scale: 0.24, collide: false, bodyMode: 'box' },
+  { key: 'glass-partition', x: 2720, y: 2180, scale: 0.24, collide: false, bodyMode: 'box' },
+  { key: 'glass-partition', x: 3060, y: 980, scale: 0.24, collide: false, bodyMode: 'box' },
+  { key: 'glass-partition', x: 3060, y: 1240, scale: 0.24, collide: false, bodyMode: 'box' },
+  { key: 'glass-partition', x: 3060, y: 1860, scale: 0.24, collide: false, bodyMode: 'box' },
+  { key: 'glass-partition', x: 3060, y: 2180, scale: 0.24, collide: false, bodyMode: 'box' },
+
+  { key: 'short-wall', x: 2880, y: 1540, scale: 0.24, collide: true, bodyMode: 'box' },
+  { key: 'short-wall', x: 3210, y: 1540, scale: 0.24, collide: true, bodyMode: 'box' },
+  { key: 'short-wall', x: 2880, y: 2360, scale: 0.24, collide: true, bodyMode: 'box' },
+  { key: 'short-wall', x: 3210, y: 2360, scale: 0.24, collide: false, bodyMode: 'box' },
+  { key: 'short-wall', x: 2880, y: 2730, scale: 0.24, collide: true, bodyMode: 'box' },
+  { key: 'short-wall', x: 3210, y: 2730, scale: 0.24, collide: false, bodyMode: 'box' },
 
   { key: 'self-checkin-kiosk', x: 2460, y: 980, scale: 0.17, collide: true, bodyMode: 'box' },
   { key: 'self-checkin-kiosk', x: 2460, y: 1260, scale: 0.17, collide: true, bodyMode: 'box' },
   { key: 'self-checkin-kiosk', x: 2460, y: 1540, scale: 0.17, collide: true, bodyMode: 'box' },
+];
+
+export const TPE2_FEATURE_PROPS: Tpe2PropPlacement[] = [
+  // Escalator zone placeholders (replace with dedicated escalator art in next art pass)
+  { key: 'escalator-module', x: 3030, y: 490, scale: 0.68, collide: false, bodyMode: 'box' },
+  { key: 'escalator-module', x: 3030, y: 2868, scale: 0.64, collide: false, bodyMode: 'box' },
+
+  // Customs / security entrance frontage
+  { key: 'customs-gate-module', x: 3210, y: 1080, scale: 0.16, collide: false, bodyMode: 'box' },
+  { key: 'info-counter', x: 3320, y: 1750, scale: 0.24, collide: true, bodyMode: 'box' },
+
+  // Duty-free frontage rhythm
+  { key: 'shopfront-module', x: 3620, y: 1240, scale: 0.16, collide: false, bodyMode: 'box' },
+  { key: 'shopfront-module', x: 3620, y: 1520, scale: 0.16, collide: false, bodyMode: 'box' },
+  { key: 'shopfront-module', x: 3620, y: 1800, scale: 0.16, collide: false, bodyMode: 'box' },
+  { key: 'shopfront-module', x: 3620, y: 2080, scale: 0.16, collide: false, bodyMode: 'box' },
+  { key: 'shopfront-module', x: 3620, y: 2360, scale: 0.16, collide: false, bodyMode: 'box' },
 ];
 
 export const TPE2_DECOR_PROPS: Tpe2PropPlacement[] = [

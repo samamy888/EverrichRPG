@@ -115,6 +115,7 @@ if (e.code === 'BracketLeft') { // [ decrease int zoom
 (window as any).__minimapCrowd = false;
 // 預設：WebSocket 連線狀態（啟動時視為未連線）
 (window as any).__netConnected = false;
+(window as any).__debugModeEnabled = true;
 
 // 介面：右下角縮放面板（Snap 整數）
 function createZoomControls() {
@@ -246,6 +247,40 @@ function createZoomControls() {
 }
 
 window.addEventListener('load', () => { createZoomControls(); });
+
+function createDebugModeSwitch() {
+  const panel = document.createElement('div');
+  panel.id = 'debug-mode-switch';
+  panel.style.cssText = [
+    'position:fixed','left:8px','top:8px','z-index:2147483647',
+    'display:flex','align-items:center','gap:6px','padding:4px 6px',
+    'border-radius:6px','background:rgba(20,26,40,0.9)','border:1px solid #c59b53',
+    'box-shadow:0 0 0 1px #3f4b64 inset',
+    'color:#d6def0','font:12px/1.2 HanPixel,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif'
+  ].join(';');
+  const label = document.createElement('span');
+  label.textContent = 'DEBUG';
+  const toggle = document.createElement('input');
+  toggle.type = 'checkbox';
+  toggle.checked = (window as any).__debugModeEnabled !== false;
+  toggle.style.cssText = 'width:14px;height:14px;accent-color:#f6c067;cursor:pointer;';
+
+  const apply = (on: boolean) => {
+    (window as any).__debugModeEnabled = on;
+    const scenes = game.scene.getScenes(true) as any[];
+    for (const s of scenes) {
+      if (s?.scene?.key === 'TPE2LobbyScene') {
+        try { (s as any).applyDebugMode?.(on); } catch {}
+      }
+    }
+  };
+  toggle.addEventListener('change', () => apply(!!toggle.checked));
+
+  panel.append(label, toggle);
+  document.body.appendChild(panel);
+}
+
+window.addEventListener('load', () => { createDebugModeSwitch(); });
 
 // 初始化客戶端日誌收集（未捕捉錯誤、自訂上報）
 try { initClientLogging(); } catch {}

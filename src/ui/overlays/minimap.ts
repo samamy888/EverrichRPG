@@ -10,7 +10,7 @@ export function ensureMinimap(scene: any) {
   }
   if (!scene.minimapBox) {
     const { w } = scene.getViewSize();
-    const pad = CONFIG.ui.minimap.pad;
+    const pad = Math.max(6, Number(CONFIG.ui.minimap.pad) || 0);
     // 初始建立時先用 1x1，實際尺寸在 renderMinimap 計算後設定，避免看到固定灰底
     scene.minimapBox = scene.add.rectangle(w - 1 - pad, scene.hintBox.height + pad, 1, 1, 0x000000, CONFIG.ui.minimap.backgroundAlpha)
       .setOrigin(0, 0).setScrollFactor(0).setDepth(1200)
@@ -27,7 +27,7 @@ export function positionMinimap(scene: any) {
   scene.minimapBox.setVisible(show); scene.minimapGfx.setVisible(show);
   if (!show) return;
   const { w } = scene.getViewSize();
-  const pad = CONFIG.ui.minimap.pad;
+  const pad = Math.max(6, Number(CONFIG.ui.minimap.pad) || 0);
   const cw = Math.max(1, Math.round(scene.minimapContentW || 1));
   const ch = Math.max(1, Math.round(scene.minimapContentH || 1));
   scene.minimapBox.setPosition(w - cw - pad, scene.hintBox.height + pad).setSize(cw, ch);
@@ -96,7 +96,7 @@ export function renderMinimap(scene: any) {
     const contentW = Math.max(1, Math.round(natW * s));
     const contentH = Math.max(1, Math.round(natH * s));
     const { w } = scene.getViewSize();
-    const pad = CONFIG.ui.minimap.pad;
+    const pad = Math.max(6, Number(CONFIG.ui.minimap.pad) || 0);
     const posX = w - contentW - pad;
     const posY = scene.hintBox.height + pad;
     try { scene.minimapBox.setPosition(posX, posY).setSize(contentW, contentH).setVisible(true); } catch {}
@@ -151,14 +151,18 @@ export function renderMinimap(scene: any) {
     const contentW = Math.max(1, Math.round(natW * s));
     const contentH = Math.max(1, Math.round(natH * s));
     const { w } = scene.getViewSize();
-    const pad = CONFIG.ui.minimap.pad;
+    const pad = Math.max(6, Number(CONFIG.ui.minimap.pad) || 0);
     const posX = w - contentW - pad;
     const posY = scene.hintBox.height + pad;
     scene.minimapBox.setPosition(posX, posY).setSize(contentW, contentH).setVisible(true);
     scene.minimapGfx.setPosition(posX, posY).setVisible(true).clear();
     scene.minimapContentW = contentW; scene.minimapContentH = contentH;
     // 外框（黑邊）
-    try { scene.minimapGfx.lineStyle(1, 0x000000, 1).strokeRect(0, 0, contentW, contentH); } catch {}
+    try {
+      scene.minimapGfx.fillStyle(0x0b1019, 0.18).fillRect(0, 0, contentW, contentH);
+      scene.minimapGfx.lineStyle(1, 0xc59b53, 0.95).strokeRect(0.5, 0.5, contentW - 1, contentH - 1);
+      scene.minimapGfx.lineStyle(1, 0x3e4a63, 0.95).strokeRect(1.5, 1.5, contentW - 3, contentH - 3);
+    } catch {}
     // Prepare or update minimap image sprite
     if (!scene.minimapImg) {
       try { scene.minimapImg = scene.add.image(posX, posY, imgKey).setOrigin(0, 0).setScrollFactor(0).setDepth(1201); } catch {}
@@ -228,7 +232,7 @@ export function renderMinimap(scene: any) {
     const contentW = Math.max(1, Math.round(mw * sX));
     const contentH = Math.max(1, Math.round(mh * sY));
     const { w } = scene.getViewSize();
-    const pad = CONFIG.ui.minimap.pad;
+    const pad = Math.max(6, Number(CONFIG.ui.minimap.pad) || 0);
     const posX = w - contentW - pad;
     const posY = scene.hintBox.height + pad;
     scene.minimapBox.setPosition(posX, posY).setSize(contentW, contentH);
@@ -246,7 +250,13 @@ export function renderMinimap(scene: any) {
     }
   }
   // 外框（黑邊）
-  try { scene.minimapGfx.lineStyle(1, 0x000000, 1).strokeRect(0, 0, Math.round(mw * sX), Math.round(mh * sY)); } catch {}
+  try {
+    const bw = Math.round(mw * sX);
+    const bh = Math.round(mh * sY);
+    scene.minimapGfx.fillStyle(0x0b1019, 0.18).fillRect(0, 0, bw, bh);
+    scene.minimapGfx.lineStyle(1, 0xc59b53, 0.95).strokeRect(0.5, 0.5, bw - 1, bh - 1);
+    scene.minimapGfx.lineStyle(1, 0x3e4a63, 0.95).strokeRect(1.5, 1.5, bw - 3, bh - 3);
+  } catch {}
   // 商店門（藍）
   try {
     const doors: any[] = (top as any)?.doors || [];

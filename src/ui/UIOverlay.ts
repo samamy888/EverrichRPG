@@ -504,45 +504,51 @@ export class UIOverlay extends Phaser.Scene {
     // Top thin navigation bar (location only)
     this.hintBox.setPosition(0, 0).setSize(w, HUD);
     this.hintFrame.clear();
-    this.hintFrame.fillStyle(0x0b1019, 0.8).fillRect(0, 0, w, HUD);
+    this.hintFrame.fillStyle(0x17141b, 0.84).fillRect(0, 0, w, HUD);
+    this.hintFrame.fillStyle(0x2c2833, 0.3).fillRect(0, 0, w, 2);
     this.hintFrame.lineStyle(1, 0x3e4a63, 0.95).lineBetween(0, HUD - 0.5, w, HUD - 0.5);
     this.hintText.setVisible(false);
     // Right-top location
     const hasIcon = this.locationIcon.visible;
     if (hasIcon) {
       const iconW = this.locationIcon.displayWidth || 10;
-      this.locationIcon.setPosition(w - 4, 3);
-      this.locationText.setOrigin(1, 0).setPosition(w - 8 - iconW - 4, 3);
+      const topY = Math.max(2, Math.floor((HUD - FS) / 2));
+      this.locationIcon.setPosition(w - 4, topY);
+      this.locationText.setOrigin(1, 0).setPosition(w - 8 - iconW - 4, topY);
     } else {
-      this.locationText.setOrigin(1, 0).setPosition(w - 8, 3);
+      const topY = Math.max(2, Math.floor((HUD - FS) / 2));
+      this.locationText.setOrigin(1, 0).setPosition(w - 8, topY);
     }
     // Bottom message window (RPG style)
-    const msgH = Math.max(24, HUD + 4);
+    const msgH = Math.max(28, HUD + 6);
     this.statusBox.setVisible(true).setPosition(0, h - msgH).setSize(w, msgH);
     this.statusFrame.clear();
-    this.statusFrame.fillStyle(0x0b1019, 0.86).fillRect(0, h - msgH, w, msgH);
-    this.statusFrame.fillStyle(0x1e2635, 0.35).fillRect(2, h - msgH + 2, w - 4, msgH - 4);
+    this.statusFrame.fillStyle(0x17141b, 0.86).fillRect(0, h - msgH, w, msgH);
+    this.statusFrame.fillStyle(0x2b2430, 0.3).fillRect(2, h - msgH + 2, w - 4, msgH - 4);
     this.statusFrame.lineStyle(1, 0xc59b53, 0.95).strokeRect(0.5, h - msgH + 0.5, w - 1, msgH - 1);
     this.statusFrame.lineStyle(1, 0x3e4a63, 0.95).strokeRect(1.5, h - msgH + 1.5, w - 3, msgH - 3);
-    this.statusText.setVisible(true).setPosition(8, h - msgH + Math.max(3, Math.floor((msgH - FS) / 2)));
+    this.statusText.setVisible(true).setPosition(10, h - msgH + Math.max(4, Math.floor((msgH - FS) / 2)));
+    this.statusText.setWordWrapWidth(Math.max(40, w - 20), true);
 
     // Place minimap first
     this.positionMinimap();
 
-    // Left-bottom RPG status panel
-    const panelW = 132;
-    const panelH = 30;
+    // Left-bottom RPG status panel (adaptive width for long money values)
+    const moneyScale = 1.1;
+    const moneyTextW = Math.ceil((this.moneyValue.width || 0) * moneyScale);
+    const panelW = Math.max(144, moneyTextW + 46);
+    const panelH = 34;
     const panelX = 6;
-    const panelY = h - msgH - panelH - 6;
+    const panelY = h - msgH - panelH - 8;
     this.rpgStatusBox.setVisible(true).setPosition(panelX, panelY).setSize(panelW, panelH);
     this.rpgStatusFrame.clear();
-    this.rpgStatusFrame.fillStyle(0x0b1019, 0.4).fillRect(panelX + 2, panelY + 2, panelW - 4, panelH - 4);
+    this.rpgStatusFrame.fillStyle(0x211b25, 0.38).fillRect(panelX + 2, panelY + 2, panelW - 4, panelH - 4);
     this.rpgStatusFrame.lineStyle(1, 0xc59b53, 0.95).strokeRect(panelX + 0.5, panelY + 0.5, panelW - 1, panelH - 1);
     this.rpgStatusFrame.lineStyle(1, 0x3e4a63, 0.95).strokeRect(panelX + 1.5, panelY + 1.5, panelW - 3, panelH - 3);
 
-    const row1Y = panelY + 8;
+    const row1Y = panelY + 10;
     this.moneyIcon.setVisible(true).setPosition(panelX + 10, row1Y + 2).setOrigin(0, 0).setScale(1.15);
-    this.moneyValue.setVisible(true).setPosition(panelX + 30, row1Y + 2);
+    this.moneyValue.setVisible(true).setPosition(panelX + 30, row1Y + 2).setScale(moneyScale);
     this.basketIcon.setVisible(false);
     this.basketValue.setVisible(false);
     // 若購物籃或對話框開啟，重繪以符合新尺寸
