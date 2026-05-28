@@ -60,9 +60,9 @@ export function initChat(game: Phaser.Game) {
   const getSavedVisible = () => {
     try {
       const s = localStorage.getItem('chatVisible');
-      if (s === null) return true; // 預設顯示
+      if (s === null) return false;
       return s === '1';
-    } catch { return true; }
+    } catch { return false; }
   };
   (window as any).__chatSetVisible = (v: boolean) => setVisible(!!v);
   (window as any).__chatToggle = () => setVisible(!((window as any).__chatVisible !== false));

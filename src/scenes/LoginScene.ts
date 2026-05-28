@@ -1,7 +1,8 @@
-import * as Phaser from 'phaser';
+﻿import * as Phaser from 'phaser';
 import { initConnection } from '../net/ws';
 import { initChat } from '../ui/chat';
 import { getApiBase } from '../net/http';
+import { hideSceneLoadingOverlay, showSceneLoadingOverlay, updateSceneLoadingOverlay } from '../ui/sceneLoadingOverlay';
 
 const LOGIN_STYLE_ID = 'login-scene-style';
 
@@ -11,6 +12,11 @@ export class LoginScene extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(250, 0, 0, 0);
     this.cameras.main.setBackgroundColor('#10141a');
+    let hudProbeMode = false;
+    try {
+      const p = new URL(window.location.href).searchParams;
+      hudProbeMode = p.get('hudprobe') === '1' || p.get('hudtest') === '1' || (navigator as any).webdriver === true;
+    } catch {}
 
     try { document.getElementById('login-panel')?.remove(); } catch {}
     this.ensureLoginStyles();
@@ -93,56 +99,94 @@ export class LoginScene extends Phaser.Scene {
       if (sel) sel.value = ss;
     } catch {}
 
+    let startRequested = false;
     const start = async () => {
+      if (startRequested) return;
+      startRequested = true;
       const button = box.querySelector('#lg-ok') as HTMLButtonElement;
       button.disabled = true;
       button.textContent = '連線中...';
-
-      const email = (box.querySelector('#lg-email') as HTMLInputElement).value.trim();
-      const name = (box.querySelector('#lg-name') as HTMLInputElement).value.trim() || `旅客${Math.floor(Math.random() * 9000) + 1000}`;
-      const gp = box.querySelector('input[name="lg-g"]:checked') as HTMLInputElement | null;
-      const gender = (gp?.value || '').toUpperCase() === 'F' ? 'F' : 'M';
-      let pid = '';
+      showSceneLoadingOverlay('Preparing map assets...');
 
       try {
-        pid = localStorage.getItem('pid') || '';
-        if (!pid) {
-          pid = Math.random().toString(36).slice(2);
-          localStorage.setItem('pid', pid);
+        const email = (box.querySelector('#lg-email') as HTMLInputElement).value.trim();
+        const name = (box.querySelector('#lg-name') as HTMLInputElement).value.trim() || `旅客${Math.floor(Math.random() * 9000) + 1000}`;
+        const gp = box.querySelector('input[name="lg-g"]:checked') as HTMLInputElement | null;
+        const gender = (gp?.value || '').toUpperCase() === 'F' ? 'F' : 'M';
+        let pid = '';
+
+        try {
+          pid = localStorage.getItem('pid') || '';
+          if (!pid) {
+            pid = Math.random().toString(36).slice(2);
+            localStorage.setItem('pid', pid);
+          }
+        } catch {}
+
+        try {
+          localStorage.setItem('pemail', email);
+          localStorage.setItem('pname', name);
+          localStorage.setItem('pgender', gender);
+        } catch {}
+
+        const selectedScene = 'TPE2LobbyScene';
+        try { localStorage.setItem('startScene', selectedScene); } catch {}
+
+        if (!hudProbeMode) {
+          try {
+            const base = getApiBase();
+            await fetch(`${base}/profile`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ Id: pid, Email: email, Name: name, Gender: gender, Ts: new Date().toISOString() })
+            });
+          } catch {}
         }
-      } catch {}
 
-      try {
-        localStorage.setItem('pemail', email);
-        localStorage.setItem('pname', name);
-        localStorage.setItem('pgender', gender);
-      } catch {}
+        try { initConnection(); } catch {}
+        updateSceneLoadingOverlay('Entering T2 lobby...');
+        const overlayGuard = window.setTimeout(() => hideSceneLoadingOverlay(), 8000);
 
-      const selectedScene = 'TPE2LobbyScene';
-      try { localStorage.setItem('startScene', selectedScene); } catch {}
-
-      try {
-        const base = getApiBase();
-        await fetch(`${base}/profile`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ Id: pid, Email: email, Name: name, Gender: gender, Ts: new Date().toISOString() })
-        });
-      } catch {}
-
-      try { initConnection(); } catch {}
-
-      this.cameras.main.fadeOut(250, 0, 0, 0);
-      this.cameras.main.once('camerafadeoutcomplete', () => {
-        try { document.body.removeChild(form); } catch {}
-        this.scene.start(selectedScene);
-        this.scene.launch('UIOverlay');
-        try { initChat(this.game as any); } catch {}
-        try { (window as any).__applyCameraZoom?.(); } catch {}
-      });
+        if (hudProbeMode) {
+          try { document.body.removeChild(form); } catch {}
+          this.scene.start(selectedScene);
+          this.scene.launch('UIOverlay');
+          try { initChat(this.game as any); } catch {}
+          try { (window as any).__applyCameraZoom?.(); } catch {}
+          window.clearTimeout(overlayGuard);
+        } else {
+          this.cameras.main.fadeOut(250, 0, 0, 0);
+          this.cameras.main.once('camerafadeoutcomplete', () => {
+            try { document.body.removeChild(form); } catch {}
+            this.scene.start(selectedScene);
+            this.scene.launch('UIOverlay');
+            try { initChat(this.game as any); } catch {}
+            try { (window as any).__applyCameraZoom?.(); } catch {}
+            window.clearTimeout(overlayGuard);
+          });
+        }
+      } catch (error) {
+        console.error('[login] start failed', error);
+        startRequested = false;
+        hideSceneLoadingOverlay();
+        button.disabled = false;
+        button.textContent = '開始登機';
+      }
     };
 
     (box.querySelector('#lg-ok') as HTMLButtonElement).onclick = () => { start(); };
+    try {
+      hideSceneLoadingOverlay();
+      const params = new URL(window.location.href).searchParams;
+      if (hudProbeMode || params.get('cleanhud') === '1' || params.get('hudtest') === '1') {
+        localStorage.setItem('chatVisible', '0');
+      }
+      if (hudProbeMode || params.get('autostart') === '1' || params.get('hudtest') === '1') {
+        // Headless runs can throttle Phaser timers; keep a plain setTimeout fallback.
+        this.time.delayedCall(100, () => { start(); });
+        window.setTimeout(() => { start(); }, 120);
+      }
+    } catch {}
   }
 
   private ensureLoginStyles() {
@@ -373,3 +417,5 @@ export class LoginScene extends Phaser.Scene {
     document.head.appendChild(style);
   }
 }
+
+

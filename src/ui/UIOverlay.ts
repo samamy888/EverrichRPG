@@ -1,4 +1,4 @@
-import * as Phaser from 'phaser';
+﻿import * as Phaser from 'phaser';
 import { registerTinyBitmapFont } from './BitmapFont';
 import { CONFIG } from '../config';
 import { t } from '../i18n';
@@ -50,7 +50,7 @@ export class UIOverlay extends Phaser.Scene {
   private listingMeasure?: Phaser.GameObjects.Text;
   // Main menu overlay (ESC)
   private menuOpen = false;
-  private menuLevel: 1 | 2 = 1; // 1=主選單, 2=地點清單
+  private menuLevel: 1 | 2 = 1; // 1=銝駁?? 2=?圈?皜
   private menuBox?: Phaser.GameObjects.Graphics;
   private menuRows: Phaser.GameObjects.Text[] = [];
   private menuSelected = 0;
@@ -68,6 +68,14 @@ export class UIOverlay extends Phaser.Scene {
   public minimapImg?: Phaser.GameObjects.Image;
   // Track last known top (content) scene key to help minimap during transitions
   private currentTopKey: string | null = null;
+  private hudProbeEl?: HTMLDivElement;
+  private hudProbeGfx?: Phaser.GameObjects.Graphics;
+  private domHudRoot?: HTMLDivElement;
+  private domTop?: HTMLDivElement;
+  private domLoc?: HTMLDivElement;
+  private domBottom?: HTMLDivElement;
+  private domMoney?: HTMLDivElement;
+  private domProbeMode = false;
   private shouldShowMinimap(): boolean {
     try {
       if (!CONFIG.ui.minimap.enabled) return false;
@@ -75,9 +83,9 @@ export class UIOverlay extends Phaser.Scene {
       const top: any = active[active.length - 1];
       const topKey: string | undefined = top?.scene?.key;
       if (topKey === 'StoreScene') return false;
-      // 若頂層場景提供 tilemap layer，則一律顯示（支援位圖地圖生成的虛擬層）
+      // ?仿?撅文?舀?靘?tilemap layer嚗?銝敺＊蝷綽??舀雿??啣??????砍惜嚗?
       if (top && top.layer && typeof top.layer.getTileAt === 'function') return true;
-      // 後備：依 locationType 判定
+      // 敺?嚗? locationType ?文?
       const locType = (this.registry.get('locationType') as string) || '';
       return locType.startsWith('concourse');
     } catch { return !!CONFIG.ui.minimap.enabled; }
@@ -86,23 +94,28 @@ export class UIOverlay extends Phaser.Scene {
   constructor() { super('UIOverlay'); }
 
   create() {
-    // 透明背景，不覆蓋主場景；相機本身維持可見
-    // 將常用工具掛到場景實例，便於外部模組（若以 any 取用）
+    // ???嚗?閬?銝餃?荔??豢??祈澈蝬剜??航?
+    // 撠虜?典極?瑟??啣?臬祕靘?靘踵憭璅∠?嚗隞?any ?嚗?
     ;(this as any).CONFIG = CONFIG; (this as any).t = t;
     this.cameras.main.setBackgroundColor('rgba(0,0,0,0)');
     this.cameras.main.setAlpha(1);
     this.cameras.main.setRoundPixels(true);
+    this.syncUICameraViewport();
+    this.initHudProbe();
+    this.initDomHud();
 
-    // 註冊清理邏輯
+    // 閮餃?皜??摩
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.registry.events.off('changedata', this.onDataChanged, this);
-      // 徹底清理聊天室
+      // 敺孵?皜??予摰?
       try { destroyChat(); } catch {}
+      try { this.domHudRoot?.remove(); } catch {}
+      this.domHudRoot = undefined;
     });
     this.events.on(Phaser.Scenes.Events.WAKE, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
     this.events.on(Phaser.Scenes.Events.RESUME, () => { try { (window as any).__applyCameraZoom?.(); } catch {} });
     try { (window as any).__applyCameraZoom?.(); } catch {}
-    // 確保覆蓋層永遠在最上層
+    // 蝣箔?閬?撅斗偶??銝惜
     this.scene.bringToTop();
     this.events.on(Phaser.Scenes.Events.WAKE, () => this.scene.bringToTop());
     this.events.on(Phaser.Scenes.Events.RESUME, () => this.scene.bringToTop());
@@ -146,7 +159,7 @@ export class UIOverlay extends Phaser.Scene {
 
     this.registry.events.on('changedata', this.onDataChanged, this);
 
-    // Bottom status box + text（實際位置在 layoutHUD 中計算）
+    // Bottom status box + text嚗祕??蝵桀 layoutHUD 銝剛?蝞?
     this.statusBox = this.add.rectangle(0, 0, GAME_WIDTH, HUD, 0x111420, 0.92).setOrigin(0).setDepth(998).setScrollFactor(0);
     this.statusFrame = this.add.graphics().setDepth(999).setScrollFactor(0);
     this.statusText = this.add.text(8, 0, '', { fontSize: `${FS}px`, resolution: 2, color: '#d6def0', fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1000).setScrollFactor(0);
@@ -164,13 +177,14 @@ export class UIOverlay extends Phaser.Scene {
     this.ensureMinimap();
     this.ensureMinimap();
     this.renderMinimap();
-    // 確保登入後初始化聊天室並依儲存狀態顯示
+    // 蝣箔??餃敺?憪??予摰支蒂靘摮??＊蝷?
     try { initChat(this.game as any); } catch {}
-    // 以下一幀再套用一次縮放，避免初次啟動時場景尚未完成建立導致比例不正確
+    // 隞乩?銝撟???其?甈∠葬?橘??踹??活????臬??芸??遣蝡??湔?靘?甇?Ⅱ
     try { this.time.delayedCall(0, () => { try { (window as any).__applyCameraZoom?.(); } catch {} }); } catch {}
-    // 當視窗大小或比例變化時，確保覆蓋層也一起更新
+    // ?嗉?蝒之撠?瘥?霈???蝣箔?閬?撅支?銝韏瑟??
     try {
       this.scale.on('resize', () => {
+        try { this.syncUICameraViewport(); } catch {}
         try { (window as any).__applyCameraZoom?.(); } catch {}
         try { this.layoutHUD(); } catch {}
         try { this.renderMinimap(); } catch {}
@@ -191,28 +205,28 @@ export class UIOverlay extends Phaser.Scene {
       ge.on('transitioncomplete', (key: any, sc: any) => { noteTop(key, sc, 'transitioncomplete'); rerender('transitioncomplete'); });
       ge.on('wake', (sc: any) => { noteTop(undefined as any, sc, 'wake'); rerender('wake'); });
       ge.on('resume', (sc: any) => { noteTop(undefined as any, sc, 'resume'); rerender('resume'); });
-      // 提供全域重新渲染介面給各內容場景在 create 後呼叫
+      // ???典??皜脫?隞蝯血??批捆?湔??create 敺??
       (window as any).__rerenderMinimap = () => { try { rerender('manual'); this.time.delayedCall(0, () => rerender('manual-next')); requestAnimationFrame(() => rerender('manual-raf')); } catch (e) { log('manual error', e); } };
     } catch {}
 
-    // 週期性重繪：確保相機與玩家移動時，小地圖持續更新（避免僅靠事件重繪不及）
+    // ?望??折?蝜迎?蝣箔??豢??摰嗥宏??嚗??啣????湔嚗????隞園?蝜芯???
     try {
       this.time.addEvent({ delay: 120, loop: true, callback: () => { try { if (this.shouldShowMinimap()) { (window as any).__rerenderMinimap?.(); } } catch {} } });
     } catch {}
 
     // Global ESC menu and navigation
     this.input.keyboard!.on('keydown-ESC', () => {
-      // 對話或清單開啟時，不處理主選單
+      // 撠店???桅???嚗???銝駁??
       if (this.dialogOpen || this.listingOpen) return;
       if (this.menuOpen) {
-        // 2 級返回到 1 級；1 級關閉
+        // 2 蝝?? 1 蝝?1 蝝???
         if (this.menuLevel === 2) { this.menuLevel = 1; this.menuSelected = 0; this.renderMenu(); }
         else this.closeMenu();
       } else {
         this.openMenu();
       }
     });
-    // 導覽（根據當前狀態切換行為：主選單 or 購物籃）
+    // 撠汗嚗????????綽?銝駁??or 鞈潛蝐?
     const navUp = () => { if (this.menuOpen) this.moveMenu(-1); else this.moveBasket(-1); };
     const navDown = () => { if (this.menuOpen) this.moveMenu(1); else this.moveBasket(1); };
     this.input.keyboard!.on('keydown-W', navUp);
@@ -236,12 +250,12 @@ export class UIOverlay extends Phaser.Scene {
       this.renderListing();
       this.renderInteract();
       if (isDialog) {
-        // 對話剛開啟時，首幀可能尚未完成縮放/排版，追加多次保險重繪
+        // 撠店????嚗?撟?航撠摰?蝮格/??嚗蕭??甈∩??芷?蝜?
         try { this.time.delayedCall(0, () => this.renderDialog()); } catch {}
         try { this.time.delayedCall(16, () => this.renderDialog()); } catch {}
         try { requestAnimationFrame(() => this.renderDialog()); } catch {}
       }
-    // 若是從關閉->開啟，立即置頂
+    // ?交敺???>??嚗??喟蔭??
         if (key === 'dialogOpen' && !!value) {
           try { this.scene.bringToTop(); } catch {}
           this.dialogForceFrames = 2;
@@ -263,7 +277,7 @@ export class UIOverlay extends Phaser.Scene {
     const basket = ((this.registry.get('basket') as { price: number }[]) ?? []);
     const basketTotal = basket.reduce((s, b) => s + b.price, 0);
 
-    // 移除時間欄位顯示
+    // 蝘駁??甈?憿舐內
     this.moneyValue.setText(`$${money}`);
     this.basketValue.setText(`$${basketTotal}`);
 
@@ -273,9 +287,9 @@ export class UIOverlay extends Phaser.Scene {
       this.hintText.setText(this.menuTip());
     } else if (this.basketOpen) {
       const bh = (t('ui.basketHint') as string) || '';
-      this.hintText.setText(bh && bh !== 'ui.basketHint' ? bh : '購物籃：W/S 選擇，E 移除，ESC 關閉');
+      this.hintText.setText(bh && bh !== 'ui.basketHint' ? bh : '鞈潛蝐?W/S ?豢?嚗 蝘駁嚗SC ??');
     } else if (this.dialogOpen) {
-      this.hintText.setText(t('store.dialog.cont') || '（按 E 繼續）');
+      this.hintText.setText(t('store.dialog.cont') || 'Press E to continue');
     } else if (hint !== undefined) {
       // Apply dynamic larger font for entry/exit hints if requested
       try {
@@ -309,9 +323,10 @@ export class UIOverlay extends Phaser.Scene {
 
     this.statusText.setText(this.hintText.text || '');
     this.layoutHUD();
+    this.updateDomHud();
   }
 
-  // 開發模式顯示字型載入狀態（網址加上 ?debugFonts=1 或 #debugFonts 生效）
+  // ?璅∪?憿舐內摮?頛???蝬脣??? ?debugFonts=1 ??#debugFonts ??嚗?
   private maybeInitFontDebug() {
     const isDev = !!((import.meta as any)?.env?.DEV);
     const url = new URL(window.location.href);
@@ -326,7 +341,7 @@ export class UIOverlay extends Phaser.Scene {
     const hasBitmap = this.cache.bitmapFont.exists('han');
     let hasWeb = false;
     try { hasWeb = (document as any).fonts?.check?.('12px "HanPixel"') === true; } catch {}
-    const msg = `字型 Bitmap(han): ${hasBitmap ? '是' : '否'}｜Web(HanPixel): ${hasWeb ? '已載入' : '尚未'}`;
+    const msg = `Font Bitmap(han): ${hasBitmap ? 'OK' : 'MISS'} | Web(HanPixel): ${hasWeb ? 'OK' : 'MISS'}`;
     this.fontDebugText.setText(msg);
     console.info('[fonts]', { bitmap: hasBitmap, web: hasWeb });
   }
@@ -337,7 +352,7 @@ export class UIOverlay extends Phaser.Scene {
   private moveBasket(dir: 1 | -1) { (extMoveBasket as any)(this, dir); }
   private pickBasket() { (extPickBasket as any)(this); }
 
-  // 對話覆蓋層（外觀與購物籃一致，置底）
+  // 撠店閬?撅歹?憭??頃?拍?銝?湛?蝵桀?嚗?
   private renderDialog() {
     const open = !!this.registry.get('dialogOpen');
     this.dialogOpen = open;
@@ -346,7 +361,7 @@ export class UIOverlay extends Phaser.Scene {
     const step = (this.registry.get('dialogStep') as number) ?? 0;
     const playerPos = (this.registry.get('playerPos') as { x: number; y: number } | undefined);
 
-    // 清理先前元素
+    // 皜?????
     try { this.dialogRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
     this.dialogRows = [];
     if (!open) {
@@ -359,25 +374,25 @@ export class UIOverlay extends Phaser.Scene {
     const { w: viewW, h: viewH } = this.getViewSize();
     const HUD = CONFIG.ui.hudHeight;
 
-    // 準備文字內容（首句保底）
+    // 皞????批捆嚗??乩?摨?
     const fallbackFirst = (t('store.dialog.l1') as string) || '';
     const currentLine = (Array.isArray(lines) && lines.length > step)
       ? (lines[step] || '')
       : (Array.isArray(lines) && lines.length > 0 ? (lines[0] || '') : fallbackFirst);
     const txt = `${currentLine} ${t('store.dialog.cont') || ''}`.trim();
 
-    // 先建立文字以取得尺寸
+    // ?遣蝡?摮誑??撠箏站
     let tempText = this.add.text(0, 0, txt, { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2001).setScrollFactor(0);
     const textW = Math.ceil(tempText.width);
     const textH = Math.ceil(tempText.height);
     let panelW = Math.max(120, textW + pad * 2);
     let panelH = Math.max(CONFIG.ui.dialogHeight, textH + pad * 2);
 
-    // 期望顯示在主角右側（若無主角座標則退回底部）
+    // ??憿舐內?其蜓閫?湛??亦銝餉?摨扳?????剁?
     let x = 0, y = 0;
     let placedByPlayer = false;
     try {
-      // 取得 StoreScene 相機
+      // ?? StoreScene ?豢?
       let cam: any = null;
       try { cam = (this.game.scene.getScene('StoreScene') as any)?.cameras?.main || null; } catch {}
       if (!cam) {
@@ -393,7 +408,7 @@ export class UIOverlay extends Phaser.Scene {
         const offset = 12;
         x = screenX + offset;
         y = Math.round(screenY - panelH / 2);
-        // 邊界修正：避免壓到 HUD 與底欄，避免超出左右邊界
+        // ??靽格迤嚗????HUD ??甈??踹?頞撌血??
         const minY = HUD + pad;
         const maxY = viewH - HUD - panelH - pad;
         if (y < minY) y = minY;
@@ -405,30 +420,30 @@ export class UIOverlay extends Phaser.Scene {
     } catch {}
 
     if (!placedByPlayer) {
-      // 退回到底部 HUD 上方（與先前行為一致）
+      // ??摨 HUD 銝嚗???銵銝?湛?
       x = 0;
       y = viewH - HUD - panelH - 2;
     }
 
-    // 更新背景框
+    // ?湔?獢?
     if (!this.dialogBox) {
       this.dialogBox = this.add.rectangle(x, y, panelW, panelH, 0x000000, 0.8).setOrigin(0).setDepth(2000).setScrollFactor(0);
     } else {
       this.dialogBox.setPosition(x, y).setSize(panelW, panelH).setDepth(2000).setVisible(true).setScrollFactor(0);
     }
 
-    // 移動文字到框內適當位置（左上內距）
+    // 蝘餃????唳??折?嗡?蝵殷?撌虫??扯?嚗?
     tempText.setPosition(x + pad, y + pad);
     this.dialogRows.push(tempText);
     try { this.scene.bringToTop(); } catch {}
   }
 
-  // 公開 API：由遊戲場景直接控制對話（避免事件時序競態）
+  // ?祇? API嚗??湔?湔?批撠店嚗??隞嗆?摨奎??
   public openDialog(lines: string[], step = 0) { extOpenDialog(this, lines, step); }
   public advanceDialog(): boolean { return extAdvanceDialog(this); }
   public closeDialog() { extCloseDialog(this); }
 
-  // 根據當前覆蓋層狀態，鎖定或解鎖玩家移動輸入
+  // ?寞??嗅?閬?撅斤??????圾?摰嗥宏?撓??
   private updateInputLock() {
     const lock = !!(this.basketOpen || this.dialogOpen || this.listingOpen || this.menuOpen);
     try { this.registry.set('inputLocked', lock); } catch {}
@@ -479,13 +494,28 @@ export class UIOverlay extends Phaser.Scene {
     });
   }
 
-  // 計算目前可視區大小（以螢幕像素對應的世界座標；UI 相機固定 1x）
+  // 閮??桀??航??憭批?嚗誑?Ｗ???撠????漣璅?UI ?豢??箏? 1x嚗?
   private getViewSize() {
-    let w = Number((this.scale as any)?.width) || 0;
-    let h = Number((this.scale as any)?.height) || 0;
+    let w = Number(this.cameras?.main?.width) || 0;
+    let h = Number(this.cameras?.main?.height) || 0;
     if (!w || !h) {
-      try { w = Number(this.cameras?.main?.width) || 0; h = Number(this.cameras?.main?.height) || 0; } catch {}
+      w = Number((this.scale as any)?.width) || 0;
+      h = Number((this.scale as any)?.height) || 0;
     }
+    try {
+      const vw = Number((window as any).visualViewport?.width) || window.innerWidth || 0;
+      const vh = Number((window as any).visualViewport?.height) || window.innerHeight || 0;
+      if (vw && vh) {
+        w = Math.round(vw);
+        h = Math.round(vh);
+      } else {
+        const rect = (this.game as any).canvas?.getBoundingClientRect?.();
+        if (rect?.width && rect?.height) {
+          w = Math.round(rect.width);
+          h = Math.round(rect.height);
+        }
+      }
+    } catch {}
     if (!w || !h) {
       try { const c: any = (this.game as any).canvas; w = Number(c?.width) || 0; h = Number(c?.height) || 0; } catch {}
     }
@@ -496,7 +526,7 @@ export class UIOverlay extends Phaser.Scene {
     return { w, h };
   }
 
-  // 依據可視區重新定位頂/底 HUD
+  // 靘??航???摰???摨?HUD
   public layoutHUD() {
     const HUD = CONFIG.ui.hudHeight;
     const FS = CONFIG.ui.fontSize;
@@ -533,29 +563,197 @@ export class UIOverlay extends Phaser.Scene {
     // Place minimap first
     this.positionMinimap();
 
-    // Left-bottom RPG status panel (adaptive width for long money values)
-    const moneyScale = 1.1;
-    const moneyTextW = Math.ceil((this.moneyValue.width || 0) * moneyScale);
-    const panelW = Math.max(144, moneyTextW + 46);
-    const panelH = 34;
-    const panelX = 6;
-    const panelY = h - msgH - panelH - 8;
+    this.layoutStatusPanel(h, HUD, msgH);
+    // ?亥頃?拍???閰望???嚗?蝜芯誑蝚血??啣偕撖?    if (this.basketOpen) this.renderBasket();
+    if (this.basketOpen) this.renderBasket();
+    if (this.dialogOpen) this.renderDialog();
+    if (this.listingOpen) this.renderListing();
+    this.renderInteract();
+    this.updateHudProbe();
+    this.layoutDomHud();
+  }
+
+  private syncUICameraViewport() {
+    try {
+      const cam = this.cameras.main;
+      const w = Number((this.scale as any)?.width) || window.innerWidth || GAME_WIDTH;
+      const h = Number((this.scale as any)?.height) || window.innerHeight || GAME_HEIGHT;
+      cam.setViewport(0, 0, w, h);
+      cam.setSize(w, h);
+    } catch {}
+  }
+
+  private initDomHud() {
+    try {
+      if (this.domHudRoot) return;
+      const p = new URL(window.location.href).searchParams; const probeOn = p.get('hudprobe') === '1' || p.get('hudtest') === '1' || (navigator as any).webdriver === true;
+      this.domProbeMode = probeOn;
+      const root = document.createElement('div');
+      root.id = 'ui-overlay-dom-hud';
+      root.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483605;';
+
+      const top = document.createElement('div');
+      top.style.cssText = probeOn
+        ? 'position:fixed;left:0;top:0;right:0;background:rgba(0,120,0,0.45);border-bottom:2px solid #00ff00;'
+        : 'position:fixed;left:0;top:0;right:0;background:rgba(23,20,27,0.86);border-bottom:1px solid #3e4a63;';
+
+      const loc = document.createElement('div');
+      loc.style.cssText = 'position:absolute;right:10px;top:4px;color:#f6c067;font:24px HanPixel, system-ui, sans-serif;';
+      top.appendChild(loc);
+
+      const bottom = document.createElement('div');
+      bottom.style.cssText = probeOn
+        ? 'position:fixed;left:0;right:0;background:rgba(160,0,0,0.55);border-top:2px solid #ff4b4b;color:#ffffff;font:24px HanPixel, system-ui, sans-serif;padding-left:10px;box-sizing:border-box;display:flex;align-items:center;'
+        : 'position:fixed;left:0;right:0;background:rgba(23,20,27,0.86);border-top:1px solid #c59b53;color:#d6def0;font:24px HanPixel, system-ui, sans-serif;padding-left:10px;box-sizing:border-box;display:flex;align-items:center;';
+
+      const money = document.createElement('div');
+      money.style.cssText = probeOn
+        ? 'position:fixed;left:6px;background:rgba(255,0,255,0.9);border:2px solid #ffffff;color:#000000;font:20px HanPixel, system-ui, sans-serif;padding:4px 8px;'
+        : 'position:fixed;left:6px;background:rgba(20,26,40,0.94);border:1px solid #c59b53;color:#f6d98d;font:20px HanPixel, system-ui, sans-serif;padding:4px 8px;';
+
+      root.append(top, bottom, money);
+      document.body.appendChild(root);
+      this.domHudRoot = root;
+      this.domTop = top;
+      this.domLoc = loc;
+      this.domBottom = bottom;
+      this.domMoney = money;
+      if (probeOn) {
+        this.domBottom.textContent = 'DOM HUD PROBE';
+        this.domMoney.textContent = 'DOM HUD';
+      }
+      this.layoutDomHud();
+      this.updateDomHud();
+    } catch {}
+  }
+
+  private layoutDomHud() {
+    if (!this.domTop || !this.domBottom || !this.domMoney || !this.domHudRoot) return;
+    try {
+      const HUD = CONFIG.ui.hudHeight;
+      const msgH = Math.max(28, HUD + 6);
+      this.domTop.style.height = `${HUD}px`;
+      this.domBottom.style.height = `${msgH}px`;
+      this.domBottom.style.bottom = '0px';
+      this.domBottom.style.lineHeight = '';
+      this.domMoney.style.bottom = `${msgH + 8}px`;
+    } catch {}
+  }
+
+  private updateDomHud() {
+    if (!this.domLoc || !this.domBottom || !this.domMoney) return;
+    try {
+      const loc = (this.registry.get('location') as string) ?? '';
+      const hint = (this.registry.get('hint') as string) ?? '';
+      const money = (this.registry.get('money') as number) ?? 0;
+      this.domLoc.textContent = loc;
+      this.domBottom.textContent = hint || (this.domProbeMode ? 'DOM HUD PROBE' : '');
+      this.domMoney.textContent = `$${money}`;
+    } catch {}
+  }
+
+  private initHudProbe() {
+    try {
+      const params = new URL(window.location.href).searchParams;
+      if (params.get('hudprobe') !== '1' && params.get('hudtest') !== '1' && (navigator as any).webdriver !== true) return;
+      let el = document.getElementById('ui-overlay-probe') as HTMLDivElement | null;
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'ui-overlay-probe';
+        el.style.cssText = [
+          'position:fixed',
+          'left:8px',
+          'top:48px',
+          'z-index:2147483647',
+          'background:rgba(0,0,0,0.78)',
+          'color:#7bff9c',
+          'padding:4px 6px',
+          'font:11px/1.2 monospace',
+          'border:1px solid #2d8f42',
+          'pointer-events:none'
+        ].join(';');
+        document.body.appendChild(el);
+      }
+      this.hudProbeEl = el;
+      if (!this.hudProbeGfx) {
+        this.hudProbeGfx = this.add.graphics().setDepth(3000).setScrollFactor(0);
+      }
+      this.updateHudProbe();
+    } catch {}
+  }
+
+  private updateHudProbe() {
+    if (!this.hudProbeEl) return;
+    try {
+      const cam = this.cameras.main;
+      const { w, h } = this.getViewSize();
+      const statusY = Math.round(this.statusBox?.y || -1);
+      const domRect = this.domBottom?.getBoundingClientRect?.();
+      const domY = domRect ? `${Math.round(domRect.top)}-${Math.round(domRect.bottom)}` : 'n/a';
+      this.hudProbeEl.textContent = `UIOverlay on | view=${w}x${h} cam=${Math.round(cam.width)}x${Math.round(cam.height)} z=${cam.zoom.toFixed(2)} sy=${Math.round(cam.scrollY)} y(status)=${statusY} domY=${domY}`;
+      if (this.hudProbeGfx && statusY >= 0) {
+        this.hudProbeGfx.clear();
+        this.hudProbeGfx.fillStyle(0xff00ff, 0.85).fillRect(0, statusY, w, 3);
+      }
+    } catch {}
+  }
+
+  private layoutStatusPanel(viewH: number, hudH: number, messageH: number) {
+    const panelConfig = CONFIG.ui.statusPanel;
+    const showMoney = !!panelConfig.fields.money;
+    const showBasket = !!panelConfig.fields.basket;
+    const enabled = !!panelConfig.enabled && (showMoney || showBasket);
+
+    if (!enabled) {
+      this.rpgStatusBox.setVisible(false);
+      this.rpgStatusFrame.clear();
+      this.moneyIcon.setVisible(false);
+      this.moneyValue.setVisible(false);
+      this.basketIcon.setVisible(false);
+      this.basketValue.setVisible(false);
+      return;
+    }
+
+    const valueScale = panelConfig.valueScale;
+    const pad = panelConfig.pad;
+    const gap = panelConfig.gap;
+    const iconW = 12;
+    const iconGap = 8;
+    const moneyTextW = showMoney ? Math.ceil((this.moneyValue.width || 0) * valueScale) : 0;
+    const basketTextW = showBasket ? Math.ceil((this.basketValue.width || 0) * valueScale) : 0;
+    const moneyW = showMoney ? iconW + iconGap + moneyTextW : 0;
+    const basketW = showBasket ? iconW + iconGap + basketTextW : 0;
+    const contentW = moneyW + basketW + (showMoney && showBasket ? gap : 0);
+    const panelW = Math.max(panelConfig.minWidth, contentW + pad * 2);
+    const panelH = panelConfig.height;
+    const panelX = pad;
+    const maxPanelY = viewH - messageH - panelH - pad;
+    const panelY = Math.max(hudH + pad, maxPanelY);
+
     this.rpgStatusBox.setVisible(true).setPosition(panelX, panelY).setSize(panelW, panelH);
     this.rpgStatusFrame.clear();
     this.rpgStatusFrame.fillStyle(0x211b25, 0.38).fillRect(panelX + 2, panelY + 2, panelW - 4, panelH - 4);
     this.rpgStatusFrame.lineStyle(1, 0xc59b53, 0.95).strokeRect(panelX + 0.5, panelY + 0.5, panelW - 1, panelH - 1);
     this.rpgStatusFrame.lineStyle(1, 0x3e4a63, 0.95).strokeRect(panelX + 1.5, panelY + 1.5, panelW - 3, panelH - 3);
 
-    const row1Y = panelY + 10;
-    this.moneyIcon.setVisible(true).setPosition(panelX + 10, row1Y + 2).setOrigin(0, 0).setScale(1.15);
-    this.moneyValue.setVisible(true).setPosition(panelX + 30, row1Y + 2).setScale(moneyScale);
-    this.basketIcon.setVisible(false);
-    this.basketValue.setVisible(false);
-    // 若購物籃或對話框開啟，重繪以符合新尺寸
-    if (this.basketOpen) this.renderBasket();
-    if (this.dialogOpen) this.renderDialog();
-    if (this.listingOpen) this.renderListing();
-    this.renderInteract();
+    const rowY = panelY + Math.max(5, Math.floor((panelH - 14) / 2));
+    let cursorX = panelX + pad + 4;
+    if (showMoney) {
+      this.moneyIcon.setVisible(true).setPosition(cursorX, rowY + 1).setOrigin(0, 0).setScale(1.15);
+      this.moneyValue.setVisible(true).setPosition(cursorX + iconW + iconGap, rowY + 2).setScale(valueScale);
+      cursorX += moneyW + gap;
+    } else {
+      this.moneyIcon.setVisible(false);
+      this.moneyValue.setVisible(false);
+    }
+
+    if (showBasket) {
+      this.basketIcon.setVisible(true).setPosition(cursorX, rowY + 1).setOrigin(0, 0).setScale(1.15);
+      this.basketValue.setVisible(true).setPosition(cursorX + iconW + iconGap, rowY + 2).setScale(valueScale);
+    } else {
+      this.basketIcon.setVisible(false);
+      this.basketValue.setVisible(false);
+    }
   }
 
   private ensureMinimap() { ensureMinimap(this); }
@@ -564,18 +762,18 @@ export class UIOverlay extends Phaser.Scene {
 
   private renderMinimap() { renderMinimap(this); }
 
-  // ===== ESC 主選單（一級：功能；二級：地點）=====
+  // ===== ESC 銝駁?殷?銝蝝??嚗?蝝??圈?嚗?====
   private getMenuItems(): { label: string; value: string }[] {
     if (this.menuLevel === 1) return [
-      { label: '購物籃', value: 'basket' },
-      { label: '回到主畫面', value: 'logout' },
+      { label: 'Basket', value: 'basket' },
+      { label: 'Logout', value: 'logout' },
     ];
     return [
-      { label: '桃園 T2 大廳', value: 'TPE2LobbyScene' },
+      { label: '獢? T2 憭批輒', value: 'TPE2LobbyScene' },
     ];
   }
   private renderMenu() {
-    // 清理舊元素
+    // 皜???蝝?
     try { this.menuRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
     this.menuRows = [];
     const pad = 8;
@@ -583,7 +781,7 @@ export class UIOverlay extends Phaser.Scene {
     const HUD = CONFIG.ui.hudHeight;
     const { w: viewW, h: viewH } = this.getViewSize();
     const items = this.getMenuItems();
-    // 簡單估算寬度（避免不同平台 make.text 行為差異造成錯誤）
+    // 蝪∪隡啁?撖砍漲嚗???像??make.text 銵撌桃???航炊嚗?
     const maxChars = Math.max(6, ...items.map(i => i.label.length));
     const textW = Math.max(120, Math.ceil(maxChars * FS * 0.62));
     const rowH = FS + 8;
@@ -600,15 +798,15 @@ export class UIOverlay extends Phaser.Scene {
     g.lineStyle(1, 0x3e4a63, 1).strokeRect(x + 1.5, y + 1.5, panelW - 3, panelH - 3);
     g.lineStyle(1, 0x4f5f7e, 0.8).lineBetween(x + 4, y + FS + 8, x + panelW - 4, y + FS + 8);
 
-    // 標題與提示
-    const title = (this.menuLevel === 1) ? '選單' : '地點';
+    // 璅???蝷?
+    const title = (this.menuLevel === 1) ? '?詨' : '?圈?';
     const titleObj = this.add.text(x + pad, y + pad - Math.max(0, Math.round(FS * 0.2)), title, { fontSize: `${FS}px`, color: '#f6c067', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2101).setScrollFactor(0);
     this.menuRows.push(titleObj as any);
 
-    // 列表項
+    // ?”??
     for (let i = 0; i < items.length; i++) {
       const it = items[i];
-      const rowY = y + pad + FS + 6 + i * rowH; // 留出標題區塊高度
+      const rowY = y + pad + FS + 6 + i * rowH; // ?璅??憛?摨?
       const row = this.add.text(x + pad, rowY, it.label, { fontSize: `${FS}px`, color: i === this.menuSelected ? '#ffe39b' : '#d6def0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2101).setScrollFactor(0);
       this.menuRows.push(row);
     }
@@ -631,7 +829,7 @@ export class UIOverlay extends Phaser.Scene {
       if (chosen.value === 'basket') { this.closeMenu(); this.openBasket(); return; }
       if (chosen.value === 'logout') {
         this.closeMenu();
-        // 停止所有場景並回到登入畫面
+        // ?迫???臭蒂??餃?恍
         this.game.scene.getScenes(true).forEach(s => {
           if (s.scene.key !== 'UIOverlay') {
             try { this.game.scene.stop(s.scene.key); } catch {}
@@ -642,26 +840,26 @@ export class UIOverlay extends Phaser.Scene {
       }
       return;
     }
-    // level 2: switch scene — stop others then start target
+    // level 2: switch scene ??stop others then start target
     const val = chosen.value;
     const startClean = (key: string, data?: any) => {
       this.closeMenu();
-      // 記錄目前場景的小地圖縮圖資訊作為過渡備援
+      // 閮??桀??湔???啣?蝮桀?鞈?雿?腹?
       try {
         const actives0 = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key && s.scene.key !== 'UIOverlay');
         const curTop: any = actives0.length ? actives0[actives0.length - 1] : null;
         const k = (curTop as any)?.__minimapTex, w = (curTop as any)?.__minimapW, h = (curTop as any)?.__minimapH;
         if (k && w && h) (window as any).__minimapLast = { key: k, w, h };
       } catch {}
-      // 提前告知目標場景 key，讓小地圖可以抓到欲啟動的場景
+      // ????格??湔 key嚗?撠?隞交??唳炬?????
       try { this.currentTopKey = key; (window as any).__minimapTopKey = key; } catch {}
-      // 先啟動目標場景，避免在空窗期沒有 top scene（導致小地圖清空）
+      // ???璅?荔??踹??函征蝒?瘝? top scene嚗??游??啣?皜征嚗?
       try { this.game.scene.start(key, data); } catch {}
-      // 觸發小地圖重新渲染（多次保險）
+      // 閫貊撠???唳葡??憭活靽嚗?
       try { (window as any).__rerenderMinimap?.(); } catch {}
       try { this.time.delayedCall(0, () => { try { (window as any).__rerenderMinimap?.(); } catch {} }); } catch {}
       try { this.time.delayedCall(80, () => { try { (window as any).__rerenderMinimap?.(); } catch {} }); } catch {}
-      // 再停止其他非 UIOverlay、且非目標場景的內容場景
+      // ??甇Ｗ隞? UIOverlay???璅?舐??批捆?湔
       try {
         const actives = this.game.scene.getScenes(true).filter((s: any) => s.scene?.key && s.scene.key !== 'UIOverlay');
         for (const s of actives) { if (s.scene.key !== key) { try { this.game.scene.stop(s.scene.key); } catch {} } }
@@ -670,8 +868,8 @@ export class UIOverlay extends Phaser.Scene {
     startClean(val);
   }
 
-  // 覆寫頂部提示為選單提示，並在關閉時恢復
-  private menuTip(): string { return 'W/S 選擇｜Enter 確認｜ESC 返回'; }
+  // 閬神??內?粹?格?蝷綽?銝血???敺?
+  private menuTip(): string { return 'W/S ?豢?嚚nter 蝣箄?嚚SC 餈?'; }
   private setTopHint(text: string) {
     try { this.hintText.setText(text); } catch {}
   }
@@ -742,7 +940,7 @@ export class UIOverlay extends Phaser.Scene {
     }
   }
 
-  // 右側商店清單（固定在畫面右側，無視縮放）
+  // ?喳??皜嚗摰?恍?喳嚗閬葬?橘?
   private renderListing() {
     const open = !!this.registry.get('listingOpen');
     this.listingOpen = open;
@@ -751,7 +949,7 @@ export class UIOverlay extends Phaser.Scene {
     const selected: number = (this.registry.get('listingSelected') as number) ?? 0;
     const playerPos = (this.registry.get('playerPos') as { x: number; y: number } | undefined);
 
-    // 清理舊行
+    // 皜???
     try { this.listingRows.forEach(r => { try { r.destroy(); } catch {} }); } catch {}
     this.listingRows = [];
     if (!open) {
@@ -763,20 +961,20 @@ export class UIOverlay extends Phaser.Scene {
     const HUD = CONFIG.ui.hudHeight;
     const { w: viewW, h: viewH } = this.getViewSize();
     const pad = 6;
-    // 自適應寬度：量測標題與各列文字的最寬寬度
+    // ?芷?祝摨佗??葫璅?????摮??撖砍祝摨?
     if (!this.listingMeasure) {
       this.listingMeasure = this.add.text(-9999, -9999, '', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setVisible(false).setScrollFactor(0);
     } else {
-      // 若字級變動，更新量測物件字級
+      // ?亙?蝝????湔?葫?拐辣摮?
       const cur = this.listingMeasure.style.fontSize as any;
       const want = `${FS}px`;
       if (cur !== want) this.listingMeasure.setFontSize(FS);
     }
     let maxTextW = 0;
-    const toMeasure: string[] = [String(t('store.listTitle') || '商品')];
+    const toMeasure: string[] = [String(t('store.listTitle') || '??')];
     items.forEach((it, idx) => {
       const prefix = idx === selected ? '>' : ' ';
-      const line = (it as any).id === '__exit' ? `${prefix} ${t('store.listExit') || '結束對話'}` : `${prefix} ${it.name}  $${it.price}`;
+      const line = (it as any).id === '__exit' ? `${prefix} ${t('store.listExit') || '蝯?撠店'}` : `${prefix} ${it.name}  $${it.price}`;
       toMeasure.push(line);
     });
     toMeasure.forEach(txt => {
@@ -786,9 +984,9 @@ export class UIOverlay extends Phaser.Scene {
     const minPanelW = Math.max(200, FS * 10);
     let panelW = Math.max(minPanelW, maxTextW + pad * 2);
     const h = Math.max(60, viewH - (HUD * 2) - pad * 2);
-    // 目標：顯示在主角右側（螢幕座標）。
-    // 先取得目前主要場景的相機與其 worldView/zoom
-    // 取得目前主要內容場景（優先 StoreScene）
+    // ?格?嚗＊蝷箏銝餉??喳嚗撟漣璅???
+    // ??敺?蜓閬?舐??豢?? worldView/zoom
+    // ???桀?銝餉??批捆?湔嚗??StoreScene嚗?
     let cam: any = null;
     try { cam = (this.game.scene.getScene('StoreScene') as any)?.cameras?.main || null; } catch {}
     if (!cam) {
@@ -796,19 +994,19 @@ export class UIOverlay extends Phaser.Scene {
       const guess = scenes.find((s: any) => s?.cameras?.main) || scenes[scenes.length - 1];
       cam = (guess as any)?.cameras?.main || null;
     }
-    let sx = viewW - panelW - pad; // fallback：螢幕右側
+    let sx = viewW - panelW - pad; // fallback嚗撟??
     let sy = HUD + pad;
     if (cam && playerPos) {
-      // world -> screen（以像素計）：(world - scroll) * zoom
+      // world -> screen嚗誑??閮?嚗?world - scroll) * zoom
       const baseX = (typeof cam.worldView?.x === 'number') ? cam.worldView.x : (cam.scrollX || 0);
       const baseY = (typeof cam.worldView?.y === 'number') ? cam.worldView.y : (cam.scrollY || 0);
       const screenX = (playerPos.x - baseX) * (cam.zoom || 1);
       const screenY = (playerPos.y - baseY) * (cam.zoom || 1);
-      const offset = 12; // 與主角的水平間距（像素）
+      const offset = 12; // ?蜓閫?瘞游像??嚗?蝝?
       sx = screenX + offset;
-      // 垂直置中，但不壓到 HUD 與底部狀態列
+      // ?蝵桐葉嚗?銝???HUD ???函???
       sy = screenY - Math.floor(h / 2);
-      // 邊界修正
+      // ??靽格迤
       if (sx + panelW + pad > viewW) sx = Math.max(pad, viewW - panelW - pad);
       if (sx < pad) sx = pad;
       const minY = HUD + pad;
@@ -827,15 +1025,15 @@ export class UIOverlay extends Phaser.Scene {
     } else {
       this.listingBox.clear().fillStyle(0x0b111a, 0.85).fillRect(sx, sy, panelW, h).lineStyle(1, 0x4a5668, 1).strokeRect(sx + 0.5, sy + 0.5, panelW - 1, h - 1).setScrollFactor(0).setDepth(1500);
     }
-    // 內容
+    // ?批捆
     const startX = sx + pad;
     let curY = sy + pad;
-    const title = this.add.text(startX, curY, t('store.listTitle') || '商品', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1501).setScrollFactor(0);
+    const title = this.add.text(startX, curY, t('store.listTitle') || '??', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1501).setScrollFactor(0);
     this.listingRows.push(title);
     curY += (FS + 4);
     items.forEach((it, idx) => {
       const prefix = idx === selected ? '>' : ' ';
-      const line = (it as any).id === '__exit' ? `${prefix} ${t('store.listExit') || '結束對話'}` : `${prefix} ${it.name}  $${it.price}`;
+      const line = (it as any).id === '__exit' ? `${prefix} ${t('store.listExit') || '蝯?撠店'}` : `${prefix} ${it.name}  $${it.price}`;
       const row = this.add.text(startX, curY, line, { fontSize: `${FS}px`, color: idx === selected ? '#ffffff' : '#c0c8d0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1501).setScrollFactor(0);
       this.listingRows.push(row);
       curY += CONFIG.ui.lineStep;
@@ -844,18 +1042,20 @@ export class UIOverlay extends Phaser.Scene {
   }
 
   update() {
-    // 開啟對話時每幀校正位置與內容，避免首幀或縮放時跑位
+    try { this.scene.bringToTop(); } catch {}
+    // ??撠店??撟?⊥迤雿蔭?摰對??踹?擐??葬?暹?頝?
     if (this.dialogOpen || this.dialogForceFrames > 0) {
       try { this.renderDialog(); this.scene.bringToTop(); } catch {}
       if (this.dialogForceFrames > 0) this.dialogForceFrames--;
     }
-    // 開啟清單時每幀校正，跟隨主角位置
+    // ??皜??撟?⊥迤嚗??其蜓閫?蝵?
     if (this.listingOpen || this.listingForceFrames > 0) {
       try { this.renderListing(); this.scene.bringToTop(); } catch {}
       if (this.listingForceFrames > 0) this.listingForceFrames--;
     }
   }
 }
+
 
 
 

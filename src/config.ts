@@ -40,7 +40,19 @@ export const CONFIG = {
       backgroundAlpha: 0.35,
       tileScaleX: 1,
       tileScaleY: 3,
-    }
+    },
+    statusPanel: {
+      enabled: true,
+      fields: {
+        money: true,
+        basket: false,
+      },
+      minWidth: 144,
+      height: 34,
+      pad: 6,
+      gap: 10,
+      valueScale: 1.1,
+    },
   },
   network: {
     // WebSocket 伺服器位址

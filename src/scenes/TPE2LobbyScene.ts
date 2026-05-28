@@ -16,6 +16,7 @@ import {
   TPE2_FLOORPLAN_PROP_MAP,
   Tpe2PropPlacement,
 } from '../data/tpe2Layout';
+import { hideSceneLoadingOverlay, updateSceneLoadingOverlay } from '../ui/sceneLoadingOverlay';
 
 export class TPE2LobbyScene extends BaseScene {
   public layer!: Phaser.Tilemaps.TilemapLayer;
@@ -65,10 +66,18 @@ export class TPE2LobbyScene extends BaseScene {
   }
 
   preload() {
-    this.load.tilemapTiledJSON('t2-lobby-map', 'map/TPE2/tpe2_lobby.json');
-    this.load.json('t2-floorplan-slots', 'map/TPE2/tpe2_floorplan_prop_slots.json');
-    this.load.image('pro-tiles-v2', 'map/TPE2/pro_tiles_v2.png');
-    this.load.image(TPE2_FLOORPLAN_BG_KEY, TPE2_FLOORPLAN_BG_PATH);
+    if (!this.cache.tilemap.exists('t2-lobby-map')) {
+      this.load.tilemapTiledJSON('t2-lobby-map', 'map/TPE2/tpe2_lobby.json');
+    }
+    if (!this.cache.json.exists('t2-floorplan-slots')) {
+      this.load.json('t2-floorplan-slots', 'map/TPE2/tpe2_floorplan_prop_slots.json');
+    }
+    if (!this.textures.exists('pro-tiles-v2')) {
+      this.load.image('pro-tiles-v2', 'map/TPE2/pro_tiles_v2.png');
+    }
+    if (!this.textures.exists(TPE2_FLOORPLAN_BG_KEY)) {
+      this.load.image(TPE2_FLOORPLAN_BG_KEY, TPE2_FLOORPLAN_BG_PATH);
+    }
 
     const uniqueProps = Array.from(new Set([
       ...T2_FACILITIES.map(f => this.floorplanPropKey(f.texture.replace('prop-', ''))),
@@ -77,7 +86,10 @@ export class TPE2LobbyScene extends BaseScene {
     ]));
 
     uniqueProps.forEach(p => {
-      this.load.image(`prop-${p}`, `map/TPE2/props/${p}/prop.png`);
+      const key = `prop-${p}`;
+      if (!this.textures.exists(key)) {
+        this.load.image(key, `map/TPE2/props/${p}/prop.png`);
+      }
     });
   }
 
@@ -114,6 +126,7 @@ export class TPE2LobbyScene extends BaseScene {
   }
 
   create(data: BaseSceneData) {
+    updateSceneLoadingOverlay('Building T2 scene...');
     this.fadeIn();
     this.initInputs();
     this.events.off(Phaser.Scenes.Events.RESUME);
@@ -182,6 +195,7 @@ export class TPE2LobbyScene extends BaseScene {
     try { (window as any).__rerenderMinimap?.(); } catch {}
     try { (window as any).__t2FloorplanSlots = this.floorplanSlots; } catch {}
     this.applyDebugMode(debugOn);
+    this.time.delayedCall(80, () => hideSceneLoadingOverlay());
   }
 
   private addFacility(fac: Facility) {

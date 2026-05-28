@@ -11,3 +11,4 @@ server/obj/
 /server/obj
 /server/bin
 /server/logs
+/debug

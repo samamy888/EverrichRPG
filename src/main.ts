@@ -31,6 +31,17 @@ const config: Phaser.Types.Core.GameConfig = {
 
 const game = new Phaser.Game(config);
 
+function ensureUIOverlayActive() {
+  try {
+    const mgr: any = game.scene;
+    if (!mgr.isActive('UIOverlay')) {
+      mgr.launch('UIOverlay');
+    } else {
+      mgr.bringToTop('UIOverlay');
+    }
+  } catch {}
+}
+
 // Initial state
 game.registry.set('money', CONFIG.player.initialMoney);
 game.registry.set('basket', [] as { id: string; name: string; price: number }[]);
@@ -82,6 +93,7 @@ game.scale.on('resize', applyCameraZoom);
 window.addEventListener('load', applyCameraZoom);
 // 初始延遲再套用一次，避免首幀 scale 為 0
 window.setTimeout(applyCameraZoom, 0);
+window.setTimeout(ensureUIOverlayActive, 0);
 // 暴露給其他場景在啟動後可呼叫（避免場景尚未建立時未套用 zoom）
 (window as any).__applyCameraZoom = applyCameraZoom;
 
@@ -91,6 +103,10 @@ try {
   sceneEvents.on('wake', applyCameraZoomNextFrame);
   sceneEvents.on('resume', applyCameraZoomNextFrame);
   sceneEvents.on('transitioncomplete', applyCameraZoomNextFrame);
+  sceneEvents.on('start', ensureUIOverlayActive);
+  sceneEvents.on('wake', ensureUIOverlayActive);
+  sceneEvents.on('resume', ensureUIOverlayActive);
+  sceneEvents.on('transitioncomplete', ensureUIOverlayActive);
 } catch {}
 
 
@@ -115,7 +131,7 @@ if (e.code === 'BracketLeft') { // [ decrease int zoom
 (window as any).__minimapCrowd = false;
 // 預設：WebSocket 連線狀態（啟動時視為未連線）
 (window as any).__netConnected = false;
-(window as any).__debugModeEnabled = true;
+(window as any).__debugModeEnabled = false;
 
 // 介面：右下角縮放面板（Snap 整數）
 function createZoomControls() {
@@ -170,9 +186,9 @@ function createZoomControls() {
       if ((window as any).__chatGetVisible) chatVisible = !!(window as any).__chatGetVisible();
       else {
         const s = localStorage.getItem('chatVisible');
-        chatVisible = (s === null) ? true : (s === '1');
+        chatVisible = (s === null) ? false : (s === '1');
       }
-    } catch { chatVisible = true; }
+    } catch { chatVisible = false; }
     btnChat.textContent = chatVisible ? '聊天：開' : '聊天：關';
     const crowdOn = (window as any).__minimapCrowd !== false;
     btnCrowd.textContent = crowdOn ? '人群：開' : '人群：關';
@@ -243,6 +259,8 @@ function createZoomControls() {
     if (e.code !== 'Backquote') return;
     const isHidden = panel.style.display === 'none';
     panel.style.display = isHidden ? 'flex' : 'none';
+    const debugPanel = document.getElementById('debug-mode-switch');
+    if (debugPanel) debugPanel.style.display = isHidden ? 'flex' : 'none';
   });
 }
 
@@ -253,7 +271,7 @@ function createDebugModeSwitch() {
   panel.id = 'debug-mode-switch';
   panel.style.cssText = [
     'position:fixed','left:8px','top:8px','z-index:2147483647',
-    'display:flex','align-items:center','gap:6px','padding:4px 6px',
+    'display:none','align-items:center','gap:6px','padding:4px 6px',
     'border-radius:6px','background:rgba(20,26,40,0.9)','border:1px solid #c59b53',
     'box-shadow:0 0 0 1px #3f4b64 inset',
     'color:#d6def0','font:12px/1.2 HanPixel,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif'

@@ -118,15 +118,15 @@ export const TPE2_FEATURE_PROPS: Tpe2PropPlacement[] = [
   { key: 'escalator-module', x: 3030, y: 2868, scale: 0.64, collide: false, bodyMode: 'box' },
 
   // Customs / security entrance frontage
-  { key: 'customs-gate-module', x: 3210, y: 1080, scale: 0.16, collide: false, bodyMode: 'box' },
-  { key: 'info-counter', x: 3320, y: 1750, scale: 0.24, collide: true, bodyMode: 'box' },
+  { key: 'customs-gate-module', x: 3220, y: 1030, scale: 0.16, collide: false, bodyMode: 'box' },
+  { key: 'info-counter', x: 3350, y: 1750, scale: 0.24, collide: true, bodyMode: 'box' },
 
   // Duty-free frontage rhythm
-  { key: 'shopfront-module', x: 3620, y: 1240, scale: 0.16, collide: false, bodyMode: 'box' },
-  { key: 'shopfront-module', x: 3620, y: 1520, scale: 0.16, collide: false, bodyMode: 'box' },
-  { key: 'shopfront-module', x: 3620, y: 1800, scale: 0.16, collide: false, bodyMode: 'box' },
-  { key: 'shopfront-module', x: 3620, y: 2080, scale: 0.16, collide: false, bodyMode: 'box' },
-  { key: 'shopfront-module', x: 3620, y: 2360, scale: 0.16, collide: false, bodyMode: 'box' },
+  { key: 'shopfront-module', x: 3540, y: 1360, scale: 0.16, collide: false, bodyMode: 'box' },
+  { key: 'shopfront-module', x: 3540, y: 1640, scale: 0.16, collide: false, bodyMode: 'box' },
+  { key: 'shopfront-module', x: 3540, y: 1920, scale: 0.16, collide: false, bodyMode: 'box' },
+  { key: 'shopfront-module', x: 3540, y: 2200, scale: 0.16, collide: false, bodyMode: 'box' },
+  { key: 'shopfront-module', x: 3540, y: 2480, scale: 0.16, collide: false, bodyMode: 'box' },
 ];
 
 export const TPE2_DECOR_PROPS: Tpe2PropPlacement[] = [
