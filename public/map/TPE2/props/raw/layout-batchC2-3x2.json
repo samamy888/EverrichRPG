@@ -1,0 +1,13 @@
+{
+  "rows": 2,
+  "cols": 3,
+  "pad": 8,
+  "labels": [
+    "store-sign-electronics",
+    "store-sign-fashion",
+    "store-sign-books",
+    "store-sign-souvenirs",
+    "store-sign-food",
+    null
+  ]
+}

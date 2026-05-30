@@ -1,3 +1,5 @@
+import { t } from '../i18n';
+
 const OVERLAY_ID = 'scene-loading-overlay';
 const STYLE_ID = 'scene-loading-overlay-style';
 
@@ -70,8 +72,8 @@ function ensureOverlay() {
   overlay.dataset.open = '0';
   overlay.innerHTML = `
     <div class="panel" role="status" aria-live="polite">
-      <div class="title">Loading Scene</div>
-      <div class="msg">Preparing world...</div>
+      <div class="title">${t('ui.loadingSceneTitle')}</div>
+      <div class="msg">${t('ui.loadingSceneMessage')}</div>
       <div class="bar"></div>
     </div>
   `;
@@ -85,7 +87,7 @@ function setMessage(message: string) {
   if (msg) msg.textContent = message;
 }
 
-export function showSceneLoadingOverlay(message = 'Preparing world...') {
+export function showSceneLoadingOverlay(message = t('ui.loadingSceneMessage')) {
   const overlay = ensureOverlay();
   setMessage(message);
   overlay.dataset.open = '1';
@@ -99,4 +101,3 @@ export function hideSceneLoadingOverlay() {
   const overlay = ensureOverlay();
   overlay.dataset.open = '0';
 }
-

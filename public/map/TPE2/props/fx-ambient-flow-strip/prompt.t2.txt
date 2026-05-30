@@ -1,0 +1,15 @@
+﻿# T2 Object Prompt Spec v1
+object_key: fx-ambient-flow-strip
+batch: D
+owner_skill: generate2dsprite
+asset_type: fx
+sheet_strategy: strip_1x4
+output_format: PNG_RGBA_TRANSPARENT_OR_MAGENTA_SHEET
+anchor: center_or_bottom_center
+canvas_hint: 1024x1024
+runtime_scale_hint: scene_dependent
+collision_hint: none
+style_tokens: clean_hd, airport_terminal, controlled_motion, readable_loop
+negative_tokens: no_watermark, no_ui_text, no_scene_background, no_cropping
+prompt:
+Ambient lane flow strip effect for terminal conveyors/escalator-like movement, four-frame seamless vertical loop, clean HD effect style, solid #FF00FF background, strict 1x4 strip with equal frame width.

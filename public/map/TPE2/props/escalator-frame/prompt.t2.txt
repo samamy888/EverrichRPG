@@ -1,0 +1,17 @@
+# T2 Object Prompt Spec v1
+object_key: escalator-frame
+batch: B
+asset_type: prop
+role: architecture-motion-base
+view: topdown
+style: clean_hd_handpainted
+output: transparent_png
+anchor: bottom-center
+palette: brushed-steel, charcoal, warm-light accents
+silhouette: clear twin-lane escalator shell with handrails and landing plates
+constraints:
+- no text, logo, watermark
+- no baked moving stair highlights; keep lanes neutral for runtime animated strips
+- isolated object only, transparent background
+prompt:
+Airport escalator static frame module for top-down 2D RPG map, twin-lane shell with left and right handrails, side metal body and top/bottom landing plates, lane interiors neutral and non-animated for separate step-strip overlay, clean HD hand-painted game prop, isolated object only, transparent background, bottom-center anchor, readable silhouette.

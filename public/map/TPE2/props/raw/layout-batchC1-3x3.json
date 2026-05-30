@@ -1,0 +1,16 @@
+{
+  "rows": 3,
+  "cols": 3,
+  "pad": 8,
+  "labels": [
+    "airport-chairs",
+    "potted-palm",
+    "trash-bin",
+    "gate-brand-signage-d-zone",
+    "gate-brand-signage-c-zone",
+    "store-sign-cosmetics",
+    "store-sign-perfume",
+    "store-sign-liquor",
+    "store-sign-snacks"
+  ]
+}

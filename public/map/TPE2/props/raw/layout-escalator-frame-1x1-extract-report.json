@@ -1,0 +1,41 @@
+{
+  "input": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\raw\\batchB-escalator-split\\escalator-frame-raw-v2.png",
+  "layout": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\raw\\layout-escalator-frame-1x1.json",
+  "width": 1024,
+  "height": 1536,
+  "rows": 1,
+  "cols": 1,
+  "cellW": 1024,
+  "cellH": 1536,
+  "pad": 6,
+  "exported": [
+    {
+      "idx": 0,
+      "label": "escalator-frame",
+      "outPath": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\escalator-frame\\prop.png",
+      "outputSize": [
+        807,
+        1309
+      ],
+      "cell": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "bbox": [
+        114,
+        96,
+        908,
+        1392
+      ],
+      "cropped": [
+        108,
+        90,
+        807,
+        1309
+      ]
+    }
+  ],
+  "skipped": []
+}

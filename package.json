@@ -10,7 +10,18 @@
     "font:gen": "pwsh ./public/fonts/generate-font.ps1",
     "hud:test": "powershell -ExecutionPolicy Bypass -File .\\scripts\\hud-regression.ps1",
     "hud:test:quick": "powershell -ExecutionPolicy Bypass -File .\\scripts\\hud-regression.ps1 -SkipBuild",
-    "hud:test:manual": "powershell -ExecutionPolicy Bypass -File .\\scripts\\hud-regression.ps1 -SkipBuild -ManualOnly"
+    "hud:test:manual": "powershell -ExecutionPolicy Bypass -File .\\scripts\\hud-regression.ps1 -SkipBuild -ManualOnly",
+    "map:verify": "powershell -ExecutionPolicy Bypass -File .\\scripts\\map-verify.ps1",
+    "map:verify:quick": "powershell -ExecutionPolicy Bypass -File .\\scripts\\map-verify.ps1 -SkipBuild",
+    "map:verify:runtime": "powershell -ExecutionPolicy Bypass -File .\\scripts\\hud-regression.ps1",
+    "map:verify:runtime:quick": "powershell -ExecutionPolicy Bypass -File .\\scripts\\hud-regression.ps1 -SkipBuild",
+    "map:verify:asset": "node .\\scripts\\map-asset-regression.cjs",
+    "map:verify:asset:quick": "node .\\scripts\\map-asset-regression.cjs",
+    "map:verify:browser": "node .\\scripts\\map-regression-cdp.cjs --tag maprt",
+    "map:verify:browser:quick": "node .\\scripts\\map-regression-cdp.cjs --skipBuild 1 --tag maprt",
+    "map:smoke": "powershell -ExecutionPolicy Bypass -File .\\scripts\\mapshot-smoke.ps1",
+    "verify:oneclick": "powershell -ExecutionPolicy Bypass -File .\\scripts\\verify-oneclick.ps1",
+    "verify:oneclick:quick": "powershell -ExecutionPolicy Bypass -File .\\scripts\\verify-oneclick.ps1 -SkipBuild"
   },
   "dependencies": {
     "phaser": "^3.70.0"
@@ -18,6 +29,7 @@
   "devDependencies": {
     "jimp": "^1.6.0",
     "msdf-bmfont-xml": "^2.8.0",
+    "playwright-core": "^1.60.0",
     "typescript": "^5.4.0",
     "vite": "^5.0.0"
   }

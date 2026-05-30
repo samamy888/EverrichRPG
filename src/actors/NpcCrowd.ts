@@ -46,11 +46,22 @@ export function createCrowd(
     const idx = Phaser.Math.Between(0, pool.length - 1);
     return pool.splice(idx, 1)[0];
   };
+  const clusterStyles = [
+    { key: 'business', tint: 0xf3f8ff, scale: 1.03, speedMul: 1.08 },
+    { key: 'family', tint: 0xfff4e9, scale: 0.97, speedMul: 0.9 },
+    { key: 'solo', tint: 0xffffff, scale: 1.0, speedMul: 1.0 },
+  ] as const;
+  const pickCluster = (tv: Traveler | undefined, i: number) => {
+    if (tv?.job === 'clerk') return clusterStyles[0];
+    const seed = (i + (tv?.id?.length ?? 0)) % clusterStyles.length;
+    return clusterStyles[seed];
+  };
 
   for (let i = 0; i < opts.count; i++) {
     const x = rnd(opts.area.xMin, opts.area.xMax);
     const y = rnd(opts.area.yMin, opts.area.yMax);
     const tv = pickTraveler();
+    const cluster = pickCluster(tv, i);
     // 選擇動畫前綴與 idle 幀名稱
     let prefix = 'npc-m';
     let frameKey = 'travelers_m_0_0';
@@ -65,6 +76,8 @@ export function createCrowd(
       // 後備
       npc = scene.add.image(x, y, tex).setOrigin(0.5, 1);
     }
+    npc.setTint(cluster.tint);
+    npc.setScale(cluster.scale);
     group.add(npc);
     physics.add.existing(npc);
     const body = (npc as any).body as Phaser.Physics.Arcade.Body;
@@ -82,9 +95,11 @@ export function createCrowd(
       body.setSize(bw, bh).setOffset(offX, offY);
     } catch {}
     body.setVelocity(pick(vx[0], vx[1], 20), pick(vy[0], vy[1], 15));
+    body.setVelocity(body.velocity.x * cluster.speedMul, body.velocity.y * cluster.speedMul);
     meta.set(npc, { state: 'walk', nextAt: scene.time.now + rnd(900, 1600) });
     if (tv) npc.setData('traveler', tv);
     npc.setData('animPrefix', prefix);
+    npc.setData('visualCluster', cluster.key);
     (npc as any).setDepth?.(5);
   }
 

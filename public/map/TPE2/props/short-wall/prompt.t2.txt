@@ -1,0 +1,15 @@
+﻿# T2 Object Prompt Spec v1
+object_key: short-wall
+batch: B
+owner_skill: generate2dmap
+asset_type: prop
+sheet_strategy: one_by_one
+output_format: PNG_RGBA_TRANSPARENT
+anchor: bottom_center
+canvas_hint: 1024x1024
+runtime_scale_hint: 0.24
+collision_hint: box
+style_tokens: clean_hd, airport_terminal, modular_architecture, readable_silhouette
+negative_tokens: no_characters, no_scene_background, no_watermark, no_text_garble
+prompt:
+Short wall segment module for corridor shaping, low architectural wall with capped edge and trim line, clean HD hand-painted prop, isolated object only, transparent background, bottom-center anchor.

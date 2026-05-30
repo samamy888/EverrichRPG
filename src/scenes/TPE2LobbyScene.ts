@@ -17,8 +17,18 @@ import {
   Tpe2PropPlacement,
 } from '../data/tpe2Layout';
 import { hideSceneLoadingOverlay, updateSceneLoadingOverlay } from '../ui/sceneLoadingOverlay';
+import { t } from '../i18n';
 
 export class TPE2LobbyScene extends BaseScene {
+  private static readonly ZONES = [
+    { key: 'north-gates', label: t('lobby.zone.northGates'), type: 'concourse', x1: 0, x2: 6000, y1: 0, y2: 520 },
+    { key: 'west-concourse', label: t('lobby.zone.westConcourse'), type: 'concourse', x1: 0, x2: 2360, y1: 520, y2: 2820 },
+    { key: 'checkin-hall', label: t('lobby.zone.checkinHall'), type: 'concourse', x1: 2100, x2: 3400, y1: 520, y2: 2500 },
+    { key: 'security', label: t('lobby.zone.securityCustoms'), type: 'concourse', x1: 2920, x2: 3520, y1: 860, y2: 2320 },
+    { key: 'dutyfree', label: t('lobby.zone.dutyFreeBoulevard'), type: 'concourse', x1: 3360, x2: 4260, y1: 1180, y2: 2720 },
+    { key: 'east-concourse', label: t('lobby.zone.eastConcourse'), type: 'concourse', x1: 4260, x2: 6000, y1: 520, y2: 2820 },
+    { key: 'south-gates', label: t('lobby.zone.southGates'), type: 'concourse', x1: 0, x2: 6000, y1: 2820, y2: 3472 },
+  ] as const;
   public layer!: Phaser.Tilemaps.TilemapLayer;
   private floorBase?: Phaser.GameObjects.Image;
   private crowd?: Phaser.Physics.Arcade.Group;
@@ -27,20 +37,23 @@ export class TPE2LobbyScene extends BaseScene {
   private propDebugToggleKey?: Phaser.Input.Keyboard.Key;
   private propDebugRows: { target: Phaser.GameObjects.Image; label: Phaser.GameObjects.Text }[] = [];
   private blockerDebugRows: { target: Phaser.GameObjects.Rectangle; label: Phaser.GameObjects.Text }[] = [];
-  private interactables: { world: Phaser.Math.Vector2; label: string; radius: number; action: () => void }[] = [];
+  private interactables: { world: Phaser.Math.Vector2; label: string; radius: number; actionLabel: string; action: () => void }[] = [];
   private interactionLocked = false;
+  private activeZoneKey = '';
+  private activeZoneLabel = t('lobby.zone.t2Lobby');
+  private interactFocusGfx?: Phaser.GameObjects.Graphics;
+  private mapshotMode = false;
+  private mapshotScrollX = 0;
+  private mapshotScrollY = 0;
+  private tilecapMode = false;
+  private tilecapScrollX = 0;
+  private tilecapScrollY = 0;
   private worldW = 0;
   private worldH = 0;
   private floorplanSlots: any = null;
   private escalatorFx: { strip: Phaser.GameObjects.TileSprite; speed: number }[] = [];
-  private escalatorLanes = [
-    // top escalator: left lane down, right lane up
-    { x: 2986, y: 170, width: 34, height: 600, dy: 18 },
-    { x: 3040, y: 170, width: 34, height: 600, dy: -18 },
-    // bottom escalator: left lane up, right lane down
-    { x: 2986, y: 2520, width: 34, height: 520, dy: -18 },
-    { x: 3040, y: 2520, width: 34, height: 520, dy: 18 },
-  ];
+  private escalatorCarryLanes: { x: number; y: number; width: number; height: number; dy: number }[] = [];
+  private microPulseTargets: { node: Phaser.GameObjects.Image; baseAlpha: number; amp: number; speed: number; phase: number }[] = [];
 
   constructor() { super('TPE2LobbyScene'); }
 
@@ -82,6 +95,8 @@ export class TPE2LobbyScene extends BaseScene {
     const uniqueProps = Array.from(new Set([
       ...T2_FACILITIES.map(f => this.floorplanPropKey(f.texture.replace('prop-', ''))),
       ...TPE2_FLOORPLAN_PROP_KEYS,
+      ...TPE2_ARCHITECTURE_PROPS.map(p => this.floorplanPropKey(p.key)),
+      ...TPE2_DECOR_PROPS.map(p => this.floorplanPropKey(p.key)),
       ...TPE2_FEATURE_PROPS.map(p => this.floorplanPropKey(p.key)),
     ]));
 
@@ -91,42 +106,161 @@ export class TPE2LobbyScene extends BaseScene {
         this.load.image(key, `map/TPE2/props/${p}/prop.png`);
       }
     });
+
+    if (!this.textures.exists('prop-escalator-frame')) {
+      this.load.image('prop-escalator-frame', 'map/TPE2/props/escalator-frame/prop.png');
+    }
+    if (!this.textures.exists('prop-escalator-steps-strip')) {
+      this.load.image('prop-escalator-steps-strip', 'map/TPE2/props/escalator-steps-strip/prop.png');
+    }
+    if (!this.textures.exists('prop-wall-block')) {
+      this.load.image('prop-wall-block', 'map/TPE2/props/wall-block/prop.png');
+    }
+    if (!this.textures.exists('prop-wall-cap-block')) {
+      this.load.image('prop-wall-cap-block', 'map/TPE2/props/wall-cap-block/prop.png');
+    }
   }
 
-  private ensureEscalatorFlowTexture() {
-    const key = 'fx-escalator-flow';
-    if (this.textures.exists(key)) return;
-    const g = this.add.graphics();
-    g.clear();
-    g.fillStyle(0x111318, 0.0).fillRect(0, 0, 16, 32);
-    g.fillStyle(0xffffff, 0.18).fillRect(0, 0, 16, 4);
-    g.fillStyle(0xffffff, 0.08).fillRect(0, 8, 16, 3);
-    g.fillStyle(0xffffff, 0.16).fillRect(0, 16, 16, 4);
-    g.fillStyle(0xffffff, 0.08).fillRect(0, 24, 16, 3);
-    g.generateTexture(key, 16, 32);
-    g.destroy();
-  }
+  private addEscalatorModule({ x, y, scale = 0.14 }: Tpe2PropPlacement) {
+    const frame = this.add.image(x, y, 'prop-escalator-frame')
+      .setOrigin(0.5, 1)
+      .setScale(scale)
+      .setDepth(y - 900);
 
-  private addEscalatorFx() {
-    this.ensureEscalatorFlowTexture();
-    const lanes = [
-      { x: 2986, y: 170, w: 34, h: 600, speed: 18 },
-      { x: 3040, y: 170, w: 34, h: 600, speed: -18 },
-      { x: 2986, y: 2520, w: 34, h: 520, speed: -18 },
-      { x: 3040, y: 2520, w: 34, h: 520, speed: 18 },
+    const lbl = this.add.text(x, y - Math.max(14, frame.displayHeight * 0.58), 'escalator-frame', {
+      fontSize: '10px',
+      color: '#ffe39b',
+      resolution: 2,
+      fontFamily: 'HanPixel, system-ui, sans-serif',
+      backgroundColor: 'rgba(10,16,25,0.82)',
+      padding: { x: 3, y: 1 },
+    }).setOrigin(0.5, 1).setDepth(30000).setVisible(false);
+    try { lbl.setStroke('#1d2433', 2); } catch {}
+    this.propDebugRows.push({ target: frame, label: lbl });
+
+    const laneW = Math.max(14, Math.round(frame.displayWidth * 0.095));
+    const laneH = Math.max(80, Math.round(frame.displayHeight * 0.72));
+    const laneY = Math.round(y - frame.displayHeight * 0.86);
+    const leftX = Math.round(x - frame.displayWidth * 0.12);
+    const rightX = Math.round(x + frame.displayWidth * 0.03);
+    const isTopHalf = y < (this.worldH > 0 ? this.worldH * 0.5 : 1736);
+    const laneConfigs = [
+      { x: leftX, y: laneY, w: laneW, h: laneH, speed: isTopHalf ? 16 : -16, carry: isTopHalf ? 18 : -18 },
+      { x: rightX, y: laneY, w: laneW, h: laneH, speed: isTopHalf ? -16 : 16, carry: isTopHalf ? -18 : 18 },
     ];
-    for (const l of lanes) {
-      const strip = this.add.tileSprite(l.x, l.y, l.w, l.h, 'fx-escalator-flow')
+
+    for (const lane of laneConfigs) {
+      const strip = this.add.tileSprite(lane.x, lane.y, lane.w, lane.h, 'prop-escalator-steps-strip')
         .setOrigin(0, 0)
-        .setAlpha(0.42)
-        .setBlendMode(Phaser.BlendModes.ADD)
-        .setDepth(l.y + l.h - 899);
-      this.escalatorFx.push({ strip, speed: l.speed });
+        .setAlpha(0.9)
+        .setDepth(y - 899);
+      this.escalatorFx.push({ strip, speed: lane.speed });
+      this.escalatorCarryLanes.push({
+        x: lane.x,
+        y: lane.y,
+        width: lane.w,
+        height: lane.h,
+        dy: lane.carry,
+      });
+    }
+  }
+
+  private addModularWall({ key, x, y, scale = 0.24, collide = false }: Tpe2PropPlacement) {
+    const blockScale = Math.max(0.03, scale * 0.19);
+    const blockSample = this.add.image(-9999, -9999, 'prop-wall-block').setOrigin(0.5, 1).setScale(blockScale).setVisible(false);
+    const cellW = Math.max(14, blockSample.displayWidth * 0.96);
+    const cellH = Math.max(10, blockSample.displayHeight * 0.78);
+    blockSample.destroy();
+
+    const cols = key === 'wall-column' ? 1 : 3;
+    const bodyRows = key === 'wall-column' ? 4 : 1;
+    const capRows = 1;
+    const depthBase = y;
+    let anchor: Phaser.GameObjects.Image | null = null;
+
+    for (let row = 0; row < bodyRows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const px = Math.round(x + (col - (cols - 1) * 0.5) * cellW);
+        const py = Math.round(y - row * cellH);
+        const part = this.add.image(px, py, 'prop-wall-block')
+          .setOrigin(0.5, 1)
+          .setScale(blockScale)
+          .setDepth(depthBase + row * 0.1);
+        if (!anchor) anchor = part;
+      }
+    }
+
+    for (let row = 0; row < capRows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const px = Math.round(x + (col - (cols - 1) * 0.5) * cellW);
+        const py = Math.round(y - (bodyRows + row) * cellH + cellH * 0.12);
+        const cap = this.add.image(px, py, 'prop-wall-cap-block')
+          .setOrigin(0.5, 1)
+          .setScale(blockScale)
+          .setDepth(depthBase + 0.5 + row * 0.1);
+        if (!anchor) anchor = cap;
+      }
+    }
+
+    if (anchor) {
+      const approxHeight = (bodyRows + capRows) * cellH;
+      const lbl = this.add.text(x, y - Math.max(14, approxHeight * 0.85), key, {
+        fontSize: '10px',
+        color: '#ffe39b',
+        resolution: 2,
+        fontFamily: 'HanPixel, system-ui, sans-serif',
+        backgroundColor: 'rgba(10,16,25,0.82)',
+        padding: { x: 3, y: 1 },
+      }).setOrigin(0.5, 1).setDepth(30000).setVisible(false);
+      try { lbl.setStroke('#1d2433', 2); } catch {}
+      this.propDebugRows.push({ target: anchor, label: lbl });
+    }
+
+    if (collide) {
+      const totalW = cols * cellW * 0.9;
+      const totalH = (bodyRows + capRows) * cellH * 0.76;
+      const collider = this.add.rectangle(
+        x,
+        y - totalH * 0.5 + 2,
+        Math.max(18, totalW),
+        Math.max(16, totalH),
+        0x000000,
+        0
+      ).setVisible(false);
+      this.physics.add.existing(collider, true);
+      this.propsGroup.add(collider);
     }
   }
 
   create(data: BaseSceneData) {
-    updateSceneLoadingOverlay('Building T2 scene...');
+    try {
+      const u = new URL(window.location.href);
+      const p = u.searchParams;
+      this.mapshotMode = p.get('mapshot') === '1';
+      this.mapshotScrollX = Math.max(0, Number(p.get('msx') || 0) || 0);
+      this.mapshotScrollY = Math.max(0, Number(p.get('msy') || 0) || 0);
+      this.tilecapMode = p.get('tilecap') === '1';
+      this.tilecapScrollX = Math.max(0, Number(p.get('tcx') || 0) || 0);
+      this.tilecapScrollY = Math.max(0, Number(p.get('tcy') || 0) || 0);
+      const hash = (u.hash || '').replace(/^#/, '');
+      if (hash.toLowerCase().startsWith('mapshot')) {
+        this.mapshotMode = true;
+        const parts = hash.split(',');
+        if (parts.length >= 3) {
+          this.mapshotScrollX = Math.max(0, Number(parts[1]) || 0);
+          this.mapshotScrollY = Math.max(0, Number(parts[2]) || 0);
+        }
+      }
+      if (hash.toLowerCase().startsWith('tilecap')) {
+        this.tilecapMode = true;
+        const parts = hash.split(',');
+        if (parts.length >= 3) {
+          this.tilecapScrollX = Math.max(0, Number(parts[1]) || 0);
+          this.tilecapScrollY = Math.max(0, Number(parts[2]) || 0);
+        }
+      }
+    } catch {}
+    updateSceneLoadingOverlay(t('lobby.loading.buildingScene'));
     this.fadeIn();
     this.initInputs();
     this.events.off(Phaser.Scenes.Events.RESUME);
@@ -172,18 +306,29 @@ export class TPE2LobbyScene extends BaseScene {
     this.addFeatureDressing();
     T2_FACILITIES.forEach(fac => this.addFacility(fac));
     this.addLobbyDressing();
-    this.addEscalatorFx();
 
     const px = data?.spawnX ?? this.worldW / 2;
     const py = data?.spawnY ?? (this.worldH - 520);
     this.setupPlayer(px, py);
     this.physics.add.collider(this.player, this.propsGroup);
+    if (this.mapshotMode || this.tilecapMode) {
+      const capX = this.tilecapMode ? this.tilecapScrollX : this.mapshotScrollX;
+      const capY = this.tilecapMode ? this.tilecapScrollY : this.mapshotScrollY;
+      this.player.setVisible(false);
+      this.cameras.main.stopFollow();
+      this.cameras.main.setZoom(1);
+      this.cameras.main.setScroll(capX, capY);
+    }
 
     this.addPlayerNameplate();
-    this.spawnCrowd();
-    attachOthers(this, { getArea: () => 't2_lobby', crossArea: false });
+    if (this.mapshotMode || this.tilecapMode) {
+      try { (this as any).nameplate?.setVisible(false); } catch {}
+    } else {
+      this.spawnCrowd();
+      attachOthers(this, { getArea: () => 't2_lobby', crossArea: false });
+    }
 
-    this.setLocation('桃園 T2 大廳', 'concourse');
+    this.setLocation(t('lobby.zone.t2Lobby'), 'concourse');
     this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);
     this.physics.world.setBounds(0, 0, this.worldW, this.worldH);
 
@@ -194,28 +339,60 @@ export class TPE2LobbyScene extends BaseScene {
     (this as any).__minimapNatH = this.worldH;
     try { (window as any).__rerenderMinimap?.(); } catch {}
     try { (window as any).__t2FloorplanSlots = this.floorplanSlots; } catch {}
+    try {
+      (window as any).__tilecapInfo = {
+        worldW: this.worldW,
+        worldH: this.worldH,
+        ready: true,
+      };
+      (window as any).__tilecapSetCamera = (x: number, y: number) => {
+        const nx = Math.max(0, Math.min(this.worldW - this.cameras.main.width, Number(x) || 0));
+        const ny = Math.max(0, Math.min(this.worldH - this.cameras.main.height, Number(y) || 0));
+        this.cameras.main.stopFollow();
+        this.cameras.main.setZoom(1);
+        this.cameras.main.setScroll(nx, ny);
+        if (this.player) {
+          this.player.setVisible(false);
+          if (typeof (this.player as any).setVelocity === 'function') {
+            (this.player as any).setVelocity(0, 0);
+          }
+        }
+        try { (this as any).nameplate?.setVisible(false); } catch {}
+        return { ok: true, x: nx, y: ny, worldW: this.worldW, worldH: this.worldH };
+      };
+    } catch {}
+    if (!this.mapshotMode && !this.tilecapMode) this.interactFocusGfx = this.add.graphics().setDepth(24000);
+    this.updateActiveZone(true);
     this.applyDebugMode(debugOn);
     this.time.delayedCall(80, () => hideSceneLoadingOverlay());
   }
 
   private addFacility(fac: Facility) {
+    const propKey = fac.texture.replace('prop-', '');
+    const collide = fac.collide ?? this.defaultCollideFor(propKey, fac.type);
+    const bodyMode = this.defaultBodyModeFor(propKey, fac.type);
+    const interactPoint = this.facilityInteractPoint(fac, propKey);
     let propHeight = 0;
-    if (fac.renderProp !== false) {
+    // Gate pillars should remain visible even when legacy data marks renderProp false.
+    const shouldRenderProp = fac.renderProp !== false || fac.type === 'gate';
+    if (shouldRenderProp) {
       const prop = this.addProp({
-        key: fac.texture.replace('prop-', ''),
+        key: propKey,
         x: fac.x,
         y: fac.y,
-        scale: fac.scale ?? this.defaultScaleFor(fac.texture.replace('prop-', '')),
-        collide: fac.collide ?? true,
+        scale: fac.scale ?? this.defaultScaleFor(propKey),
+        collide,
+        bodyMode,
       });
       propHeight = prop.displayHeight;
     }
     this.addFacilityLabel(fac, propHeight);
 
     this.interactables.push({
-      world: new Phaser.Math.Vector2(fac.x, fac.y),
+      world: interactPoint,
       label: fac.name,
-      radius: fac.radius ?? 50,
+      radius: fac.radius ?? this.defaultInteractRadiusFor(propKey, fac.type),
+      actionLabel: this.defaultActionLabelFor(fac),
       action: () => {
         if (fac.targetScene === 'StoreScene' && fac.storeId) {
           this.openStore(fac.storeId);
@@ -232,7 +409,7 @@ export class TPE2LobbyScene extends BaseScene {
     this.registry.set('interactOpen', false);
     this.registry.set('dialogOpen', false);
     this.registry.set('listingOpen', false);
-    this.setHint('正在進入商店...');
+    this.setHint(t('lobby.hint.enteringShop'));
 
     this.cameras.main.fadeOut(180, 0, 0, 0);
     this.cameras.main.once('camerafadeoutcomplete', () => {
@@ -249,17 +426,16 @@ export class TPE2LobbyScene extends BaseScene {
 
   private addFacilityLabel(fac: Facility, propHeight: number) {
     if (!fac.shortName) return;
-    if (fac.type === 'gate') return;
-    const isShop = fac.type === 'shop';
+    const style = this.facilityLabelStyle(fac.type);
     const label = this.add.text(fac.x, fac.y - Math.max(22, propHeight * 0.72), fac.shortName, {
       fontSize: `${CONFIG.ui.small}px`,
-      color: isShop ? '#f9d58a' : '#e8f0ff',
+      color: style.color,
       resolution: 2,
       fontFamily: 'HanPixel, system-ui, sans-serif',
-      backgroundColor: isShop ? 'rgba(10,16,25,0.8)' : 'rgba(20,30,44,0.72)',
+      backgroundColor: style.backgroundColor,
       padding: { x: 4, y: 2 },
     }).setOrigin(0.5, 1).setDepth(fac.y + 4);
-    try { label.setStroke(isShop ? '#1d2433' : '#ffffff', 2); } catch {}
+    try { label.setStroke(style.stroke, 2); } catch {}
   }
 
   private floorplanPropKey(key: string) {
@@ -268,7 +444,8 @@ export class TPE2LobbyScene extends BaseScene {
 
   private addProp({ key, x, y, scale = this.defaultScaleFor(key), collide = false, bodyMode = 'feet' }: Tpe2PropPlacement) {
     const visualKey = this.floorplanPropKey(key);
-    const p = this.add.image(x, y, `prop-${visualKey}`).setOrigin(0.5, 1).setScale(scale);
+    const depth = visualKey === 'escalator-module' ? y - 900 : y;
+    const p = this.add.image(x, y, `prop-${visualKey}`).setOrigin(0.5, 1).setScale(scale).setDepth(depth);
     const lbl = this.add.text(x, y - Math.max(14, p.displayHeight * 0.58), visualKey, {
       fontSize: '10px',
       color: '#ffe39b',
@@ -279,6 +456,7 @@ export class TPE2LobbyScene extends BaseScene {
     }).setOrigin(0.5, 1).setDepth(30000).setVisible(false);
     try { lbl.setStroke('#1d2433', 2); } catch {}
     this.propDebugRows.push({ target: p, label: lbl });
+    this.registerMicroPulseTarget(visualKey, p);
 
     if (collide) {
       this.physics.add.existing(p, true);
@@ -300,6 +478,16 @@ export class TPE2LobbyScene extends BaseScene {
     }
 
     return p;
+  }
+
+  private registerMicroPulseTarget(key: string, node: Phaser.GameObjects.Image) {
+    if (key === 'flight-board') {
+      this.microPulseTargets.push({ node, baseAlpha: 0.94, amp: 0.06, speed: 1.65, phase: node.x * 0.01 });
+      return;
+    }
+    if (key === 'shopfront-module') {
+      this.microPulseTargets.push({ node, baseAlpha: 0.9, amp: 0.08, speed: 1.05, phase: node.y * 0.008 });
+    }
   }
 
   private addBlocker(x: number, y: number, width: number, height: number, labelText?: string) {
@@ -351,8 +539,120 @@ export class TPE2LobbyScene extends BaseScene {
     return scales[key] ?? 0.2;
   }
 
+  private defaultBodyModeFor(key: string, type: Facility['type']): 'feet' | 'box' {
+    if (type === 'shop' || type === 'counter') return 'box';
+    if ([
+      'security-scanner',
+      'airport-atm',
+      'self-checkin-kiosk',
+      'info-counter',
+      'checkin-counter-module',
+      'dutyfree-shop-kiosk',
+      'wall-column',
+      'short-wall',
+      'glass-partition',
+      'airport-elevator',
+    ].includes(key)) return 'box';
+    return 'feet';
+  }
+
+  private defaultCollideFor(key: string, type: Facility['type']): boolean {
+    if (type === 'gate') return false;
+    if (['flight-board', 'signage-pillar'].includes(key)) return false;
+    return true;
+  }
+
+  private defaultInteractRadiusFor(key: string, type: Facility['type']) {
+    if (type === 'shop') return 78;
+    if (type === 'counter') return 66;
+    if (type === 'gate') return 80;
+    if (key === 'security-scanner') return 72;
+    if (key === 'flight-board') return 76;
+    if (key === 'airport-atm') return 58;
+    return 62;
+  }
+
+  private facilityInteractPoint(fac: Facility, key: string) {
+    let x = fac.x;
+    let y = fac.y;
+
+    // Check-in counters are interacted from the corridor side.
+    if (key === 'checkin-counter-module') x += 92;
+
+    // Security scanner / counter are easier to trigger from queue approach.
+    if (key === 'security-scanner' || key === 'info-counter') y += 26;
+    if (fac.id === 'security-lane') {
+      // Pull anchor toward the west queue corridor for smoother approach.
+      x -= 44;
+      y += 34;
+    }
+    if (fac.id === 'customs-main') {
+      // Customs desk is approached from the central spine.
+      x -= 52;
+      y += 18;
+    }
+
+    // Shops are primarily approached from the left in current T2 layout.
+    if (key === 'dutyfree-shop-kiosk') x -= 96;
+
+    if (key === 'flight-board') y += 34;
+    if (fac.id === 'flight-info-center') {
+      // Keep interaction point below board near escalator exit flow.
+      y += 14;
+    }
+    if (fac.type === 'gate') {
+      // Top gates are approached from below; bottom gates are approached from above.
+      const midY = this.worldH > 0 ? this.worldH * 0.5 : 1736;
+      y += fac.y <= midY ? 42 : -52;
+    }
+
+    return new Phaser.Math.Vector2(x, y);
+  }
+
+  private defaultActionLabelFor(fac: Facility) {
+    if (fac.targetScene === 'StoreScene') return t('lobby.action.enterShop');
+    if (fac.type === 'gate') return t('lobby.action.viewGate');
+    if (fac.type === 'counter') return t('lobby.action.checkCounter');
+    return t('lobby.action.inspect');
+  }
+
+  private facilityLabelStyle(type: Facility['type']) {
+    if (type === 'shop') {
+      return {
+        color: '#f9d58a',
+        backgroundColor: 'rgba(10,16,25,0.8)',
+        stroke: '#1d2433',
+      };
+    }
+    if (type === 'gate') {
+      return {
+        color: '#8fd3ff',
+        backgroundColor: 'rgba(10,18,28,0.74)',
+        stroke: '#1a2b3d',
+      };
+    }
+    if (type === 'counter') {
+      return {
+        color: '#d8e6ff',
+        backgroundColor: 'rgba(17,29,44,0.74)',
+        stroke: '#1d2d43',
+      };
+    }
+    return {
+      color: '#e8f0ff',
+      backgroundColor: 'rgba(20,30,44,0.72)',
+      stroke: '#ffffff',
+    };
+  }
+
   private addArchitectureDressing() {
-    TPE2_ARCHITECTURE_PROPS.forEach(p => this.addProp(p));
+    TPE2_ARCHITECTURE_PROPS.forEach(p => {
+      if (p.key === 'wall-column' || p.key === 'short-wall') {
+        this.addModularWall(p);
+        return;
+      }
+      this.addProp(p);
+    });
   }
 
   private addLobbyDressing() {
@@ -360,7 +660,13 @@ export class TPE2LobbyScene extends BaseScene {
   }
 
   private addFeatureDressing() {
-    TPE2_FEATURE_PROPS.forEach(p => this.addProp(p));
+    TPE2_FEATURE_PROPS.forEach(p => {
+      if (p.key === 'escalator-module' && !this.mapshotMode && !this.tilecapMode) {
+        this.addEscalatorModule(p);
+        return;
+      }
+      this.addProp(p);
+    });
   }
 
   private addPlayerNameplate() {
@@ -394,15 +700,78 @@ export class TPE2LobbyScene extends BaseScene {
     });
   }
 
+  private updateDynamicDepths() {
+    this.player.setDepth(this.player.y);
+
+    if (this.crowd) {
+      const children = this.crowd.getChildren() as Phaser.GameObjects.GameObject[];
+      for (const child of children) {
+        const sprite = child as Phaser.GameObjects.Sprite;
+        if (typeof (sprite as any).y === 'number') sprite.setDepth((sprite as any).y);
+      }
+    }
+
+    const othersState = (this as any).__others;
+    const othersMap: Map<string, Phaser.GameObjects.Sprite> | undefined = othersState?.map;
+    if (othersMap && othersMap.size) {
+      for (const sprite of othersMap.values()) {
+        sprite.setDepth(sprite.y);
+      }
+    }
+  }
+
+  private resolveZone(x: number, y: number) {
+    const hits = TPE2LobbyScene.ZONES.filter((z) => (
+      x >= z.x1 && x <= z.x2 && y >= z.y1 && y <= z.y2
+    ));
+    if (hits.length) {
+      // Prefer the most specific zone when rectangles overlap.
+      hits.sort((a, b) => ((a.x2 - a.x1) * (a.y2 - a.y1)) - ((b.x2 - b.x1) * (b.y2 - b.y1)));
+      return hits[0];
+    }
+    return { key: 't2-lobby', label: t('lobby.zone.t2Lobby'), type: 'concourse' as const };
+  }
+
+  private updateActiveZone(force = false) {
+    const zone = this.resolveZone(this.player.x, this.player.y);
+    if (!force && zone.key === this.activeZoneKey) return;
+    this.activeZoneKey = zone.key;
+    this.activeZoneLabel = zone.label;
+    this.setLocation(zone.label, zone.type);
+  }
+
+  private drawInteractFocus(target: Phaser.Math.Vector2, radius: number) {
+    if (!this.interactFocusGfx) return;
+    const pulse = (Math.sin(this.time.now / 180) + 1) * 0.5;
+    const r = Math.max(14, Math.min(30, radius * 0.46));
+    const y = target.y - 6;
+    this.interactFocusGfx.clear();
+    this.interactFocusGfx.lineStyle(2, 0xf6c067, 0.62 + pulse * 0.28);
+    this.interactFocusGfx.strokeCircle(target.x, y, r);
+    this.interactFocusGfx.lineStyle(1, 0xffffff, 0.28 + pulse * 0.18);
+    this.interactFocusGfx.strokeCircle(target.x, y, r + 5 + pulse * 2);
+    this.interactFocusGfx.fillStyle(0xf6c067, 0.82);
+    this.interactFocusGfx.fillCircle(target.x, y, 1.8);
+  }
+
   update() {
     if (!this.player) return;
+    if (this.tilecapMode) {
+      if (typeof (this.player as any).setVelocity === 'function') {
+        (this.player as any).setVelocity(0, 0);
+      }
+      this.updateDynamicDepths();
+      return;
+    }
     this.updatePlayerMovement();
     this.updateNetworkMovement('t2_lobby');
+    this.updateActiveZone();
+    try { this.registry.set('playerPos', { x: this.player.x, y: this.player.y }); } catch {}
 
     if (this.propDebugToggleKey && Phaser.Input.Keyboard.JustDown(this.propDebugToggleKey)) {
       this.applyDebugMode(!this.propDebugMode);
       (window as any).__debugModeEnabled = this.propDebugMode;
-      this.setHint(this.propDebugMode ? 'Prop Debug：顯示名稱（F2 關閉）' : 'Prop Debug：已關閉（F2 開啟）');
+      this.setHint(this.propDebugMode ? t('lobby.hint.propDebugOn') : t('lobby.hint.propDebugOff'));
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.keys.C)) {
@@ -410,17 +779,7 @@ export class TPE2LobbyScene extends BaseScene {
       (window as any).__debugModeEnabled = this.physics.world.drawDebug;
     }
 
-    this.children.each((child: any) => {
-      if (child === this.layer || child.texture?.key === TPE2_FLOORPLAN_BG_KEY) return;
-      if (child.texture && (child.texture.key.startsWith('prop-') || child.texture.key === 'characters' || child.texture.key === 'sprite-npc')) {
-        if (child.texture.key === 'prop-escalator-module') {
-          child.setDepth(child.y - 900);
-        } else {
-          child.setDepth(child.y);
-        }
-      }
-    });
-    this.player.setDepth(this.player.y);
+    this.updateDynamicDepths();
     try { if ((this as any).nameplate) (this as any).nameplate.setPosition(this.player.x, this.player.y - 22); } catch {}
     if (this.propDebugRows.length) {
       for (const row of this.propDebugRows) {
@@ -447,9 +806,18 @@ export class TPE2LobbyScene extends BaseScene {
       }
     }
 
-    // Escalator carry effect (both directions available by lane).
+    if (this.microPulseTargets.length) {
+      const now = this.time.now * 0.001;
+      for (const row of this.microPulseTargets) {
+        if (!row.node.active) continue;
+        const pulse = (Math.sin(now * row.speed + row.phase) + 1) * 0.5;
+        row.node.setAlpha(Math.max(0.78, Math.min(1, row.baseAlpha + (pulse - 0.5) * row.amp)));
+      }
+    }
+
+    // Escalator carry effect based on split step-lanes.
     const dt = Math.max(0.5, Math.min(2, this.game.loop.delta / 16.6667));
-    for (const lane of this.escalatorLanes) {
+    for (const lane of this.escalatorCarryLanes) {
       const inLane = this.player.x >= lane.x && this.player.x <= lane.x + lane.width
         && this.player.y >= lane.y && this.player.y <= lane.y + lane.height;
       if (!inLane) continue;
@@ -457,7 +825,7 @@ export class TPE2LobbyScene extends BaseScene {
       break;
     }
 
-    let nearest: { world: Phaser.Math.Vector2; label: string; radius: number; action: () => void } | null = null;
+    let nearest: { world: Phaser.Math.Vector2; label: string; radius: number; actionLabel: string; action: () => void } | null = null;
     let minDist = Infinity;
     for (const item of this.interactables) {
       const d = Phaser.Math.Distance.Between(this.player.x, this.player.y, item.world.x, item.world.y);
@@ -465,10 +833,19 @@ export class TPE2LobbyScene extends BaseScene {
     }
 
     if (nearest) {
-      this.setHint(`${nearest.label}｜按 E 互動｜ESC 選單`);
+      this.drawInteractFocus(nearest.world, nearest.radius);
+      if (!this.interactionLocked) {
+        this.registry.set('interactOptions', [nearest.actionLabel]);
+        this.registry.set('interactOpen', true);
+      } else {
+        this.registry.set('interactOpen', false);
+      }
+      this.setHint(t('lobby.hint.interactMenu', { zone: this.activeZoneLabel, target: nearest.label }));
       if (!this.interactionLocked && Phaser.Input.Keyboard.JustDown(this.keys.E)) nearest.action();
     } else {
-      this.setHint('WASD/方向鍵移動｜ESC 選單｜C 碰撞偵錯');
+      try { this.interactFocusGfx?.clear(); } catch {}
+      this.registry.set('interactOpen', false);
+      this.setHint(t('lobby.hint.moveMenuDebug', { zone: this.activeZoneLabel }));
     }
 
     try {
@@ -476,3 +853,4 @@ export class TPE2LobbyScene extends BaseScene {
     } catch {}
   }
 }
+

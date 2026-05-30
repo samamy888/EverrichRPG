@@ -287,9 +287,9 @@ export class UIOverlay extends Phaser.Scene {
       this.hintText.setText(this.menuTip());
     } else if (this.basketOpen) {
       const bh = (t('ui.basketHint') as string) || '';
-      this.hintText.setText(bh && bh !== 'ui.basketHint' ? bh : '鞈潛蝐?W/S ?豢?嚗 蝘駁嚗SC ??');
+      this.hintText.setText(bh && bh !== 'ui.basketHint' ? bh : '購物籃：W/S 選擇，E 移除，ESC 關閉');
     } else if (this.dialogOpen) {
-      this.hintText.setText(t('store.dialog.cont') || 'Press E to continue');
+      this.hintText.setText(t('store.dialog.cont') || '（按 E 繼續）');
     } else if (hint !== undefined) {
       // Apply dynamic larger font for entry/exit hints if requested
       try {
@@ -341,7 +341,7 @@ export class UIOverlay extends Phaser.Scene {
     const hasBitmap = this.cache.bitmapFont.exists('han');
     let hasWeb = false;
     try { hasWeb = (document as any).fonts?.check?.('12px "HanPixel"') === true; } catch {}
-    const msg = `Font Bitmap(han): ${hasBitmap ? 'OK' : 'MISS'} | Web(HanPixel): ${hasWeb ? 'OK' : 'MISS'}`;
+    const msg = `字型狀態 Bitmap(han)：${hasBitmap ? '正常' : '缺少'}｜Web(HanPixel)：${hasWeb ? '正常' : '缺少'}`;
     this.fontDebugText.setText(msg);
     console.info('[fonts]', { bitmap: hasBitmap, web: hasWeb });
   }
@@ -586,7 +586,10 @@ export class UIOverlay extends Phaser.Scene {
   private initDomHud() {
     try {
       if (this.domHudRoot) return;
-      const p = new URL(window.location.href).searchParams; const probeOn = p.get('hudprobe') === '1' || p.get('hudtest') === '1' || (navigator as any).webdriver === true;
+      const p = new URL(window.location.href).searchParams;
+      const probeOn = p.get('hudprobe') === '1' || p.get('hudtest') === '1' || (navigator as any).webdriver === true;
+      const forceDomHud = p.get('domhud') === '1';
+      if (!probeOn && !forceDomHud) return;
       this.domProbeMode = probeOn;
       const root = document.createElement('div');
       root.id = 'ui-overlay-dom-hud';
@@ -619,8 +622,8 @@ export class UIOverlay extends Phaser.Scene {
       this.domBottom = bottom;
       this.domMoney = money;
       if (probeOn) {
-        this.domBottom.textContent = 'DOM HUD PROBE';
-        this.domMoney.textContent = 'DOM HUD';
+        this.domBottom.textContent = t('ui.domHudProbe');
+        this.domMoney.textContent = t('ui.domHudLabel');
       }
       this.layoutDomHud();
       this.updateDomHud();
@@ -647,7 +650,7 @@ export class UIOverlay extends Phaser.Scene {
       const hint = (this.registry.get('hint') as string) ?? '';
       const money = (this.registry.get('money') as number) ?? 0;
       this.domLoc.textContent = loc;
-      this.domBottom.textContent = hint || (this.domProbeMode ? 'DOM HUD PROBE' : '');
+      this.domBottom.textContent = hint || (this.domProbeMode ? t('ui.domHudProbe') : '');
       this.domMoney.textContent = `$${money}`;
     } catch {}
   }
@@ -690,7 +693,7 @@ export class UIOverlay extends Phaser.Scene {
       const statusY = Math.round(this.statusBox?.y || -1);
       const domRect = this.domBottom?.getBoundingClientRect?.();
       const domY = domRect ? `${Math.round(domRect.top)}-${Math.round(domRect.bottom)}` : 'n/a';
-      this.hudProbeEl.textContent = `UIOverlay on | view=${w}x${h} cam=${Math.round(cam.width)}x${Math.round(cam.height)} z=${cam.zoom.toFixed(2)} sy=${Math.round(cam.scrollY)} y(status)=${statusY} domY=${domY}`;
+      this.hudProbeEl.textContent = `UIOverlay 啟用中｜視窗=${w}x${h}｜相機=${Math.round(cam.width)}x${Math.round(cam.height)}｜縮放=${cam.zoom.toFixed(2)}｜scrollY=${Math.round(cam.scrollY)}｜底欄Y=${statusY}｜DOMY=${domY}`;
       if (this.hudProbeGfx && statusY >= 0) {
         this.hudProbeGfx.clear();
         this.hudProbeGfx.fillStyle(0xff00ff, 0.85).fillRect(0, statusY, w, 3);
@@ -765,11 +768,11 @@ export class UIOverlay extends Phaser.Scene {
   // ===== ESC 銝駁?殷?銝蝝??嚗?蝝??圈?嚗?====
   private getMenuItems(): { label: string; value: string }[] {
     if (this.menuLevel === 1) return [
-      { label: 'Basket', value: 'basket' },
-      { label: 'Logout', value: 'logout' },
+      { label: t('ui.menuBasket'), value: 'basket' },
+      { label: t('ui.menuLogout'), value: 'logout' },
     ];
     return [
-      { label: '獢? T2 憭批輒', value: 'TPE2LobbyScene' },
+      { label: '返回 T2 大廳', value: 'TPE2LobbyScene' },
     ];
   }
   private renderMenu() {
@@ -799,7 +802,7 @@ export class UIOverlay extends Phaser.Scene {
     g.lineStyle(1, 0x4f5f7e, 0.8).lineBetween(x + 4, y + FS + 8, x + panelW - 4, y + FS + 8);
 
     // 璅???蝷?
-    const title = (this.menuLevel === 1) ? '?詨' : '?圈?';
+    const title = (this.menuLevel === 1) ? t('ui.menuTitle') : t('ui.menuSceneTitle');
     const titleObj = this.add.text(x + pad, y + pad - Math.max(0, Math.round(FS * 0.2)), title, { fontSize: `${FS}px`, color: '#f6c067', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(2101).setScrollFactor(0);
     this.menuRows.push(titleObj as any);
 
@@ -869,7 +872,7 @@ export class UIOverlay extends Phaser.Scene {
   }
 
   // 閬神??內?粹?格?蝷綽?銝血???敺?
-  private menuTip(): string { return 'W/S ?豢?嚚nter 蝣箄?嚚SC 餈?'; }
+  private menuTip(): string { return t('ui.menuTip') || 'W/S 選擇｜Enter 確認｜ESC 關閉'; }
   private setTopHint(text: string) {
     try { this.hintText.setText(text); } catch {}
   }
@@ -971,10 +974,10 @@ export class UIOverlay extends Phaser.Scene {
       if (cur !== want) this.listingMeasure.setFontSize(FS);
     }
     let maxTextW = 0;
-    const toMeasure: string[] = [String(t('store.listTitle') || '??')];
+    const toMeasure: string[] = [String(t('store.listTitle') || '商品')];
     items.forEach((it, idx) => {
       const prefix = idx === selected ? '>' : ' ';
-      const line = (it as any).id === '__exit' ? `${prefix} ${t('store.listExit') || '蝯?撠店'}` : `${prefix} ${it.name}  $${it.price}`;
+      const line = (it as any).id === '__exit' ? `${prefix} ${t('store.listExit') || '結束對話'}` : `${prefix} ${it.name}  $${it.price}`;
       toMeasure.push(line);
     });
     toMeasure.forEach(txt => {
@@ -1028,12 +1031,12 @@ export class UIOverlay extends Phaser.Scene {
     // ?批捆
     const startX = sx + pad;
     let curY = sy + pad;
-    const title = this.add.text(startX, curY, t('store.listTitle') || '??', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1501).setScrollFactor(0);
+    const title = this.add.text(startX, curY, t('store.listTitle') || '商品', { fontSize: `${FS}px`, color: '#e6f0ff', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1501).setScrollFactor(0);
     this.listingRows.push(title);
     curY += (FS + 4);
     items.forEach((it, idx) => {
       const prefix = idx === selected ? '>' : ' ';
-      const line = (it as any).id === '__exit' ? `${prefix} ${t('store.listExit') || '蝯?撠店'}` : `${prefix} ${it.name}  $${it.price}`;
+      const line = (it as any).id === '__exit' ? `${prefix} ${t('store.listExit') || '結束對話'}` : `${prefix} ${it.name}  $${it.price}`;
       const row = this.add.text(startX, curY, line, { fontSize: `${FS}px`, color: idx === selected ? '#ffffff' : '#c0c8d0', resolution: 2, fontFamily: 'HanPixel, system-ui, sans-serif' }).setDepth(1501).setScrollFactor(0);
       this.listingRows.push(row);
       curY += CONFIG.ui.lineStep;

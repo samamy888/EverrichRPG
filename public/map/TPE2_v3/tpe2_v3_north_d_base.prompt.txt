@@ -1,0 +1,1 @@
+Top-down 2D RPG airport map foundation for NORTH D-ZONE of Taoyuan T2 remake. Clean HD hand-painted style, gate-concourse character, structured lanes and waiting bays, clear central approach from south side, premium terminal materials, no props, no people, no text, no labels, no logos, no UI. Foundation-only layer for runtime object placement.

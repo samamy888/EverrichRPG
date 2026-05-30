@@ -1,0 +1,9 @@
+{
+  "rows": 1,
+  "cols": 2,
+  "pad": 8,
+  "labels": [
+    "wall-block",
+    "wall-cap-block"
+  ]
+}

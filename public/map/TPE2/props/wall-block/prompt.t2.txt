@@ -1,0 +1,17 @@
+# T2 Object Prompt Spec v1
+object_key: wall-block
+batch: B
+asset_type: prop
+role: architecture-modular-wall
+view: topdown
+style: clean_hd_handpainted
+output: transparent_png
+anchor: bottom-center
+palette: warm-gray concrete, terminal trim accents
+silhouette: rectangular block tile for stack/repeat
+constraints:
+- isolated object only
+- no text/logo/watermark
+- keep edge readability for tiling composition
+prompt:
+Modular airport interior wall block tile for top-down 2D RPG, rectangular structural block with subtle concrete and trim detail, designed for repeat stacking and side-by-side composition, clean HD hand-painted game prop, isolated object only, transparent background, bottom-center anchor.

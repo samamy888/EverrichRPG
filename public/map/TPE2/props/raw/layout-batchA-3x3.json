@@ -1,0 +1,16 @@
+{
+  "rows": 3,
+  "cols": 3,
+  "pad": 8,
+  "labels": [
+    "checkin-counter-module",
+    "info-counter",
+    "security-scanner",
+    "dutyfree-shop-kiosk",
+    "flight-board",
+    "airport-atm",
+    "signage-pillar",
+    "self-checkin-kiosk",
+    null
+  ]
+}

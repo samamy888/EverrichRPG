@@ -9,11 +9,26 @@ import { initClientLogging } from './utils/logger';
 import { initChat } from './ui/chat';
 import { getApiBase } from './net/http';
 import { TPE2LobbyScene } from './scenes/TPE2LobbyScene';
+import { TPE2LobbyV2Scene } from './scenes/TPE2LobbyV2Scene';
+import { TPE2CentralHallV3Scene } from './scenes/TPE2CentralHallV3Scene';
+import { TPE2NorthDZoneV3Scene } from './scenes/TPE2NorthDZoneV3Scene';
+import { TPE2SouthCZoneV3Scene } from './scenes/TPE2SouthCZoneV3Scene';
 
 export const GAME_WIDTH = 320;
 export const GAME_HEIGHT = 180;
 
 const appContainer = document.getElementById('app')!;
+const isOverlaySuppressed = (() => {
+  try {
+    const u = new URL(window.location.href);
+    const byQuery = u.searchParams.get('mapshot') === '1';
+    const byHash = (u.hash || '').toLowerCase().startsWith('#mapshot');
+    const bySkipUi = u.searchParams.get('skipui') === '1';
+    return byQuery || byHash || bySkipUi;
+  } catch {
+    return false;
+  }
+})();
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -26,12 +41,24 @@ const config: Phaser.Types.Core.GameConfig = {
   render: { antialias: false, pixelArt: true, roundPixels: true },
   physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.NO_CENTER },
-  scene: [BootScene, LoginScene, TPE2LobbyScene, StoreScene, UIOverlay],
+  scene: [
+    BootScene,
+    LoginScene,
+    TPE2LobbyScene,
+    TPE2LobbyV2Scene,
+    TPE2CentralHallV3Scene,
+    TPE2NorthDZoneV3Scene,
+    TPE2SouthCZoneV3Scene,
+    StoreScene,
+    UIOverlay
+  ],
 };
 
 const game = new Phaser.Game(config);
+try { (window as any).__game = game; } catch {}
 
 function ensureUIOverlayActive() {
+  if (isOverlaySuppressed) return;
   try {
     const mgr: any = game.scene;
     if (!mgr.isActive('UIOverlay')) {

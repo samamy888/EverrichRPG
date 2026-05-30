@@ -13,9 +13,14 @@ export class LoginScene extends Phaser.Scene {
     this.cameras.main.fadeIn(250, 0, 0, 0);
     this.cameras.main.setBackgroundColor('#10141a');
     let hudProbeMode = false;
+    let mapshotMode = false;
+    let skipUiMode = false;
     try {
-      const p = new URL(window.location.href).searchParams;
+      const u = new URL(window.location.href);
+      const p = u.searchParams;
       hudProbeMode = p.get('hudprobe') === '1' || p.get('hudtest') === '1' || (navigator as any).webdriver === true;
+      mapshotMode = p.get('mapshot') === '1' || (u.hash || '').toLowerCase().startsWith('#mapshot');
+      skipUiMode = p.get('skipui') === '1';
     } catch {}
 
     try { document.getElementById('login-panel')?.remove(); } catch {}
@@ -74,7 +79,11 @@ export class LoginScene extends Phaser.Scene {
           <label class="field">
             <span>起始地點</span>
             <select id="lg-scene">
-              <option value="TPE2LobbyScene">桃園 T2 大廳</option>
+              <option value="TPE2CentralHallV3Scene">桃園 T2 重製：中央大廳（v3）</option>
+              <option value="TPE2NorthDZoneV3Scene">桃園 T2 重製：D 區（v3）</option>
+              <option value="TPE2SouthCZoneV3Scene">桃園 T2 重製：C 區（v3）</option>
+              <option value="TPE2LobbyV2Scene">桃園 T2 大廳 v2（重製）</option>
+              <option value="TPE2LobbyScene">桃園 T2 大廳（舊版）</option>
             </select>
           </label>
 
@@ -90,7 +99,7 @@ export class LoginScene extends Phaser.Scene {
       const em = localStorage.getItem('pemail') || '';
       const nm = localStorage.getItem('pname') || '';
       const gd = localStorage.getItem('pgender') || 'M';
-      const ss = 'TPE2LobbyScene';
+      const ss = localStorage.getItem('startScene') || 'TPE2CentralHallV3Scene';
       (box.querySelector('#lg-email') as HTMLInputElement).value = em;
       (box.querySelector('#lg-name') as HTMLInputElement).value = nm;
       const r = box.querySelector(`input[name="lg-g"][value="${gd}"]`) as HTMLInputElement | null;
@@ -106,7 +115,9 @@ export class LoginScene extends Phaser.Scene {
       const button = box.querySelector('#lg-ok') as HTMLButtonElement;
       button.disabled = true;
       button.textContent = '連線中...';
-      showSceneLoadingOverlay('Preparing map assets...');
+      if (!hudProbeMode) {
+        try { showSceneLoadingOverlay('Preparing map assets...'); } catch {}
+      }
 
       try {
         const email = (box.querySelector('#lg-email') as HTMLInputElement).value.trim();
@@ -129,8 +140,10 @@ export class LoginScene extends Phaser.Scene {
           localStorage.setItem('pgender', gender);
         } catch {}
 
-        const selectedScene = 'TPE2LobbyScene';
+        const scenePicker = box.querySelector('#lg-scene') as HTMLSelectElement | null;
+        const selectedScene = scenePicker?.value || 'TPE2CentralHallV3Scene';
         try { localStorage.setItem('startScene', selectedScene); } catch {}
+        const shouldLaunchUi = !mapshotMode && !skipUiMode;
 
         if (!hudProbeMode) {
           try {
@@ -150,8 +163,11 @@ export class LoginScene extends Phaser.Scene {
         if (hudProbeMode) {
           try { document.body.removeChild(form); } catch {}
           this.scene.start(selectedScene);
-          this.scene.launch('UIOverlay');
-          try { initChat(this.game as any); } catch {}
+          if (shouldLaunchUi) {
+            this.scene.launch('UIOverlay');
+            try { initChat(this.game as any); } catch {}
+          }
+          try { hideSceneLoadingOverlay(); } catch {}
           try { (window as any).__applyCameraZoom?.(); } catch {}
           window.clearTimeout(overlayGuard);
         } else {
@@ -159,8 +175,10 @@ export class LoginScene extends Phaser.Scene {
           this.cameras.main.once('camerafadeoutcomplete', () => {
             try { document.body.removeChild(form); } catch {}
             this.scene.start(selectedScene);
-            this.scene.launch('UIOverlay');
-            try { initChat(this.game as any); } catch {}
+            if (shouldLaunchUi) {
+              this.scene.launch('UIOverlay');
+              try { initChat(this.game as any); } catch {}
+            }
             try { (window as any).__applyCameraZoom?.(); } catch {}
             window.clearTimeout(overlayGuard);
           });
@@ -182,7 +200,8 @@ export class LoginScene extends Phaser.Scene {
         localStorage.setItem('chatVisible', '0');
       }
       if (hudProbeMode || params.get('autostart') === '1' || params.get('hudtest') === '1') {
-        // Headless runs can throttle Phaser timers; keep a plain setTimeout fallback.
+        // Headless runs can throttle Phaser timers. Start immediately and keep retries.
+        start();
         this.time.delayedCall(100, () => { start(); });
         window.setTimeout(() => { start(); }, 120);
       }

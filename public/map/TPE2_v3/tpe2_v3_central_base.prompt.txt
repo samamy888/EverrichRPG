@@ -1,0 +1,1 @@
+Top-down 2D RPG airport map foundation for CENTRAL HALL of Taoyuan T2 remake. Clean HD hand-painted style, broad central concourse, symmetric architecture hints, warm polished floor, clear circulation lanes, no props, no furniture, no people, no text, no labels, no logos, no UI. Foundation-only layer for runtime prop placement.

@@ -1,0 +1,41 @@
+{
+  "input": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\raw\\batchB-escalator-split\\escalator-steps-strip-raw-v2.png",
+  "layout": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\raw\\layout-escalator-steps-strip-1x1.json",
+  "width": 724,
+  "height": 2172,
+  "rows": 1,
+  "cols": 1,
+  "cellW": 724,
+  "cellH": 2172,
+  "pad": 2,
+  "exported": [
+    {
+      "idx": 0,
+      "label": "escalator-steps-strip",
+      "outPath": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\escalator-steps-strip\\prop.png",
+      "outputSize": [
+        354,
+        2172
+      ],
+      "cell": [
+        0,
+        0,
+        724,
+        2172
+      ],
+      "bbox": [
+        187,
+        0,
+        536,
+        2171
+      ],
+      "cropped": [
+        185,
+        0,
+        354,
+        2172
+      ]
+    }
+  ],
+  "skipped": []
+}

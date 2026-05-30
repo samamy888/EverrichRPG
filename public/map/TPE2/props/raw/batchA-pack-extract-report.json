@@ -1,0 +1,239 @@
+{
+  "input": "public/map/TPE2/props/raw/batchA-prop-pack-v1.png",
+  "width": 1254,
+  "height": 1254,
+  "rows": 3,
+  "cols": 3,
+  "cellW": 418,
+  "cellH": 418,
+  "exported": [
+    {
+      "idx": 0,
+      "label": "checkin-counter-module",
+      "outPath": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\checkin-counter-module\\prop.png",
+      "outputSize": [
+        395,
+        225
+      ],
+      "cell": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "bbox": [
+        24,
+        135,
+        402,
+        343
+      ],
+      "cropped": [
+        16,
+        127,
+        395,
+        225
+      ]
+    },
+    {
+      "idx": 1,
+      "label": "info-counter",
+      "outPath": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\info-counter\\prop.png",
+      "outputSize": [
+        344,
+        323
+      ],
+      "cell": [
+        418,
+        0,
+        418,
+        418
+      ],
+      "bbox": [
+        82,
+        68,
+        417,
+        374
+      ],
+      "cropped": [
+        74,
+        60,
+        344,
+        323
+      ]
+    },
+    {
+      "idx": 2,
+      "label": "security-scanner",
+      "outPath": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\security-scanner\\prop.png",
+      "outputSize": [
+        382,
+        289
+      ],
+      "cell": [
+        836,
+        0,
+        418,
+        418
+      ],
+      "bbox": [
+        0,
+        106,
+        365,
+        378
+      ],
+      "cropped": [
+        0,
+        98,
+        382,
+        289
+      ]
+    },
+    {
+      "idx": 3,
+      "label": "dutyfree-shop-kiosk",
+      "outPath": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\dutyfree-shop-kiosk\\prop.png",
+      "outputSize": [
+        369,
+        240
+      ],
+      "cell": [
+        0,
+        418,
+        418,
+        418
+      ],
+      "bbox": [
+        33,
+        96,
+        385,
+        319
+      ],
+      "cropped": [
+        25,
+        88,
+        369,
+        240
+      ]
+    },
+    {
+      "idx": 4,
+      "label": "flight-board",
+      "outPath": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\flight-board\\prop.png",
+      "outputSize": [
+        316,
+        295
+      ],
+      "cell": [
+        418,
+        418,
+        418,
+        418
+      ],
+      "bbox": [
+        63,
+        66,
+        362,
+        344
+      ],
+      "cropped": [
+        55,
+        58,
+        316,
+        295
+      ]
+    },
+    {
+      "idx": 5,
+      "label": "airport-atm",
+      "outPath": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\airport-atm\\prop.png",
+      "outputSize": [
+        142,
+        281
+      ],
+      "cell": [
+        836,
+        418,
+        418,
+        418
+      ],
+      "bbox": [
+        117,
+        90,
+        242,
+        354
+      ],
+      "cropped": [
+        109,
+        82,
+        142,
+        281
+      ]
+    },
+    {
+      "idx": 6,
+      "label": "signage-pillar",
+      "outPath": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\signage-pillar\\prop.png",
+      "outputSize": [
+        130,
+        349
+      ],
+      "cell": [
+        0,
+        836,
+        418,
+        418
+      ],
+      "bbox": [
+        146,
+        3,
+        259,
+        335
+      ],
+      "cropped": [
+        138,
+        0,
+        130,
+        349
+      ]
+    },
+    {
+      "idx": 7,
+      "label": "self-checkin-kiosk",
+      "outPath": "D:\\Project\\EverrichRPG\\public\\map\\TPE2\\props\\self-checkin-kiosk\\prop.png",
+      "outputSize": [
+        137,
+        312
+      ],
+      "cell": [
+        418,
+        836,
+        418,
+        418
+      ],
+      "bbox": [
+        141,
+        27,
+        261,
+        322
+      ],
+      "cropped": [
+        133,
+        19,
+        137,
+        312
+      ]
+    }
+  ],
+  "skipped": [
+    {
+      "idx": 8,
+      "reason": "placeholder",
+      "cell": [
+        836,
+        836,
+        418,
+        418
+      ]
+    }
+  ]
+}

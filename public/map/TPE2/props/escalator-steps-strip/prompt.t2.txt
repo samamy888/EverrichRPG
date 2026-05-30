@@ -1,0 +1,17 @@
+# T2 Object Prompt Spec v1
+object_key: escalator-steps-strip
+batch: B
+asset_type: fx
+role: escalator-step-motion
+view: topdown
+style: clean_hd_handpainted
+output: transparent_png
+anchor: top-left
+palette: dark-metal, yellow safety-edge accents
+silhouette: narrow vertical strip, seamless top-to-bottom pattern
+constraints:
+- seamless vertical tiling required
+- no text, logo, watermark
+- isolated strip only, transparent background
+prompt:
+Seamless vertical escalator step tread strip for 2D game runtime scrolling, narrow single-lane texture with repeating metallic stair pattern and subtle yellow edge accents, top-down compatible, clean HD hand-painted style, isolated object only, transparent background, tileable perfectly top-to-bottom.

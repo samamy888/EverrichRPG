@@ -235,7 +235,7 @@ export const T2_FACILITIES: Facility[] = [
         id: 'atm-service-1',
         name: 'ATM / 外幣提領',
         type: 'info',
-        x: 3290, y: 2920,
+        x: 3435, y: 2920,
         texture: 'prop-airport-atm',
         scale: 0.18,
         radius: 55,

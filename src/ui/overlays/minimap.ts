@@ -1,6 +1,23 @@
 import * as Phaser from 'phaser';
 import { CONFIG } from '../../config';
 
+function isHudProbeMode() {
+  try {
+    const u = new URL(window.location.href);
+    return u.searchParams.get('hudprobe') === '1' || u.searchParams.get('hudtest') === '1' || (navigator as any).webdriver === true;
+  } catch {
+    return false;
+  }
+}
+
+function drawProbeBlueFrame(scene: any, w: number, h: number) {
+  if (!isHudProbeMode()) return;
+  const innerW = Math.max(1, w - 6);
+  const innerH = Math.max(1, h - 6);
+  scene.minimapGfx.lineStyle(2, 0x336699, 1).strokeRect(3, 3, innerW, innerH);
+  scene.minimapGfx.fillStyle(0x336699, 0.35).fillRect(4, 4, Math.max(1, w - 8), 3);
+}
+
 // 將 UIOverlay 之迷你地圖相關行為拆出，避免主檔案過大
 
 export function ensureMinimap(scene: any) {
@@ -162,6 +179,7 @@ export function renderMinimap(scene: any) {
       scene.minimapGfx.fillStyle(0x0b1019, 0.18).fillRect(0, 0, contentW, contentH);
       scene.minimapGfx.lineStyle(1, 0xc59b53, 0.95).strokeRect(0.5, 0.5, contentW - 1, contentH - 1);
       scene.minimapGfx.lineStyle(1, 0x3e4a63, 0.95).strokeRect(1.5, 1.5, contentW - 3, contentH - 3);
+      drawProbeBlueFrame(scene, contentW, contentH);
     } catch {}
     // Prepare or update minimap image sprite
     if (!scene.minimapImg) {
@@ -256,6 +274,7 @@ export function renderMinimap(scene: any) {
     scene.minimapGfx.fillStyle(0x0b1019, 0.18).fillRect(0, 0, bw, bh);
     scene.minimapGfx.lineStyle(1, 0xc59b53, 0.95).strokeRect(0.5, 0.5, bw - 1, bh - 1);
     scene.minimapGfx.lineStyle(1, 0x3e4a63, 0.95).strokeRect(1.5, 1.5, bw - 3, bh - 3);
+    drawProbeBlueFrame(scene, bw, bh);
   } catch {}
   // 商店門（藍）
   try {

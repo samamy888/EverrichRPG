@@ -1,0 +1,16 @@
+{
+  "rows": 3,
+  "cols": 3,
+  "pad": 8,
+  "labels": [
+    "airport-elevator",
+    "escalator-module",
+    "customs-gate-module",
+    "shopfront-module",
+    "security-partition",
+    "glass-partition",
+    "wall-column",
+    "short-wall",
+    null
+  ]
+}
