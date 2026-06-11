@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "regionId": "shop-liquor-food-01",
+  "entities": [
+    {
+      "id": "clerk-liquor-food-01",
+      "type": "clerk",
+      "position": { "x": 5, "y": 23 },
+      "facing": "down",
+      "spriteId": "clerk-liquor-food-01",
+      "collision": "feet",
+      "interaction": {
+        "kind": "shop",
+        "targetId": "shop-liquor-food-01"
+      },
+      "enabledWhen": null
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "duty-free-clerks-v1",
+  "skill": "generate2dsprite",
+  "assetType": "npc",
+  "action": "single",
+  "view": "topdown",
+  "artStyle": "project-native-retro-pixel",
+  "anchor": "feet",
+  "source": "public/assets/sprites/duty-free-clerks-v1/raw-sheet.png",
+  "transparentSheet": "public/assets/sprites/duty-free-clerks-v1/sheet-transparent.png",
+  "sprites": [
+    {
+      "id": "clerk-beauty-01",
+      "file": "public/assets/sprites/duty-free-clerks-v1/clerk-1.png"
+    },
+    {
+      "id": "clerk-liquor-food-01",
+      "file": "public/assets/sprites/duty-free-clerks-v1/clerk-2.png"
+    },
+    {
+      "id": "clerk-gift-01",
+      "file": "public/assets/sprites/duty-free-clerks-v1/clerk-3.png"
+    }
+  ],
+  "qc": {
+    "sharedScale": true,
+    "edgeTouchFrames": []
+  }
+}

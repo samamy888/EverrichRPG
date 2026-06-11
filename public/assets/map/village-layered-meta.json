@@ -1,0 +1,33 @@
+{
+  "id": "village-base-v1",
+  "map_mode": "scene_mode",
+  "visual_model": "layered_raster",
+  "runtime_object_model": "interactive_scene_objects",
+  "collision_model": "trigger_zones",
+  "engine_target": "Phaser",
+  "size": {
+    "width": 1536,
+    "height": 1024
+  },
+  "zones": [
+    {
+      "id": "elder-interact",
+      "type": "interact",
+      "x": 708,
+      "y": 450,
+      "width": 120,
+      "height": 120
+    }
+  ],
+  "spawns": [
+    {
+      "id": "player-start",
+      "x": 768,
+      "y": 602
+    }
+  ],
+  "notes": [
+    "Base image follows airport duty-free hall art direction.",
+    "Interactive and collision objects are runtime-driven by scene code."
+  ]
+}

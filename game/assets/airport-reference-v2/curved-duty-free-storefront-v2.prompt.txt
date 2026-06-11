@@ -1,0 +1,6 @@
+Use the visible airport photographs above as environmental reference for the broad curved duty-free liquor and cosmetics storefront, its dark fascia, cyan LED glow, warm interior and open entrances. Create one original wide curved duty-free storefront prop for a retro 16-bit top-down RPG.
+
+Three-quarter top-down view, broad gently curved dark navy fascia with abstract cyan illuminated panel, two open walk-in bays, warm ivory interior floor, a few simplified display shelves visible inside, brushed metal and restrained gold accents. No readable text, no logos, no brands, no advertisements, no bottles with labels, no people.
+
+This is a collision-bearing wide map object: keep the floor baseline perfectly horizontal, architecture symmetrical and clean, all parts fully inside the canvas with generous magenta padding. Crisp intentional 16-bit pixel art, strong silhouette, suitable for bottom-center anchoring and y-sorting. Solid #FF00FF background only.
+

@@ -1,0 +1,11 @@
+Create a single transparent-ready 2D RPG NPC sprite sheet for EverrichRPG, using the existing player character and airport display assets as visual style references.
+
+Exact layout: 1 row × 3 columns, three separate full-body airport duty-free store clerks, each standing still and facing forward/down in a top-down 3/4 GBA-era RPG view.
+
+1. Beauty shop clerk: navy uniform with rose-pink scarf.
+2. Liquor and food shop clerk: navy uniform with warm gold tie or scarf.
+3. Gift shop clerk: navy uniform with teal scarf.
+
+Friendly Taiwanese airport retail staff appearance, clean readable silhouette, matching proportions and pixel density of the player character, polished retro pixel art with subtle modern detail. Each character centered in its cell, identical scale, stable feet baseline, full body within the central safe area, generous padding, and nothing touching cell borders.
+
+Solid pure #FF00FF magenta background only. No transparency, shadows, text, labels, borders, UI, or props.

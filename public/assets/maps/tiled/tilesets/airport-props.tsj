@@ -1,0 +1,756 @@
+{
+  "type": "tileset",
+  "version": "1.10",
+  "tiledversion": "1.11.2",
+  "name": "airport-props",
+  "tilecount": 57,
+  "columns": 0,
+  "grid": {
+    "orientation": "orthogonal",
+    "width": 16,
+    "height": 16
+  },
+  "tiles": [
+    {
+      "id": 0,
+      "image": "../../../props/duty-free-terminal-v1/service-counter.png",
+      "imagewidth": 144,
+      "imageheight": 40,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "service-counter"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "image": "../../../props/duty-free-terminal-v1/display-shelf.png",
+      "imagewidth": 128,
+      "imageheight": 21,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "display-shelf"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "image": "../../../props/duty-free-terminal-v1/planter.png",
+      "imagewidth": 42,
+      "imageheight": 66,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "planter"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "image": "../../../props/duty-free-terminal-v1/sign-pillar.png",
+      "imagewidth": 28,
+      "imageheight": 77,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "sign-pillar"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "image": "../../../props/duty-free-terminal-v1/shop-doorway.png",
+      "imagewidth": 112,
+      "imageheight": 88,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "shop-doorway"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "image": "../../../props/airport-reference-v2/digital-map-kiosk-v2.png",
+      "imagewidth": 144,
+      "imageheight": 97,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "digital-map-kiosk-v2"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "image": "../../../props/airport-reference-v2/curved-duty-free-storefront-v2.png",
+      "imagewidth": 320,
+      "imageheight": 122,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "curved-duty-free-storefront-v2"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "image": "../../../props/airport-reference-v2/luxury-storefront-v2.png",
+      "imagewidth": 288,
+      "imageheight": 156,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "luxury-storefront-v2"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "image": "../../../props/airport-reference-v2/beauty-display-island-v2.png",
+      "imagewidth": 144,
+      "imageheight": 65,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "beauty-display-island-v2"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "image": "../../../props/airport-directional-v1/planter-south.png",
+      "imagewidth": 95,
+      "imageheight": 84,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-planter-south"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "image": "../../../props/airport-directional-v1/planter-west.png",
+      "imagewidth": 62,
+      "imageheight": 100,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-planter-west"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "image": "../../../props/airport-directional-v1/planter-east.png",
+      "imagewidth": 62,
+      "imageheight": 100,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-planter-east"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "image": "../../../props/airport-directional-v1/planter-north.png",
+      "imagewidth": 92,
+      "imageheight": 84,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-planter-north"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "image": "../../../props/airport-directional-v1/water-dispenser-south.png",
+      "imagewidth": 43,
+      "imageheight": 92,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-water-dispenser-south"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "image": "../../../props/airport-directional-v1/water-dispenser-west.png",
+      "imagewidth": 41,
+      "imageheight": 92,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-water-dispenser-west"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "image": "../../../props/airport-directional-v1/water-dispenser-east.png",
+      "imagewidth": 42,
+      "imageheight": 92,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-water-dispenser-east"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "image": "../../../props/airport-directional-v1/water-dispenser-north.png",
+      "imagewidth": 39,
+      "imageheight": 92,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-water-dispenser-north"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "image": "../../../props/airport-directional-v1/restroom-entrance-south.png",
+      "imagewidth": 292,
+      "imageheight": 145,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-restroom-entrance-south"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "image": "../../../props/airport-directional-v1/restroom-entrance-west.png",
+      "imagewidth": 72,
+      "imageheight": 212,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-restroom-entrance-west"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "image": "../../../props/airport-directional-v1/restroom-entrance-east.png",
+      "imagewidth": 72,
+      "imageheight": 212,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-restroom-entrance-east"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "image": "../../../props/airport-directional-v1/restroom-entrance-north.png",
+      "imagewidth": 292,
+      "imageheight": 145,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-restroom-entrance-north"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "image": "../../../props/airport-directional-v1/escalator-south.png",
+      "imagewidth": 132,
+      "imageheight": 186,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-escalator-south"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "image": "../../../props/airport-directional-v1/escalator-west.png",
+      "imagewidth": 244,
+      "imageheight": 83,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-escalator-west"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "image": "../../../props/airport-directional-v1/escalator-east.png",
+      "imagewidth": 244,
+      "imageheight": 83,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-escalator-east"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "image": "../../../props/airport-directional-v1/escalator-north.png",
+      "imagewidth": 132,
+      "imageheight": 168,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-escalator-north"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "image": "../../../props/legacy-directional-v1/dutyfree-curved-storefront-south.png",
+      "imagewidth": 324,
+      "imageheight": 126,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-curved-storefront-south"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "image": "../../../props/legacy-directional-v1/dutyfree-curved-storefront-west.png",
+      "imagewidth": 101,
+      "imageheight": 314,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-curved-storefront-west"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "image": "../../../props/legacy-directional-v1/dutyfree-curved-storefront-east.png",
+      "imagewidth": 101,
+      "imageheight": 314,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-curved-storefront-east"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "image": "../../../props/legacy-directional-v1/dutyfree-curved-storefront-north.png",
+      "imagewidth": 324,
+      "imageheight": 128,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-curved-storefront-north"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "image": "../../../props/legacy-directional-v1/dutyfree-luxury-storefront-south.png",
+      "imagewidth": 292,
+      "imageheight": 160,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-luxury-storefront-south"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "image": "../../../props/legacy-directional-v1/dutyfree-luxury-storefront-west.png",
+      "imagewidth": 120,
+      "imageheight": 314,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-luxury-storefront-west"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "image": "../../../props/legacy-directional-v1/dutyfree-luxury-storefront-east.png",
+      "imagewidth": 120,
+      "imageheight": 314,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-luxury-storefront-east"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "image": "../../../props/legacy-directional-v1/dutyfree-luxury-storefront-north.png",
+      "imagewidth": 292,
+      "imageheight": 145,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-luxury-storefront-north"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "image": "../../../props/legacy-directional-v1/dutyfree-display-island-south.png",
+      "imagewidth": 148,
+      "imageheight": 69,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-display-island-south"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "image": "../../../props/legacy-directional-v1/dutyfree-display-island-west.png",
+      "imagewidth": 56,
+      "imageheight": 124,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-display-island-west"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "image": "../../../props/legacy-directional-v1/dutyfree-display-island-east.png",
+      "imagewidth": 56,
+      "imageheight": 124,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-display-island-east"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "image": "../../../props/legacy-directional-v1/dutyfree-display-island-north.png",
+      "imagewidth": 148,
+      "imageheight": 63,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-display-island-north"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "image": "../../../props/legacy-directional-v1/dutyfree-display-shelf-south.png",
+      "imagewidth": 140,
+      "imageheight": 73,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-display-shelf-south"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "image": "../../../props/legacy-directional-v1/dutyfree-display-shelf-west.png",
+      "imagewidth": 76,
+      "imageheight": 103,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-display-shelf-west"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "image": "../../../props/legacy-directional-v1/dutyfree-display-shelf-east.png",
+      "imagewidth": 76,
+      "imageheight": 103,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-display-shelf-east"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "image": "../../../props/legacy-directional-v1/dutyfree-display-shelf-north.png",
+      "imagewidth": 140,
+      "imageheight": 70,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-display-shelf-north"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "image": "../../../props/legacy-directional-v1/dutyfree-service-counter-south.png",
+      "imagewidth": 107,
+      "imageheight": 60,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-service-counter-south"
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "image": "../../../props/legacy-directional-v1/dutyfree-service-counter-west.png",
+      "imagewidth": 76,
+      "imageheight": 99,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-service-counter-west"
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "image": "../../../props/legacy-directional-v1/dutyfree-service-counter-east.png",
+      "imagewidth": 76,
+      "imageheight": 99,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-service-counter-east"
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "image": "../../../props/legacy-directional-v1/dutyfree-service-counter-north.png",
+      "imagewidth": 99,
+      "imageheight": 60,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-service-counter-north"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "image": "../../../props/legacy-directional-v1/dutyfree-shop-doorway-south.png",
+      "imagewidth": 148,
+      "imageheight": 108,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-shop-doorway-south"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "image": "../../../props/legacy-directional-v1/dutyfree-shop-doorway-west.png",
+      "imagewidth": 41,
+      "imageheight": 148,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-shop-doorway-west"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "image": "../../../props/legacy-directional-v1/dutyfree-shop-doorway-east.png",
+      "imagewidth": 41,
+      "imageheight": 148,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-shop-doorway-east"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "image": "../../../props/legacy-directional-v1/dutyfree-shop-doorway-north.png",
+      "imagewidth": 148,
+      "imageheight": 104,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "dutyfree-shop-doorway-north"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "image": "../../../props/legacy-directional-v1/airport-digital-map-kiosk-south.png",
+      "imagewidth": 155,
+      "imageheight": 108,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-digital-map-kiosk-south"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "image": "../../../props/legacy-directional-v1/airport-digital-map-kiosk-west.png",
+      "imagewidth": 46,
+      "imageheight": 116,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-digital-map-kiosk-west"
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "image": "../../../props/legacy-directional-v1/airport-digital-map-kiosk-east.png",
+      "imagewidth": 45,
+      "imageheight": 116,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-digital-map-kiosk-east"
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "image": "../../../props/legacy-directional-v1/airport-digital-map-kiosk-north.png",
+      "imagewidth": 153,
+      "imageheight": 108,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-digital-map-kiosk-north"
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "image": "../../../props/legacy-directional-v1/airport-sign-pillar-south.png",
+      "imagewidth": 39,
+      "imageheight": 100,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-sign-pillar-south"
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "image": "../../../props/legacy-directional-v1/airport-sign-pillar-west.png",
+      "imagewidth": 26,
+      "imageheight": 100,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-sign-pillar-west"
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "image": "../../../props/legacy-directional-v1/airport-sign-pillar-east.png",
+      "imagewidth": 26,
+      "imageheight": 100,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-sign-pillar-east"
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "image": "../../../props/legacy-directional-v1/airport-sign-pillar-north.png",
+      "imagewidth": 36,
+      "imageheight": 100,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-sign-pillar-north"
+        }
+      ]
+    }
+  ]
+}

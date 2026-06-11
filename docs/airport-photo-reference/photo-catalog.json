@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "updatedAt": "2026-06-09",
+  "sourcePattern": "docs/IMG_20260601_*.jpg",
+  "pipeline": {
+    "mapMode": "tile_mode",
+    "visualModel": "layered_tilemap",
+    "runtimeObjectModel": [
+      "interactive_scene_objects",
+      "foreground_occluders",
+      "scene_hooks"
+    ],
+    "collisionModel": [
+      "tile_collision",
+      "trigger_zones"
+    ],
+    "engineTarget": "Phaser",
+    "tileSize": 16
+  },
+  "photos": [
+    {"file":"IMG_20260601_150159.jpg","group":"central-node","priority":"A","tags":["digital-map","wayfinding","terrazzo-floor","upper-level"]},
+    {"file":"IMG_20260601_150202.jpg","group":"central-atrium","priority":"A","tags":["retail-strip","open-floor","overview"]},
+    {"file":"IMG_20260601_150215.jpg","group":"central-atrium","priority":"A","tags":["escalator","glass-roof","multi-level"]},
+    {"file":"IMG_20260601_150219.jpg","group":"directory","priority":"B","tags":["brand-directory","advertising-column"]},
+    {"file":"IMG_20260601_150222.jpg","group":"liquor-store","priority":"A","tags":["curved-storefront","led-signage","display-islands"]},
+    {"file":"IMG_20260601_150306.jpg","group":"food-court","priority":"C","tags":["seating","wood-floor","tables"]},
+    {"file":"IMG_20260601_150308.jpg","group":"food-counter","priority":"C","tags":["service-counter","menu-lightbox","restaurant"]},
+    {"file":"IMG_20260601_150603.jpg","group":"directory","priority":"B","tags":["digital-map","floor-list"]},
+    {"file":"IMG_20260601_150609.jpg","group":"central-atrium","priority":"B","tags":["glass-roof","railing","upper-level"]},
+    {"file":"IMG_20260601_150613.jpg","group":"central-atrium","priority":"A","tags":["escalator","zone-sign","transition-node"]},
+    {"file":"IMG_20260601_150620.jpg","group":"architecture","priority":"B","tags":["steel-roof","glass-roof","cyan-light"]},
+    {"file":"IMG_20260601_150719.jpg","group":"central-node","priority":"A","tags":["digital-map","wayfinding","facility-icons"]},
+    {"file":"IMG_20260601_150723.jpg","group":"central-retail","priority":"A","tags":["luxury-storefront","main-corridor","digital-map"]},
+    {"file":"IMG_20260601_150734.jpg","group":"central-node","priority":"B","tags":["digital-map","hanging-sign","corridor-scale"]},
+    {"file":"IMG_20260601_150755.jpg","group":"beauty-corridor","priority":"A","tags":["blue-carpet","ceiling-lights","two-sided-retail"]},
+    {"file":"IMG_20260601_150758.jpg","group":"beauty-corridor","priority":"A","tags":["blue-carpet","wide-corridor","storefront-rhythm"]},
+    {"file":"IMG_20260601_150800.jpg","group":"beauty-retail","priority":"A","tags":["open-counter","display-island","floor-transition"]},
+    {"file":"IMG_20260601_150804.jpg","group":"beauty-retail","priority":"A","tags":["wall-shelf","checkout-counter","arched-storefront"]},
+    {"file":"IMG_20260601_150924.jpg","group":"gate-connector","priority":"B","tags":["moving-walkway","floor-arrow","overhead-sign"]},
+    {"file":"IMG_20260601_150933.jpg","group":"waiting-area","priority":"C","tags":["seating","window","floor-transition"]},
+    {"file":"IMG_20260601_150954.jpg","group":"luxury-connector","priority":"B","tags":["moving-walkway","luxury-storefront","glass-block-light"]}  
+  ],
+  "privacy": {
+    "containsPeople": true,
+    "publicRedistributionApproved": false,
+    "allowDirectTextureExtraction": false,
+    "useAsInternalVisualReferenceOnly": true
+  }
+}

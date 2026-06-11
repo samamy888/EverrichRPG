@@ -1,0 +1,10 @@
+{
+  "curved-storefront": "Match the existing curved duty-free storefront's navy, purple, gold and cyan airport style. Side modules must be full deep shops, not thin walls: visible interior floor, shelves and display island, with an aisle-facing recessed entrance. Use solid #FF00FF.",
+  "luxury-storefront": "Match the existing luxury storefront's navy frame, amber glass-block header, cream panels and gold trim. Side modules must be full deep boutiques, not thin walls: visible interior floor, luxury shelves and pedestal, with an aisle-facing recessed entrance. Use solid #FF00FF.",
+  "display-island": "Match the existing cosmetics display island's cream body, gold trim, teal glass and colorful products. Generate isolated north/back and west/side views on solid #FF00FF; east is mirrored and south reuses the accepted original.",
+  "display-shelf": "Create the same compact duty-free merchandise shelf in a 2x2 directional sheet ordered south, west, east, north, with consistent scale and solid #FF00FF background.",
+  "service-counter": "Create the same cream-and-gold airport service counter in a 2x2 directional sheet ordered south, west, east, north, with consistent scale and solid #FF00FF background.",
+  "shop-doorway": "Create the same premium navy, cream and amber duty-free doorway as isolated south/front, north/back and west/side views on solid #FF00FF; keep the central passage open and mirror west for east.",
+  "digital-map-kiosk": "Create the same navy, gold and cyan digital map kiosk in a 2x2 directional sheet ordered south, west, east, north, with consistent scale and solid #FF00FF background.",
+  "sign-pillar": "Create the same slim premium airport sign pillar in a 2x2 directional sheet ordered south, west, east, north, with consistent scale and solid #FF00FF background."
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "regionId": "shop-beauty-01",
+  "portals": [
+    {
+      "id": "to-central",
+      "boundsTiles": {
+        "x": 13,
+        "y": 24,
+        "width": 6,
+        "height": 2
+      },
+      "destinationRegionId": "duty-free-central",
+      "destinationSpawnId": "from-beauty",
+      "transition": "fade"
+    }
+  ]
+}

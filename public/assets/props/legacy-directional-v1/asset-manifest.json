@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "tileSize": 16,
+  "directions": ["south", "west", "east", "north"],
+  "families": {
+    "dutyfree-curved-storefront": {
+      "collisionTiles": {
+        "south": [16, 2],
+        "north": [16, 2],
+        "west": [11, 9],
+        "east": [11, 9]
+      },
+      "sideEntranceNote": "Portrait corridor module parallel to the aisle. Keep the outer 4x18 tile body blocked and place a 3x5 portal trigger at the inner-edge doorway."
+    },
+    "dutyfree-luxury-storefront": {
+      "collisionTiles": {
+        "south": [16, 2],
+        "north": [16, 2],
+        "west": [11, 9],
+        "east": [11, 9]
+      },
+      "sideEntranceNote": "Portrait corridor module parallel to the aisle. Keep the outer 4x18 tile body blocked and place a 3x5 portal trigger at the inner-edge doorway."
+    },
+    "dutyfree-display-island": {
+      "collisionTiles": {
+        "south": [8, 2],
+        "north": [8, 2],
+        "west": [2, 6],
+        "east": [2, 6]
+      }
+    },
+    "dutyfree-display-shelf": {
+      "collisionTiles": {
+        "south": [7, 2],
+        "north": [7, 2],
+        "west": [2, 5],
+        "east": [2, 5]
+      }
+    },
+    "dutyfree-service-counter": {
+      "collisionTiles": {
+        "south": [6, 2],
+        "north": [6, 2],
+        "west": [2, 5],
+        "east": [2, 5]
+      }
+    },
+    "dutyfree-shop-doorway": {
+      "collisionNote": "Block only the two pillars; keep the center opening walkable or use it as a portal trigger."
+    },
+    "airport-digital-map-kiosk": {
+      "collisionTiles": {
+        "south": [6, 2],
+        "north": [6, 2],
+        "west": [2, 5],
+        "east": [2, 5]
+      },
+      "interactionType": "directory"
+    },
+    "airport-sign-pillar": {
+      "collisionTiles": {
+        "south": [1, 1],
+        "north": [1, 1],
+        "west": [1, 1],
+        "east": [1, 1]
+      },
+      "interactionType": "sign"
+    }
+  }
+}

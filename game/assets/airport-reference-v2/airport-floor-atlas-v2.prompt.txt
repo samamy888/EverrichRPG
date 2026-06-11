@@ -1,0 +1,6 @@
+Use the visible airport photographs above as environmental reference, especially the polished gray terrazzo concourse, warm ivory shop flooring, blue-gray cloud-pattern carpet, and dark navy metal walkway borders. Create an original retro 16-bit top-down RPG floor tile atlas for a Pokémon-era-inspired airport duty-free game, without copying any logo, text, person, advertisement, or product.
+
+Exact composition: one square image divided into a clean 2x2 grid of four equal seamless floor samples with no gutters and no labels. Top-left polished gray terrazzo concourse with subtle speckle and restrained reflected highlights. Top-right warm ivory luxury shop tile. Bottom-left blue-gray mottled carpet with low-contrast organic cloud pattern. Bottom-right dark navy charcoal metal border/walkway tile with understated panel seams.
+
+All four samples must use the same three-quarter top-down game perspective, crisp intentional pixel clusters, limited 16-bit palette, no photorealism, no objects, no walls, no characters, no text, no symbols, no shadows cast by objects. Each quadrant must tile seamlessly on all four edges and remain readable when downscaled to 16x16 pixels.
+

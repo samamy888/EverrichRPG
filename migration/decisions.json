@@ -1,0 +1,5901 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-06-10T08:41:33.099Z",
+  "allowedDecisions": [
+    "adopt",
+    "candidate",
+    "reference",
+    "archive",
+    "remove-after-review"
+  ],
+  "decisions": [
+    {
+      "path": ".gemini/skills/generate2dmap/agents/openai.yaml",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dmap/references/layered-map-contract.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dmap/references/map-strategies.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dmap/references/prop-pack-contract.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dmap/scripts/compose_layered_preview.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dmap/scripts/extract_prop_pack.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dmap/SKILL.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dsprite/agents/openai.yaml",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dsprite/references/modes.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dsprite/references/prompt-rules.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dsprite/scripts/generate2dsprite.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dsprite/scripts/make_layout_guide.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gemini/skills/generate2dsprite/SKILL.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".github/workflows/gh-pages.yml",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": ".gitignore",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "1",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "AGENTS.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "assets/map/TPE2/airport_tileset.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "assets/sprites/player/clerk_new.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/airport-photo-reference/Airport_Photo_Reference_Index.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/airport-photo-reference/contact-sheet-01.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/airport-photo-reference/contact-sheet-02.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/airport-photo-reference/contact-sheet-03.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/airport-photo-reference/photo-catalog.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/EverrichRPG_Rewrite_Plan_v2.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150159.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150202.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150215.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150219.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150222.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150306.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150308.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150603.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150609.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150613.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150620.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150719.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150723.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150734.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150755.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150758.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150800.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150804.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150924.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150933.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/IMG_20260601_150954.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/Phase3_Shop_MVP.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/Phase4_Character_Assets.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/Phase6_Exploration_Passport.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/t2-art-object-plan-v1.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "docs/Tiled_Map_Workflow.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/airport-floor-atlas-v2.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/ART_DIRECTION.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/beauty-display-island-v2.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/curved-duty-free-storefront-v2.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/digital-map-kiosk-v2.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/luxury-storefront-v2.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/manifest.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/beauty-display-island-v2/clean.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/beauty-display-island-v2/pipeline-meta.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/beauty-display-island-v2/prompt-used.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/beauty-display-island-v2/raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/curved-duty-free-storefront-v2/clean.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/curved-duty-free-storefront-v2/pipeline-meta.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/curved-duty-free-storefront-v2/prompt-used.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/curved-duty-free-storefront-v2/raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/digital-map-kiosk-v2/clean.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/digital-map-kiosk-v2/pipeline-meta.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/digital-map-kiosk-v2/prompt-used.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/digital-map-kiosk-v2/raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/luxury-storefront-v2/clean.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/luxury-storefront-v2/pipeline-meta.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/luxury-storefront-v2/prompt-used.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/processed/luxury-storefront-v2/raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/source/airport-floor-atlas-v2-source.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/source/beauty-display-island-v2-source.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/source/curved-duty-free-storefront-v2-source.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/source/digital-map-kiosk-v2-source.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/airport-reference-v2/source/luxury-storefront-v2-source.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/characters/duty-free-clerks-v1.manifest.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/characters/duty-free-clerks-v1.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/characters/player-traveler-female-v1.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/characters/player-traveler-male-v1.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/characters/player-travelers-v1.manifest.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/tilesets/duty-free-terminal-v1-source.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/tilesets/duty-free-terminal-v1.manifest.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/assets/tilesets/duty-free-terminal-v1.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/brands/brand-review.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/characters/characters.draft.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/exploration/hidden-collectibles.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/items/items.draft.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/shops/shop-catalog.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/shops/shops.draft.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/world/regions/shop-beauty-01/entities.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/world/regions/shop-beauty-01/portals.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/world/regions/shop-beauty-01/region.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/world/regions/shop-gift-01/entities.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/world/regions/shop-gift-01/portals.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/world/regions/shop-gift-01/region.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/world/regions/shop-liquor-food-01/entities.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/world/regions/shop-liquor-food-01/portals.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/world/regions/shop-liquor-food-01/region.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/content/world/world-topology.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/schemas/entity.schema.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/schemas/item.schema.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/schemas/portal.schema.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/schemas/quest.schema.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/schemas/region.schema.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/schemas/shop.schema.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "game/schemas/world-topology.schema.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "index.html",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "migration/a-grade-review.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "migration/id-map.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "package-lock.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "package.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "patch.diff",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "PROMPT_PACK_SKILLS.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/chunks-meta.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/runtime-config.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_0.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_0_9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_0.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_1_9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_0.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_2_9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_0.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_3_9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_0.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_4_9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_0.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_5_9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_0.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_6_9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_0.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/terminal/tiles/tile_7_9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/village-base.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/village-base.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/map/village-layered-meta.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/EverrichRPG.tiled-project",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/regions/duty-free-central.tmj",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/regions/duty-free-entrance.tmj",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/regions/shop-beauty-01.tmj",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/regions/shop-gift-01.tmj",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/regions/shop-liquor-food-01.tmj",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/tilesets/airport-floors.tsj",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/tilesets/airport-npcs.tsj",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/tilesets/airport-props.tsj",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/tilesets/images/floor-blue.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/tilesets/images/floor-carpet-blue.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/tilesets/images/floor-cream.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/tilesets/images/floor-dark.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/tilesets/images/floor-gold.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/tilesets/images/floor-ivory.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/tilesets/images/floor-navy-panel.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/maps/tiled/tilesets/images/floor-terrazzo.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/asset-manifest.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/directional-props-preview.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/escalator-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/escalator-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/escalator-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/escalator-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/escalator.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/planter-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/planter-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/planter-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/planter-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/planter.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/raw/escalator-north-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/raw/escalator-south-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/raw/escalator-west-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/raw/planter-directions-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/raw/restroom-north-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/raw/restroom-south-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/raw/restroom-west-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/raw/water-dispenser-directions-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/restroom-entrance-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/restroom-entrance-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/restroom-entrance-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/restroom-entrance-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/restroom.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/water-dispenser-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/water-dispenser-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/water-dispenser-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/water-dispenser-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-directional-v1/water-dispenser.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-reference-v2/beauty-display-island-v2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-reference-v2/curved-duty-free-storefront-v2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-reference-v2/digital-map-kiosk-v2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/airport-reference-v2/luxury-storefront-v2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/duty-free-terminal-v1/display-shelf.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/duty-free-terminal-v1/planter.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/duty-free-terminal-v1/service-counter.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/duty-free-terminal-v1/shop-doorway.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/duty-free-terminal-v1/sign-pillar.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/airport-digital-map-kiosk-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/airport-digital-map-kiosk-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/airport-digital-map-kiosk-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/airport-digital-map-kiosk-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/airport-sign-pillar-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/airport-sign-pillar-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/airport-sign-pillar-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/airport-sign-pillar-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/asset-manifest.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/corridor-side-storefront-preview.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/deep-side-storefront-preview.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-curved-storefront-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-curved-storefront-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-curved-storefront-side.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-curved-storefront-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-curved-storefront-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-display-island-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-display-island-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-display-island-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-display-island-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-display-shelf-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-display-shelf-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-display-shelf-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-display-shelf-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-luxury-storefront-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-luxury-storefront-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-luxury-storefront-side.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-luxury-storefront-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-luxury-storefront-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-service-counter-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-service-counter-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-service-counter-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-service-counter-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-shop-doorway-east.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-shop-doorway-north.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-shop-doorway-south.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/dutyfree-shop-doorway-west.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/generation-prompts.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/legacy-directional-preview.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/curved-storefront-east-corridor-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/curved-storefront-east-deep-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/curved-storefront-north-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/curved-storefront-west-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/digital-map-kiosk-directions-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/display-island-north-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/display-island-west-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/display-shelf-directions-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/luxury-storefront-north-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/luxury-storefront-west-corridor-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/luxury-storefront-west-deep-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/luxury-storefront-west-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/service-counter-directions-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/shop-doorway-north-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/shop-doorway-south-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/shop-doorway-west-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/props/legacy-directional-v1/raw/sign-pillar-directions-raw.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/duty-free-clerks-v1/animation.gif",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/duty-free-clerks-v1/clerk-1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/duty-free-clerks-v1/clerk-2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/duty-free-clerks-v1/clerk-3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/duty-free-clerks-v1/pipeline-meta.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/duty-free-clerks-v1/prompt-used.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/duty-free-clerks-v1/raw-sheet-clean.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/duty-free-clerks-v1/raw-sheet.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/duty-free-clerks-v1/sheet-transparent.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/animation.gif",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/pipeline-meta.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-12.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-13.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-14.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-15.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-16.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/player_sheet-9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/raw-sheet-clean.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/raw-sheet.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/raw-sheet.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player_hero/sheet-transparent.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/animation.gif",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/pipeline-meta.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/prompt-used.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/raw-sheet-clean.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/raw-sheet-padded.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/raw-sheet.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/sheet-transparent.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-12.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-13.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-14.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-15.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-16.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-female-v1/traveler-female-9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/animation.gif",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/pipeline-meta.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/prompt-used.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/raw-sheet-clean.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/raw-sheet-padded.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/raw-sheet.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/sheet-transparent.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-12.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-13.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-14.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-15.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-16.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/sprites/player-traveler-male-v1/traveler-male-9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/tilesets/airport-reference-v2/floor-carpet-blue.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/tilesets/airport-reference-v2/floor-ivory.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/tilesets/airport-reference-v2/floor-navy-panel.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/tilesets/airport-reference-v2/floor-terrazzo.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/tilesets/duty-free-terminal-v1/floor-blue.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/tilesets/duty-free-terminal-v1/floor-cream.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/tilesets/duty-free-terminal-v1/floor-dark.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/assets/tilesets/duty-free-terminal-v1/floor-gold.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/fonts/han.css",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/fonts/han.ttf",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-02.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-03.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-04.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-05.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-06.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-07.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-08.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-09.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-12.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-13-1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE/TPE-13-2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2_v2/tpe2_v2_base.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2_v2/tpe2_v2_base.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2_v3/tpe2_v3_central_base.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2_v3/tpe2_v3_central_base.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2_v3/tpe2_v3_north_d_base.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2_v3/tpe2_v3_north_d_base.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2_v3/tpe2_v3_south_c_base.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2_v3/tpe2_v3_south_c_base.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/airport_tileset_clean.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/airport_tileset.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/lobby_base.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/lobby_bg.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/pro_tiles_v2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/pro_tiles.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/airport-atm/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/airport-atm/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/airport-chairs/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/airport-chairs/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/airport-elevator/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/airport-elevator/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/checkin-counter-module/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/checkin-counter-module/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/customs-gate-module/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/customs-gate-module/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/dutyfree-shop-kiosk/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/dutyfree-shop-kiosk/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/escalator-frame/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/escalator-frame/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/escalator-module/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/escalator-module/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/escalator-steps-strip/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/escalator-steps-strip/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/flight-board/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/flight-board/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-atm/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-chairs/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-checkin-counter/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-column/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-elevator/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-flight-board/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-glass-partition/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-info-counter/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-plant/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-security-partition/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-security-scanner/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-self-checkin/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-shop/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-short-wall/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-signage/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/floorplan-trash-bin/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/fx-ambient-flow-strip/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/fx-ambient-flow-strip/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/fx-flightboard-flicker/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/fx-flightboard-flicker/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/fx-interact-pulse/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/fx-interact-pulse/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/fx-interact-sparkle/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/fx-interact-sparkle/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/fx-shopfront-breath-light/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/fx-shopfront-breath-light/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/gate-brand-signage-c-zone/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/gate-brand-signage-c-zone/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/gate-brand-signage-d-zone/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/gate-brand-signage-d-zone/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/glass-partition/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/glass-partition/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/info-counter/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/info-counter/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/npc-visual-clerk-premium/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/npc-visual-clerk-premium/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/npc-visual-traveler-business/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/npc-visual-traveler-business/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/npc-visual-traveler-family/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/npc-visual-traveler-family/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/npc-visual-traveler-solo/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/npc-visual-traveler-solo/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/potted-palm/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/potted-palm/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/prop-pack.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchA-pack-extract-report.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchA-prop-pack-v1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchA-prop-pack-v1.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchB-escalator-split/escalator-frame-raw-v1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchB-escalator-split/escalator-frame-raw-v2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchB-escalator-split/escalator-frame-raw-v2.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchB-escalator-split/escalator-steps-strip-raw-v1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchB-escalator-split/escalator-steps-strip-raw-v2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchB-escalator-split/escalator-steps-strip-raw-v2.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchB-prop-pack-v1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchB-prop-pack-v1.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchB-wall-modular/wall-modular-pack-v1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchB-wall-modular/wall-modular-pack-v1.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchC1-prop-pack-v1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchC1-prop-pack-v1.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchC2-prop-pack-v1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/batchC2-prop-pack-v1.prompt.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/customs-gate-concept-v1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/escalator-concept-v1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-batchA-3x3.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-batchB-3x3-extract-report.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-batchB-3x3.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-batchC1-3x3-extract-report.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-batchC1-3x3.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-batchC2-3x2-extract-report.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-batchC2-3x2.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-escalator-frame-1x1-extract-report.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-escalator-frame-1x1.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-escalator-steps-strip-1x1-extract-report.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-escalator-steps-strip-1x1.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-wall-modular-2x1-extract-report.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/layout-wall-modular-2x1.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/raw/shopfront-module-concept-v1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/security-partition/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/security-partition/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/security-scanner/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/security-scanner/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/self-checkin-kiosk/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/self-checkin-kiosk/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/shopfront-module/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/shopfront-module/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/short-wall/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/short-wall/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/signage-pillar/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/signage-pillar/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-books/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-books/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-cosmetics/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-cosmetics/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-electronics/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-electronics/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-fashion/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-fashion/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-food/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-food/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-liquor/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-liquor/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-perfume/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-perfume/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-snacks/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-snacks/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-souvenirs/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/store-sign-souvenirs/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/trash-bin/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/trash-bin/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/wall-block/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/wall-block/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/wall-cap-block/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/wall-cap-block/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/wall-column/prompt.t2.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/props/wall-column/prop.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/ref_bot.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/ref_mid.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/ref_top.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/tiles_placeholder.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/tileset_preview.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/tpe2_floorplan_base.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/tpe2_floorplan_layers.manifest.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/tpe2_floorplan_prop_slots.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/map/TPE2/tpe2_lobby.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/character/clerk_walk.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/character/clerk.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/character/player_f_walk.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/character/player_f.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/character/player_m_walk.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/character/player_m.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/character/travelers_f_walk.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/character/travelers_f.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/character/travelers_m_walk.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/character/travelers_m.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/characters_atlas.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/characters_atlas.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-1.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-10.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-11.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-12.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-13.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-14.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-15.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-16.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-2.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-3.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-4.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-5.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-6.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-7.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-8.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/4x4-9.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/animation.gif",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/pipeline-meta.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/raw-sheet-clean.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/raw-sheet.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/sprites/clerk_new/sheet-transparent.png",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/view/177986336053576_P32374184.webp",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/view/47618_1_1.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/view/62403_1_1.jpg",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/view/china-airline-41.jpg.webp",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/view/okayama-airport-23.jpg.webp",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "public/web.config",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "README.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "requirements.txt",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "REWRITE_MASTER_PLAN.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "REWRITE_SPEC_v1.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/bootstrap-tiled-maps.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/build-airport-photo-contact-sheets.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/build-migration-inventory.mjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/capture-hud-pw.cjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/capture-hud.ps1",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/convert_floorplan_to_tilemap.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/copy-web-config.mjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/extract-duty-free-tileset.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/extract-t2-prop-pack.cjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/find_floor.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/hud-regression.ps1",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/map-asset-regression.cjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/map-regression-cdp.cjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/map-regression.ps1",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/map-verify.ps1",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/mapshot-smoke.ps1",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/orient-tiled-props.mjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/pack-sprites.cjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/pad-sprite-grid.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/process-airport-reference-v2-assets.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/slice-map-tiles.py",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/stitch-mapshot.cjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/verify-character-assets.mjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/verify-exploration-data.mjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/verify-hud.cjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/verify-oneclick.ps1",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/verify-phase0-data.mjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/verify-shop-data.mjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/verify-tiled-maps.mjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "scripts/verify-world-data.mjs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/data-snapshot.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/EverrichRpg.Server.csproj",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/Models/ChatMessage.cs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/Models/PlayerProfile.cs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/Models/PlayerState.cs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/Program.cs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/Properties/launchSettings.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/README.md",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/Realtime/IWebSocketHub.cs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/Realtime/WebSocketHub.cs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/Services/FileLogSink.cs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/Services/FileStateStore.cs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/Services/ILogSink.cs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "server/Services/IStateStore.cs",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/actors/NpcCrowd.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/actors/Player.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/api/travelers.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/config.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/core/prototypeEvents.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/facilities.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/facilitiesT2V3.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/items.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/prototypeRegions.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/shopCatalog.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/tiledRegionLoader.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/tpe2Layout.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/tpe2LayoutV2.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/tpe2LayoutV3Central.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/tpe2LayoutV3NorthD.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/tpe2LayoutV3SouthC.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/data/travelers.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/i18n/index.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/main.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/net/http.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/net/others.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/net/ws.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/BaseScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/BootScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/CharacterSelectScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/ConcourseAScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/ConcourseBScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/ConcourseHallScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/ConcourseScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/LoginScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/StoreScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/TerminalScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/TitleScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/TPE2CentralHallV3Scene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/TPE2LobbyScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/TPE2LobbyV2Scene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/TPE2NorthDZoneV3Scene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/TPE2SouthCZoneV3Scene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/scenes/WorldScene.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/styles.css",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/systems/audioManager.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/systems/explorationService.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/systems/prototypeSave.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/systems/shopService.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/systems/TravelerAI.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/systems/travelerQuestService.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/types/phaser-globals.d.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/ui/BitmapFont.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/ui/chat.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/ui/overlays/basket.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/ui/overlays/dialog.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/ui/overlays/interact.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/ui/overlays/listing.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/ui/overlays/minimap.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/ui/sceneLoadingOverlay.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/ui/UIOverlay.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "src/utils/logger.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "tsconfig.json",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "vite.config.ts",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    },
+    {
+      "path": "web.config",
+      "decision": null,
+      "targetPath": null,
+      "reason": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    }
+  ]
+}

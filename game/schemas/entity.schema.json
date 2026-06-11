@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://everrich.local/schemas/entity.schema.json",
+  "title": "Everrich RPG Region Entity",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "type", "position", "spriteId", "interaction"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "type": {
+      "enum": ["npc", "clerk", "fixture", "shelf", "service-desk", "sign"]
+    },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "integer", "minimum": 0 },
+        "y": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "facing": { "enum": ["up", "down", "left", "right"] },
+    "spriteId": { "type": "string", "minLength": 1 },
+    "collision": {
+      "enum": ["none", "feet", "solid"]
+    },
+    "interaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": ["none", "dialogue", "shop", "quest", "catalog", "checkout"]
+        },
+        "targetId": { "type": ["string", "null"] }
+      }
+    },
+    "enabledWhen": { "type": ["string", "null"] }
+  }
+}

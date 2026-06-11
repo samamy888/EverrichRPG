@@ -1,0 +1,48 @@
+{
+  "version": 2,
+  "createdAt": "2026-06-09",
+  "skills": ["generate2dmap", "generate2dsprite"],
+  "reference": "docs/airport-photo-reference/Airport_Photo_Reference_Index.md",
+  "pipeline": {
+    "mapMode": "tile_mode",
+    "visualModel": "layered_tilemap",
+    "runtimeObjectModel": ["interactive_scene_objects", "foreground_occluders"],
+    "collisionModel": ["tile_collision", "trigger_zones"],
+    "engineTarget": "Phaser",
+    "tileSize": 16,
+    "artStyle": "retro_pixel"
+  },
+  "tiles": [
+    "floor-terrazzo",
+    "floor-ivory",
+    "floor-carpet-blue",
+    "floor-navy-panel"
+  ],
+  "props": [
+    {
+      "id": "digital-map-kiosk-v2",
+      "anchor": "bottom-center",
+      "collisionRole": "blocker+interactable"
+    },
+    {
+      "id": "curved-duty-free-storefront-v2",
+      "anchor": "bottom-center",
+      "collisionRole": "storefront+interactable"
+    },
+    {
+      "id": "luxury-storefront-v2",
+      "anchor": "bottom-center",
+      "collisionRole": "storefront+interactable"
+    },
+    {
+      "id": "beauty-display-island-v2",
+      "anchor": "bottom-center",
+      "collisionRole": "blocker"
+    }
+  ],
+  "restrictions": {
+    "containsCopiedBrandLogos": false,
+    "containsPeople": false,
+    "directPhotoTextureExtraction": false
+  }
+}

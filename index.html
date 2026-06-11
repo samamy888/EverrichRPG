@@ -2,32 +2,14 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EverrichRPG</title>
-    <link rel="stylesheet" href="/fonts/han.css" />
-    <style>
-      html, body, #app { height: 100%; margin: 0; }
-      /* 置中容器，並讓 canvas 用整數像素放大 */
-      #app { position: fixed; inset: 0; background: #10141a; }
-      canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
-    </style>
-    <script>
-      // 提前於 Vite 客戶端注入 Web Crypto 後備（避免某些環境缺少 getRandomValues）
-      (function(){
-        const g = (typeof globalThis !== 'undefined') ? globalThis : window;
-        g.crypto = g.crypto || {};
-        if (typeof g.crypto.getRandomValues !== 'function') {
-          g.crypto.getRandomValues = function(arr){
-            if (!arr || typeof arr.length !== 'number') throw new TypeError('Expected typed array');
-            for (let i = 0; i < arr.length; i++) { arr[i] = Math.floor(Math.random() * 256); }
-            return arr;
-          }
-        }
-      })();
-    </script>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>EverrichRPG Rewrite</title>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
-  </html>
+</html>

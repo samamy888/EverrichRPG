@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "characters": [
+    {
+      "id": "player-traveler-male",
+      "role": "player",
+      "presentation": "male",
+      "nameMode": "player-input",
+      "spriteId": "player-traveler-male",
+      "enabledInMvp": true
+    },
+    {
+      "id": "player-traveler-female",
+      "role": "player",
+      "presentation": "female",
+      "nameMode": "player-input",
+      "spriteId": "player-traveler-female",
+      "enabledInMvp": true
+    },
+    {
+      "id": "clerk-beauty-01",
+      "role": "clerk",
+      "presentation": "unspecified",
+      "nameMode": "content-defined",
+      "spriteId": "clerk-beauty-01",
+      "enabledInMvp": true
+    },
+    {
+      "id": "clerk-liquor-food-01",
+      "role": "clerk",
+      "presentation": "unspecified",
+      "nameMode": "content-defined",
+      "spriteId": "clerk-liquor-food-01",
+      "enabledInMvp": true
+    },
+    {
+      "id": "clerk-gift-01",
+      "role": "clerk",
+      "presentation": "unspecified",
+      "nameMode": "content-defined",
+      "spriteId": "clerk-gift-01",
+      "enabledInMvp": true
+    }
+  ]
+}

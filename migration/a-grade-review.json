@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "status": "reviewed-draft",
+  "reviewedSources": [
+    {
+      "path": "src/data/facilities.ts",
+      "decision": "adopt-structure",
+      "notes": [
+        "保留設施、商店分類、互動半徑與提示文字概念。",
+        "捨棄舊世界座標與 Scene class 名稱。",
+        "品牌與店名需另外通過授權審核。"
+      ]
+    },
+    {
+      "path": "src/data/facilitiesT2V3.ts",
+      "decision": "reference",
+      "notes": [
+        "只保留區域分類與設施概念。",
+        "V3 舊座標不可直接套用至 16×16 分區地圖。"
+      ]
+    },
+    {
+      "path": "src/data/items.ts",
+      "decision": "adopt-and-expand",
+      "notes": [
+        "保留商品分類與基礎價格作為娛樂版平衡參考。",
+        "商品需補上品牌、容量、重量、標籤、授權與來源欄位。"
+      ]
+    },
+    {
+      "path": "src/data/travelers.ts",
+      "decision": "adopt-structure",
+      "notes": [
+        "保留旅客與店員角色分類方式。",
+        "舊人物姓名視為暫代資料，不直接當正式角色名單。"
+      ]
+    },
+    {
+      "path": "src/data/tpe2Layout.ts",
+      "decision": "archive-and-reference",
+      "notes": [
+        "保留碰撞物件、場景物件與空間節奏作為拆區參考。",
+        "不沿用 6000×3472 世界座標。"
+      ]
+    },
+    {
+      "path": "src/data/tpe2LayoutV2.ts",
+      "decision": "archive",
+      "notes": ["舊版迭代資料，僅供追溯。"]
+    },
+    {
+      "path": "src/data/tpe2LayoutV3Central.ts",
+      "decision": "reference",
+      "notes": ["中央區概念可作新版商店街拓撲參考。"]
+    },
+    {
+      "path": "src/data/tpe2LayoutV3NorthD.ts",
+      "decision": "archive",
+      "notes": ["首版不製作登機門區域。"]
+    },
+    {
+      "path": "src/data/tpe2LayoutV3SouthC.ts",
+      "decision": "archive",
+      "notes": ["首版不製作登機門區域。"]
+    },
+    {
+      "path": "src/data/content.ts",
+      "decision": "replace",
+      "notes": [
+        "現行重寫原型的史萊姆戰鬥與 Elder 任務不符合新方向。",
+        "不遷移至新版內容。"
+      ]
+    },
+    {
+      "path": "src/data/terminalMap.ts",
+      "decision": "replace",
+      "notes": [
+        "切塊大圖與矩形碰撞流程將由 16×16 layered tilemap 取代。"
+      ]
+    }
+  ]
+}

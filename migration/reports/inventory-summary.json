@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-06-10T08:41:33.099Z",
+  "sourceRevision": "9c9d587d82a4537d53da1ae54544acb97d83567a",
+  "summary": {
+    "total": 736,
+    "byPresence": {
+      "head-only": 302,
+      "head-and-working-tree": 11,
+      "working-tree-only": 423
+    },
+    "byCategory": {
+      "metadata": 62,
+      "documentation": 45,
+      "project-file": 22,
+      "map-asset": 274,
+      "sprite-asset": 111,
+      "visual-reference": 121,
+      "tooling": 30,
+      "legacy-server": 14,
+      "source-code": 45,
+      "game-data": 12
+    },
+    "bySuggestedGrade": {
+      "C": 229,
+      "D": 196,
+      "E": 3,
+      "B": 296,
+      "A": 12
+    },
+    "headBytes": 240573536,
+    "workingTreeBytes": 253556472
+  }
+}

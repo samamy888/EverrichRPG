@@ -1,0 +1,1 @@
+﻿2D RPG top-down airport duty-free staff character sprite sheet, 4x4 grid implied by pose arrangement only, NO visible cell borders or guide lines, four-direction walk cycle (down,left,right,up), staff uniform with badge, consistent scale centered in each frame region, full body visible with safe padding, solid #FF00FF background only, pixel-art inspired, clean outlines.

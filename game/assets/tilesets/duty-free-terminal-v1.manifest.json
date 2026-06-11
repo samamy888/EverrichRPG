@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "source": "game/assets/tilesets/duty-free-terminal-v1-source.png",
+  "prompt": "game/assets/tilesets/duty-free-terminal-v1.prompt.txt",
+  "mapMode": "tile_mode",
+  "visualModel": "layered_tilemap",
+  "runtimeObjectModel": [
+    "interactive_scene_objects",
+    "foreground_occluders",
+    "scene_hooks"
+  ],
+  "collisionModel": [
+    "tile_collision",
+    "trigger_zones"
+  ],
+  "engineTarget": "Phaser",
+  "tileSize": 16,
+  "artStyle": "retro_pixel",
+  "generatedSource": true,
+  "runtimePolicy": {
+    "sourceSheetIsRuntimeMap": false,
+    "collisionFromPixels": false,
+    "largeObjectsAreSeparate": true
+  },
+  "tiles": [
+    "floor-cream",
+    "floor-blue",
+    "floor-gold",
+    "floor-dark"
+  ],
+  "props": [
+    "service-counter",
+    "display-shelf",
+    "planter",
+    "sign-pillar",
+    "shop-doorway"
+  ]
+}

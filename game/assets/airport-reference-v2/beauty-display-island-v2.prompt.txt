@@ -1,0 +1,5 @@
+Use the visible airport photographs above as environmental reference for open cosmetics counters and low product display islands along the carpeted duty-free corridor. Create one original standalone beauty display island prop for a retro 16-bit top-down RPG.
+
+Three-quarter top-down view, low rectangular double-sided display island, warm ivory counter body, dark navy kick plate, pale cyan glass shelves, small abstract pastel product blocks with no labels, one subtle gold trim line. No readable text, no logo, no brand, no copied packaging, no people.
+
+Collision-friendly compact wide prop, perfectly horizontal bottom baseline, fully contained with generous padding, crisp intentional 16-bit pixel art, readable at approximately 6 to 8 logical tiles wide. Solid #FF00FF background only, no extra objects.

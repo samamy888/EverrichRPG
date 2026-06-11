@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "player-travelers-v1",
+  "skill": "generate2dsprite",
+  "assetType": "player",
+  "action": "walk",
+  "view": "topdown",
+  "sheet": "4x4",
+  "rowOrder": ["down", "left", "right", "up"],
+  "framesPerDirection": 4,
+  "artStyle": "project-native-retro-pixel",
+  "anchor": "feet",
+  "variants": [
+    {
+      "id": "player-traveler-male",
+      "sheet": "public/assets/sprites/player-traveler-male-v1/sheet-transparent.png",
+      "pipeline": "public/assets/sprites/player-traveler-male-v1/pipeline-meta.json"
+    },
+    {
+      "id": "player-traveler-female",
+      "sheet": "public/assets/sprites/player-traveler-female-v1/sheet-transparent.png",
+      "pipeline": "public/assets/sprites/player-traveler-female-v1/pipeline-meta.json"
+    }
+  ],
+  "runtime": {
+    "frameWidth": 96,
+    "frameHeight": 96,
+    "displayScale": 0.42,
+    "walkFrameRate": 8,
+    "runFrameRate": 14,
+    "idleFrameInRow": 1
+  }
+}

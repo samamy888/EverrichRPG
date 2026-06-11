@@ -1,0 +1,121 @@
+{
+  "type": "tileset",
+  "version": "1.10",
+  "tiledversion": "1.11.2",
+  "name": "airport-floors",
+  "tilewidth": 16,
+  "tileheight": 16,
+  "tilecount": 8,
+  "columns": 0,
+  "grid": {
+    "orientation": "orthogonal",
+    "width": 16,
+    "height": 16
+  },
+  "tiles": [
+    {
+      "id": 0,
+      "image": "images/floor-cream.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-cream"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "image": "images/floor-blue.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-blue"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "image": "images/floor-gold.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-gold"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "image": "images/floor-dark.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-dark"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "image": "images/floor-terrazzo.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-terrazzo"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "image": "images/floor-ivory.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-ivory"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "image": "images/floor-carpet-blue.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-carpet-blue"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "image": "images/floor-navy-panel.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-navy-panel"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "shop-gift-01",
+  "nameKey": "region.shopGift01.name",
+  "kind": "shop",
+  "width": 32,
+  "height": 26,
+  "tileSize": 16,
+  "defaultSpawnId": "from-central",
+  "cameraMode": "follow-player"
+}

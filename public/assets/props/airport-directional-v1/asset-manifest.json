@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "tileSize": 16,
+  "directions": ["south", "west", "east", "north"],
+  "families": {
+    "planter": {
+      "textures": [
+        "airport-planter-south",
+        "airport-planter-west",
+        "airport-planter-east",
+        "airport-planter-north"
+      ],
+      "collisionTiles": {
+        "south": [2, 1],
+        "west": [1, 1],
+        "east": [1, 1],
+        "north": [2, 1]
+      }
+    },
+    "water-dispenser": {
+      "textures": [
+        "airport-water-dispenser-south",
+        "airport-water-dispenser-west",
+        "airport-water-dispenser-east",
+        "airport-water-dispenser-north"
+      ],
+      "collisionTiles": {
+        "south": [1, 1],
+        "west": [1, 1],
+        "east": [1, 1],
+        "north": [1, 1]
+      },
+      "interactionType": "drink"
+    },
+    "restroom-entrance": {
+      "textures": [
+        "airport-restroom-entrance-south",
+        "airport-restroom-entrance-west",
+        "airport-restroom-entrance-east",
+        "airport-restroom-entrance-north"
+      ],
+      "collisionNote": "Only block wall and pillar sections; keep the doorway or interaction trigger clear.",
+      "interactionType": "enter-restroom"
+    },
+    "escalator": {
+      "textures": [
+        "airport-escalator-south",
+        "airport-escalator-west",
+        "airport-escalator-east",
+        "airport-escalator-north"
+      ],
+      "collisionNote": "Block the full machine until escalator riding is implemented.",
+      "optionalTiledProperties": {
+        "travelDirection": "up|down|left|right",
+        "destinationRegionId": "region id",
+        "destinationSpawnId": "spawn id"
+      }
+    }
+  }
+}

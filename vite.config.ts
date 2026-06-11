@@ -1,29 +1,9 @@
-import { defineConfig } from 'vite';
-import { realpathSync } from 'node:fs';
+import { defineConfig } from "vite";
 
 export default defineConfig({
-  root: realpathSync(process.cwd()),
-  resolve: {
-    alias: {
-      phaser: 'phaser/dist/phaser.esm.js',
-    },
-  },
-  optimizeDeps: {
-    exclude: ['phaser'],
-  },
-  build: {
-    chunkSizeWarningLimit: 1600,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          phaser: ['phaser'],
-        },
-      },
-    },
-  },
   server: {
-    port: 5173,
-    open: true,
-  },
+    host: "0.0.0.0",
+    port: 5173
+  }
 });
 

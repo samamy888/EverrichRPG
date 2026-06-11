@@ -1,36 +1,31 @@
 {
-  "name": "everrichrpg",
+  "name": "everrich-rpg-rewrite",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc --noEmit && vite build",
+    "build:iis": "npm run build && node scripts/copy-web-config.mjs",
+    "map:slice": "python scripts/slice-map-tiles.py --input public/assets/map/village-base.png --output-dir public/assets/map/terminal/tiles --tile-size 128 --meta-output public/assets/map/terminal/chunks-meta.json --url-base /assets/map/terminal/tiles",
+    "migration:inventory": "node scripts/build-migration-inventory.mjs",
+    "phase0:verify": "npm run migration:inventory && node scripts/verify-phase0-data.mjs",
+    "world:verify": "node scripts/verify-world-data.mjs",
+    "tiled:bootstrap": "python scripts/bootstrap-tiled-maps.py",
+    "tiled:orient-props": "node scripts/orient-tiled-props.mjs",
+    "tiled:verify": "node scripts/verify-tiled-maps.mjs",
+    "shop:verify": "node scripts/verify-shop-data.mjs",
+    "exploration:verify": "node scripts/verify-exploration-data.mjs",
+    "character:verify": "node scripts/verify-character-assets.mjs",
+    "release:prep": "npm run map:slice && npm run world:verify && npm run build:iis",
     "preview": "vite preview",
-    "font:gen": "pwsh ./public/fonts/generate-font.ps1",
-    "hud:test": "powershell -ExecutionPolicy Bypass -File .\\scripts\\hud-regression.ps1",
-    "hud:test:quick": "powershell -ExecutionPolicy Bypass -File .\\scripts\\hud-regression.ps1 -SkipBuild",
-    "hud:test:manual": "powershell -ExecutionPolicy Bypass -File .\\scripts\\hud-regression.ps1 -SkipBuild -ManualOnly",
-    "map:verify": "powershell -ExecutionPolicy Bypass -File .\\scripts\\map-verify.ps1",
-    "map:verify:quick": "powershell -ExecutionPolicy Bypass -File .\\scripts\\map-verify.ps1 -SkipBuild",
-    "map:verify:runtime": "powershell -ExecutionPolicy Bypass -File .\\scripts\\hud-regression.ps1",
-    "map:verify:runtime:quick": "powershell -ExecutionPolicy Bypass -File .\\scripts\\hud-regression.ps1 -SkipBuild",
-    "map:verify:asset": "node .\\scripts\\map-asset-regression.cjs",
-    "map:verify:asset:quick": "node .\\scripts\\map-asset-regression.cjs",
-    "map:verify:browser": "node .\\scripts\\map-regression-cdp.cjs --tag maprt",
-    "map:verify:browser:quick": "node .\\scripts\\map-regression-cdp.cjs --skipBuild 1 --tag maprt",
-    "map:smoke": "powershell -ExecutionPolicy Bypass -File .\\scripts\\mapshot-smoke.ps1",
-    "verify:oneclick": "powershell -ExecutionPolicy Bypass -File .\\scripts\\verify-oneclick.ps1",
-    "verify:oneclick:quick": "powershell -ExecutionPolicy Bypass -File .\\scripts\\verify-oneclick.ps1 -SkipBuild"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "phaser": "^3.70.0"
+    "phaser": "^3.90.0"
   },
   "devDependencies": {
-    "jimp": "^1.6.0",
-    "msdf-bmfont-xml": "^2.8.0",
-    "playwright-core": "^1.60.0",
-    "typescript": "^5.4.0",
-    "vite": "^5.0.0"
+    "typescript": "^5.9.2",
+    "vite": "^6.3.5"
   }
 }

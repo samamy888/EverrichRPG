@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "shops": [
+    {
+      "id": "shop-beauty-01",
+      "name": "美妝香氛免稅店",
+      "welcome": "歡迎來到美妝香氛區，適合挑選旅行保養與送禮小物。",
+      "clerkMessage": "如果是第一次逛，我推薦從旅行香水開始，再到另外兩間店完成伴手禮巡禮。",
+      "productIds": [
+        "beauty-hand-cream-30ml",
+        "perfume-travel-10ml",
+        "beauty-mask-travel-set",
+        "perfume-gift-duo"
+      ]
+    },
+    {
+      "id": "shop-liquor-food-01",
+      "name": "酒類食品免稅店",
+      "welcome": "這裡集合酒類、巧克力與台灣點心。",
+      "clerkMessage": "鳳梨酥方便攜帶，也很適合作為旅程中的第一份伴手禮。",
+      "productIds": [
+        "liquor-whisky-500ml",
+        "food-chocolate-gift-box",
+        "food-pineapple-cake-box",
+        "liquor-mini-tasting-set"
+      ]
+    },
+    {
+      "id": "shop-gift-01",
+      "name": "台灣禮品免稅店",
+      "welcome": "最後一站可以挑選有台灣記憶的旅行紀念品。",
+      "clerkMessage": "明信片組輕巧又有紀念性，很適合完成這次的三店巡禮。",
+      "productIds": [
+        "souvenir-taiwan-keychain",
+        "travel-neck-pillow",
+        "souvenir-postcard-set",
+        "travel-organizer-pouch"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "beauty-hand-cream-30ml",
+      "name": "旅行護手霜 30ml",
+      "description": "輕巧容量，適合放進隨身行李。",
+      "category": "beauty",
+      "price": 120,
+      "storeId": "shop-beauty-01"
+    },
+    {
+      "id": "perfume-travel-10ml",
+      "name": "旅行香水 10ml",
+      "description": "清新淡香，適合作為旅程的開始。",
+      "category": "perfume",
+      "price": 90,
+      "storeId": "shop-beauty-01"
+    },
+    {
+      "id": "beauty-mask-travel-set",
+      "name": "旅行面膜組",
+      "description": "三片入的簡便保養組合。",
+      "category": "beauty",
+      "price": 180,
+      "storeId": "shop-beauty-01"
+    },
+    {
+      "id": "perfume-gift-duo",
+      "name": "香氛雙入禮盒",
+      "description": "兩款迷你香氛，適合送禮。",
+      "category": "perfume",
+      "price": 260,
+      "storeId": "shop-beauty-01"
+    },
+    {
+      "id": "liquor-whisky-500ml",
+      "name": "精選威士忌 500ml",
+      "description": "免稅限定容量，風味溫潤。",
+      "category": "liquor",
+      "price": 300,
+      "storeId": "shop-liquor-food-01"
+    },
+    {
+      "id": "food-chocolate-gift-box",
+      "name": "巧克力禮盒",
+      "description": "適合與親友分享的綜合口味。",
+      "category": "food",
+      "price": 150,
+      "storeId": "shop-liquor-food-01"
+    },
+    {
+      "id": "food-pineapple-cake-box",
+      "name": "台灣鳳梨酥",
+      "description": "經典伴手禮，小盒裝方便攜帶。",
+      "category": "food",
+      "price": 220,
+      "storeId": "shop-liquor-food-01"
+    },
+    {
+      "id": "liquor-mini-tasting-set",
+      "name": "迷你品飲組",
+      "description": "三瓶小容量組合，適合收藏。",
+      "category": "liquor",
+      "price": 420,
+      "storeId": "shop-liquor-food-01"
+    },
+    {
+      "id": "souvenir-taiwan-keychain",
+      "name": "台灣造型鑰匙圈",
+      "description": "簡單醒目的旅行紀念品。",
+      "category": "souvenir",
+      "price": 150,
+      "storeId": "shop-gift-01"
+    },
+    {
+      "id": "travel-neck-pillow",
+      "name": "旅行頸枕",
+      "description": "柔軟支撐，適合長途旅程。",
+      "category": "travel",
+      "price": 380,
+      "storeId": "shop-gift-01"
+    },
+    {
+      "id": "souvenir-postcard-set",
+      "name": "台灣風景明信片組",
+      "description": "收錄機場與城市風景的紀念套組。",
+      "category": "souvenir",
+      "price": 100,
+      "storeId": "shop-gift-01"
+    },
+    {
+      "id": "travel-organizer-pouch",
+      "name": "旅行收納包",
+      "description": "整理護照、票券與小物的輕便收納包。",
+      "category": "travel",
+      "price": 280,
+      "storeId": "shop-gift-01"
+    }
+  ]
+}

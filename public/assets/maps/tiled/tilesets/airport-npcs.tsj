@@ -1,0 +1,80 @@
+{
+  "type": "tileset",
+  "version": "1.10",
+  "tiledversion": "1.11.2",
+  "name": "airport-npcs",
+  "tilecount": 5,
+  "columns": 0,
+  "grid": {
+    "orientation": "orthogonal",
+    "width": 16,
+    "height": 16
+  },
+  "tiles": [
+    {
+      "id": 0,
+      "image": "../../../sprites/duty-free-clerks-v1/clerk-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "clerk-beauty-01"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "image": "../../../sprites/duty-free-clerks-v1/clerk-2.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "clerk-liquor-food-01"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "image": "../../../sprites/duty-free-clerks-v1/clerk-3.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "clerk-gift-01"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "image": "../../../sprites/player-traveler-male-v1/traveler-male-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "traveler-male-npc"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "image": "../../../sprites/player-traveler-female-v1/traveler-female-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "traveler-female-npc"
+        }
+      ]
+    }
+  ]
+}

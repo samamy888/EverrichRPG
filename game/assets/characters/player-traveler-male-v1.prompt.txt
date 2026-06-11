@@ -1,0 +1,9 @@
+Use the existing player and clerk sprites as the exact project style reference.
+
+Create one canonical 4-direction walking sprite sheet for the same male traveler player character. Exact 4×4 layout implied only by placement: row 1 down/front, row 2 left, row 3 right, row 4 up/back. Each row contains four walk frames: contact, passing, opposite contact, passing.
+
+Young adult male Taiwanese airport traveler with short dark brown hair, blue casual travel jacket, light shirt, dark pants, sneakers, and a small cross-body travel bag. No staff uniform or badge.
+
+Match the project's polished GBA-era retro pixel art, chibi proportions, outline weight, face style, pixel density, and body scale. Preserve the same identity and clothing in all frames. Keep every body centered in the central safe area with identical scale and stable feet baseline.
+
+Solid pure #FF00FF background only. No transparency, shadow, floor, text, labels, borders, UI, props, extra characters, or detached effects.

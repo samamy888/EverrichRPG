@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "startRegionId": "duty-free-entrance",
+  "regions": [
+    {
+      "id": "duty-free-entrance",
+      "nameKey": "region.dutyFreeEntrance.name",
+      "kind": "hub",
+      "enabledInMvp": true
+    },
+    {
+      "id": "duty-free-central",
+      "nameKey": "region.dutyFreeCentral.name",
+      "kind": "hub",
+      "enabledInMvp": true
+    },
+    {
+      "id": "shop-beauty-01",
+      "nameKey": "region.shopBeauty01.name",
+      "kind": "shop",
+      "enabledInMvp": true
+    },
+    {
+      "id": "shop-liquor-food-01",
+      "nameKey": "region.shopLiquorFood01.name",
+      "kind": "shop",
+      "enabledInMvp": true
+    },
+    {
+      "id": "shop-gift-01",
+      "nameKey": "region.shopGift01.name",
+      "kind": "shop",
+      "enabledInMvp": true
+    },
+    {
+      "id": "customer-service",
+      "nameKey": "region.customerService.name",
+      "kind": "service",
+      "enabledInMvp": true
+    },
+    {
+      "id": "shop-travel-01",
+      "nameKey": "region.shopTravel01.name",
+      "kind": "future",
+      "enabledInMvp": false
+    }
+  ],
+  "connections": [
+    {
+      "id": "entrance-central",
+      "fromRegionId": "duty-free-entrance",
+      "toRegionId": "duty-free-central",
+      "bidirectional": true,
+      "transition": "fade"
+    },
+    {
+      "id": "central-beauty",
+      "fromRegionId": "duty-free-central",
+      "toRegionId": "shop-beauty-01",
+      "bidirectional": true,
+      "transition": "fade"
+    },
+    {
+      "id": "central-liquor-food",
+      "fromRegionId": "duty-free-central",
+      "toRegionId": "shop-liquor-food-01",
+      "bidirectional": true,
+      "transition": "fade"
+    },
+    {
+      "id": "central-gift",
+      "fromRegionId": "duty-free-central",
+      "toRegionId": "shop-gift-01",
+      "bidirectional": true,
+      "transition": "fade"
+    },
+    {
+      "id": "central-service",
+      "fromRegionId": "duty-free-central",
+      "toRegionId": "customer-service",
+      "bidirectional": true,
+      "transition": "fade"
+    },
+    {
+      "id": "central-travel-future",
+      "fromRegionId": "duty-free-central",
+      "toRegionId": "shop-travel-01",
+      "bidirectional": true,
+      "transition": "fade"
+    }
+  ]
+}

@@ -1,9 +1,0 @@
-/* 將你的中文字型檔放到同資料夾，優先使用 woff2；沒有的話也支援 ttf/otf/woff */
-@font-face {
-  font-family: 'HanPixel';
-  src:
-    url('/fonts/han.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}

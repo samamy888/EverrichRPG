@@ -1,88 +1,78 @@
-﻿# EverrichRPG
+# EverrichRPG Rewrite
 
-> 閮餉?嚗??????湔閬死?誑 `TPE11` ?箔蜓閬遛?批皞?
-EverrichRPG ?臭誑 Phaser 3 + TypeScript 鋆賭???2D RPG 撠?嚗?臭誑璈????璆剔征????詨???
-## ??銵?
+Phaser + TypeScript + Vite based rewrite baseline for a modular 2D RPG.
+
+## Quick Start
 ```powershell
 npm ci
 npm run dev
 ```
 
-- ?垢?身嚗http://localhost:5173`
-- 撱箇蔭嚗?
+Build:
 ```powershell
 npm run build
+```
+
+Map chunk pipeline:
+```powershell
+npm run map:slice
+```
+
+World data verify:
+```powershell
+npm run world:verify
+```
+
+Release prep (map slice + verify + IIS build):
+```powershell
+npm run release:prep
+```
+
+Preview build:
+```powershell
 npm run preview
 ```
 
-## 撠?蝯?
+## Phase 1.5 Prototype Controls
+- Grid movement: `WASD`, Arrow keys, or mobile touch D-pad
+- Interact: `Enter`, `Space`, or mobile `A`
+- Close dialogue: `Esc`, mobile `B`, or interact again
+- Collision and portal debug overlay: `D`
+- Mobile pause/help: `MENU`
+- Enter a region: walk into the yellow portal
+- Test fade transition: `T` (temporary Phase 1 shortcut)
+- Re-select traveler: `R`
 
-- `src/scenes/`嚗haser ?湔
-- `src/ui/`嚗UD / Overlay / 鈭? UI
-- `src/data/`嚗?????- `public/`嚗????????- `server/`嚗?蝡荔?ASP.NET Core嚗?
-## ?桀??脣漲嚗?026-05-27嚗?
-### ?啣??惜?孵?嚗歇蝣箇?嚗?
-- ?寧銋暹楊?惜嚗????臭??隞嗥?脣???- ?格??惜嚗?  1. ?唳撅歹???憛韏?銝韏啣之敶Ｙ?嚗?  2. 撱箇?/??撅歹????????
-  3. 鈭??拐辣撅歹?瑹?璇胯?瑼Ｘ??TM???Ｙ? runtime props嚗?  4. 璅惜/UI 撅歹?Gate??????蝔梧?
+Current prototype:
+- Logical resolution: `480x320`
+- Tile size: `16x16`
+- Regions: duty-free entrance and central shopping street
+- Player variants: male and female traveler
+- Save behavior: current region and traveler restore after refresh
+- Generated map source: `game/assets/tilesets/duty-free-terminal-v1-source.png`
+- Tileset contract: `game/assets/tilesets/duty-free-terminal-v1.manifest.json`
 
-### HUD/UI嚗洵銝????
-
-- 銝嚗?撠汗璇??圈?鞈?嚗?- 摨嚗PG 閮蝒?鈭??內嚗?- 撌虫?嚗??脩????芷＊蝷粹??ｇ?`$` + ?詨潘?
-- ?喃?嚗????啣?嚗宏?文銝?憭???
-- Debug ?批???身?梯?嚗? `~`嚗ackquote嚗??＊蝷?
-### ?祆活撌脰?啁??琿?隤踵
-
-- 蝘駁?椰銝???＊蝷綽??????Ｚ?閮?- 撌虫??獢?箄????RPG ?Ｘ瘥?敺????桀??
-- 摨?豢筑 debug ??箔?撣賊?嚗?憯??脫?瘚豢?
-
-## 銝?甇亙遣霅?
-1. 靘???debug ?芸??洵鈭憚 UI 蝎曆耨嚗?蝝頝?摨艾???
-2. ?亥??游?撌虫?獢?撱箄降??config ?批?舫甈?嚗??脣?/HP/隞餃????
-3. ????隞嗆???runtime props嚗雁???舐雁霅瑟?
----
-
-## 2026-05-28 Handoff Update (ASCII)
-
-### Completed
-
-1. Added HUD regression scripts:
-   - `scripts/capture-hud.ps1`
-   - `scripts/hud-regression.ps1`
-2. Added npm shortcut:
-   - `npm run hud:test` (build + full auto verification)
-   - `npm run hud:test:quick` (skip build + full auto verification)
-   - `npm run hud:test:manual` (manual in-app browser check only)
-3. Added configurable left-bottom status panel in config:
-   - `CONFIG.ui.statusPanel` in `src/config.ts`
-4. Debug/chat defaults updated for cleaner HUD verification:
-   - debug mode default off
-   - chat panel default hidden
-5. Added HUD automation mode:
-   - `hudtest=1` (autostart + cleanhud + hudprobe)
-
-### In Progress / Known Issue
-
-1. `UIOverlay` scene is active and reports expected size, but Phaser-drawn bottom HUD is still not consistently visible in runtime verification.
-2. DOM-based probe layer is visible and confirms top-layer rendering works.
-3. Root cause is likely layering/visibility interaction in runtime rather than simple coordinate math.
-
-### Current Auto Test Commands
-
+Regenerate extracted tiles and props:
 ```powershell
-npm run hud:test
+python scripts/extract-duty-free-tileset.py
 ```
 
-Manual fallback URL is:
+## Architecture
+- `src/data/prototypeRegions.ts`: Phase 1 blockout region data
+- `src/scenes/WorldScene.ts`: shared data-driven exploration scene
+- `src/scenes/CharacterSelectScene.ts`: traveler selection
+- `src/systems/prototypeSave.ts`: prototype save and restore
+- `src/ui/UIOverlay.ts`: HUD and mobile touch controls
+- `game/content`: new content drafts and world topology
+- `game/schemas`: new content contracts
+- `migration`: legacy inventory and migration decisions
 
-```text
-http://127.0.0.1:5173/?hudtest=1
-```
+## Deployment to IIS
+1. Run `npm run build`.
+2. Copy `dist/*` and `web.config` to IIS website root.
+3. Ensure IIS URL Rewrite module is installed.
+4. Verify SPA routing fallback works.
 
-### Next TODO (for next chat)
-
-1. Force a minimal bottom bar in DOM probe mode and verify stable visibility in every run.
-2. Decide final strategy:
-   - keep Phaser HUD and fix layer ordering fully, or
-   - switch production bottom/top HUD to DOM overlay for guaranteed visibility.
-3. After HUD is stable, remove temporary probe visuals and keep only regression scripts.
-
+## Project Plan Files
+- `REWRITE_MASTER_PLAN.md`: master plan and execution log
+- `REWRITE_SPEC_v1.md`: decision baseline and MVP checklist

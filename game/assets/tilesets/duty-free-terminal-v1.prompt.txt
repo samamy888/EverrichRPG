@@ -1,0 +1,24 @@
+Create a production-oriented retro pixel art tileset source sheet for a top-down airport duty-free shopping RPG.
+
+Target game:
+- Logical viewport 480x320.
+- Runtime grid 16x16 pixels.
+- Classic handheld-era top-down RPG readability, original design, not copied from Pokemon or any existing game.
+- Bright modern international airport duty-free interior.
+
+Sheet composition:
+- Clean orthographic top-down / slight top-front RPG tileset presentation.
+- A coherent atlas of square modular tile families arranged with generous spacing.
+- Include floor tile families: warm cream terrazzo, pale blue-gray terminal floor, subtle gold shopping-lane accent, dark threshold mat.
+- Include wall tile families: white wall, navy structural wall, glass partition, gold trim, corners, inner corners, end caps.
+- Include compact modular object families: low service counter pieces, low display shelf pieces, small planter, compact sign pillar, small bench, checkout desk, shop doorway frame.
+- Include foreground/occluder pieces: upper wall cap and shop awning edge.
+- No characters, NPCs, people, logos, brand names, text, UI, arrows, numbers, labels, annotations, or map layout.
+
+Pixel constraints:
+- True retro pixel art with crisp hard edges, no antialiasing, no painterly texture.
+- Limited cohesive palette, readable silhouettes at 1x scale.
+- Every modular piece aligned to a consistent square grid.
+- Keep large objects split into repeatable modular pieces rather than one giant building.
+- Neutral solid background clearly distinct from all tile colors.
+- No perspective drift, no isometric view, no shadows crossing neighboring cells.
