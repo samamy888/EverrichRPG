@@ -1,0 +1,11 @@
+{
+  "target": "asset",
+  "mode": "single",
+  "prompt": "",
+  "role": "",
+  "input": "game\\assets\\airport-reference-v3\\source\\checkout-items-liquor-food-raw.png",
+  "threshold": 38,
+  "edge_threshold": 54,
+  "duration": 200,
+  "single_size": 128
+}

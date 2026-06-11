@@ -4,13 +4,13 @@
   "tiledversion": "1.11.2",
   "orientation": "orthogonal",
   "renderorder": "right-down",
-  "width": 32,
-  "height": 26,
+  "width": 30,
+  "height": 20,
   "tilewidth": 16,
   "tileheight": 16,
   "infinite": false,
-  "nextlayerid": 9,
-  "nextobjectid": 22,
+  "nextlayerid": 10,
+  "nextobjectid": 28,
   "properties": [
     {
       "name": "regionId",
@@ -41,244 +41,12 @@
     {
       "name": "Ground",
       "type": "tilelayer",
+      "width": 30,
+      "height": 20,
       "opacity": 1,
       "visible": true,
       "locked": false,
-      "width": 32,
-      "height": 26,
       "data": [
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
         7,
         7,
         7,
@@ -885,244 +653,12 @@
     {
       "name": "Accent",
       "type": "tilelayer",
-      "width": 32,
-      "height": 26,
+      "width": 30,
+      "height": 20,
       "opacity": 0.55,
       "visible": true,
       "locked": false,
       "data": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0,
@@ -1734,10 +1270,13 @@
       "locked": false,
       "objects": [
         {
-          "name": "wall-0-0",
+          "name": "wall-0-0-30-2",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
           "x": 0,
           "y": 0,
-          "width": 512,
+          "width": 480,
           "height": 32,
           "properties": [
             {
@@ -1749,11 +1288,14 @@
           "id": 1
         },
         {
-          "name": "wall-left-edge",
+          "name": "wall-0-0-2-20",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
           "x": 0,
           "y": 0,
           "width": 32,
-          "height": 416,
+          "height": 320,
           "properties": [
             {
               "name": "texture",
@@ -1764,11 +1306,14 @@
           "id": 2
         },
         {
-          "name": "wall-30-0",
-          "x": 480,
+          "name": "wall-28-0-2-20",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "x": 448,
           "y": 0,
           "width": 32,
-          "height": 416,
+          "height": 320,
           "properties": [
             {
               "name": "texture",
@@ -1779,9 +1324,12 @@
           "id": 3
         },
         {
-          "name": "wall-0-24",
+          "name": "wall-0-18-13-2",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
           "x": 0,
-          "y": 384,
+          "y": 288,
           "width": 208,
           "height": 32,
           "properties": [
@@ -1794,9 +1342,12 @@
           "id": 4
         },
         {
-          "name": "wall-19-24",
-          "x": 304,
-          "y": 384,
+          "name": "wall-17-18-13-2",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "x": 272,
+          "y": 288,
           "width": 208,
           "height": 32,
           "properties": [
@@ -1820,17 +1371,20 @@
       "locked": false,
       "objects": [
         {
-          "name": "beauty-feature-store",
-          "gid": 129,
-          "x": 110,
-          "y": 128,
-          "width": 292,
-          "height": 160,
+          "name": "beauty-checkout-counter",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 109,
+          "x": 144.0,
+          "y": 96,
+          "width": 192,
+          "height": 56,
           "properties": [
             {
               "name": "texture",
               "type": "string",
-              "value": "dutyfree-luxury-storefront-south"
+              "value": "checkout-counter-base"
             },
             {
               "name": "foreground",
@@ -1840,33 +1394,36 @@
             {
               "name": "label",
               "type": "string",
-              "value": "香氛專區"
+              "value": "美妝結帳櫃台"
             },
             {
               "name": "interactionTitle",
               "type": "string",
-              "value": "美妝香氛推薦"
+              "value": "美妝結帳櫃台"
             },
             {
               "name": "interactionLines",
               "type": "string",
-              "value": "[\"旅行香水是店員推薦任務的第一件商品。\"]"
+              "value": "[\"POS 機已準備完成，可以在這裡結帳與詢問商品。\"]"
             }
           ],
           "id": 6
         },
         {
           "name": "beauty-left-island-top",
-          "gid": 135,
-          "x": 84,
-          "y": 208,
-          "width": 56,
-          "height": 124,
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 114,
+          "x": 96.0,
+          "y": 160,
+          "width": 96,
+          "height": 39,
           "properties": [
             {
               "name": "texture",
               "type": "string",
-              "value": "dutyfree-display-island-east"
+              "value": "beauty-display-base"
             },
             {
               "name": "label",
@@ -1888,16 +1445,19 @@
         },
         {
           "name": "beauty-right-island-top",
-          "gid": 134,
-          "x": 372,
-          "y": 208,
-          "width": 56,
-          "height": 124,
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 114,
+          "x": 288.0,
+          "y": 160,
+          "width": 96,
+          "height": 39,
           "properties": [
             {
               "name": "texture",
               "type": "string",
-              "value": "dutyfree-display-island-west"
+              "value": "beauty-display-base"
             },
             {
               "name": "label",
@@ -1919,16 +1479,19 @@
         },
         {
           "name": "beauty-left-island-bottom",
-          "gid": 135,
-          "x": 84,
-          "y": 304,
-          "width": 56,
-          "height": 124,
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 114,
+          "x": 96.0,
+          "y": 240,
+          "width": 96,
+          "height": 39,
           "properties": [
             {
               "name": "texture",
               "type": "string",
-              "value": "dutyfree-display-island-east"
+              "value": "beauty-display-base"
             },
             {
               "name": "label",
@@ -1950,16 +1513,19 @@
         },
         {
           "name": "beauty-right-island-bottom",
-          "gid": 134,
-          "x": 372,
-          "y": 304,
-          "width": 56,
-          "height": 124,
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 114,
+          "x": 288.0,
+          "y": 240,
+          "width": 96,
+          "height": 39,
           "properties": [
             {
               "name": "texture",
               "type": "string",
-              "value": "dutyfree-display-island-west"
+              "value": "beauty-display-base"
             },
             {
               "name": "label",
@@ -1981,9 +1547,12 @@
         },
         {
           "name": "beauty-directory",
-          "gid": 150,
-          "x": 425,
-          "y": 368,
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 168,
+          "x": 409.0,
+          "y": 272,
           "width": 46,
           "height": 116,
           "properties": [
@@ -2014,6 +1583,191 @@
       "id": 4
     },
     {
+      "name": "Merchandise",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "opacity": 1,
+      "visible": true,
+      "locked": false,
+      "objects": [
+        {
+          "name": "beauty-checkout-equipment",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 110,
+          "x": 206.0,
+          "y": 52.8,
+          "width": 108,
+          "height": 47,
+          "properties": [
+            {
+              "name": "texture",
+              "type": "string",
+              "value": "checkout-equipment-pos"
+            },
+            {
+              "name": "decorative",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "depthOffset",
+              "type": "int",
+              "value": 54
+            }
+          ],
+          "id": 12
+        },
+        {
+          "name": "beauty-checkout-items",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 111,
+          "x": 157.0,
+          "y": 52.0,
+          "width": 54,
+          "height": 47,
+          "properties": [
+            {
+              "name": "texture",
+              "type": "string",
+              "value": "checkout-items-beauty"
+            },
+            {
+              "name": "decorative",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "depthOffset",
+              "type": "int",
+              "value": 55
+            }
+          ],
+          "id": 13
+        },
+        {
+          "name": "beauty-left-island-top-merchandise",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 115,
+          "x": 108.0,
+          "y": 145.6,
+          "width": 72,
+          "height": 32,
+          "properties": [
+            {
+              "name": "texture",
+              "type": "string",
+              "value": "beauty-products-perfume"
+            },
+            {
+              "name": "decorative",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "depthOffset",
+              "type": "int",
+              "value": 15
+            }
+          ],
+          "id": 14
+        },
+        {
+          "name": "beauty-right-island-top-merchandise",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 116,
+          "x": 300.0,
+          "y": 145.6,
+          "width": 72,
+          "height": 35,
+          "properties": [
+            {
+              "name": "texture",
+              "type": "string",
+              "value": "beauty-products-skincare"
+            },
+            {
+              "name": "decorative",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "depthOffset",
+              "type": "int",
+              "value": 15
+            }
+          ],
+          "id": 15
+        },
+        {
+          "name": "beauty-left-island-bottom-merchandise",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 117,
+          "x": 108.0,
+          "y": 225.6,
+          "width": 72,
+          "height": 32,
+          "properties": [
+            {
+              "name": "texture",
+              "type": "string",
+              "value": "beauty-products-cosmetics"
+            },
+            {
+              "name": "decorative",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "depthOffset",
+              "type": "int",
+              "value": 15
+            }
+          ],
+          "id": 16
+        },
+        {
+          "name": "beauty-right-island-bottom-merchandise",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "gid": 118,
+          "x": 300.0,
+          "y": 225.6,
+          "width": 72,
+          "height": 31,
+          "properties": [
+            {
+              "name": "texture",
+              "type": "string",
+              "value": "beauty-products-gift-set"
+            },
+            {
+              "name": "decorative",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "depthOffset",
+              "type": "int",
+              "value": 15
+            }
+          ],
+          "id": 17
+        }
+      ],
+      "id": 5
+    },
+    {
       "name": "NPCs",
       "type": "objectgroup",
       "draworder": "topdown",
@@ -2023,9 +1777,12 @@
       "objects": [
         {
           "name": "clerk-beauty-01",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
           "gid": 200,
-          "x": 62,
-          "y": 368,
+          "x": 30.0,
+          "y": 272,
           "width": 36,
           "height": 36,
           "properties": [
@@ -2075,10 +1832,10 @@
               "value": "clerk-beauty-01"
             }
           ],
-          "id": 12
+          "id": 18
         }
       ],
-      "id": 5
+      "id": 6
     },
     {
       "name": "Collision",
@@ -2088,26 +1845,32 @@
       "locked": false,
       "objects": [
         {
-          "name": "beauty-feature-store-collision",
-          "x": 128,
-          "y": 96,
-          "width": 256,
+          "name": "beauty-checkout-counter-collision",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "x": 144,
+          "y": 64,
+          "width": 192,
           "height": 32,
           "properties": [
             {
               "name": "ownerId",
               "type": "string",
-              "value": "beauty-feature-store"
+              "value": "beauty-checkout-counter"
             }
           ],
-          "id": 13
+          "id": 19
         },
         {
           "name": "beauty-left-island-top-collision",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
           "x": 96,
-          "y": 112,
-          "width": 32,
-          "height": 96,
+          "y": 128,
+          "width": 96,
+          "height": 32,
           "properties": [
             {
               "name": "ownerId",
@@ -2115,14 +1878,17 @@
               "value": "beauty-left-island-top"
             }
           ],
-          "id": 14
+          "id": 20
         },
         {
           "name": "beauty-right-island-top-collision",
-          "x": 384,
-          "y": 112,
-          "width": 32,
-          "height": 96,
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "x": 288,
+          "y": 128,
+          "width": 96,
+          "height": 32,
           "properties": [
             {
               "name": "ownerId",
@@ -2130,14 +1896,17 @@
               "value": "beauty-right-island-top"
             }
           ],
-          "id": 15
+          "id": 21
         },
         {
           "name": "beauty-left-island-bottom-collision",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
           "x": 96,
           "y": 208,
-          "width": 32,
-          "height": 96,
+          "width": 96,
+          "height": 32,
           "properties": [
             {
               "name": "ownerId",
@@ -2145,14 +1914,17 @@
               "value": "beauty-left-island-bottom"
             }
           ],
-          "id": 16
+          "id": 22
         },
         {
           "name": "beauty-right-island-bottom-collision",
-          "x": 384,
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "x": 288,
           "y": 208,
-          "width": 32,
-          "height": 96,
+          "width": 96,
+          "height": 32,
           "properties": [
             {
               "name": "ownerId",
@@ -2160,12 +1932,15 @@
               "value": "beauty-right-island-bottom"
             }
           ],
-          "id": 17
+          "id": 23
         },
         {
           "name": "beauty-directory-collision",
-          "x": 432,
-          "y": 288,
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "x": 416.0,
+          "y": 192.0,
           "width": 32,
           "height": 80,
           "properties": [
@@ -2175,14 +1950,17 @@
               "value": "beauty-directory"
             }
           ],
-          "id": 18
+          "id": 24
         },
         {
           "name": "clerk-beauty-01-collision",
-          "x": 68,
-          "y": 344,
-          "width": 24,
-          "height": 24,
+          "type": "",
+          "rotation": 0,
+          "visible": true,
+          "x": 36.0,
+          "y": 248.0,
+          "width": 24.0,
+          "height": 24.0,
           "properties": [
             {
               "name": "ownerId",
@@ -2190,10 +1968,10 @@
               "value": "clerk-beauty-01"
             }
           ],
-          "id": 19
+          "id": 25
         }
       ],
-      "id": 6
+      "id": 7
     },
     {
       "name": "Portals",
@@ -2204,9 +1982,12 @@
       "objects": [
         {
           "name": "to-central",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
           "x": 208,
-          "y": 384,
-          "width": 96,
+          "y": 288,
+          "width": 64,
           "height": 32,
           "properties": [
             {
@@ -2220,10 +2001,10 @@
               "value": "from-beauty"
             }
           ],
-          "id": 20
+          "id": 26
         }
       ],
-      "id": 7
+      "id": 8
     },
     {
       "name": "Spawns",
@@ -2234,9 +2015,14 @@
       "objects": [
         {
           "name": "from-central",
+          "type": "",
+          "rotation": 0,
+          "visible": true,
           "point": true,
-          "x": 256,
-          "y": 352,
+          "x": 240,
+          "y": 272,
+          "width": 0,
+          "height": 0,
           "properties": [
             {
               "name": "facing",
@@ -2244,10 +2030,10 @@
               "value": "up"
             }
           ],
-          "id": 21
+          "id": 27
         }
       ],
-      "id": 8
+      "id": 9
     }
   ]
 }

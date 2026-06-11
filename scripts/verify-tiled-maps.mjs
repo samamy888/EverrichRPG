@@ -38,6 +38,26 @@ const directionalPropTextures = [
   "airport-escalator-east",
   "airport-escalator-north"
 ];
+const projectNativePropTextures = [
+  "checkout-counter-base",
+  "checkout-equipment-pos",
+  "checkout-items-beauty",
+  "checkout-items-liquor-food",
+  "checkout-items-gift",
+  "beauty-display-base",
+  "beauty-products-perfume",
+  "beauty-products-skincare",
+  "beauty-products-cosmetics",
+  "beauty-products-gift-set",
+  "liquor-products-whisky",
+  "liquor-products-chocolate",
+  "food-products-pineapple-cake",
+  "liquor-products-mini-tasting",
+  "gift-products-keychains",
+  "gift-products-neck-pillows",
+  "gift-products-postcards",
+  "gift-products-organizers"
+];
 const legacyDirectionalPropTextures = [
   "dutyfree-curved-storefront-south",
   "dutyfree-curved-storefront-west",
@@ -83,24 +103,7 @@ const expectedOrientedObjects = {
   "right-display-shelf": "dutyfree-display-island-west",
   "central-digital-map": "airport-digital-map-kiosk-east",
   "right-planter": "airport-planter-west",
-  "beauty-feature-store": "dutyfree-luxury-storefront-south",
-  "beauty-left-island-top": "dutyfree-display-island-east",
-  "beauty-right-island-top": "dutyfree-display-island-west",
-  "beauty-left-island-bottom": "dutyfree-display-island-east",
-  "beauty-right-island-bottom": "dutyfree-display-island-west",
   "beauty-directory": "airport-digital-map-kiosk-west",
-  "liquor-feature-store": "dutyfree-curved-storefront-south",
-  "liquor-left-island-top": "dutyfree-display-island-east",
-  "liquor-right-island-top": "dutyfree-display-island-west",
-  "liquor-left-island-bottom": "dutyfree-display-island-east",
-  "liquor-right-island-bottom": "dutyfree-display-island-west",
-  "liquor-clerk-counter": "dutyfree-service-counter-west",
-  "gift-feature-store": "dutyfree-luxury-storefront-south",
-  "gift-left-island-top": "dutyfree-display-island-east",
-  "gift-right-island-top": "dutyfree-display-island-west",
-  "gift-left-island-bottom": "dutyfree-display-island-east",
-  "gift-right-island-bottom": "dutyfree-display-island-west",
-  "gift-clerk-counter": "dutyfree-service-counter-west"
 };
 
 function fail(message) {
@@ -130,6 +133,9 @@ const propTileset = JSON.parse(readFileSync(resolve(root, "tilesets/airport-prop
 const propTilesetTextures = new Set(
   propTileset.tiles.map((tile) => tile.properties.find((property) => property.name === "texture")?.value)
 );
+for (const texture of projectNativePropTextures) {
+  if (!propTilesetTextures.has(texture)) fail(`airport-props.tsj is missing ${texture}`);
+}
 for (const texture of directionalPropTextures) {
   if (!propTilesetTextures.has(texture)) fail(`airport-props.tsj is missing ${texture}`);
   const fileName = texture.replace("airport-", "");
@@ -270,32 +276,158 @@ if (!entranceStart || entranceStart.x !== 320 || entranceStart.y !== 352) {
 
 const expectedShopObjects = {
   "shop-beauty-01": [
+    "beauty-checkout-counter",
+    "beauty-checkout-equipment",
+    "beauty-checkout-items",
     "beauty-left-island-top",
     "beauty-right-island-top",
     "beauty-left-island-bottom",
-    "beauty-right-island-bottom"
+    "beauty-right-island-bottom",
+    "beauty-left-island-top-merchandise",
+    "beauty-right-island-top-merchandise",
+    "beauty-left-island-bottom-merchandise",
+    "beauty-right-island-bottom-merchandise"
   ],
   "shop-liquor-food-01": [
+    "liquor-checkout-counter",
+    "liquor-checkout-equipment",
+    "liquor-checkout-items",
     "liquor-left-island-top",
     "liquor-right-island-top",
     "liquor-left-island-bottom",
-    "liquor-right-island-bottom"
+    "liquor-right-island-bottom",
+    "liquor-left-island-top-merchandise",
+    "liquor-right-island-top-merchandise",
+    "liquor-left-island-bottom-merchandise",
+    "liquor-right-island-bottom-merchandise"
   ],
   "shop-gift-01": [
+    "gift-checkout-counter",
+    "gift-checkout-equipment",
+    "gift-checkout-items",
     "gift-left-island-top",
     "gift-right-island-top",
     "gift-left-island-bottom",
-    "gift-right-island-bottom"
+    "gift-right-island-bottom",
+    "gift-left-island-top-merchandise",
+    "gift-right-island-top-merchandise",
+    "gift-left-island-bottom-merchandise",
+    "gift-right-island-bottom-merchandise"
   ]
 };
 
+const expectedShopVisuals = {
+  "shop-beauty-01": {
+    checkoutId: "beauty-checkout-counter",
+    checkoutTexture: "checkout-counter-base",
+    checkoutEquipment: ["beauty-checkout-equipment", "checkout-equipment-pos"],
+    checkoutItems: ["beauty-checkout-items", "checkout-items-beauty"],
+    merchandise: [
+      ["beauty-left-island-top-merchandise", "beauty-products-perfume"],
+      ["beauty-right-island-top-merchandise", "beauty-products-skincare"],
+      ["beauty-left-island-bottom-merchandise", "beauty-products-cosmetics"],
+      ["beauty-right-island-bottom-merchandise", "beauty-products-gift-set"]
+    ]
+  },
+  "shop-liquor-food-01": {
+    checkoutId: "liquor-checkout-counter",
+    checkoutTexture: "checkout-counter-base",
+    checkoutEquipment: ["liquor-checkout-equipment", "checkout-equipment-pos"],
+    checkoutItems: ["liquor-checkout-items", "checkout-items-liquor-food"],
+    merchandise: [
+      ["liquor-left-island-top-merchandise", "liquor-products-whisky"],
+      ["liquor-right-island-top-merchandise", "liquor-products-chocolate"],
+      ["liquor-left-island-bottom-merchandise", "food-products-pineapple-cake"],
+      ["liquor-right-island-bottom-merchandise", "liquor-products-mini-tasting"]
+    ]
+  },
+  "shop-gift-01": {
+    checkoutId: "gift-checkout-counter",
+    checkoutTexture: "checkout-counter-base",
+    checkoutEquipment: ["gift-checkout-equipment", "checkout-equipment-pos"],
+    checkoutItems: ["gift-checkout-items", "checkout-items-gift"],
+    merchandise: [
+      ["gift-left-island-top-merchandise", "gift-products-keychains"],
+      ["gift-right-island-top-merchandise", "gift-products-neck-pillows"],
+      ["gift-left-island-bottom-merchandise", "gift-products-postcards"],
+      ["gift-right-island-bottom-merchandise", "gift-products-organizers"]
+    ]
+  }
+};
+
 for (const [shopId, objectIds] of Object.entries(expectedShopObjects)) {
-  const props = maps
-    .get(shopId)
-    .layers.find((layer) => layer.name === "Props")
-    .objects.map((object) => object.name);
+  const shopMap = maps.get(shopId);
+  if (shopMap.width !== 30 || shopMap.height !== 20) {
+    fail(`${shopId} must use the one-screen 30x20 interior layout`);
+  }
+  const merchandiseLayer = shopMap.layers.find((layer) => layer.name === "Merchandise");
+  if (!merchandiseLayer) fail(`${shopId} is missing the Merchandise layer`);
+  const props = [
+    ...shopMap.layers.find((layer) => layer.name === "Props").objects,
+    ...(merchandiseLayer?.objects ?? [])
+  ].map((object) => object.name);
   for (const objectId of objectIds) {
     if (!props.includes(objectId)) fail(`${shopId} is missing product display ${objectId}`);
+  }
+  const visualSpec = expectedShopVisuals[shopId];
+  if (visualSpec) {
+    const checkoutCounter = shopMap.layers
+      .find((layer) => layer.name === "Props")
+      .objects.find((object) => object.name === visualSpec.checkoutId);
+    const texture = checkoutCounter?.properties?.find(
+      (property) => property.name === "texture"
+    )?.value;
+    if (
+      !checkoutCounter ||
+      texture !== visualSpec.checkoutTexture ||
+      checkoutCounter.width !== 192
+    ) {
+      fail(`${shopId} checkout counter must use the shared compact 192px base`);
+    }
+    const shopProps = [
+      ...shopMap.layers.find((layer) => layer.name === "Props").objects,
+      ...shopMap.layers.find((layer) => layer.name === "Merchandise").objects
+    ];
+    for (const [objectId, textureName] of [
+      visualSpec.checkoutEquipment,
+      visualSpec.checkoutItems
+    ]) {
+      const object = shopProps.find((candidate) => candidate.name === objectId);
+      const properties = new Map(
+        object?.properties?.map((property) => [property.name, property.value]) ?? []
+      );
+      if (
+        !object ||
+        properties.get("texture") !== textureName ||
+        properties.get("decorative") !== true
+      ) {
+        fail(`${objectId} must be a decorative checkout overlay using ${textureName}`);
+      }
+      const isEquipment = objectId.endsWith("-checkout-equipment");
+      const expectedCenterX = isEquipment ? 260 : 184;
+      const expectedY = isEquipment ? 52.8 : 52;
+      const expectedDepthOffset = isEquipment ? 54 : 55;
+      if (
+        object.x + object.width / 2 !== expectedCenterX ||
+        Math.abs(object.y - expectedY) > 0.01 ||
+        properties.get("depthOffset") !== expectedDepthOffset
+      ) {
+        fail(`${objectId} must stay aligned above the shared checkout counter surface`);
+      }
+    }
+    for (const [objectId, textureName] of visualSpec.merchandise) {
+      const object = shopProps.find((candidate) => candidate.name === objectId);
+      const properties = new Map(
+        object?.properties?.map((property) => [property.name, property.value]) ?? []
+      );
+      if (
+        !object ||
+        properties.get("texture") !== textureName ||
+        properties.get("decorative") !== true
+      ) {
+        fail(`${objectId} must be a decorative merchandise overlay using ${textureName}`);
+      }
+    }
   }
 }
 
@@ -305,6 +437,19 @@ for (const shopId of Object.keys(expectedShopObjects)) {
     .layers.find((layer) => layer.name === "NPCs")
     .objects;
   if (npcs.length !== 1) fail(`${shopId} must contain exactly one clerk NPC`);
+  const portal = maps
+    .get(shopId)
+    .layers.find((layer) => layer.name === "Portals")
+    .objects.find((candidate) => candidate.name === "to-central");
+  if (
+    !portal ||
+    portal.x !== 208 ||
+    portal.y !== 288 ||
+    portal.width !== 64 ||
+    portal.height !== 32
+  ) {
+    fail(`${shopId}/to-central must align with the compact interior exit`);
+  }
 }
 
 console.log(`[tiled:verify] OK (${regionIds.length} maps)`);

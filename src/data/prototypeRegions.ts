@@ -52,6 +52,24 @@ export type MapObjectTexture =
   | "curved-duty-free-storefront-v2"
   | "luxury-storefront-v2"
   | "beauty-display-island-v2"
+  | "checkout-counter-base"
+  | "checkout-equipment-pos"
+  | "checkout-items-beauty"
+  | "checkout-items-liquor-food"
+  | "checkout-items-gift"
+  | "beauty-display-base"
+  | "beauty-products-perfume"
+  | "beauty-products-skincare"
+  | "beauty-products-cosmetics"
+  | "beauty-products-gift-set"
+  | "liquor-products-whisky"
+  | "liquor-products-chocolate"
+  | "food-products-pineapple-cake"
+  | "liquor-products-mini-tasting"
+  | "gift-products-keychains"
+  | "gift-products-neck-pillows"
+  | "gift-products-postcards"
+  | "gift-products-organizers"
   | "airport-planter-south"
   | "airport-planter-west"
   | "airport-planter-east"
@@ -136,6 +154,8 @@ export interface MapObjectData {
     lines: string[];
   };
   foreground?: boolean;
+  decorative?: boolean;
+  depthOffset?: number;
   npcBehavior?: NpcBehaviorData;
 }
 

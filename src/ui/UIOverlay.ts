@@ -243,6 +243,15 @@ export class UIOverlay {
         this.renderMenu();
       }
     });
+    this.menuPanel.addEventListener("input", (event) => {
+      const slider = (event.target as HTMLElement).closest<HTMLInputElement>(
+        "[data-music-volume]"
+      );
+      if (!slider) return;
+      audioManager.setMusicVolume(Number(slider.value) / 100);
+      const valueLabel = this.menuPanel.querySelector<HTMLElement>("[data-music-volume-label]");
+      if (valueLabel) valueLabel.textContent = `${slider.value}%`;
+    });
 
     window.addEventListener("keydown", (event) => {
       if (event.key.toLowerCase() === "m") {
@@ -413,6 +422,26 @@ export class UIOverlay {
           <button type="button" data-menu-action="toggle-audio">${
             audioManager.isMuted() ? "開啟" : "關閉"
           }</button>
+        </div>
+        <div class="menu-setting-row">
+          <div>
+            <strong>BGM 音量</strong>
+            <p>調整背景音樂，不影響互動音效。</p>
+          </div>
+          <label>
+            <span data-music-volume-label>${Math.round(
+              audioManager.getMusicVolume() * 100
+            )}%</span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              value="${Math.round(audioManager.getMusicVolume() * 100)}"
+              data-music-volume
+              aria-label="BGM 音量"
+            />
+          </label>
         </div>
         <div class="menu-setting-row is-static">
           <div><strong>自動存檔</strong><p>移動、購物及切換區域時自動儲存。</p></div>

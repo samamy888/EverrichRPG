@@ -48,6 +48,7 @@ export class CharacterSelectScene extends Phaser.Scene {
   }
 
   create(): void {
+    audioManager.setBgm("title");
     this.createSelectionAnimations();
     this.cameras.main.setBackgroundColor("#17242b");
     this.add

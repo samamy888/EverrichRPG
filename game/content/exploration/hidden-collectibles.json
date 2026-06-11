@@ -24,14 +24,14 @@
     },
     {
       "id": "stamp-food",
-      "objectId": "liquor-clerk-counter",
+      "objectId": "liquor-checkout-counter",
       "regionId": "shop-liquor-food-01",
       "name": "台灣滋味紀念章",
       "description": "以鳳梨酥與禮盒為主題的紀念章。"
     },
     {
       "id": "stamp-gift",
-      "objectId": "gift-clerk-counter",
+      "objectId": "gift-checkout-counter",
       "regionId": "shop-gift-01",
       "name": "旅程回憶紀念章",
       "description": "象徵將旅行記憶帶回家的紀念章。"

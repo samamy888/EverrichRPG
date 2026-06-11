@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import argparse
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +38,39 @@ PROPS = [
     ),
     ("luxury-storefront-v2", "airport-reference-v2/luxury-storefront-v2.png"),
     ("beauty-display-island-v2", "airport-reference-v2/beauty-display-island-v2.png"),
+    ("checkout-counter-base", "airport-reference-v3/checkout-counter-base.png"),
+    ("checkout-equipment-pos", "airport-reference-v3/checkout-equipment-pos.png"),
+    ("checkout-items-beauty", "airport-reference-v3/checkout-items-beauty.png"),
+    (
+        "checkout-items-liquor-food",
+        "airport-reference-v3/checkout-items-liquor-food.png",
+    ),
+    ("checkout-items-gift", "airport-reference-v3/checkout-items-gift.png"),
+    ("beauty-display-base", "airport-reference-v3/beauty-display-base.png"),
+    ("beauty-products-perfume", "airport-reference-v3/beauty-products-perfume.png"),
+    ("beauty-products-skincare", "airport-reference-v3/beauty-products-skincare.png"),
+    ("beauty-products-cosmetics", "airport-reference-v3/beauty-products-cosmetics.png"),
+    ("beauty-products-gift-set", "airport-reference-v3/beauty-products-gift-set.png"),
+    ("liquor-products-whisky", "airport-reference-v3/liquor-products-whisky.png"),
+    (
+        "liquor-products-chocolate",
+        "airport-reference-v3/liquor-products-chocolate.png",
+    ),
+    (
+        "food-products-pineapple-cake",
+        "airport-reference-v3/food-products-pineapple-cake.png",
+    ),
+    (
+        "liquor-products-mini-tasting",
+        "airport-reference-v3/liquor-products-mini-tasting.png",
+    ),
+    ("gift-products-keychains", "airport-reference-v3/gift-products-keychains.png"),
+    (
+        "gift-products-neck-pillows",
+        "airport-reference-v3/gift-products-neck-pillows.png",
+    ),
+    ("gift-products-postcards", "airport-reference-v3/gift-products-postcards.png"),
+    ("gift-products-organizers", "airport-reference-v3/gift-products-organizers.png"),
     ("airport-planter-south", "airport-directional-v1/planter-south.png"),
     ("airport-planter-west", "airport-directional-v1/planter-west.png"),
     ("airport-planter-east", "airport-directional-v1/planter-east.png"),
@@ -236,20 +270,18 @@ OBJECT_COPY = {
     "liquor-food-doorway": ("酒類食品", "酒類食品免稅店", ["往左側通道可以進入酒類食品免稅店。"]),
     "gift-doorway": ("台灣禮品", "台灣禮品免稅店", ["往右側通道可以進入台灣禮品免稅店。"]),
     "central-digital-map": ("樓層導覽", "中央商店街導覽", ["上方是美妝香氛店，左右兩側分別是食品與禮品店。"]),
-    "beauty-feature-store": ("香氛專區", "美妝香氛推薦", ["旅行香水是店員推薦任務的第一件商品。"]),
+    "beauty-checkout-counter": ("美妝結帳櫃台", "美妝結帳櫃台", ["POS 機已準備完成，可以在這裡結帳與詢問商品。"]),
     "beauty-left-island-top": ("旅行香水", "旅行香水 10ml", ["清新淡香，適合作為旅程的開始。"]),
     "beauty-right-island-top": ("旅行護手霜", "旅行護手霜 30ml", ["輕巧容量，適合放進隨身行李。"]),
     "beauty-left-island-bottom": ("旅行面膜", "旅行面膜組", ["三片入的簡便保養組合。"]),
     "beauty-right-island-bottom": ("香氛禮盒", "香氛雙入禮盒", ["兩款迷你香氛，適合送禮。"]),
     "beauty-directory": ("店內導覽", "美妝店導覽", ["四座展示台都能開啟商品介面。"]),
-    "liquor-feature-store": ("食品專區", "酒類食品推薦", ["鳳梨酥是三店巡禮的指定商品。"]),
-    "liquor-clerk-counter": ("食品服務櫃台", "食品服務櫃台", ["靠近店員或展示台即可開啟購物介面。"]),
+    "liquor-checkout-counter": ("食品結帳櫃台", "食品結帳櫃台", ["POS 機已準備完成，可以在這裡結帳與詢問商品。"]),
     "liquor-left-island-top": ("精選威士忌", "精選威士忌 500ml", ["免稅限定容量，風味溫潤。"]),
     "liquor-right-island-top": ("巧克力禮盒", "巧克力禮盒", ["適合與親友分享的綜合口味。"]),
     "liquor-left-island-bottom": ("台灣鳳梨酥", "台灣鳳梨酥", ["經典伴手禮，小盒裝方便攜帶。"]),
     "liquor-right-island-bottom": ("迷你品飲組", "迷你品飲組", ["三瓶小容量組合，適合收藏。"]),
-    "gift-feature-store": ("台灣禮品", "台灣禮品推薦", ["明信片組是三店巡禮的指定商品。"]),
-    "gift-clerk-counter": ("禮品服務櫃台", "禮品服務櫃台", ["靠近店員或展示台即可開啟購物介面。"]),
+    "gift-checkout-counter": ("禮品結帳櫃台", "禮品結帳櫃台", ["POS 機已準備完成，可以在這裡結帳與詢問商品。"]),
     "gift-left-island-top": ("台灣鑰匙圈", "台灣造型鑰匙圈", ["簡單醒目的旅行紀念品。"]),
     "gift-right-island-top": ("旅行頸枕", "旅行頸枕", ["柔軟支撐，適合長途旅程。"]),
     "gift-left-island-bottom": ("風景明信片", "台灣風景明信片組", ["收錄機場與城市風景的紀念套組。"]),
@@ -267,24 +299,7 @@ ORIENTED_PROP_OVERRIDES = {
     "right-display-shelf": ("dutyfree-display-island-west", (2, 6)),
     "central-digital-map": ("airport-digital-map-kiosk-east", (2, 5)),
     "right-planter": ("airport-planter-west", (1, 1)),
-    "beauty-feature-store": ("dutyfree-luxury-storefront-south", (16, 2)),
-    "beauty-left-island-top": ("dutyfree-display-island-east", (2, 6)),
-    "beauty-right-island-top": ("dutyfree-display-island-west", (2, 6)),
-    "beauty-left-island-bottom": ("dutyfree-display-island-east", (2, 6)),
-    "beauty-right-island-bottom": ("dutyfree-display-island-west", (2, 6)),
     "beauty-directory": ("airport-digital-map-kiosk-west", (2, 5)),
-    "liquor-feature-store": ("dutyfree-curved-storefront-south", (16, 2)),
-    "liquor-left-island-top": ("dutyfree-display-island-east", (2, 6)),
-    "liquor-right-island-top": ("dutyfree-display-island-west", (2, 6)),
-    "liquor-left-island-bottom": ("dutyfree-display-island-east", (2, 6)),
-    "liquor-right-island-bottom": ("dutyfree-display-island-west", (2, 6)),
-    "liquor-clerk-counter": ("dutyfree-service-counter-west", (2, 5)),
-    "gift-feature-store": ("dutyfree-luxury-storefront-south", (16, 2)),
-    "gift-left-island-top": ("dutyfree-display-island-east", (2, 6)),
-    "gift-right-island-top": ("dutyfree-display-island-west", (2, 6)),
-    "gift-left-island-bottom": ("dutyfree-display-island-east", (2, 6)),
-    "gift-right-island-bottom": ("dutyfree-display-island-west", (2, 6)),
-    "gift-clerk-counter": ("dutyfree-service-counter-west", (2, 5)),
 }
 
 
@@ -349,6 +364,8 @@ def prop(
     label: str | None = None,
     interaction: tuple[str, list[str]] | None = None,
     foreground: bool = False,
+    decorative: bool = False,
+    depth_offset: int = 0,
 ) -> dict[str, Any]:
     source_path = ROOT / "public" / "assets" / "props" / dict(PROPS)[texture]
     with Image.open(source_path) as image:
@@ -365,6 +382,10 @@ def prop(
         )
     if foreground:
         properties.append(tiled_property("foreground", True, "bool"))
+    if decorative:
+        properties.append(tiled_property("decorative", True, "bool"))
+    if depth_offset:
+        properties.append(tiled_property("depthOffset", depth_offset, "int"))
     return {
         "name": name,
         **object_defaults(),
@@ -542,57 +563,117 @@ REGIONS: list[dict[str, Any]] = [
     {
         "id": "shop-beauty-01",
         "name": "美妝免稅店",
-        "size": (32, 26),
+        "size": (30, 20),
         "floor": "floor-carpet-blue",
         "accent": None,
-        "spawns": [spawn("from-central", 16, 22, "up")],
-        "portals": [portal("to-central", (13, 24, 6, 2), "duty-free-central", "from-beauty")],
+        "spawns": [spawn("from-central", 15, 17, "up")],
+        "portals": [portal("to-central", (13, 18, 4, 2), "duty-free-central", "from-beauty")],
         "walls": [
-            wall((0, 0, 32, 2)),
-            wall((0, 0, 2, 26)),
-            wall((30, 0, 2, 26)),
-            wall((0, 24, 13, 2)),
-            wall((19, 24, 13, 2)),
+            wall((0, 0, 30, 2)),
+            wall((0, 0, 2, 20)),
+            wall((28, 0, 2, 20)),
+            wall((0, 18, 13, 2)),
+            wall((17, 18, 13, 2)),
         ],
         "props": [
             prop(
-                "beauty-feature-store",
-                "luxury-storefront-v2",
-                16,
-                8,
-                256,
-                (8, 6, 16, 2),
-                "美妝專區",
-                ("美妝專區", ["這裡未來會加入品牌櫃位與試用品互動。"]),
+                "beauty-checkout-counter",
+                "checkout-counter-base",
+                15,
+                6,
+                192,
+                (9, 4, 12, 2),
+                "美妝結帳櫃台",
+                ("美妝結帳櫃台", ["POS 機已準備完成，可以在這裡結帳與詢問商品。"]),
                 True,
             ),
             prop(
+                "beauty-checkout-equipment",
+                "checkout-equipment-pos",
+                16.25,
+                3.3,
+                108,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=54,
+            ),
+            prop(
+                "beauty-checkout-items",
+                "checkout-items-beauty",
+                11.5,
+                3.25,
+                54,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=55,
+            ),
+            prop(
                 "beauty-left-island-top",
-                "beauty-display-island-v2",
-                7,
-                13,
-                128,
-                (3, 11.5, 8, 1.5),
+                "beauty-display-base",
+                9,
+                10,
+                96,
+                (6, 8, 6, 2),
                 interaction=("香氛展示", ["陳列熱門香氛與旅行限定組。"]),
             ),
             prop(
                 "beauty-right-island-top",
-                "beauty-display-island-v2",
-                25,
-                13,
-                128,
-                (21, 11.5, 8, 1.5),
+                "beauty-display-base",
+                21,
+                10,
+                96,
+                (18, 8, 6, 2),
                 interaction=("保養展示", ["陳列保養品與機場限定組合。"]),
             ),
-            prop("beauty-left-island-bottom", "beauty-display-island-v2", 7, 19, 128, (3, 17.5, 8, 1.5)),
-            prop("beauty-right-island-bottom", "beauty-display-island-v2", 25, 19, 128, (21, 17.5, 8, 1.5)),
+            prop("beauty-left-island-bottom", "beauty-display-base", 9, 15, 96, (6, 13, 6, 2)),
+            prop("beauty-right-island-bottom", "beauty-display-base", 21, 15, 96, (18, 13, 6, 2)),
+            prop(
+                "beauty-left-island-top-merchandise",
+                "beauty-products-perfume",
+                9,
+                9.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
+            ),
+            prop(
+                "beauty-right-island-top-merchandise",
+                "beauty-products-skincare",
+                21,
+                9.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
+            ),
+            prop(
+                "beauty-left-island-bottom-merchandise",
+                "beauty-products-cosmetics",
+                9,
+                14.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
+            ),
+            prop(
+                "beauty-right-island-bottom-merchandise",
+                "beauty-products-gift-set",
+                21,
+                14.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
+            ),
             prop(
                 "beauty-directory",
                 "digital-map-kiosk-v2",
-                28,
-                23,
-                96,
-                (25, 21, 6, 2),
+                27,
+                17,
+                64,
+                (26, 12, 2, 5),
                 "美妝導覽",
                 ("美妝導覽", ["下方出口可返回中央免稅商店街。"]),
             ),
@@ -601,150 +682,250 @@ REGIONS: list[dict[str, Any]] = [
     {
         "id": "shop-liquor-food-01",
         "name": "菸酒食品免稅店",
-        "size": (32, 26),
+        "size": (30, 20),
         "floor": "floor-cream",
         "accent": "floor-gold",
-        "spawns": [spawn("from-central", 16, 22, "up")],
+        "spawns": [spawn("from-central", 15, 17, "up")],
         "portals": [
-            portal("to-central", (13, 24, 6, 2), "duty-free-central", "from-liquor-food")
+            portal("to-central", (13, 18, 4, 2), "duty-free-central", "from-liquor-food")
         ],
         "walls": [
-            wall((0, 0, 32, 2)),
-            wall((0, 0, 2, 26)),
-            wall((30, 0, 2, 26)),
-            wall((0, 24, 13, 2)),
-            wall((19, 24, 13, 2)),
+            wall((0, 0, 30, 2)),
+            wall((0, 0, 2, 20)),
+            wall((28, 0, 2, 20)),
+            wall((0, 18, 13, 2)),
+            wall((17, 18, 13, 2)),
         ],
         "props": [
             prop(
-                "liquor-feature-store",
-                "curved-duty-free-storefront-v2",
-                16,
-                8,
-                256,
-                (8, 6, 16, 2),
-                "菸酒食品專區",
-                ("菸酒食品專區", ["精選酒款、點心與旅行限定禮盒。"]),
+                "liquor-checkout-counter",
+                "checkout-counter-base",
+                15,
+                6,
+                192,
+                (9, 4, 12, 2),
+                "食品結帳櫃台",
+                ("食品結帳櫃台", ["POS 機已準備完成，可以在這裡結帳與詢問商品。"]),
                 True,
             ),
             prop(
+                "liquor-checkout-equipment",
+                "checkout-equipment-pos",
+                16.25,
+                3.3,
+                108,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=54,
+            ),
+            prop(
+                "liquor-checkout-items",
+                "checkout-items-liquor-food",
+                11.5,
+                3.25,
+                54,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=55,
+            ),
+            prop(
                 "liquor-left-island-top",
-                "beauty-display-island-v2",
-                7,
-                13,
-                128,
-                (3, 11.5, 8, 1.5),
+                "beauty-display-base",
+                9,
+                10,
+                96,
+                (6, 8, 6, 2),
                 interaction=("精選酒款", ["旅行限定容量酒款。"]),
             ),
             prop(
                 "liquor-right-island-top",
-                "beauty-display-island-v2",
-                25,
-                13,
-                128,
-                (21, 11.5, 8, 1.5),
+                "beauty-display-base",
+                21,
+                10,
+                96,
+                (18, 8, 6, 2),
                 interaction=("巧克力禮盒", ["適合分享與送禮。"]),
             ),
             prop(
                 "liquor-left-island-bottom",
-                "beauty-display-island-v2",
-                7,
-                19,
-                128,
-                (3, 17.5, 8, 1.5),
+                "beauty-display-base",
+                9,
+                15,
+                96,
+                (6, 13, 6, 2),
             ),
             prop(
                 "liquor-right-island-bottom",
-                "beauty-display-island-v2",
-                25,
-                19,
-                128,
-                (21, 17.5, 8, 1.5),
+                "beauty-display-base",
+                21,
+                15,
+                96,
+                (18, 13, 6, 2),
             ),
             prop(
-                "liquor-clerk-counter",
-                "service-counter",
-                27,
-                23,
-                80,
-                (24.5, 21.5, 5, 1.5),
-                "店員推薦",
-                ("店員推薦", ["巧克力禮盒與迷你酒款組很適合送禮。"]),
+                "liquor-left-island-top-merchandise",
+                "liquor-products-whisky",
+                9,
+                9.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
+            ),
+            prop(
+                "liquor-right-island-top-merchandise",
+                "liquor-products-chocolate",
+                21,
+                9.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
+            ),
+            prop(
+                "liquor-left-island-bottom-merchandise",
+                "food-products-pineapple-cake",
+                9,
+                14.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
+            ),
+            prop(
+                "liquor-right-island-bottom-merchandise",
+                "liquor-products-mini-tasting",
+                21,
+                14.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
             ),
         ],
     },
     {
         "id": "shop-gift-01",
         "name": "精品禮品免稅店",
-        "size": (32, 26),
+        "size": (30, 20),
         "floor": "floor-blue",
         "accent": "floor-gold",
-        "spawns": [spawn("from-central", 16, 22, "up")],
+        "spawns": [spawn("from-central", 15, 17, "up")],
         "portals": [
-            portal("to-central", (13, 24, 6, 2), "duty-free-central", "from-gift")
+            portal("to-central", (13, 18, 4, 2), "duty-free-central", "from-gift")
         ],
         "walls": [
-            wall((0, 0, 32, 2)),
-            wall((0, 0, 2, 26)),
-            wall((30, 0, 2, 26)),
-            wall((0, 24, 13, 2)),
-            wall((19, 24, 13, 2)),
+            wall((0, 0, 30, 2)),
+            wall((0, 0, 2, 20)),
+            wall((28, 0, 2, 20)),
+            wall((0, 18, 13, 2)),
+            wall((17, 18, 13, 2)),
         ],
         "props": [
             prop(
-                "gift-feature-store",
-                "luxury-storefront-v2",
-                16,
-                8,
-                256,
-                (8, 6, 16, 2),
-                "精品禮品專區",
-                ("精品禮品專區", ["旅行用品與台灣紀念禮品。"]),
+                "gift-checkout-counter",
+                "checkout-counter-base",
+                15,
+                6,
+                192,
+                (9, 4, 12, 2),
+                "禮品結帳櫃台",
+                ("禮品結帳櫃台", ["POS 機已準備完成，可以在這裡結帳與詢問商品。"]),
                 True,
             ),
             prop(
+                "gift-checkout-equipment",
+                "checkout-equipment-pos",
+                16.25,
+                3.3,
+                108,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=54,
+            ),
+            prop(
+                "gift-checkout-items",
+                "checkout-items-gift",
+                11.5,
+                3.25,
+                62,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=55,
+            ),
+            prop(
                 "gift-left-island-top",
-                "beauty-display-island-v2",
-                7,
-                13,
-                128,
-                (3, 11.5, 8, 1.5),
+                "beauty-display-base",
+                9,
+                10,
+                96,
+                (6, 8, 6, 2),
                 interaction=("台灣紀念品", ["輕巧好攜帶的旅行紀念品。"]),
             ),
             prop(
                 "gift-right-island-top",
-                "beauty-display-island-v2",
-                25,
-                13,
-                128,
-                (21, 11.5, 8, 1.5),
+                "beauty-display-base",
+                21,
+                10,
+                96,
+                (18, 8, 6, 2),
                 interaction=("旅行用品", ["讓候機與飛行更舒服。"]),
             ),
             prop(
                 "gift-left-island-bottom",
-                "beauty-display-island-v2",
-                7,
-                19,
-                128,
-                (3, 17.5, 8, 1.5),
+                "beauty-display-base",
+                9,
+                15,
+                96,
+                (6, 13, 6, 2),
             ),
             prop(
                 "gift-right-island-bottom",
-                "beauty-display-island-v2",
-                25,
-                19,
-                128,
-                (21, 17.5, 8, 1.5),
+                "beauty-display-base",
+                21,
+                15,
+                96,
+                (18, 13, 6, 2),
             ),
             prop(
-                "gift-clerk-counter",
-                "service-counter",
-                27,
-                23,
-                80,
-                (24.5, 21.5, 5, 1.5),
-                "店員推薦",
-                ("店員推薦", ["頸枕適合長途旅行，明信片是輕巧的小禮物。"]),
+                "gift-left-island-top-merchandise",
+                "gift-products-keychains",
+                9,
+                9.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
+            ),
+            prop(
+                "gift-right-island-top-merchandise",
+                "gift-products-neck-pillows",
+                21,
+                9.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
+            ),
+            prop(
+                "gift-left-island-bottom-merchandise",
+                "gift-products-postcards",
+                9,
+                14.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
+            ),
+            prop(
+                "gift-right-island-bottom-merchandise",
+                "gift-products-organizers",
+                21,
+                14.1,
+                72,
+                (0, 0, 0, 0),
+                decorative=True,
+                depth_offset=15,
             ),
         ],
     },
@@ -911,9 +1092,9 @@ def build_region(region: dict[str, Any]) -> None:
             npc(
                 config[0],
                 config[1],
-                5,
-                23,
-                (4.25, 21.5, 1.5, 1.5),
+                3,
+                17,
+                (2.25, 15.5, 1.5, 1.5),
                 clerk_copy[0],
                 (clerk_copy[0], [clerk_copy[1]]),
             )
@@ -959,6 +1140,12 @@ def build_region(region: dict[str, Any]) -> None:
     collisions = []
     for item in [*props, *npcs]:
         collision = item.pop("_collision")
+        is_decorative = any(
+            property_data["name"] == "decorative" and property_data["value"] is True
+            for property_data in item["properties"]
+        )
+        if is_decorative:
+            continue
         collisions.append(
             {
                 "name": f"{item['name']}-collision",
@@ -999,7 +1186,30 @@ def build_region(region: dict[str, Any]) -> None:
             "type": "objectgroup",
             "draworder": "topdown",
             **visible_layer,
-            "objects": props,
+            "objects": [
+                item
+                for item in props
+                if not any(
+                    property_data["name"] == "decorative"
+                    and property_data["value"] is True
+                    for property_data in item["properties"]
+                )
+            ],
+        },
+        {
+            "name": "Merchandise",
+            "type": "objectgroup",
+            "draworder": "topdown",
+            **visible_layer,
+            "objects": [
+                item
+                for item in props
+                if any(
+                    property_data["name"] == "decorative"
+                    and property_data["value"] is True
+                    for property_data in item["properties"]
+                )
+            ],
         },
         {
             "name": "NPCs",
@@ -1103,8 +1313,21 @@ def apply_oriented_prop_overrides(region: dict[str, Any]) -> None:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="建立 EverrichRPG Tiled 地圖。")
+    parser.add_argument(
+        "--region",
+        action="append",
+        choices=[region["id"] for region in REGIONS],
+        help="只重建指定區域；可重複使用。未指定時重建全部區域。",
+    )
+    args = parser.parse_args()
+    selected_ids = set(args.region or [])
+    selected_regions = [
+        region for region in REGIONS if not selected_ids or region["id"] in selected_ids
+    ]
+
     build_tilesets()
-    for region in REGIONS:
+    for region in selected_regions:
         build_region(region)
     write_json(
         TILED_ROOT / "EverrichRPG.tiled-project",
@@ -1114,7 +1337,7 @@ def main() -> None:
             "propertyTypes": [],
         },
     )
-    print(f"[tiled:bootstrap] Created {len(REGIONS)} maps in {TILED_ROOT}")
+    print(f"[tiled:bootstrap] Created {len(selected_regions)} maps in {TILED_ROOT}")
 
 
 if __name__ == "__main__":

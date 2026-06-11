@@ -33,20 +33,20 @@ Preview build:
 npm run preview
 ```
 
-## Phase 1.5 Prototype Controls
+## 操作方式
 - Grid movement: `WASD`, Arrow keys, or mobile touch D-pad
 - Interact: `Enter`, `Space`, or mobile `A`
 - Close dialogue: `Esc`, mobile `B`, or interact again
-- Collision and portal debug overlay: `D`
+- Collision and portal debug overlay: `E`
 - Mobile pause/help: `MENU`
 - Enter a region: walk into the yellow portal
 - Test fade transition: `T` (temporary Phase 1 shortcut)
-- Re-select traveler: `R`
+- Open menu: `M`
 
-Current prototype:
+目前版本：
 - Logical resolution: `480x320`
 - Tile size: `16x16`
-- Regions: duty-free entrance and central shopping street
+- Regions: entrance, central shopping street and three duty-free shops
 - Player variants: male and female traveler
 - Save behavior: current region and traveler restore after refresh
 - Generated map source: `game/assets/tilesets/duty-free-terminal-v1-source.png`
@@ -73,6 +73,7 @@ python scripts/extract-duty-free-tileset.py
 3. Ensure IIS URL Rewrite module is installed.
 4. Verify SPA routing fallback works.
 
-## Project Plan Files
-- `REWRITE_MASTER_PLAN.md`: master plan and execution log
-- `REWRITE_SPEC_v1.md`: decision baseline and MVP checklist
+## 專案計畫
+
+- `PROJECT_PLAN.md`：唯一的玩法、開發階段與驗收計畫。
+- `docs/Tiled_Map_Workflow.md`：Tiled 地圖編輯操作手冊。

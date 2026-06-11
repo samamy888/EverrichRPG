@@ -1,33 +1,31 @@
 {
-  "generatedAt": "2026-06-10T08:41:33.099Z",
-  "sourceRevision": "9c9d587d82a4537d53da1ae54544acb97d83567a",
+  "generatedAt": "2026-06-11T09:16:18.942Z",
+  "sourceRevision": "29c68cc83a678c2502e6739751a1f4b19b62b9f8",
   "summary": {
-    "total": 736,
+    "total": 485,
     "byPresence": {
-      "head-only": 302,
-      "head-and-working-tree": 11,
-      "working-tree-only": 423
+      "head-and-working-tree": 476,
+      "head-only": 7,
+      "working-tree-only": 2
     },
     "byCategory": {
-      "metadata": 62,
-      "documentation": 45,
-      "project-file": 22,
-      "map-asset": 274,
-      "sprite-asset": 111,
-      "visual-reference": 121,
-      "tooling": 30,
-      "legacy-server": 14,
-      "source-code": 45,
-      "game-data": 12
+      "project-file": 14,
+      "documentation": 41,
+      "metadata": 61,
+      "visual-reference": 116,
+      "map-asset": 101,
+      "sprite-asset": 119,
+      "tooling": 15,
+      "source-code": 15,
+      "game-data": 3
     },
     "bySuggestedGrade": {
-      "C": 229,
-      "D": 196,
-      "E": 3,
-      "B": 296,
-      "A": 12
+      "C": 199,
+      "D": 73,
+      "B": 210,
+      "A": 3
     },
-    "headBytes": 240573536,
-    "workingTreeBytes": 253556472
+    "headBytes": 262119778,
+    "workingTreeBytes": 261966024
   }
 }

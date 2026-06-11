@@ -116,14 +116,22 @@ export function loadTiledRegion(scene: Phaser.Scene, regionId: RegionId): Region
     if (ownerId) collisionByOwner.set(ownerId, toRect(object));
   }
 
-  const objects = [...getObjects(map, "Props"), ...getObjects(map, "NPCs")].map<MapObjectData>((object) => {
+  const objects = [
+    ...getObjects(map, "Props"),
+    ...getObjects(map, "Merchandise"),
+    ...getObjects(map, "NPCs")
+  ].map<MapObjectData>((object) => {
     const texture = getRequiredString(object.properties, "texture") as MapObjectTexture;
+    const decorative = getBoolean(object.properties, "decorative");
     const collision = collisionByOwner.get(object.name);
-    if (!collision) throw new Error(`Tiled object "${object.name}" is missing collision data.`);
+    if (!collision && !decorative) {
+      throw new Error(`Tiled object "${object.name}" is missing collision data.`);
+    }
     const label = getString(object.properties, "label");
     const interactionTitle = getString(object.properties, "interactionTitle");
     const interactionLines = getString(object.properties, "interactionLines");
     const foreground = getBoolean(object.properties, "foreground");
+    const depthOffset = getNumber(object.properties, "depthOffset") ?? 0;
     const movementType = getString(object.properties, "movementType");
     const npcBehavior = movementType
       ? {
@@ -140,7 +148,7 @@ export function loadTiledRegion(scene: Phaser.Scene, regionId: RegionId): Region
       x: object.x + object.width / 2,
       baselineY: object.y,
       displayWidth: object.width,
-      collision,
+      collision: collision ?? { x: object.x, y: object.y, width: 0, height: 0 },
       ...(label ? { label } : {}),
       ...(interactionTitle
         ? {
@@ -152,6 +160,8 @@ export function loadTiledRegion(scene: Phaser.Scene, regionId: RegionId): Region
         : {}),
       ...(foreground ? { foreground: true } : {})
       ,
+      ...(decorative ? { decorative: true } : {}),
+      ...(depthOffset ? { depthOffset } : {}),
       ...(npcBehavior ? { npcBehavior } : {})
     };
   });

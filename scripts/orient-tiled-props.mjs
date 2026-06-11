@@ -18,24 +18,7 @@ const overrides = {
   "right-display-shelf": ["dutyfree-display-island-west", [2, 6]],
   "central-digital-map": ["airport-digital-map-kiosk-east", [2, 5]],
   "right-planter": ["airport-planter-west", [1, 1]],
-  "beauty-feature-store": ["dutyfree-luxury-storefront-south", [16, 2]],
-  "beauty-left-island-top": ["dutyfree-display-island-east", [2, 6]],
-  "beauty-right-island-top": ["dutyfree-display-island-west", [2, 6]],
-  "beauty-left-island-bottom": ["dutyfree-display-island-east", [2, 6]],
-  "beauty-right-island-bottom": ["dutyfree-display-island-west", [2, 6]],
   "beauty-directory": ["airport-digital-map-kiosk-west", [2, 5]],
-  "liquor-feature-store": ["dutyfree-curved-storefront-south", [16, 2]],
-  "liquor-left-island-top": ["dutyfree-display-island-east", [2, 6]],
-  "liquor-right-island-top": ["dutyfree-display-island-west", [2, 6]],
-  "liquor-left-island-bottom": ["dutyfree-display-island-east", [2, 6]],
-  "liquor-right-island-bottom": ["dutyfree-display-island-west", [2, 6]],
-  "liquor-clerk-counter": ["dutyfree-service-counter-west", [2, 5]],
-  "gift-feature-store": ["dutyfree-luxury-storefront-south", [16, 2]],
-  "gift-left-island-top": ["dutyfree-display-island-east", [2, 6]],
-  "gift-right-island-top": ["dutyfree-display-island-west", [2, 6]],
-  "gift-left-island-bottom": ["dutyfree-display-island-east", [2, 6]],
-  "gift-right-island-bottom": ["dutyfree-display-island-west", [2, 6]],
-  "gift-clerk-counter": ["dutyfree-service-counter-west", [2, 5]]
 };
 
 const tileset = JSON.parse(readFileSync(tilesetPath, "utf8"));

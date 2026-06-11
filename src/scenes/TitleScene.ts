@@ -13,6 +13,7 @@ export class TitleScene extends Phaser.Scene {
 
   create(): void {
     this.starting = false;
+    audioManager.setBgm("title");
     document.documentElement.classList.add("title-screen");
     this.cameras.main.setBackgroundColor("#101a21");
     this.add.rectangle(CONFIG.width / 2, CONFIG.height / 2, CONFIG.width, CONFIG.height, 0x101a21);

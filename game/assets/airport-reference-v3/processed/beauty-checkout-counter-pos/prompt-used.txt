@@ -1,0 +1,9 @@
+Create one standalone 2D top-down 3/4-view RPG map prop: a compact airport duty-free beauty checkout counter with an integrated POS terminal.
+
+Match the visual language of a polished 16-bit-era monster-catching RPG interior while using the project's modern airport palette: ivory and white counter body, restrained champagne-gold trim, dark navy base accents, warm subtle highlights, crisp pixel-art-inspired outlines, and strong readability at small game scale.
+
+The counter faces south toward the player. It is wide and low with gently rounded end caps, clear front paneling, and shallow countertop depth. Place one unmistakable dark POS monitor and payment terminal on the countertop slightly right of center, plus a tiny receipt printer and one tasteful beauty-product display on the opposite side.
+
+Keep the silhouette low and open. This is a checkout fixture, not a storefront, room, wall, doorway, kiosk booth, or building facade.
+
+No clerk, people, signs, letters, logos, floor, cast shadow, or detached objects. One object only, centered with generous padding and fully contained. Solid pure #FF00FF background only.

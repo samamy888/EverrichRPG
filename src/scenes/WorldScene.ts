@@ -167,6 +167,28 @@ export class WorldScene extends Phaser.Scene {
       "beauty-display-island-v2",
       `${airportV2Props}/beauty-display-island-v2.png`
     );
+    for (const texture of [
+      "checkout-counter-base",
+      "checkout-equipment-pos",
+      "checkout-items-beauty",
+      "checkout-items-liquor-food",
+      "checkout-items-gift",
+      "beauty-display-base",
+      "beauty-products-perfume",
+      "beauty-products-skincare",
+      "beauty-products-cosmetics",
+      "beauty-products-gift-set",
+      "liquor-products-whisky",
+      "liquor-products-chocolate",
+      "food-products-pineapple-cake",
+      "liquor-products-mini-tasting",
+      "gift-products-keychains",
+      "gift-products-neck-pillows",
+      "gift-products-postcards",
+      "gift-products-organizers"
+    ]) {
+      this.load.image(texture, `/assets/props/airport-reference-v3/${texture}.png`);
+    }
     const directionalPropBase = "/assets/props/airport-directional-v1";
     for (const texture of [
       "airport-planter-south",
@@ -319,6 +341,7 @@ export class WorldScene extends Phaser.Scene {
     const region = loadTiledRegion(this, regionId);
     if (!region) throw new Error(`Region ${regionId} could not be loaded.`);
     this.currentRegion = region;
+    audioManager.setBgm(this.getBgmForRegion(regionId));
     explorationService.visitRegion(regionId);
     this.regionId = regionId;
     this.spawnId = spawnId;
@@ -347,6 +370,10 @@ export class WorldScene extends Phaser.Scene {
     this.persist();
     this.emitStatus();
     emitPrototypeMovementMode({ running: this.running });
+  }
+
+  private getBgmForRegion(regionId: RegionId): "concourse" | "shop" {
+    return this.getShopIdForRegion(regionId) ? "shop" : "concourse";
   }
 
   private drawFloor(region: RegionData): void {
@@ -417,7 +444,10 @@ export class WorldScene extends Phaser.Scene {
         ? this.add.sprite(object.x, object.baselineY, texture).setOrigin(0.5, 1)
         : this.add.image(object.x, object.baselineY, texture).setOrigin(0.5, 1);
       image.setDisplaySize(object.displayWidth, image.height * (object.displayWidth / image.width));
-      image.setDepth(object.foreground ? object.baselineY + 10 : object.baselineY);
+      image.setDepth(
+        (object.foreground ? object.baselineY + 10 : object.baselineY) +
+          (object.depthOffset ?? 0)
+      );
       if (object.texture.startsWith("clerk-")) {
         this.tweens.add({
           targets: image,
@@ -435,14 +465,15 @@ export class WorldScene extends Phaser.Scene {
         object.collision.width,
         object.collision.height
       );
-      if (!isTraveler) this.collisionRects.push(bounds);
+      if (!isTraveler && !object.decorative) this.collisionRects.push(bounds);
       if (
-        object.interaction ||
-        this.getShopIdForRegion(region.id) ||
-        HIDDEN_COLLECTIBLES.some(
-          (collectible) =>
-            collectible.regionId === region.id && collectible.objectId === object.id
-        )
+        !object.decorative &&
+        (object.interaction ||
+          this.getShopIdForRegion(region.id) ||
+          HIDDEN_COLLECTIBLES.some(
+            (collectible) =>
+              collectible.regionId === region.id && collectible.objectId === object.id
+          ))
       ) {
         this.interactiveObjects.push({ object, bounds });
       }
@@ -802,6 +833,11 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private getInteractionLabel(object: MapObjectData): string {
+    if (
+      object.texture === "checkout-counter-base"
+    ) {
+      return "結帳";
+    }
     if (this.getShopIdForRegion(this.regionId)) return "購物";
     if (
       object.texture === "shop-doorway" ||

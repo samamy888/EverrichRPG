@@ -1,0 +1,3 @@
+Create an exact 2x2 merchandise-only overlay sheet for an empty modular display cabinet.
+
+Top-left whisky bottles, top-right chocolate gift boxes, bottom-left Taiwan pineapple cake boxes, bottom-right miniature liquor tasting set. Products only with no cabinet, tray, platform, text, people, floor, or shadows. Shared bottom anchor and south-facing top-down 3/4 perspective. Solid pure #FF00FF background.

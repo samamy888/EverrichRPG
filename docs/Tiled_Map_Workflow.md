@@ -64,3 +64,24 @@
 
 - `npm run tiled:verify`：檢查圖層、尺寸與傳送門連結。
 - `npm run tiled:bootstrap`：重新產生初始三區。這會覆蓋 Tiled 內的調整，只在需要重建範例時使用。
+
+## 模組化美妝展示櫃
+
+- 空白展示櫃放在 `Props` 圖層，負責碰撞、商品名稱與互動。
+- 商品陳列放在 `Merchandise` 圖層，只負責畫面顯示，不會產生碰撞或互動。
+- 美妝店的商品物件名稱以 `-merchandise` 結尾。
+- 要替換櫃位內容時，只需選取 `Merchandise` 圖層中的商品物件，再更換其 tileset 圖像與 `texture` 屬性。
+- 不要移動或刪除同位置的展示櫃底座，否則碰撞與商店商品互動會一起消失。
+- 目前可用商品 texture：`beauty-products-perfume`、`beauty-products-skincare`、`beauty-products-cosmetics`、`beauty-products-gift-set`。
+- 菸酒食品商品 texture：`liquor-products-whisky`、`liquor-products-chocolate`、`food-products-pineapple-cake`、`liquor-products-mini-tasting`。
+- 精品禮品商品 texture：`gift-products-keychains`、`gift-products-neck-pillows`、`gift-products-postcards`、`gift-products-organizers`。
+
+## 模組化結帳櫃台
+
+- 結帳區拆成三層：`checkout-counter-base` 空櫃台、`checkout-equipment-pos` 共用設備、各店的結帳商品。
+- 空櫃台放在 `Props` 圖層，保留原本的碰撞、互動文字與隱藏收集品 owner ID。
+- POS 螢幕、刷卡機、發票機與結帳商品放在 `Merchandise` 圖層，屬於純裝飾，不會阻擋玩家。
+- 三間店共用設備 texture：`checkout-equipment-pos`。
+- 各店商品 texture：`checkout-items-beauty`、`checkout-items-liquor-food`、`checkout-items-gift`。
+- 要更換店別時，只需替換 `*-checkout-items` 物件的圖像與 `texture`，不要複製整張櫃台。
+- 若要換設備，只需替換 `*-checkout-equipment`；不要移動或刪除 `*-checkout-counter` 本體。
