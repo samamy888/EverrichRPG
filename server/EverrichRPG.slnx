@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EverrichRPG.Api/EverrichRPG.Api.csproj" />
+    <Project Path="src/EverrichRPG.Application/EverrichRPG.Application.csproj" />
+    <Project Path="src/EverrichRPG.Domain/EverrichRPG.Domain.csproj" />
+    <Project Path="src/EverrichRPG.Infrastructure/EverrichRPG.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EverrichRPG.IntegrationTests/EverrichRPG.IntegrationTests.csproj" />
+    <Project Path="tests/EverrichRPG.UnitTests/EverrichRPG.UnitTests.csproj" />
+  </Folder>
+</Solution>

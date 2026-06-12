@@ -1,5 +1,9 @@
 import { CONFIG } from "../config";
-import { SHOP_PRODUCTS, type ShopProduct } from "../data/shopCatalog";
+import {
+  getProductSalePrice,
+  SHOP_PRODUCTS,
+  type ShopProduct
+} from "../data/shopCatalog";
 
 export interface PurchasedItem {
   productId: string;
@@ -42,7 +46,7 @@ export class ShopService {
   getCartTotal(): number {
     return Object.entries(this.state.cart).reduce((total, [productId, quantity]) => {
       const product = SHOP_PRODUCTS.find((candidate) => candidate.id === productId);
-      return total + (product?.price ?? 0) * quantity;
+      return total + (product ? getProductSalePrice(product) : 0) * quantity;
     }, 0);
   }
 
@@ -53,7 +57,9 @@ export class ShopService {
   }
 
   addToCart(productId: string): void {
-    if (!this.getProduct(productId)) return;
+    const product = this.getProduct(productId);
+    if (!product) return;
+    if ((this.state.cart[productId] ?? 0) >= product.stockQuantity) return;
     this.state.cart[productId] = (this.state.cart[productId] ?? 0) + 1;
     this.persist();
   }

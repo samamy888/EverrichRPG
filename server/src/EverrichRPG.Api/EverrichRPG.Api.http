@@ -1,0 +1,16 @@
+@EverrichRPG.Api_HostAddress = http://localhost:5080
+
+GET {{EverrichRPG.Api_HostAddress}}/api/v1/health
+Accept: application/json
+
+###
+
+GET {{EverrichRPG.Api_HostAddress}}/api/v1/health/ready
+Accept: application/json
+
+###
+
+GET {{EverrichRPG.Api_HostAddress}}/api/v1/version
+Accept: application/json
+
+###

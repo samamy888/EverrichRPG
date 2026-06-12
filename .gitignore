@@ -1,9 +1,12 @@
 node_modules/
 dist/
+**/bin/
+**/obj/
 .DS_Store
 *.log
 coverage/
 __pycache__/
 *.pyc
 *.tiled-session
+/tmp/
 /tools/agent-sprite-forge/

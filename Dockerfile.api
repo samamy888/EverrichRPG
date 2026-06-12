@@ -1,0 +1,26 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY global.json dotnet-tools.json ./
+COPY server/EverrichRPG.slnx server/
+COPY server/src/EverrichRPG.Api/EverrichRPG.Api.csproj server/src/EverrichRPG.Api/
+COPY server/src/EverrichRPG.Application/EverrichRPG.Application.csproj server/src/EverrichRPG.Application/
+COPY server/src/EverrichRPG.Domain/EverrichRPG.Domain.csproj server/src/EverrichRPG.Domain/
+COPY server/src/EverrichRPG.Infrastructure/EverrichRPG.Infrastructure.csproj server/src/EverrichRPG.Infrastructure/
+
+RUN dotnet restore server/src/EverrichRPG.Api/EverrichRPG.Api.csproj
+
+COPY server/ server/
+RUN dotnet publish server/src/EverrichRPG.Api/EverrichRPG.Api.csproj \
+    --configuration Release \
+    --no-restore \
+    --output /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+
+ENV ASPNETCORE_HTTP_PORTS=8080
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "EverrichRPG.Api.dll"]

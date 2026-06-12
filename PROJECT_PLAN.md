@@ -286,3 +286,309 @@ npm run build
 - 無阻塞流程的瀏覽器錯誤。
 - 玩法目的對第一次遊玩的玩家足夠清楚。
 
+## 12. 前後端分離與後端設計
+
+### 12.1 技術選型
+
+- 前端維持 Phaser 3、TypeScript 與 Vite，部署為純靜態網站。
+- 後端採用 `.NET 10 LTS` 與 ASP.NET Core Web API。
+- 資料存取採用 Entity Framework Core。
+- 第一選擇資料庫為 PostgreSQL。
+- API 文件使用 OpenAPI。
+- 開發環境允許前端繼續使用本機 JSON 與 localStorage，逐步切換到 API。
+- 正式環境由後端掌握玩家進度、商品價格、結帳結果與任務獎勵。
+
+選擇 ASP.NET Core 的理由：
+
+- 可直接部署到 IIS。
+- 可包裝成 Linux 或 Windows Docker 容器。
+- 同一套程式不因最終部署方式不同而重寫。
+- 適合未來加入後台管理、公司帳號或 Microsoft Entra ID。
+
+目前電腦只有 `.NET 8 SDK`。正式建立後端專案前先安裝 `.NET 10 SDK`，不要新建一個即將需要升級的 `.NET 8` 專案。
+
+### 12.2 架構形式
+
+第一版採用「模組化單體」，不要拆微服務。
+
+```text
+Phaser Web Client
+        │ HTTPS / JSON
+        ▼
+EverrichRPG API
+├─ Identity       匿名玩家、未來會員
+├─ Saves          角色、位置與設定
+├─ Exploration    區域、NPC、紀念章
+├─ Commerce       商品、購物籃、結帳
+├─ Quests         任務階段與獎勵
+└─ Content        商店與可變遊戲內容
+        │
+        ▼
+PostgreSQL
+```
+
+- 每個模組有自己的資料模型、服務與 API 端點。
+- 模組共用同一個 ASP.NET Core 程序與資料庫。
+- 模組之間透過明確服務介面呼叫，不直接修改別人的資料表。
+- 等到流量、團隊或部署需求真的出現，再評估拆服務。
+
+### 12.3 前端與後端責任
+
+仍由前端版本控管：
+
+- Phaser 場景與操作。
+- Tiled 地圖、碰撞與 Portal。
+- 圖片、動畫、音效與 BGM。
+- 純視覺 UI 狀態。
+- 可離線使用的預設內容快照。
+
+改由後端管理：
+
+- 玩家識別與存檔版本。
+- 角色、所在區域、出生點、面向與移動模式。
+- 已拜訪區域、已見 NPC 與已取得紀念章。
+- 玩家旅費、購物籃、持有商品與結帳紀錄。
+- 任務狀態、任務階段與獎勵領取。
+- 正式商品價格、上下架狀態與未來營運內容。
+
+後端不保存玩家每一幀的座標。只在切換區域、重要互動、結帳、任務變更與離開遊戲時保存必要狀態。
+
+### 12.4 API 第一版
+
+所有端點使用 `/api/v1` 前綴。
+
+#### 系統
+
+- `GET /api/v1/health`：存活檢查。
+- `GET /api/v1/version`：API 與內容版本。
+
+#### 玩家與存檔
+
+- `POST /api/v1/players/anonymous`：建立匿名玩家與憑證。
+- `GET /api/v1/me`：取得玩家基本資料。
+- `GET /api/v1/me/save`：取得完整遊戲存檔。
+- `PUT /api/v1/me/save/location`：儲存角色、區域、Spawn 與面向。
+- `DELETE /api/v1/me/save`：重置遊戲進度。
+
+#### 探索
+
+- `POST /api/v1/me/exploration/regions/{regionId}/visit`
+- `POST /api/v1/me/exploration/npcs/{npcId}/meet`
+- `POST /api/v1/me/exploration/collectibles/{collectibleId}/discover`
+
+#### 商店
+
+- `GET /api/v1/shops`
+- `GET /api/v1/shops/{shopId}`
+- `GET /api/v1/shops/{shopId}/products`
+- `GET /api/v1/me/cart`
+- `PUT /api/v1/me/cart/items/{productId}`
+- `DELETE /api/v1/me/cart/items/{productId}`
+- `POST /api/v1/me/checkouts`
+
+結帳端點必須由後端重新計算價格，並支援 `Idempotency-Key`，避免手機網路重送造成重複扣款或重複取得商品。
+
+#### 任務
+
+- `GET /api/v1/me/quests`
+- `POST /api/v1/me/quests/{questId}/start`
+- `POST /api/v1/me/quests/{questId}/advance`
+- `POST /api/v1/me/quests/{questId}/claim`
+
+### 12.5 資料表第一版
+
+- `Players`
+  - `Id`
+  - `DisplayName`
+  - `PlayerType`
+  - `CreatedAt`
+  - `LastSeenAt`
+- `PlayerCredentials`
+  - `PlayerId`
+  - `TokenHash`
+  - `ExpiresAt`
+- `PlayerSaves`
+  - `PlayerId`
+  - `SaveVersion`
+  - `PlayerVariant`
+  - `RegionId`
+  - `SpawnId`
+  - `Facing`
+  - `MovementMode`
+  - `UpdatedAt`
+  - `RowVersion`
+- `PlayerExploration`
+  - `PlayerId`
+  - `EntryType`
+  - `EntryId`
+  - `DiscoveredAt`
+- `PlayerWallets`
+  - `PlayerId`
+  - `Balance`
+  - `UpdatedAt`
+  - `RowVersion`
+- `PlayerInventory`
+  - `PlayerId`
+  - `ProductId`
+  - `Quantity`
+- `PlayerCartItems`
+  - `PlayerId`
+  - `ProductId`
+  - `Quantity`
+- `Checkouts`
+  - `Id`
+  - `PlayerId`
+  - `Total`
+  - `IdempotencyKey`
+  - `CreatedAt`
+- `CheckoutItems`
+  - `CheckoutId`
+  - `ProductId`
+  - `UnitPrice`
+  - `Quantity`
+- `PlayerQuests`
+  - `PlayerId`
+  - `QuestId`
+  - `Status`
+  - `Stage`
+  - `UpdatedAt`
+- `PlayerRewards`
+  - `PlayerId`
+  - `RewardId`
+  - `ClaimedAt`
+- `Shops`
+- `Products`
+- `QuestDefinitions`
+
+商品、商店與任務定義初期可由目前 JSON 匯入資料庫。Tiled 地圖本身不匯入資料庫。
+
+### 12.6 驗證與安全
+
+- 所有 ID、數量、價格與狀態轉移都由後端驗證。
+- 購物結帳與任務獎勵使用資料庫交易。
+- API 回傳統一使用 RFC 7807 Problem Details。
+- 所有時間保存為 UTC。
+- 金額使用整數，不使用浮點數。
+- 正式環境強制 HTTPS。
+- CORS 只允許指定前端網域。
+- 匿名玩家使用伺服器產生的高強度不透明憑證，資料庫只保存雜湊。
+- 日誌不得記錄完整憑證或個人資料。
+- 寫入 API 加入請求大小限制與基本 Rate Limit。
+- 未來帳號系統優先採用 ASP.NET Core Identity 或 OpenID Connect，不自製密碼驗證。
+
+### 12.7 存檔同步策略
+
+- localStorage 暫時保留為離線快取與舊存檔遷移來源。
+- 玩家第一次連線後，由前端將本機存檔上傳到後端。
+- 成功遷移後記錄伺服器存檔版本。
+- 重要狀態修改採伺服器優先，不做雙向任意合併。
+- `RowVersion` 或等價併發欄位用來阻止舊分頁覆蓋新存檔。
+- 網路中斷時允許繼續移動與瀏覽，但結帳、任務領獎等關鍵操作必須等待伺服器確認。
+
+### 12.8 專案目錄規劃
+
+```text
+EverrichRPG/
+├─ src/                         Phaser 前端
+├─ game/                        地圖與內容來源
+├─ server/
+│  ├─ EverrichRPG.sln
+│  ├─ src/
+│  │  ├─ EverrichRPG.Api/
+│  │  ├─ EverrichRPG.Application/
+│  │  ├─ EverrichRPG.Domain/
+│  │  └─ EverrichRPG.Infrastructure/
+│  └─ tests/
+│     ├─ EverrichRPG.UnitTests/
+│     └─ EverrichRPG.IntegrationTests/
+├─ Dockerfile.frontend
+├─ Dockerfile.api
+└─ compose.yaml
+```
+
+第一版雖然分成四個 .NET 專案，但仍是一個可部署的 API 程序，不是四個服務。
+
+### 12.9 部署方案
+
+#### Docker
+
+- 前端使用 Nginx 靜態容器。
+- API 使用 ASP.NET Core Linux 容器。
+- PostgreSQL 使用獨立容器或託管資料庫。
+- 由 Docker Compose 提供本機與測試環境。
+- 正式環境的資料庫密碼與 Token 金鑰使用環境變數或 Secret，不寫入映像。
+
+#### IIS
+
+- 前端可作為 IIS 靜態網站。
+- API 由 ASP.NET Core Module 反向代理至 Kestrel。
+- Windows Server 安裝對應版本的 Hosting Bundle。
+- PostgreSQL 可使用獨立主機、雲端服務或同機 Windows 服務。
+- IIS 可將 `/api` 反向代理至 API，使前後端維持同網域並簡化 CORS。
+
+不論採 Docker 或 IIS，前端都只透過環境設定取得 API Base URL，不在程式碼寫死部署位址。
+
+### 12.10 後端執行階段
+
+#### Backend Phase 0：基礎骨架
+
+- [x] 安裝 `.NET 10 SDK`
+- [x] 建立 Solution 與四層專案
+- [x] 建立 Health、Version 與 OpenAPI
+- [x] 建立 PostgreSQL 與 EF Core Migration
+- [x] 建立統一錯誤格式、日誌與 Rate Limit
+- [x] 建立 Docker Compose 開發環境
+
+Phase 0 完成狀態：
+
+- Solution：`server/EverrichRPG.slnx`
+- API：`server/src/EverrichRPG.Api`
+- 第一版 Migration：`InitialPlayers`
+- Docker：`Dockerfile.api` 與 `compose.yaml`
+- IIS：Release publish 已確認會產生 `web.config`
+- 測試：Domain 單元測試與 Health／Version 整合測試
+- 注意：目前本機 Docker CLI 為舊版 `20.10.10`，Compose 設定可解析，但正式映像建置需在 Docker daemon 正常或更新 Docker Desktop 後再次驗證。
+
+#### Backend Phase 1：匿名玩家與雲端存檔
+
+- [ ] 建立匿名玩家
+- [ ] 讀寫角色與位置
+- [ ] 遷移 localStorage 存檔
+- [ ] 加入存檔版本與併發保護
+- [ ] 前端加入 API Client 與離線 fallback
+
+#### Backend Phase 2：探索與任務
+
+- [ ] 同步已拜訪區域、NPC 與紀念章
+- [ ] 任務階段由後端驗證
+- [ ] 任務獎勵不可重複領取
+- [ ] 完成重新整理與跨裝置恢復測試
+
+#### Backend Phase 3：商店與結帳
+
+- [x] 商品與商店內容 API
+- [x] 前端商品清單 API 串接與本機 JSON 備援
+- [ ] 購物籃同步
+- [ ] 交易式結帳
+- [ ] Idempotency-Key 防重送
+- [ ] 商品價格與上下架由後端控制
+
+#### Backend Phase 4：營運與工作模式
+
+- [ ] 管理後台
+- [ ] 帳號登入與匿名帳號升級
+- [ ] 角色權限與店員模式
+- [ ] 稽核紀錄
+- [ ] 監控、備份與資料保留政策
+
+### 12.11 後端第一個可驗收版本
+
+第一個後端里程碑只做：
+
+1. 建立匿名玩家。
+2. 儲存男女角色選擇。
+3. 儲存目前區域、Spawn、面向與走跑模式。
+4. 重新整理後從 API 恢復。
+5. API 無法連線時仍能使用 localStorage 繼續遊玩。
+
+先完成這五項，再搬探索、任務與商店，避免一次改寫全部前端狀態服務。

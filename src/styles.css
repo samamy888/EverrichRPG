@@ -489,6 +489,22 @@ button {
   letter-spacing: 0.12em;
 }
 
+.shop-data-source {
+  display: inline-block;
+  margin: 2px 0 6px;
+  padding: 2px 6px;
+  color: #b9f7d4;
+  border: 1px solid rgba(91, 214, 146, 0.55);
+  background: rgba(24, 92, 58, 0.5);
+  font-size: 9px;
+}
+
+.shop-data-source.is-fallback {
+  color: #ffe2a8;
+  border-color: rgba(234, 176, 70, 0.65);
+  background: rgba(110, 70, 18, 0.5);
+}
+
 .shop-title {
   margin-top: 2px !important;
   font-size: 22px;
@@ -604,7 +620,7 @@ button {
 
 .product-card {
   display: grid;
-  grid-template-columns: 42px 1fr auto;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
   gap: 9px;
   align-items: center;
   padding: 10px;
@@ -637,8 +653,63 @@ button {
   line-height: 1.35;
 }
 
-.product-copy span {
+.product-sku {
+  display: block;
+  color: #68787c;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+.product-name {
+  display: block;
+  margin-top: 2px;
+}
+
+.product-data-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 7px;
+}
+
+.product-data-grid span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+  color: #59666b;
+  background: #f5ecd2;
+  border: 1px solid #c8b88f;
+  font-size: 8px;
+}
+
+.product-data-grid b {
   color: #8b562b;
+  font-weight: bold;
+}
+
+.product-data-grid .original-price {
+  color: #7b7b73;
+  text-decoration: line-through;
+}
+
+.product-data-grid .promotion-price {
+  color: #b54332;
+}
+
+.product-data-grid .out-of-stock {
+  color: #a3372d;
+}
+
+.promotion-period {
+  display: block;
+  margin-top: 5px;
+  color: #77766f;
+  font-size: 8px;
+}
+
+.promotion-period.is-active {
+  color: #b54332;
   font-weight: bold;
 }
 
@@ -654,6 +725,11 @@ button {
 
 .product-card button {
   padding: 7px;
+}
+
+.product-card button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .shop-balance,

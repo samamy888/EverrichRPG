@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { CONFIG } from "./config";
+import { syncShopCatalog } from "./data/shopCatalog";
 import { BootScene } from "./scenes/BootScene";
 import { CharacterSelectScene } from "./scenes/CharacterSelectScene";
 import { TitleScene } from "./scenes/TitleScene";
@@ -42,28 +43,34 @@ syncFullscreenTouchLayout();
 window.visualViewport?.addEventListener("resize", syncFullscreenTouchLayout);
 window.addEventListener("orientationchange", syncFullscreenTouchLayout);
 
-new UIOverlay(app);
+const bootstrap = async (): Promise<void> => {
+  app.dataset.shopCatalogSource = await syncShopCatalog();
 
-new Phaser.Game({
-  type: Phaser.AUTO,
-  parent: app,
-  width: CONFIG.width,
-  height: CONFIG.height,
-  backgroundColor: "#101820",
-  pixelArt: true,
-  antialias: false,
-  roundPixels: true,
-  physics: {
-    default: "arcade",
-    arcade: {
-      debug: false
-    }
-  },
-  scene: [BootScene, TitleScene, CharacterSelectScene, WorldScene],
-  scale: {
-    mode: useFullscreenTouchLayout ? Phaser.Scale.NONE : Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+  new UIOverlay(app);
+
+  new Phaser.Game({
+    type: Phaser.AUTO,
+    parent: app,
     width: CONFIG.width,
-    height: CONFIG.height
-  }
-});
+    height: CONFIG.height,
+    backgroundColor: "#101820",
+    pixelArt: true,
+    antialias: false,
+    roundPixels: true,
+    physics: {
+      default: "arcade",
+      arcade: {
+        debug: false
+      }
+    },
+    scene: [BootScene, TitleScene, CharacterSelectScene, WorldScene],
+    scale: {
+      mode: useFullscreenTouchLayout ? Phaser.Scale.NONE : Phaser.Scale.FIT,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+      width: CONFIG.width,
+      height: CONFIG.height
+    }
+  });
+};
+
+void bootstrap();

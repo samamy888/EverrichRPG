@@ -33,6 +33,16 @@ Preview build:
 npm run preview
 ```
 
+Backend:
+
+```powershell
+dotnet build server/EverrichRPG.slnx
+dotnet test server/EverrichRPG.slnx
+dotnet run --project server/src/EverrichRPG.Api --urls http://localhost:5080
+```
+
+Backend setup and deployment details are in `server/README.md`.
+
 ## 操作方式
 - Grid movement: `WASD`, Arrow keys, or mobile touch D-pad
 - Interact: `Enter`, `Space`, or mobile `A`

@@ -5,7 +5,14 @@ import type {
   PrototypeShopOpenDetail,
   PrototypeStatusDetail
 } from "../core/prototypeEvents";
-import { getShop, getShopProducts, SHOP_PRODUCTS } from "../data/shopCatalog";
+import {
+  getProductSalePrice,
+  getShop,
+  getShopCatalogSource,
+  getShopProducts,
+  isProductPromotionActive,
+  SHOP_PRODUCTS
+} from "../data/shopCatalog";
 import type { ShopId } from "../data/shopCatalog";
 import { audioManager } from "../systems/audioManager";
 import {
@@ -40,6 +47,7 @@ export class UIOverlay {
   private readonly shopPanel: HTMLElement;
   private readonly shopTitle: HTMLHeadingElement;
   private readonly shopWelcome: HTMLParagraphElement;
+  private readonly shopDataSource: HTMLParagraphElement;
   private readonly shopClerk: HTMLParagraphElement;
   private readonly questPanel: HTMLElement;
   private readonly productList: HTMLDivElement;
@@ -96,6 +104,7 @@ export class UIOverlay {
           <div>
             <p class="shop-kicker">DUTY FREE SHOP</p>
             <h2 class="shop-title"></h2>
+            <p class="shop-data-source"></p>
             <p class="shop-welcome"></p>
             <p class="shop-clerk"></p>
           </div>
@@ -149,6 +158,7 @@ export class UIOverlay {
     this.runButton = this.root.querySelector(".back-button")!;
     this.shopPanel = this.root.querySelector(".shop-panel")!;
     this.shopTitle = this.root.querySelector(".shop-title")!;
+    this.shopDataSource = this.root.querySelector(".shop-data-source")!;
     this.shopWelcome = this.root.querySelector(".shop-welcome")!;
     this.shopClerk = this.root.querySelector(".shop-clerk")!;
     this.questPanel = this.root.querySelector(".quest-panel")!;
@@ -529,25 +539,63 @@ export class UIOverlay {
     const state = shopService.getState();
     const products = getShopProducts(shop.id);
     this.shopTitle.textContent = shop.name;
+    this.shopDataSource.textContent =
+      getShopCatalogSource() === "api" ? "商品資料：後端 API" : "商品資料：本機備援";
+    this.shopDataSource.classList.toggle(
+      "is-fallback",
+      getShopCatalogSource() === "local"
+    );
     this.shopWelcome.textContent = shop.welcome;
     this.shopClerk.textContent = `店員推薦：${shop.clerkMessage}`;
     this.shopBalance.textContent = String(state.balance);
     this.cartTotal.textContent = String(shopService.getCartTotal());
     this.renderQuestPanel();
     this.productList.innerHTML = products
-      .map(
-        (product) => `
+      .map((product) => {
+        const cartQuantity = state.cart[product.id] ?? 0;
+        const remainingStock = Math.max(0, product.stockQuantity - cartQuantity);
+        const salePrice = getProductSalePrice(product);
+        const hasPromotion = isProductPromotionActive(product);
+        const promotionPeriod =
+          product.promotionStartAt && product.promotionEndAt
+            ? `${this.formatPromotionDate(product.promotionStartAt)}－${this.formatPromotionDate(
+                product.promotionEndAt
+              )}`
+            : null;
+        const promotionLabel = hasPromotion
+          ? `特價期間：${promotionPeriod}`
+          : product.promotionStartAt &&
+              product.promotionEndAt &&
+              Date.now() < Date.parse(product.promotionStartAt)
+            ? `特價預告：${promotionPeriod}`
+            : product.promotionEndAt && Date.now() > Date.parse(product.promotionEndAt)
+              ? "特價已結束"
+              : "目前無促銷";
+
+        return `
           <article class="product-card${product.id === this.focusProductId ? " is-focused" : ""}">
             <div class="product-icon">${this.getCategoryIcon(product.category)}</div>
             <div class="product-copy">
-              <strong>${product.name}</strong>
-              <p>${product.description}</p>
-              <span>NT$ ${product.price}</span>
+              <span class="product-sku">商品品號：${product.sku}</span>
+              <strong class="product-name">${product.name}</strong>
+              <p class="product-description">${product.description}</p>
+              <div class="product-data-grid">
+                <span>售價 <b class="${hasPromotion ? "original-price" : ""}">NT$ ${product.price}</b></span>
+                <span>促銷價 <b class="${hasPromotion ? "promotion-price" : ""}">${
+                  hasPromotion ? `NT$ ${salePrice}` : "—"
+                }</b></span>
+                <span>庫存數 <b class="${remainingStock === 0 ? "out-of-stock" : ""}">${remainingStock}</b></span>
+              </div>
+              <small class="promotion-period${
+                hasPromotion ? " is-active" : ""
+              }">${promotionLabel}</small>
             </div>
-            <button type="button" data-add-product="${product.id}">加入</button>
+            <button type="button" data-add-product="${product.id}" ${
+              remainingStock === 0 ? "disabled" : ""
+            }>${remainingStock === 0 ? "售完" : "加入"}</button>
           </article>
-        `
-      )
+        `;
+      })
       .join("");
 
     const cartEntries = Object.entries(state.cart);
@@ -641,6 +689,14 @@ export class UIOverlay {
     if (category === "souvenir") return "★";
     if (category === "travel") return "▣";
     return "●";
+  }
+
+  private formatPromotionDate(value: string): string {
+    return new Intl.DateTimeFormat("zh-TW", {
+      timeZone: "Asia/Taipei",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(new Date(value));
   }
 
   private bindTouchControls(): void {
