@@ -5,6 +5,8 @@ import type {
   FloorTexture,
   MapObjectData,
   MapObjectTexture,
+  DialogueChoiceData,
+  QuestDialogueStatus,
   NpcMovementType,
   PortalData,
   RectData,
@@ -74,6 +76,10 @@ const GID_MASK = 0x1fffffff;
 
 export const TILED_REGION_IDS = [
   "duty-free-entrance",
+  "security-check",
+  "departure-hall",
+  "information-core",
+  "airport-facilities",
   "duty-free-central",
   "shop-beauty-01",
   "shop-liquor-food-01",
@@ -130,6 +136,8 @@ export function loadTiledRegion(scene: Phaser.Scene, regionId: RegionId): Region
     const label = getString(object.properties, "label");
     const interactionTitle = getString(object.properties, "interactionTitle");
     const interactionLines = getString(object.properties, "interactionLines");
+    const interactionChoices = getString(object.properties, "interactionChoices");
+    const interactionQuestLines = getString(object.properties, "interactionQuestLines");
     const foreground = getBoolean(object.properties, "foreground");
     const depthOffset = getNumber(object.properties, "depthOffset") ?? 0;
     const movementType = getString(object.properties, "movementType");
@@ -154,7 +162,13 @@ export function loadTiledRegion(scene: Phaser.Scene, regionId: RegionId): Region
         ? {
             interaction: {
               title: interactionTitle,
-              lines: parseLines(interactionLines)
+              lines: parseLines(interactionLines),
+              ...(interactionChoices
+                ? { choices: parseDialogueChoices(interactionChoices) }
+                : {}),
+              ...(interactionQuestLines
+                ? { questLines: parseQuestDialogueLines(interactionQuestLines) }
+                : {})
             }
           }
         : {}),
@@ -262,6 +276,49 @@ function parseLines(value: string | undefined): string[] {
     return [value];
   }
   return [value];
+}
+
+function parseDialogueChoices(value: string): DialogueChoiceData[] {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.flatMap((choice) => {
+      if (
+        typeof choice !== "object" ||
+        choice === null ||
+        !("label" in choice) ||
+        typeof choice.label !== "string" ||
+        !("responseLines" in choice) ||
+        !Array.isArray(choice.responseLines) ||
+        !choice.responseLines.every((line: unknown) => typeof line === "string")
+      ) {
+        return [];
+      }
+      return [{ label: choice.label, responseLines: choice.responseLines }];
+    });
+  } catch {
+    return [];
+  }
+}
+
+function parseQuestDialogueLines(
+  value: string
+): Partial<Record<QuestDialogueStatus, string[]>> {
+  const statuses: QuestDialogueStatus[] = ["available", "active", "ready", "completed"];
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (typeof parsed !== "object" || parsed === null) return {};
+    return Object.fromEntries(
+      statuses.flatMap((status) => {
+        const lines = (parsed as Record<string, unknown>)[status];
+        return Array.isArray(lines) && lines.every((line) => typeof line === "string")
+          ? [[status, lines]]
+          : [];
+      })
+    );
+  } catch {
+    return {};
+  }
 }
 
 function toRect(object: TiledObject): RectData {

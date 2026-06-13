@@ -9,6 +9,30 @@
       "enabledInMvp": true
     },
     {
+      "id": "security-check",
+      "nameKey": "region.securityCheck.name",
+      "kind": "hub",
+      "enabledInMvp": true
+    },
+    {
+      "id": "departure-hall",
+      "nameKey": "region.departureHall.name",
+      "kind": "hub",
+      "enabledInMvp": true
+    },
+    {
+      "id": "information-core",
+      "nameKey": "region.informationCore.name",
+      "kind": "service",
+      "enabledInMvp": true
+    },
+    {
+      "id": "airport-facilities",
+      "nameKey": "region.airportFacilities.name",
+      "kind": "service",
+      "enabledInMvp": true
+    },
+    {
       "id": "duty-free-central",
       "nameKey": "region.dutyFreeCentral.name",
       "kind": "hub",
@@ -33,12 +57,6 @@
       "enabledInMvp": true
     },
     {
-      "id": "customer-service",
-      "nameKey": "region.customerService.name",
-      "kind": "service",
-      "enabledInMvp": true
-    },
-    {
       "id": "shop-travel-01",
       "nameKey": "region.shopTravel01.name",
       "kind": "future",
@@ -47,8 +65,36 @@
   ],
   "connections": [
     {
-      "id": "entrance-central",
+      "id": "entrance-security",
       "fromRegionId": "duty-free-entrance",
+      "toRegionId": "security-check",
+      "bidirectional": true,
+      "transition": "fade"
+    },
+    {
+      "id": "security-departure-hall",
+      "fromRegionId": "security-check",
+      "toRegionId": "departure-hall",
+      "bidirectional": true,
+      "transition": "fade"
+    },
+    {
+      "id": "hall-information",
+      "fromRegionId": "departure-hall",
+      "toRegionId": "information-core",
+      "bidirectional": true,
+      "transition": "fade"
+    },
+    {
+      "id": "hall-facilities",
+      "fromRegionId": "departure-hall",
+      "toRegionId": "airport-facilities",
+      "bidirectional": true,
+      "transition": "fade"
+    },
+    {
+      "id": "hall-duty-free",
+      "fromRegionId": "departure-hall",
       "toRegionId": "duty-free-central",
       "bidirectional": true,
       "transition": "fade"
@@ -71,20 +117,6 @@
       "id": "central-gift",
       "fromRegionId": "duty-free-central",
       "toRegionId": "shop-gift-01",
-      "bidirectional": true,
-      "transition": "fade"
-    },
-    {
-      "id": "central-service",
-      "fromRegionId": "duty-free-central",
-      "toRegionId": "customer-service",
-      "bidirectional": true,
-      "transition": "fade"
-    },
-    {
-      "id": "central-travel-future",
-      "fromRegionId": "duty-free-central",
-      "toRegionId": "shop-travel-01",
       "bidirectional": true,
       "transition": "fade"
     }

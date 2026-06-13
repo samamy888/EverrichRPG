@@ -4,6 +4,10 @@ import { resolve } from "node:path";
 const root = resolve(process.cwd(), "public/assets/maps/tiled");
 const regionIds = [
   "duty-free-entrance",
+  "security-check",
+  "departure-hall",
+  "information-core",
+  "airport-facilities",
   "duty-free-central",
   "shop-beauty-01",
   "shop-liquor-food-01",
@@ -56,7 +60,12 @@ const projectNativePropTextures = [
   "gift-products-keychains",
   "gift-products-neck-pillows",
   "gift-products-postcards",
-  "gift-products-organizers"
+  "gift-products-organizers",
+  "airport-overhead-wayfinding",
+  "airport-floor-wayfinding",
+  "airport-waiting-seats",
+  "airport-queue-barriers",
+  "airport-ceiling-skylight"
 ];
 const legacyDirectionalPropTextures = [
   "dutyfree-curved-storefront-south",
@@ -241,7 +250,12 @@ const centralPortals = maps
   .get("duty-free-central")
   .layers.find((layer) => layer.name === "Portals")
   .objects.map((portal) => portal.name);
-for (const portalId of ["to-beauty-corridor", "to-liquor-food", "to-gift"]) {
+for (const portalId of [
+  "to-departure-hall",
+  "to-beauty-corridor",
+  "to-liquor-food",
+  "to-gift"
+]) {
   if (!centralPortals.includes(portalId)) fail(`duty-free-central is missing ${portalId}`);
 }
 
@@ -272,6 +286,28 @@ const entranceStart = maps
   .objects.find((spawn) => spawn.name === "start");
 if (!entranceStart || entranceStart.x !== 320 || entranceStart.y !== 352) {
   fail("duty-free-entrance/start must remain at the safe centered starting position");
+}
+
+const expectedPublicConnections = {
+  "duty-free-entrance": ["to-security"],
+  "security-check": ["to-entrance", "to-departure-hall"],
+  "departure-hall": [
+    "to-security",
+    "to-duty-free",
+    "to-information",
+    "to-facilities"
+  ],
+  "information-core": ["to-departure-hall"],
+  "airport-facilities": ["to-departure-hall"]
+};
+for (const [regionId, portalIds] of Object.entries(expectedPublicConnections)) {
+  const actual = maps
+    .get(regionId)
+    .layers.find((layer) => layer.name === "Portals")
+    .objects.map((entry) => entry.name);
+  for (const portalId of portalIds) {
+    if (!actual.includes(portalId)) fail(`${regionId} is missing ${portalId}`);
+  }
 }
 
 const expectedShopObjects = {

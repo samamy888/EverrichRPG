@@ -24,7 +24,6 @@ import {
 import { shopService } from "../systems/shopService";
 import { TRAVELER_QUEST, travelerQuestService } from "../systems/travelerQuestService";
 
-type Direction = "up" | "down" | "left" | "right";
 type MenuView =
   | "home"
   | "map"
@@ -42,6 +41,8 @@ export class UIOverlay {
   private readonly dialogue: HTMLElement;
   private readonly dialogueTitle: HTMLParagraphElement;
   private readonly dialogueText: HTMLParagraphElement;
+  private readonly dialogueChoices: HTMLDivElement;
+  private readonly dialogueNext: HTMLSpanElement;
   private readonly actionButton: HTMLButtonElement;
   private readonly runButton: HTMLButtonElement;
   private readonly shopPanel: HTMLElement;
@@ -75,7 +76,8 @@ export class UIOverlay {
       <section class="dialogue-box" aria-live="polite" hidden>
         <p class="dialogue-title"></p>
         <p class="dialogue-text"></p>
-        <span class="dialogue-next">A / Enter 繼續</span>
+        <div class="dialogue-choices"></div>
+        <span class="dialogue-next"></span>
       </section>
       <section class="game-menu" aria-label="遊戲選單" hidden>
         <aside class="game-menu-nav">
@@ -129,19 +131,12 @@ export class UIOverlay {
         </div>
       </section>
       <section class="touch-controls" aria-label="行動裝置操作">
-        <div class="dpad">
-          <button data-directions="up,left" aria-label="左上">↖</button>
-          <button data-direction="up" aria-label="向上">↑</button>
-          <button data-directions="up,right" aria-label="右上">↗</button>
-          <button data-direction="left" aria-label="向左">←</button>
-          <button data-direction="down" aria-label="向下">↓</button>
-          <button data-direction="right" aria-label="向右">→</button>
-          <button data-directions="down,left" aria-label="左下">↙</button>
-          <button data-directions="down,right" aria-label="右下">↘</button>
+        <div class="virtual-stick" role="group" aria-label="虛擬方向蘑菇頭">
+          <div class="virtual-stick-ring" aria-hidden="true"></div>
+          <div class="virtual-stick-knob" aria-hidden="true"></div>
         </div>
         <div class="mobile-actions">
-          <button class="small-action menu-button" data-action="menu" aria-label="開啟選單">MENU</button>
-          <button class="small-action back-button" data-action="back" aria-label="切換跑步">B</button>
+          <button class="back-button" data-action="back" aria-label="切換跑步">B</button>
           <button class="action-button" data-action="action" aria-label="互動">A</button>
         </div>
       </section>
@@ -154,6 +149,8 @@ export class UIOverlay {
     this.dialogue = this.root.querySelector(".dialogue-box")!;
     this.dialogueTitle = this.root.querySelector(".dialogue-title")!;
     this.dialogueText = this.root.querySelector(".dialogue-text")!;
+    this.dialogueChoices = this.root.querySelector(".dialogue-choices")!;
+    this.dialogueNext = this.root.querySelector(".dialogue-next")!;
     this.actionButton = this.root.querySelector(".action-button")!;
     this.runButton = this.root.querySelector(".back-button")!;
     this.shopPanel = this.root.querySelector(".shop-panel")!;
@@ -190,11 +187,47 @@ export class UIOverlay {
     window.addEventListener("prototype:dialogue", (event) => {
       const detail = (event as CustomEvent<PrototypeDialogueDetail>).detail;
       this.dialogueTitle.textContent = detail.title;
-      this.dialogueText.textContent = detail.lines.join("\n");
+      this.dialogueText.textContent = detail.text;
+      this.dialogueChoices.innerHTML = (detail.choices ?? [])
+        .map(
+          (choice, index) =>
+            `<button type="button" data-dialogue-choice="${index}" class="${
+              index === detail.selectedChoice ? "is-selected" : ""
+            }"><span>${index === detail.selectedChoice ? "▶" : ""}</span>${choice}</button>`
+        )
+        .join("");
+      this.dialogueChoices
+        .querySelectorAll<HTMLButtonElement>("[data-dialogue-choice]")
+        .forEach((button) => {
+          button.addEventListener("pointerdown", (pointerEvent) => {
+            pointerEvent.preventDefault();
+            pointerEvent.stopPropagation();
+            audioManager.unlock();
+            window.dispatchEvent(
+              new CustomEvent("prototype:dialogue-choice", {
+                detail: { index: Number(button.dataset.dialogueChoice) }
+              })
+            );
+          });
+        });
+      const choosing = (detail.choices?.length ?? 0) > 0;
+      this.dialogue.classList.toggle("has-choices", choosing);
+      this.root.classList.toggle("dialogue-has-choices", choosing);
+      this.dialogueNext.textContent = choosing
+        ? "W / S 選擇 · A / Enter 確認"
+        : detail.complete
+          ? detail.page < detail.pageCount
+            ? "▼  A / Enter 下一頁"
+            : "▼  A / Enter 結束"
+          : "A / Enter 快速顯示";
+      this.dialogueNext.classList.toggle("is-complete", detail.complete);
       this.dialogue.hidden = false;
     });
     window.addEventListener("prototype:dialogue-close", () => {
       this.dialogue.hidden = true;
+      this.dialogue.classList.remove("has-choices");
+      this.root.classList.remove("dialogue-has-choices");
+      this.dialogueChoices.innerHTML = "";
     });
     window.addEventListener("prototype:interaction-hint", (event) => {
       const detail = (event as CustomEvent<PrototypeInteractionHintDetail>).detail;
@@ -231,6 +264,7 @@ export class UIOverlay {
     window.addEventListener("prototype:exploration-state", () => this.renderMenu());
     window.addEventListener("prototype:shop-dismiss", () => this.closeShop());
     window.addEventListener("prototype:menu-open-request", () => this.openMenu());
+
   }
 
   private bindMenuControls(): void {
@@ -281,12 +315,14 @@ export class UIOverlay {
     this.activeMenuView = "home";
     this.renderMenu();
     this.menuPanel.hidden = false;
+    this.root.classList.add("menu-is-open");
     window.dispatchEvent(new CustomEvent("prototype:menu-state", { detail: { open: true } }));
   }
 
   private closeMenu(): void {
     if (this.menuPanel.hidden) return;
     this.menuPanel.hidden = true;
+    this.root.classList.remove("menu-is-open");
     window.dispatchEvent(new CustomEvent("prototype:menu-state", { detail: { open: false } }));
   }
 
@@ -347,6 +383,12 @@ export class UIOverlay {
             ${node("duty-free-central")}
             ${node("shop-gift-01")}
           </div>
+          <div class="map-middle">
+            ${node("information-core")}
+            ${node("departure-hall")}
+            ${node("airport-facilities")}
+          </div>
+          <div class="map-bottom">${node("security-check")}</div>
           <div class="map-bottom">${node("duty-free-entrance")}</div>
         </div>
       `;
@@ -369,7 +411,7 @@ export class UIOverlay {
         <div class="passport-summary">
           <article><span>探索完成率</span><strong>${explorationService.getExplorationPercent()}%</strong></article>
           <article><span>到訪區域</span><strong>${explorationState.visitedRegionIds.length}/${REGION_ORDER.length}</strong></article>
-          <article><span>遇見人物</span><strong>${explorationState.metNpcIds.length}/6</strong></article>
+          <article><span>遇見人物</span><strong>${explorationState.metNpcIds.length}/11</strong></article>
           <article><span>購買商品</span><strong>${shopState.purchasedItems.length}/${SHOP_PRODUCTS.length}</strong></article>
         </div>
         <h3>機場紀念章</h3>
@@ -466,7 +508,7 @@ export class UIOverlay {
       <p class="menu-kicker">CONTROLS</p>
       <h2>操作說明</h2>
       <dl class="menu-controls-list">
-        <div><dt>移動</dt><dd>方向鍵 / WASD / 手機方向鍵</dd></div>
+        <div><dt>移動</dt><dd>方向鍵 / WASD / 滑鼠按住 / 手機蘑菇頭</dd></div>
         <div><dt>互動</dt><dd>A / Enter / Space</dd></div>
         <div><dt>走路／跑步</dt><dd>Shift / B</dd></div>
         <div><dt>開啟選單</dt><dd>M / MENU</dd></div>
@@ -700,28 +742,55 @@ export class UIOverlay {
   }
 
   private bindTouchControls(): void {
-    const buttons =
-      this.root.querySelectorAll<HTMLButtonElement>("[data-direction], [data-directions]");
-    buttons.forEach((button) => {
-      const directions = (button.dataset.directions ?? button.dataset.direction ?? "")
-        .split(",")
-        .filter(Boolean) as Direction[];
-      const emit = (pressed: boolean): void => {
-        directions.forEach((direction) => {
-          window.dispatchEvent(
-            new CustomEvent("prototype:touch", { detail: { direction, pressed } })
-          );
-        });
-      };
-      button.addEventListener("pointerdown", (event) => {
-        event.preventDefault();
-        button.setPointerCapture(event.pointerId);
-        emit(true);
-      });
-      button.addEventListener("pointerup", () => emit(false));
-      button.addEventListener("pointercancel", () => emit(false));
-      button.addEventListener("lostpointercapture", () => emit(false));
+    const stick = this.root.querySelector<HTMLElement>(".virtual-stick")!;
+    const knob = this.root.querySelector<HTMLElement>(".virtual-stick-knob")!;
+
+    const updateStick = (event: PointerEvent): void => {
+      const bounds = stick.getBoundingClientRect();
+      const offsetX = event.clientX - (bounds.left + bounds.width / 2);
+      const offsetY = event.clientY - (bounds.top + bounds.height / 2);
+      const maxDistance = bounds.width * 0.28;
+      const distance = Math.hypot(offsetX, offsetY);
+      const scale = distance > maxDistance ? maxDistance / distance : 1;
+      const x = offsetX * scale;
+      const y = offsetY * scale;
+      const deadZone = bounds.width * 0.08;
+      const strength = Math.max(
+        0,
+        Math.min(1, (distance - deadZone) / (maxDistance - deadZone))
+      );
+      const magnitude = Math.hypot(x, y) || 1;
+      const vector = strength > 0
+        ? { x: x / magnitude, y: y / magnitude, strength }
+        : { x: 0, y: 0, strength: 0 };
+
+      knob.style.transform = `translate(${x}px, ${y}px)`;
+      window.dispatchEvent(new CustomEvent("prototype:joystick", { detail: vector }));
+    };
+
+    const releaseStick = (): void => {
+      window.dispatchEvent(
+        new CustomEvent("prototype:joystick", {
+          detail: { x: 0, y: 0, strength: 0 }
+        })
+      );
+      knob.style.transform = "translate(0, 0)";
+      stick.classList.remove("is-active");
+    };
+
+    stick.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      audioManager.unlock();
+      stick.setPointerCapture(event.pointerId);
+      stick.classList.add("is-active");
+      updateStick(event);
     });
+    stick.addEventListener("pointermove", (event) => {
+      if (stick.hasPointerCapture(event.pointerId)) updateStick(event);
+    });
+    stick.addEventListener("pointerup", releaseStick);
+    stick.addEventListener("pointercancel", releaseStick);
+    stick.addEventListener("lostpointercapture", releaseStick);
 
     this.root.querySelectorAll<HTMLButtonElement>("[data-action]").forEach((button) => {
       button.addEventListener("pointerdown", (event) => {

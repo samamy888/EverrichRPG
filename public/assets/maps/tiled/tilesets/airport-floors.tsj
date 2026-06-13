@@ -5,7 +5,7 @@
   "name": "airport-floors",
   "tilewidth": 16,
   "tileheight": 16,
-  "tilecount": 8,
+  "tilecount": 9,
   "columns": 0,
   "grid": {
     "orientation": "orthogonal",
@@ -114,6 +114,19 @@
           "name": "texture",
           "type": "string",
           "value": "floor-navy-panel"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "image": "images/wall-ivory-panel.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "wall-ivory-panel"
         }
       ]
     }

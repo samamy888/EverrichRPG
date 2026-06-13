@@ -33,6 +33,7 @@ const OPPOSITE_DIRECTION: Record<Facing, Facing> = {
 
 export class TravelerAI {
   readonly bounds: Phaser.Geom.Rectangle;
+  readonly objectId: string;
 
   private readonly scene: Phaser.Scene;
   private readonly object: MapObjectData;
@@ -49,10 +50,12 @@ export class TravelerAI {
   private nextDecisionAt: number;
   private remainingSteps = 0;
   private paused = false;
+  private dialogueFacing: Facing | null = null;
 
   constructor(options: TravelerAIOptions) {
     this.scene = options.scene;
     this.object = options.object;
+    this.objectId = options.object.id;
     this.sprite = options.sprite;
     this.bounds = options.bounds;
     this.label = options.label;
@@ -106,6 +109,28 @@ export class TravelerAI {
 
   getBounds(): Phaser.Geom.Rectangle {
     return this.bounds;
+  }
+
+  faceToward(x: number, y: number): void {
+    if (this.dialogueFacing === null) this.dialogueFacing = this.facing;
+    const deltaX = x - this.sprite.x;
+    const deltaY = y - this.sprite.y;
+    this.facing =
+      Math.abs(deltaX) > Math.abs(deltaY)
+        ? deltaX < 0
+          ? "left"
+          : "right"
+        : deltaY < 0
+          ? "up"
+          : "down";
+    this.setIdleFrame();
+  }
+
+  restoreFacing(): void {
+    if (this.dialogueFacing === null) return;
+    this.facing = this.dialogueFacing;
+    this.dialogueFacing = null;
+    this.setIdleFrame();
   }
 
   private chooseDirection(): void {

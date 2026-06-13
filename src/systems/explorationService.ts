@@ -20,6 +20,10 @@ export interface ExplorationSave {
 
 export const REGION_LABELS: Record<RegionId, string> = {
   "duty-free-entrance": "免稅商店入口區",
+  "security-check": "安全檢查區",
+  "departure-hall": "中央出境大廳",
+  "information-core": "旅客服務中心",
+  "airport-facilities": "機場設施區",
   "duty-free-central": "中央免稅商店街",
   "shop-beauty-01": "美妝香氛免稅店",
   "shop-liquor-food-01": "酒類食品免稅店",
@@ -83,7 +87,7 @@ export class ExplorationService {
     const regionPoints = this.state.visitedRegionIds.length;
     const npcPoints = this.state.metNpcIds.length;
     const collectiblePoints = this.state.collectibleIds.length;
-    const total = REGION_ORDER.length + 6 + HIDDEN_COLLECTIBLES.length;
+    const total = REGION_ORDER.length + 11 + HIDDEN_COLLECTIBLES.length;
     return Math.round(((regionPoints + npcPoints + collectiblePoints) / total) * 100);
   }
 

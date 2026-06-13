@@ -9,6 +9,7 @@ import {
   emitPrototypeStatus
 } from "../core/prototypeEvents";
 import {
+  type DialogueChoiceData,
   type Facing,
   type MapObjectData,
   type PortalData,
@@ -28,6 +29,7 @@ import {
   type PlayerVariant,
   type PrototypeSave
 } from "../systems/prototypeSave";
+import { travelerQuestService } from "../systems/travelerQuestService";
 import { TravelerAI } from "../systems/TravelerAI";
 
 interface MovementState {
@@ -38,8 +40,9 @@ interface MovementState {
 }
 
 interface MovementInput {
-  x: -1 | 0 | 1;
-  y: -1 | 0 | 1;
+  x: number;
+  y: number;
+  strength: number;
   facing: Facing;
   key: string;
 }
@@ -47,6 +50,16 @@ interface MovementInput {
 interface InteractiveObject {
   object: MapObjectData;
   bounds: Phaser.Geom.Rectangle;
+}
+
+interface ActiveDialogue {
+  title: string;
+  pages: string[];
+  pageIndex: number;
+  visibleCharacters: number;
+  choices?: DialogueChoiceData[];
+  selectedChoice: number;
+  typingEvent?: Phaser.Time.TimerEvent;
 }
 
 const DIRECTION_VECTOR: Record<Facing, Phaser.Math.Vector2> = {
@@ -64,7 +77,6 @@ export class WorldScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasd!: Record<"W" | "A" | "S" | "D", Phaser.Input.Keyboard.Key>;
-  private interactKey!: Phaser.Input.Keyboard.Key;
   private resetKey!: Phaser.Input.Keyboard.Key;
   private testPortalKey!: Phaser.Input.Keyboard.Key;
   private debugKey!: Phaser.Input.Keyboard.Key;
@@ -77,6 +89,8 @@ export class WorldScene extends Phaser.Scene {
   private interactionHintLabel!: Phaser.GameObjects.Text;
   private hintedObjectId: string | null = null;
   private touchState: MovementState = { up: false, down: false, left: false, right: false };
+  private joystickVector = { x: 0, y: 0, strength: 0 };
+  private mouseMovementActive = false;
   private moving = false;
   private transitioning = false;
   private dialogueOpen = false;
@@ -89,10 +103,37 @@ export class WorldScene extends Phaser.Scene {
   private shopOpen = false;
   private menuOpen = false;
   private travelerAIs: TravelerAI[] = [];
+  private activeDialogue: ActiveDialogue | null = null;
+  private dialogueTraveler: TravelerAI | null = null;
+  private dialogueJoystickDirection: "up" | "down" | null = null;
 
   private readonly touchHandler = (event: Event): void => {
     const detail = (event as CustomEvent<{ direction: keyof MovementState; pressed: boolean }>).detail;
     this.touchState[detail.direction] = detail.pressed;
+  };
+  private readonly joystickHandler = (event: Event): void => {
+    const vector = (
+      event as CustomEvent<{ x: number; y: number; strength: number }>
+    ).detail;
+    if (this.hasVisibleDialogueChoices()) {
+      this.joystickVector = { x: 0, y: 0, strength: 0 };
+      if (vector.strength < 0.45 || Math.abs(vector.y) <= Math.abs(vector.x)) {
+        this.dialogueJoystickDirection = null;
+        return;
+      }
+      const direction = vector.y < 0 ? "up" : "down";
+      if (direction !== this.dialogueJoystickDirection) {
+        this.dialogueJoystickDirection = direction;
+        this.moveDialogueChoice(direction === "up" ? -1 : 1);
+      }
+      return;
+    }
+    this.dialogueJoystickDirection = null;
+    this.joystickVector = vector;
+  };
+  private readonly dialogueChoiceHandler = (event: Event): void => {
+    const index = (event as CustomEvent<{ index: number }>).detail.index;
+    this.chooseDialogueOption(index);
   };
 
   private readonly actionHandler = (): void => this.interact();
@@ -117,6 +158,8 @@ export class WorldScene extends Phaser.Scene {
   private readonly menuStateHandler = (event: Event): void => {
     this.menuOpen = (event as CustomEvent<{ open: boolean }>).detail.open;
     this.touchState = { up: false, down: false, left: false, right: false };
+    this.joystickVector = { x: 0, y: 0, strength: 0 };
+    this.mouseMovementActive = false;
     this.heldDirection = null;
     this.updateInteractionHint();
   };
@@ -152,6 +195,7 @@ export class WorldScene extends Phaser.Scene {
     this.load.image("floor-ivory", `${airportV2Tiles}/floor-ivory.png`);
     this.load.image("floor-carpet-blue", `${airportV2Tiles}/floor-carpet-blue.png`);
     this.load.image("floor-navy-panel", `${airportV2Tiles}/floor-navy-panel.png`);
+    this.load.image("wall-ivory-panel", `${airportV2Tiles}/wall-ivory-panel.png`);
     this.load.image("service-counter", `${propBase}/service-counter.png`);
     this.load.image("display-shelf", `${propBase}/display-shelf.png`);
     this.load.image("planter", `${propBase}/planter.png`);
@@ -189,7 +233,26 @@ export class WorldScene extends Phaser.Scene {
     ]) {
       this.load.image(texture, `/assets/props/airport-reference-v3/${texture}.png`);
     }
+    for (const texture of [
+      "airport-overhead-wayfinding",
+      "airport-waiting-seats",
+      "airport-queue-barriers",
+      "airport-ceiling-skylight"
+    ]) {
+      this.load.image(
+        texture,
+        `/assets/props/airport-atrium-v1/${texture.replace("airport-", "")}.png`
+      );
+    }
+    this.load.image(
+      "airport-floor-wayfinding",
+      "/assets/props/airport-floor-wayfinding-v1/floor-duty-free.png"
+    );
     const directionalPropBase = "/assets/props/airport-directional-v1";
+    this.load.image(
+      "airport-restroom-entrance-south",
+      "/assets/props/airport-directional-v2/restroom-wall-south.png"
+    );
     for (const texture of [
       "airport-planter-south",
       "airport-planter-west",
@@ -199,7 +262,6 @@ export class WorldScene extends Phaser.Scene {
       "airport-water-dispenser-west",
       "airport-water-dispenser-east",
       "airport-water-dispenser-north",
-      "airport-restroom-entrance-south",
       "airport-restroom-entrance-west",
       "airport-restroom-entrance-east",
       "airport-restroom-entrance-north",
@@ -297,6 +359,15 @@ export class WorldScene extends Phaser.Scene {
     }
     if (this.debugVisible) this.drawDebug();
 
+    if (Phaser.Input.Keyboard.JustDown(this.resetKey)) {
+      clearPrototypeSave();
+      this.scene.start("CharacterSelectScene");
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.debugKey)) {
+      this.debugVisible = !this.debugVisible;
+      this.drawDebug();
+    }
+
     if (worldPaused) return;
 
     const movement = this.readHeldMovement();
@@ -309,28 +380,15 @@ export class WorldScene extends Phaser.Scene {
     } else if (movement.key !== this.heldDirection) {
       this.heldDirection = movement.key;
       this.tryMove(movement);
-      this.repeatMoveAt =
-        time + this.getStepDuration(movement.x !== 0 && movement.y !== 0);
+      this.repeatMoveAt = time + this.getInputRepeatDuration(movement);
     } else if (!this.moving && time >= this.repeatMoveAt) {
       this.tryMove(movement);
-      this.repeatMoveAt =
-        time + this.getStepDuration(movement.x !== 0 && movement.y !== 0);
+      this.repeatMoveAt = time + this.getInputRepeatDuration(movement);
     }
 
-    if (Phaser.Input.Keyboard.JustDown(this.interactKey)) {
-      this.interact();
-    }
-    if (Phaser.Input.Keyboard.JustDown(this.resetKey)) {
-      clearPrototypeSave();
-      this.scene.start("CharacterSelectScene");
-    }
     if (Phaser.Input.Keyboard.JustDown(this.testPortalKey)) {
       const portal = this.currentRegion.portals[0];
       if (portal) this.tryPortal(portal);
-    }
-    if (Phaser.Input.Keyboard.JustDown(this.debugKey)) {
-      this.debugVisible = !this.debugVisible;
-      this.drawDebug();
     }
     if (Phaser.Input.Keyboard.JustDown(this.runKey)) {
       this.toggleMovementMode();
@@ -516,7 +574,48 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private drawPortals(region: RegionData): void {
-    void region;
+    const edgeThreshold = CONFIG.tileSize * 3;
+
+    for (const portal of region.portals) {
+      const { x, y, width, height } = portal.bounds;
+      const isTop = y <= edgeThreshold;
+      const isBottom = y + height >= region.height - edgeThreshold;
+      const isLeft = x <= edgeThreshold;
+      const horizontal = isTop || isBottom;
+      const glow = this.add.graphics().setDepth(3).setBlendMode(Phaser.BlendModes.ADD);
+
+      glow.fillStyle(0xfffdf1, 0.16);
+      if (horizontal) {
+        glow.fillRoundedRect(x - 8, y - 5, width + 16, height + 10, 8);
+        glow.fillStyle(0xffffff, 0.32);
+        glow.fillRoundedRect(x + 3, y, Math.max(10, width - 6), height, 5);
+        glow.fillStyle(0xfff2bc, 0.18);
+        const poolY = isTop ? y + height - 3 : y - 13;
+        glow.fillEllipse(x + width / 2, poolY, width + 18, 28);
+        glow.fillStyle(0xffffff, 0.72);
+        const lineY = isTop ? y + height - 3 : y + 1;
+        glow.fillRect(x + 5, lineY, Math.max(8, width - 10), 3);
+      } else {
+        glow.fillRoundedRect(x - 5, y - 8, width + 10, height + 16, 8);
+        glow.fillStyle(0xffffff, 0.32);
+        glow.fillRoundedRect(x, y + 3, width, Math.max(10, height - 6), 5);
+        glow.fillStyle(0xfff2bc, 0.18);
+        const poolX = isLeft ? x + width - 3 : x - 13;
+        glow.fillEllipse(poolX, y + height / 2, 28, height + 18);
+        glow.fillStyle(0xffffff, 0.72);
+        const lineX = isLeft ? x + width - 3 : x + 1;
+        glow.fillRect(lineX, y + 5, 3, Math.max(8, height - 10));
+      }
+
+      this.tweens.add({
+        targets: glow,
+        alpha: { from: 0.48, to: 0.82 },
+        duration: 1050,
+        ease: "Sine.InOut",
+        yoyo: true,
+        repeat: -1
+      });
+    }
   }
 
   private createPlayer(region: RegionData, spawnId: string): void {
@@ -547,13 +646,13 @@ export class WorldScene extends Phaser.Scene {
       .setDepth(50);
 
     const menuButton = this.add
-      .text(CONFIG.width - 8, 8, "MENU · M", {
+      .text(CONFIG.width - 8, 8, "☰ MENU", {
         color: "#fff2c7",
         fontFamily: "monospace",
-        fontSize: "10px",
+        fontSize: "11px",
         fontStyle: "bold",
         backgroundColor: "rgba(23,50,59,0.9)",
-        padding: { x: 7, y: 4 }
+        padding: { x: 10, y: 6 }
       })
       .setOrigin(1, 0)
       .setScrollFactor(0)
@@ -614,51 +713,101 @@ export class WorldScene extends Phaser.Scene {
       "W" | "A" | "S" | "D",
       Phaser.Input.Keyboard.Key
     >;
-    this.interactKey = this.input.keyboard!.addKey("ENTER");
     this.resetKey = this.input.keyboard!.addKey("R");
     this.testPortalKey = this.input.keyboard!.addKey("T");
     this.debugKey = this.input.keyboard!.addKey("E");
     this.runKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+    this.input.keyboard!.on("keydown-ENTER", () => this.interact());
     this.input.keyboard!.on("keydown-SPACE", () => this.interact());
+    this.input.keyboard!.on("keydown-W", () => this.moveDialogueChoice(-1));
+    this.input.keyboard!.on("keydown-UP", () => this.moveDialogueChoice(-1));
+    this.input.keyboard!.on("keydown-S", () => this.moveDialogueChoice(1));
+    this.input.keyboard!.on("keydown-DOWN", () => this.moveDialogueChoice(1));
     this.input.keyboard!.on("keydown-ESC", () => this.closeDialogue());
+    this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+      const pointerType =
+        "pointerType" in pointer.event ? String(pointer.event.pointerType) : "mouse";
+      if (pointer.leftButtonDown() && pointerType === "mouse") {
+        this.mouseMovementActive = true;
+      }
+    });
+    this.input.on("pointerup", (pointer: Phaser.Input.Pointer) => {
+      if (!pointer.leftButtonDown()) this.mouseMovementActive = false;
+    });
+    this.input.on("gameout", () => {
+      this.mouseMovementActive = false;
+    });
   }
 
   private bindUiEvents(): void {
     window.addEventListener("prototype:touch", this.touchHandler);
+    window.addEventListener("prototype:joystick", this.joystickHandler);
     window.addEventListener("prototype:action", this.actionHandler);
     window.addEventListener("prototype:back", this.backHandler);
     window.addEventListener("prototype:menu", this.menuHandler);
     window.addEventListener("prototype:menu-state", this.menuStateHandler);
     window.addEventListener("prototype:return-title", this.returnTitleHandler);
+    window.addEventListener("prototype:dialogue-choice", this.dialogueChoiceHandler);
     window.addEventListener("prototype:shop-close", this.shopCloseHandler);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       window.removeEventListener("prototype:touch", this.touchHandler);
+      window.removeEventListener("prototype:joystick", this.joystickHandler);
       window.removeEventListener("prototype:action", this.actionHandler);
       window.removeEventListener("prototype:back", this.backHandler);
       window.removeEventListener("prototype:menu", this.menuHandler);
       window.removeEventListener("prototype:menu-state", this.menuStateHandler);
       window.removeEventListener("prototype:return-title", this.returnTitleHandler);
+      window.removeEventListener("prototype:dialogue-choice", this.dialogueChoiceHandler);
       window.removeEventListener("prototype:shop-close", this.shopCloseHandler);
     });
   }
 
   private readHeldMovement(): MovementInput | null {
+    let inputX = 0;
+    let inputY = 0;
+    let strength = 1;
     const left = this.cursors.left.isDown || this.wasd.A.isDown || this.touchState.left;
     const right = this.cursors.right.isDown || this.wasd.D.isDown || this.touchState.right;
     const up = this.cursors.up.isDown || this.wasd.W.isDown || this.touchState.up;
     const down = this.cursors.down.isDown || this.wasd.S.isDown || this.touchState.down;
-    const x = (Number(right) - Number(left)) as -1 | 0 | 1;
-    const y = (Number(down) - Number(up)) as -1 | 0 | 1;
+    inputX = Number(right) - Number(left);
+    inputY = Number(down) - Number(up);
 
-    if (x === 0 && y === 0) return null;
+    if (inputX === 0 && inputY === 0 && this.joystickVector.strength > 0) {
+      inputX = this.joystickVector.x;
+      inputY = this.joystickVector.y;
+      strength = this.joystickVector.strength;
+    }
+    if (
+      inputX === 0 &&
+      inputY === 0 &&
+      this.mouseMovementActive &&
+      this.input.activePointer
+    ) {
+      const pointer = this.input.activePointer;
+      inputX = pointer.worldX - this.player.x;
+      inputY = pointer.worldY - this.player.y;
+      strength = 1;
+      if (Math.hypot(inputX, inputY) < CONFIG.tileSize * 0.7) return null;
+    }
+    if (inputX === 0 && inputY === 0) return null;
+
+    const magnitude = Math.hypot(inputX, inputY);
+    const x = inputX / magnitude;
+    const y = inputY / magnitude;
 
     let facing = this.facing;
-    if (y < 0) facing = "up";
-    else if (y > 0) facing = "down";
-    else if (x < 0) facing = "left";
-    else if (x > 0) facing = "right";
+    if (Math.abs(y) >= Math.abs(x)) facing = y < 0 ? "up" : "down";
+    else facing = x < 0 ? "left" : "right";
 
-    return { x, y, facing, key: `${x},${y}` };
+    const angle = Math.atan2(y, x);
+    return {
+      x,
+      y,
+      strength,
+      facing,
+      key: `${Math.round(angle * 12)},${Math.round(strength * 4)}`
+    };
   }
 
   private tryMove(movement: MovementInput): void {
@@ -666,8 +815,9 @@ export class WorldScene extends Phaser.Scene {
     this.updateInteractionHint();
     if (this.moving || this.transitioning || this.dialogueOpen || this.menuOpen) return;
 
-    const targetX = this.player.x + movement.x * CONFIG.tileSize;
-    const targetY = this.player.y + movement.y * CONFIG.tileSize;
+    const stepDistance = CONFIG.tileSize * Phaser.Math.Clamp(movement.strength, 0.35, 1);
+    const targetX = this.player.x + movement.x * stepDistance;
+    const targetY = this.player.y + movement.y * stepDistance;
     const region = this.currentRegion;
     const blocked = (x: number, y: number): boolean => {
       const footBox = new Phaser.Geom.Rectangle(x - 5, y - 10, 10, 10);
@@ -685,7 +835,7 @@ export class WorldScene extends Phaser.Scene {
       );
     };
 
-    const isDiagonal = movement.x !== 0 && movement.y !== 0;
+    const isDiagonal = Math.abs(movement.x) > 0.2 && Math.abs(movement.y) > 0.2;
     if (
       blocked(targetX, targetY) ||
       (isDiagonal &&
@@ -702,7 +852,7 @@ export class WorldScene extends Phaser.Scene {
       targets: this.player,
       x: targetX,
       y: targetY,
-      duration: this.getStepDuration(isDiagonal),
+      duration: this.getInputRepeatDuration(movement),
       ease: "Linear",
       onUpdate: () => {
         this.player.setDepth(this.player.y);
@@ -738,7 +888,7 @@ export class WorldScene extends Phaser.Scene {
   private interact(): void {
     if (this.transitioning || this.shopOpen) return;
     if (this.dialogueOpen) {
-      this.closeDialogue();
+      this.advanceDialogue();
       return;
     }
 
@@ -751,18 +901,20 @@ export class WorldScene extends Phaser.Scene {
       );
       if (collectible) {
         audioManager.playConfirm();
-        emitPrototypeDialogue({
+        this.startDialogue({
           title: `發現「${collectible.name}」`,
           lines: [collectible.description, "紀念章已登錄到旅客護照。"]
         });
-        this.dialogueOpen = true;
-        this.updateInteractionHint();
         return;
       }
     }
 
     const shopId = this.getShopIdForRegion(this.regionId);
     const shopProductId = target ? this.getShopProductId(target.object.id) : undefined;
+    if (target?.object.texture.startsWith("clerk-") && target.object.interaction) {
+      this.startDialogue(this.resolveInteractionDialogue(target.object), target.object.id);
+      return;
+    }
     if (target && shopId) {
       this.shopOpen = true;
       emitPrototypeShopOpen({
@@ -774,28 +926,165 @@ export class WorldScene extends Phaser.Scene {
     }
 
     if (!target?.object.interaction) {
-      emitPrototypeDialogue({
+      this.startDialogue({
         title: "目前沒有可互動的內容",
         lines: ["靠近櫃台、商品或指示牌時，畫面會出現 A 互動提示。"]
       });
-      this.dialogueOpen = true;
-      this.updateInteractionHint();
       return;
     }
 
-    if (!target?.object.interaction) {
-      emitPrototypeDialogue({
-        title: "沒有可互動物件",
-        lines: ["面向櫃台或店鋪後再按 A / Enter。"]
-      });
-    } else {
-      emitPrototypeDialogue(target.object.interaction);
+    this.startDialogue(this.resolveInteractionDialogue(target.object), target.object.id);
+  }
+
+  private resolveInteractionDialogue(
+    object: MapObjectData
+  ): NonNullable<MapObjectData["interaction"]> {
+    const interaction = object.interaction;
+    if (!interaction) {
+      return { title: object.label ?? "互動", lines: [] };
     }
+    const questLines = interaction.questLines?.[travelerQuestService.getState().status];
+    return {
+      ...interaction,
+      lines: questLines?.length ? questLines : interaction.lines
+    };
+  }
+
+  private startDialogue(
+    dialogue: { title: string; lines: string[]; choices?: DialogueChoiceData[] },
+    objectId?: string
+  ): void {
+    this.closeDialogue();
     this.dialogueOpen = true;
+    this.activeDialogue = {
+      title: dialogue.title,
+      pages: dialogue.lines.length > 0 ? dialogue.lines : [""],
+      pageIndex: 0,
+      visibleCharacters: 0,
+      ...(dialogue.choices?.length ? { choices: dialogue.choices } : {}),
+      selectedChoice: 0
+    };
+    this.dialogueTraveler =
+      this.travelerAIs.find((traveler) => traveler.objectId === objectId) ?? null;
+    this.dialogueTraveler?.faceToward(this.player.x, this.player.y);
+    this.beginDialoguePage();
     this.updateInteractionHint();
   }
 
+  private beginDialoguePage(): void {
+    const dialogue = this.activeDialogue;
+    if (!dialogue) return;
+    dialogue.typingEvent?.remove(false);
+    dialogue.visibleCharacters = 0;
+    this.emitDialoguePage();
+    const pageText = dialogue.pages[dialogue.pageIndex] ?? "";
+    if (pageText.length === 0) {
+      dialogue.visibleCharacters = pageText.length;
+      this.emitDialoguePage();
+      return;
+    }
+    dialogue.typingEvent = this.time.addEvent({
+      delay: 28,
+      repeat: pageText.length - 1,
+      callback: () => {
+        if (!this.activeDialogue) return;
+        this.activeDialogue.visibleCharacters = Math.min(
+          pageText.length,
+          this.activeDialogue.visibleCharacters + 1
+        );
+        this.emitDialoguePage();
+      }
+    });
+  }
+
+  private emitDialoguePage(): void {
+    const dialogue = this.activeDialogue;
+    if (!dialogue) return;
+    const pageText = dialogue.pages[dialogue.pageIndex] ?? "";
+    emitPrototypeDialogue({
+      title: dialogue.title,
+      text: pageText.slice(0, dialogue.visibleCharacters),
+      page: dialogue.pageIndex + 1,
+      pageCount: dialogue.pages.length,
+      complete: dialogue.visibleCharacters >= pageText.length,
+      ...(this.hasVisibleDialogueChoices()
+        ? {
+            choices: dialogue.choices?.map((choice) => choice.label) ?? [],
+            selectedChoice: dialogue.selectedChoice
+          }
+        : {})
+    });
+  }
+
+  private advanceDialogue(): void {
+    const dialogue = this.activeDialogue;
+    if (!dialogue) {
+      this.closeDialogue();
+      return;
+    }
+    const pageText = dialogue.pages[dialogue.pageIndex] ?? "";
+    if (dialogue.visibleCharacters < pageText.length) {
+      dialogue.typingEvent?.remove(false);
+      delete dialogue.typingEvent;
+      dialogue.visibleCharacters = pageText.length;
+      this.emitDialoguePage();
+      audioManager.playConfirm();
+      return;
+    }
+    if (this.hasVisibleDialogueChoices()) {
+      this.chooseDialogueOption(dialogue.selectedChoice);
+      return;
+    }
+    if (dialogue.pageIndex < dialogue.pages.length - 1) {
+      dialogue.pageIndex += 1;
+      audioManager.playConfirm();
+      this.beginDialoguePage();
+      return;
+    }
+    this.closeDialogue();
+  }
+
+  private hasVisibleDialogueChoices(): boolean {
+    const dialogue = this.activeDialogue;
+    if (!dialogue?.choices?.length) return false;
+    const pageText = dialogue.pages[dialogue.pageIndex] ?? "";
+    return (
+      dialogue.pageIndex === dialogue.pages.length - 1 &&
+      dialogue.visibleCharacters >= pageText.length
+    );
+  }
+
+  private moveDialogueChoice(offset: number): void {
+    const dialogue = this.activeDialogue;
+    if (!dialogue || !this.hasVisibleDialogueChoices() || !dialogue.choices?.length) return;
+    dialogue.selectedChoice =
+      (dialogue.selectedChoice + offset + dialogue.choices.length) %
+      dialogue.choices.length;
+    audioManager.playConfirm();
+    this.emitDialoguePage();
+  }
+
+  private chooseDialogueOption(index: number): void {
+    const dialogue = this.activeDialogue;
+    const choice = dialogue?.choices?.[index];
+    if (!dialogue || !choice || !this.hasVisibleDialogueChoices()) return;
+    dialogue.typingEvent?.remove(false);
+    dialogue.pages = choice.responseLines.length > 0 ? choice.responseLines : [""];
+    dialogue.pageIndex = 0;
+    dialogue.visibleCharacters = 0;
+    dialogue.selectedChoice = 0;
+    delete dialogue.choices;
+    this.dialogueJoystickDirection = null;
+    audioManager.playConfirm();
+    this.beginDialoguePage();
+  }
+
   private closeDialogue(): void {
+    this.activeDialogue?.typingEvent?.remove(false);
+    this.activeDialogue = null;
+    this.dialogueTraveler?.restoreFacing();
+    this.dialogueTraveler = null;
+    this.dialogueJoystickDirection = null;
     if (!this.dialogueOpen) return;
     this.dialogueOpen = false;
     emitPrototypeDialogueClose();
@@ -922,9 +1211,15 @@ export class WorldScene extends Phaser.Scene {
 
   private resetRuntimeState(): void {
     this.touchState = { up: false, down: false, left: false, right: false };
+    this.joystickVector = { x: 0, y: 0, strength: 0 };
+    this.mouseMovementActive = false;
     this.moving = false;
     this.transitioning = false;
     this.dialogueOpen = false;
+    this.activeDialogue?.typingEvent?.remove(false);
+    this.activeDialogue = null;
+    this.dialogueTraveler = null;
+    this.dialogueJoystickDirection = null;
     this.shopOpen = false;
     this.menuOpen = false;
     this.heldDirection = null;
@@ -985,9 +1280,9 @@ export class WorldScene extends Phaser.Scene {
     );
   }
 
-  private getStepDuration(isDiagonal: boolean): number {
-    const cardinalDuration = this.running ? 90 : 150;
-    return isDiagonal ? Math.round(cardinalDuration * Math.SQRT2) : cardinalDuration;
+  private getInputRepeatDuration(movement: MovementInput): number {
+    const fullStepDuration = this.running ? 90 : 150;
+    return Math.max(55, Math.round(fullStepDuration * movement.strength));
   }
 
   private toggleMovementMode(): void {
@@ -1002,7 +1297,7 @@ export class WorldScene extends Phaser.Scene {
   private emitStatus(): void {
     emitPrototypeStatus({
       regionName: this.currentRegion.name,
-      message: `${this.running ? "跑步" : "走路"}模式 · Shift / B 切換 · A 互動 · E 除錯`,
+      message: `${this.running ? "跑步" : "走路"}模式 · WASD / 滑鼠按住移動 · A 互動`,
       playerVariant: this.playerVariant
     });
     return;

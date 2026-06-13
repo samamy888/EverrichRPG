@@ -6,7 +6,12 @@ export interface PrototypeStatusDetail {
 
 export interface PrototypeDialogueDetail {
   title: string;
-  lines: string[];
+  text: string;
+  page: number;
+  pageCount: number;
+  complete: boolean;
+  choices?: string[];
+  selectedChoice?: number;
 }
 
 export interface PrototypeInteractionHintDetail {

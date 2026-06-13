@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: airport waiting seat row
+Primary request: Five connected terminal seats with dark teal-gray padding, brushed-silver frame and subtle charging panel.
+Style: clean pixel-inspired HD RPG prop.
+Constraints: no people, luggage, brand, floor or cast shadow.
+Generation: built-in imagegen on solid #FF00FF, followed by generate2dsprite cleanup and scale normalization.

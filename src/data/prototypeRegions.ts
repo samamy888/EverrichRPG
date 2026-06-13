@@ -2,6 +2,10 @@ export type Facing = "up" | "down" | "left" | "right";
 
 export type RegionId =
   | "duty-free-entrance"
+  | "security-check"
+  | "departure-hall"
+  | "information-core"
+  | "airport-facilities"
   | "duty-free-central"
   | "shop-beauty-01"
   | "shop-liquor-food-01"
@@ -29,7 +33,7 @@ export interface PortalData {
 }
 
 export interface BoundaryData extends RectData {
-  texture: "floor-dark" | "floor-navy-panel";
+  texture: "floor-dark" | "floor-navy-panel" | "wall-ivory-panel";
 }
 
 export type FloorTexture =
@@ -40,7 +44,8 @@ export type FloorTexture =
   | "floor-terrazzo"
   | "floor-ivory"
   | "floor-carpet-blue"
-  | "floor-navy-panel";
+  | "floor-navy-panel"
+  | "wall-ivory-panel";
 
 export type MapObjectTexture =
   | "service-counter"
@@ -118,6 +123,11 @@ export type MapObjectTexture =
   | "airport-sign-pillar-west"
   | "airport-sign-pillar-east"
   | "airport-sign-pillar-north"
+  | "airport-overhead-wayfinding"
+  | "airport-floor-wayfinding"
+  | "airport-waiting-seats"
+  | "airport-queue-barriers"
+  | "airport-ceiling-skylight"
   | "clerk-beauty-01"
   | "clerk-liquor-food-01"
   | "clerk-gift-01"
@@ -141,6 +151,13 @@ export interface NpcBehaviorData {
   animationKey: string;
 }
 
+export interface DialogueChoiceData {
+  label: string;
+  responseLines: string[];
+}
+
+export type QuestDialogueStatus = "available" | "active" | "ready" | "completed";
+
 export interface MapObjectData {
   id: string;
   texture: MapObjectTexture;
@@ -152,6 +169,8 @@ export interface MapObjectData {
   interaction?: {
     title: string;
     lines: string[];
+    choices?: DialogueChoiceData[];
+    questLines?: Partial<Record<QuestDialogueStatus, string[]>>;
   };
   foreground?: boolean;
   decorative?: boolean;

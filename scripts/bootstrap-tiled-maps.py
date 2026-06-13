@@ -23,6 +23,7 @@ FLOORS = [
     ("floor-ivory", "airport-reference-v2/floor-ivory.png"),
     ("floor-carpet-blue", "airport-reference-v2/floor-carpet-blue.png"),
     ("floor-navy-panel", "airport-reference-v2/floor-navy-panel.png"),
+    ("wall-ivory-panel", "airport-reference-v2/wall-ivory-panel.png"),
 ]
 
 PROPS = [
@@ -93,7 +94,7 @@ PROPS = [
     ),
     (
         "airport-restroom-entrance-south",
-        "airport-directional-v1/restroom-entrance-south.png",
+        "airport-directional-v2/restroom-wall-south.png",
     ),
     (
         "airport-restroom-entrance-west",
@@ -239,6 +240,14 @@ PROPS = [
         "airport-sign-pillar-north",
         "legacy-directional-v1/airport-sign-pillar-north.png",
     ),
+    ("airport-overhead-wayfinding", "airport-atrium-v1/overhead-wayfinding.png"),
+    ("airport-waiting-seats", "airport-atrium-v1/waiting-seats.png"),
+    ("airport-queue-barriers", "airport-atrium-v1/queue-barriers.png"),
+    ("airport-ceiling-skylight", "airport-atrium-v1/ceiling-skylight.png"),
+    (
+        "airport-floor-wayfinding",
+        "airport-floor-wayfinding-v1/floor-duty-free.png",
+    ),
 ]
 
 NPCS = [
@@ -261,6 +270,45 @@ CLERK_COPY = {
     "shop-beauty-01": ("美妝店員", "想找旅行小物嗎？我有一個三店伴手禮巡禮可以推薦你。"),
     "shop-liquor-food-01": ("食品店員", "鳳梨酥方便攜帶，是很受旅客歡迎的台灣伴手禮。"),
     "shop-gift-01": ("禮品店員", "明信片組很適合替這趟免稅店巡禮留下紀念。"),
+}
+
+CLERK_QUEST_LINES = {
+    "shop-beauty-01": {
+        "available": [
+            "想找旅行小物嗎？我準備了一條三店伴手禮巡禮。",
+            "如果有興趣，可以從商店介面接受推薦。",
+        ],
+        "active": [
+            "目前要找旅行香水、台灣鳳梨酥和風景明信片。",
+            "都買齊後再回來找我。",
+        ],
+        "ready": [
+            "三樣推薦商品都收進旅行袋了！",
+            "打開商店介面向我回報，就能領取巡禮獎勵。",
+        ],
+        "completed": [
+            "恭喜完成三店伴手禮巡禮！",
+            "機場購物達人徽章很適合你。",
+        ],
+    },
+    "shop-liquor-food-01": {
+        "available": ["鳳梨酥方便攜帶，是很受旅客歡迎的台灣伴手禮。"],
+        "active": [
+            "你正在進行三店伴手禮巡禮吧？",
+            "記得挑一盒台灣鳳梨酥。",
+        ],
+        "ready": ["看來鳳梨酥已經準備好了，祝你順利完成巡禮。"],
+        "completed": ["完成巡禮後，也別忘了把鳳梨酥分享給同行旅伴。"],
+    },
+    "shop-gift-01": {
+        "available": ["明信片組很適合替這趟免稅店巡禮留下紀念。"],
+        "active": [
+            "巡禮需要一組台灣風景明信片。",
+            "它就在店內的禮品展示櫃。",
+        ],
+        "ready": ["明信片也收好了，現在可以回美妝店員那裡回報。"],
+        "completed": ["下次旅行時，也可以用明信片記錄新的機場回憶。"],
+    },
 }
 
 OBJECT_COPY = {
@@ -345,7 +393,7 @@ def portal(
     }
 
 
-def wall(bounds: tuple[float, float, float, float], texture: str = "floor-navy-panel") -> dict[str, Any]:
+def wall(bounds: tuple[float, float, float, float], texture: str = "wall-ivory-panel") -> dict[str, Any]:
     return {
         "name": f"wall-{bounds[0]}-{bounds[1]}-{bounds[2]}-{bounds[3]}",
         **object_defaults(),
@@ -407,6 +455,7 @@ def npc(
     collision: tuple[float, float, float, float],
     label: str,
     interaction: tuple[str, list[str]],
+    quest_lines: dict[str, list[str]] | None = None,
 ) -> dict[str, Any]:
     source_path = ROOT / "public" / "assets" / "sprites" / dict(NPCS)[texture]
     with Image.open(source_path) as image:
@@ -430,6 +479,16 @@ def npc(
             tiled_property("label", label),
             tiled_property("interactionTitle", interaction[0]),
             tiled_property("interactionLines", json.dumps(interaction[1], ensure_ascii=False)),
+            *(
+                [
+                    tiled_property(
+                        "interactionQuestLines",
+                        json.dumps(quest_lines, ensure_ascii=False),
+                    )
+                ]
+                if quest_lines
+                else []
+            ),
             tiled_property("foreground", True, "bool"),
             tiled_property("movementType", "wander" if is_traveler else "idle"),
             tiled_property("facing", "down"),
@@ -1097,6 +1156,7 @@ def build_region(region: dict[str, Any]) -> None:
                 (2.25, 15.5, 1.5, 1.5),
                 clerk_copy[0],
                 (clerk_copy[0], [clerk_copy[1]]),
+                CLERK_QUEST_LINES.get(region["id"]),
             )
         ]
         if config and clerk_copy

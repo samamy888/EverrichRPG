@@ -3,7 +3,7 @@
   "version": "1.10",
   "tiledversion": "1.11.2",
   "name": "airport-props",
-  "tilecount": 75,
+  "tilecount": 80,
   "columns": 0,
   "grid": {
     "orientation": "orthogonal",
@@ -468,9 +468,9 @@
     },
     {
       "id": 35,
-      "image": "../../../props/airport-directional-v1/restroom-entrance-south.png",
-      "imagewidth": 292,
-      "imageheight": 145,
+      "image": "../../../props/airport-directional-v2/restroom-wall-south.png",
+      "imagewidth": 176,
+      "imageheight": 68,
       "properties": [
         {
           "name": "texture",
@@ -983,6 +983,71 @@
           "name": "texture",
           "type": "string",
           "value": "airport-sign-pillar-north"
+        }
+      ]
+    },
+    {
+      "id": 75,
+      "image": "../../../props/airport-atrium-v1/overhead-wayfinding.png",
+      "imagewidth": 192,
+      "imageheight": 64,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-overhead-wayfinding"
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "image": "../../../props/airport-atrium-v1/waiting-seats.png",
+      "imagewidth": 176,
+      "imageheight": 72,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-waiting-seats"
+        }
+      ]
+    },
+    {
+      "id": 77,
+      "image": "../../../props/airport-atrium-v1/queue-barriers.png",
+      "imagewidth": 152,
+      "imageheight": 80,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-queue-barriers"
+        }
+      ]
+    },
+    {
+      "id": 78,
+      "image": "../../../props/airport-atrium-v1/ceiling-skylight.png",
+      "imagewidth": 320,
+      "imageheight": 76,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-ceiling-skylight"
+        }
+      ]
+    },
+    {
+      "id": 79,
+      "image": "../../../props/airport-floor-wayfinding-v1/floor-duty-free.png",
+      "imagewidth": 448,
+      "imageheight": 104,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-floor-wayfinding"
         }
       ]
     }

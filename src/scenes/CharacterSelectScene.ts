@@ -13,16 +13,17 @@ export class CharacterSelectScene extends Phaser.Scene {
   private readonly selectMaleHandler = (): void => this.setSelected("male");
   private readonly selectFemaleHandler = (): void => this.setSelected("female");
   private readonly confirmHandler = (): void => this.confirm();
-  private readonly touchHandler = (event: Event): void => {
+  private readonly joystickHandler = (event: Event): void => {
     const detail = (
       event as CustomEvent<{
-        direction: "up" | "down" | "left" | "right";
-        pressed: boolean;
+        x: number;
+        y: number;
+        strength: number;
       }>
     ).detail;
-    if (!detail.pressed) return;
-    if (detail.direction === "left") this.setSelected("male");
-    if (detail.direction === "right") this.setSelected("female");
+    if (detail.strength < 0.35) return;
+    if (detail.x < -0.35) this.setSelected("male");
+    if (detail.x > 0.35) this.setSelected("female");
   };
   private readonly actionHandler = (): void => this.confirm();
 
@@ -81,7 +82,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.input.keyboard?.on("keydown-D", this.selectFemaleHandler);
     this.input.keyboard?.on("keydown-ENTER", this.confirmHandler);
     this.input.keyboard?.on("keydown-SPACE", this.confirmHandler);
-    window.addEventListener("prototype:touch", this.touchHandler);
+    window.addEventListener("prototype:joystick", this.joystickHandler);
     window.addEventListener("prototype:action", this.actionHandler);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.input.keyboard?.off("keydown-LEFT", this.selectMaleHandler);
@@ -90,7 +91,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       this.input.keyboard?.off("keydown-D", this.selectFemaleHandler);
       this.input.keyboard?.off("keydown-ENTER", this.confirmHandler);
       this.input.keyboard?.off("keydown-SPACE", this.confirmHandler);
-      window.removeEventListener("prototype:touch", this.touchHandler);
+      window.removeEventListener("prototype:joystick", this.joystickHandler);
       window.removeEventListener("prototype:action", this.actionHandler);
     });
     this.renderSelection();
