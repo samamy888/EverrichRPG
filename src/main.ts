@@ -20,21 +20,28 @@ const useFullscreenTouchLayout =
 
 const syncFullscreenTouchLayout = (): void => {
   document.documentElement.classList.toggle("touch-layout", useFullscreenTouchLayout);
-  if (!useFullscreenTouchLayout) return;
 
   const viewport = window.visualViewport;
   const viewportWidth = viewport?.width ?? window.innerWidth;
   const viewportHeight = viewport?.height ?? window.innerHeight;
-  const portrait = viewportHeight > viewportWidth;
+  const portrait = useFullscreenTouchLayout && viewportHeight > viewportWidth;
   const layoutWidth = portrait ? viewportHeight : viewportWidth;
   const layoutHeight = portrait ? viewportWidth : viewportHeight;
-  const gameAspectRatio = CONFIG.width / CONFIG.height;
-  const canvasWidth = Math.min(layoutWidth, layoutHeight * gameAspectRatio);
-  const canvasHeight = canvasWidth / gameAspectRatio;
+  const integerScale = Math.max(
+    1,
+    Math.floor(Math.min(layoutWidth / CONFIG.width, layoutHeight / CONFIG.height))
+  );
+  const canvasWidth = CONFIG.width * integerScale;
+  const canvasHeight = CONFIG.height * integerScale;
 
   document.documentElement.classList.toggle("portrait-touch-layout", portrait);
-  app.style.width = `${layoutWidth}px`;
-  app.style.height = `${layoutHeight}px`;
+  if (useFullscreenTouchLayout) {
+    app.style.width = `${layoutWidth}px`;
+    app.style.height = `${layoutHeight}px`;
+  } else {
+    app.style.width = "100vw";
+    app.style.height = "100vh";
+  }
   app.style.setProperty("--touch-canvas-width", `${canvasWidth}px`);
   app.style.setProperty("--touch-canvas-height", `${canvasHeight}px`);
 };
@@ -44,6 +51,8 @@ window.visualViewport?.addEventListener("resize", syncFullscreenTouchLayout);
 window.addEventListener("orientationchange", syncFullscreenTouchLayout);
 
 const bootstrap = async (): Promise<void> => {
+  await document.fonts.load('12px "Fusion Pixel 12"');
+  await document.fonts.ready;
   app.dataset.shopCatalogSource = await syncShopCatalog();
 
   new UIOverlay(app);
@@ -65,7 +74,7 @@ const bootstrap = async (): Promise<void> => {
     },
     scene: [BootScene, TitleScene, CharacterSelectScene, WorldScene],
     scale: {
-      mode: useFullscreenTouchLayout ? Phaser.Scale.NONE : Phaser.Scale.FIT,
+      mode: Phaser.Scale.NONE,
       autoCenter: Phaser.Scale.CENTER_BOTH,
       width: CONFIG.width,
       height: CONFIG.height

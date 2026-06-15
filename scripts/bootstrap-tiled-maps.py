@@ -33,6 +33,11 @@ PROPS = [
     ("sign-pillar", "duty-free-terminal-v1/sign-pillar.png"),
     ("shop-doorway", "duty-free-terminal-v1/shop-doorway.png"),
     ("digital-map-kiosk-v2", "airport-reference-v2/digital-map-kiosk-v2.png"),
+    ("airport-long-kiosk", "airport-long-kiosk-v1/long-kiosk-1.png"),
+    (
+        "airport-self-order-kiosk",
+        "airport-self-order-kiosk-v1/self-order-kiosk-1.png",
+    ),
     (
         "curved-duty-free-storefront-v2",
         "airport-reference-v2/curved-duty-free-storefront-v2.png",
@@ -389,6 +394,9 @@ def portal(
         "properties": [
             tiled_property("destinationRegionId", destination_region_id),
             tiled_property("destinationSpawnId", destination_spawn_id),
+            tiled_property("visualEffect", "portalFlow"),
+            tiled_property("effectColor", "#fff2bc"),
+            tiled_property("effectDurationMs", 1150, "int"),
         ],
     }
 
@@ -434,6 +442,32 @@ def prop(
         properties.append(tiled_property("decorative", True, "bool"))
     if depth_offset:
         properties.append(tiled_property("depthOffset", depth_offset, "int"))
+    if texture.startswith("airport-digital-map-kiosk-"):
+        properties.extend(
+            [
+                tiled_property("visualEffect", "kioskPulse"),
+                tiled_property("effectColor", "#56e7ff"),
+                tiled_property("effectDurationMs", 1400, "int"),
+            ]
+        )
+    if texture == "airport-long-kiosk":
+        properties.extend(
+            [
+                tiled_property("displayHeight", display_height, "float"),
+                tiled_property("visualEffect", "kioskPulse"),
+                tiled_property("effectColor", "#56e7ff"),
+                tiled_property("effectDurationMs", 1500, "int"),
+            ]
+        )
+    if texture == "airport-self-order-kiosk":
+        properties.extend(
+            [
+                tiled_property("displayHeight", display_height, "float"),
+                tiled_property("visualEffect", "kioskPulse"),
+                tiled_property("effectColor", "#ffd36b"),
+                tiled_property("effectDurationMs", 1500, "int"),
+            ]
+        )
     return {
         "name": name,
         **object_defaults(),
@@ -1052,19 +1086,46 @@ def build_tilesets() -> None:
     )
 
     prop_tiles = []
+    next_prop_frame_id = len(PROPS)
     for tile_id, (texture, relative_source) in enumerate(PROPS):
         source = ROOT / "public" / "assets" / "props" / relative_source
         with Image.open(source) as image:
             width, height = image.size
-        prop_tiles.append(
-            {
-                "id": tile_id,
-                "image": f"../../../props/{relative_source}",
-                "imagewidth": width,
-                "imageheight": height,
-                "properties": [tiled_property("texture", texture)],
-            }
-        )
+        tile = {
+            "id": tile_id,
+            "image": f"../../../props/{relative_source}",
+            "imagewidth": width,
+            "imageheight": height,
+            "properties": [tiled_property("texture", texture)],
+        }
+        animated_prop = {
+            "airport-long-kiosk": ("airport-long-kiosk-v1/long-kiosk", 900),
+            "airport-self-order-kiosk": (
+                "airport-self-order-kiosk-v1/self-order-kiosk",
+                900,
+            ),
+        }.get(texture)
+        if animated_prop:
+            frame_prefix, duration = animated_prop
+            frame_ids = [tile_id]
+            for frame in range(2, 5):
+                frame_id = next_prop_frame_id
+                next_prop_frame_id += 1
+                frame_path = f"{frame_prefix}-{frame}.png"
+                prop_tiles.append(
+                    {
+                        "id": frame_id,
+                        "image": f"../../../props/{frame_path}",
+                        "imagewidth": 128,
+                        "imageheight": 128,
+                    }
+                )
+                frame_ids.append(frame_id)
+            tile["animation"] = [
+                {"duration": duration, "tileid": frame_id} for frame_id in frame_ids
+            ]
+        prop_tiles.append(tile)
+    prop_tiles.sort(key=lambda tile: tile["id"])
 
     write_json(
         TILESETS_DIR / "airport-props.tsj",
@@ -1073,7 +1134,7 @@ def build_tilesets() -> None:
             "version": "1.10",
             "tiledversion": "1.11.2",
             "name": "airport-props",
-            "tilecount": len(prop_tiles),
+            "tilecount": max(tile["id"] for tile in prop_tiles) + 1,
             "columns": 0,
             "grid": {"orientation": "orthogonal", "width": TILE, "height": TILE},
             "tiles": prop_tiles,
@@ -1081,19 +1142,48 @@ def build_tilesets() -> None:
     )
 
     npc_tiles = []
+    clerk_frames = {
+        "clerk-beauty-01": [1, 2, 3, 4],
+        "clerk-liquor-food-01": [5, 6, 7, 8],
+        "clerk-gift-01": [9, 10, 11, 12],
+    }
+    next_npc_frame_id = len(NPCS)
     for tile_id, (texture, filename) in enumerate(NPCS):
+        frames = clerk_frames.get(texture)
+        if frames:
+            filename = f"duty-free-clerks-animated-v2/clerk-work-{frames[0]}.png"
         source = ROOT / "public" / "assets" / "sprites" / filename
         with Image.open(source) as image:
             width, height = image.size
-        npc_tiles.append(
-            {
-                "id": tile_id,
-                "image": f"../../../sprites/{filename}",
-                "imagewidth": width,
-                "imageheight": height,
-                "properties": [tiled_property("texture", texture)],
-            }
-        )
+        tile = {
+            "id": tile_id,
+            "image": f"../../../sprites/{filename}",
+            "imagewidth": width,
+            "imageheight": height,
+            "properties": [tiled_property("texture", texture)],
+        }
+        if frames:
+            frame_ids = [tile_id]
+            for frame in frames[1:]:
+                frame_id = next_npc_frame_id
+                next_npc_frame_id += 1
+                npc_tiles.append(
+                    {
+                        "id": frame_id,
+                        "image": (
+                            "../../../sprites/duty-free-clerks-animated-v2/"
+                            f"clerk-work-{frame}.png"
+                        ),
+                        "imagewidth": 128,
+                        "imageheight": 128,
+                    }
+                )
+                frame_ids.append(frame_id)
+            tile["animation"] = [
+                {"duration": 286, "tileid": frame_id} for frame_id in frame_ids
+            ]
+        npc_tiles.append(tile)
+    npc_tiles.sort(key=lambda tile: tile["id"])
 
     write_json(
         TILESETS_DIR / "airport-npcs.tsj",
@@ -1102,7 +1192,7 @@ def build_tilesets() -> None:
             "version": "1.10",
             "tiledversion": "1.11.2",
             "name": "airport-npcs",
-            "tilecount": len(npc_tiles),
+            "tilecount": max(tile["id"] for tile in npc_tiles) + 1,
             "columns": 0,
             "grid": {"orientation": "orthogonal", "width": TILE, "height": TILE},
             "tiles": npc_tiles,

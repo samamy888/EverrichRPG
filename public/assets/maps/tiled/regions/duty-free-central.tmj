@@ -3186,6 +3186,21 @@
        "name": "texture",
        "type": "string",
        "value": "airport-digital-map-kiosk-east"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "kioskPulse"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#56e7ff"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1400
       }
      ],
      "rotation": 0,
@@ -3196,7 +3211,7 @@
      "y": 416
     },
     {
-     "gid": 19,
+     "gid": 117,
      "height": 100,
      "id": 12,
      "name": "right-planter",
@@ -3205,7 +3220,12 @@
       {
        "name": "texture",
        "type": "string",
-       "value": "airport-planter-west"
+       "value": "airport-planter-animated-west"
+      },
+      {
+       "name": "displayHeight",
+       "type": "float",
+       "value": 100
       }
      ],
      "rotation": 0,
@@ -3538,6 +3558,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-duty-free"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ],
      "rotation": 0,
@@ -3562,6 +3597,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-central"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ],
      "rotation": 0,
@@ -3586,6 +3636,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-central"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ],
      "rotation": 0,
@@ -3610,6 +3675,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-central"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ],
      "rotation": 0,

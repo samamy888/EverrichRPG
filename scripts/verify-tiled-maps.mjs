@@ -65,7 +65,14 @@ const projectNativePropTextures = [
   "airport-floor-wayfinding",
   "airport-waiting-seats",
   "airport-queue-barriers",
-  "airport-ceiling-skylight"
+  "airport-ceiling-skylight",
+  "airport-restroom-animated",
+  "airport-water-dispenser-animated",
+  "airport-planter-animated-south",
+  "airport-planter-animated-west",
+  "airport-planter-animated-east",
+  "airport-planter-animated-north",
+  "airport-vending-machine"
 ];
 const legacyDirectionalPropTextures = [
   "dutyfree-curved-storefront-south",
@@ -105,13 +112,13 @@ const expectedOrientedObjects = {
   "traveler-info-sign": "airport-sign-pillar-east",
   "shopping-guide-sign": "airport-sign-pillar-west",
   "entrance-service-counter": "dutyfree-service-counter-north",
-  "entrance-planter": "airport-planter-west",
+  "entrance-planter": "airport-planter-animated-west",
   "liquor-food-doorway": "dutyfree-curved-storefront-east",
   "gift-doorway": "dutyfree-luxury-storefront-west",
   "left-display-shelf": "dutyfree-display-island-east",
   "right-display-shelf": "dutyfree-display-island-west",
   "central-digital-map": "airport-digital-map-kiosk-east",
-  "right-planter": "airport-planter-west",
+  "right-planter": "airport-planter-animated-west",
   "beauty-directory": "airport-digital-map-kiosk-west",
 };
 
@@ -140,7 +147,9 @@ for (const file of [
 
 const propTileset = JSON.parse(readFileSync(resolve(root, "tilesets/airport-props.tsj"), "utf8"));
 const propTilesetTextures = new Set(
-  propTileset.tiles.map((tile) => tile.properties.find((property) => property.name === "texture")?.value)
+  propTileset.tiles.map((tile) =>
+    tile.properties?.find((property) => property.name === "texture")?.value
+  )
 );
 for (const texture of projectNativePropTextures) {
   if (!propTilesetTextures.has(texture)) fail(`airport-props.tsj is missing ${texture}`);
@@ -472,7 +481,33 @@ for (const shopId of Object.keys(expectedShopObjects)) {
     .get(shopId)
     .layers.find((layer) => layer.name === "NPCs")
     .objects;
-  if (npcs.length !== 1) fail(`${shopId} must contain exactly one clerk NPC`);
+  if (npcs.length !== 3) fail(`${shopId} must contain exactly three clerk NPCs`);
+  const expectedTexture = {
+    "shop-beauty-01": "clerk-beauty-01",
+    "shop-liquor-food-01": "clerk-liquor-food-01",
+    "shop-gift-01": "clerk-gift-01"
+  }[shopId];
+  const expectedStaff = new Map([
+    [`${expectedTexture}-reception-left`, { x: 54, y: 272 }],
+    [`${expectedTexture}-reception-right`, { x: 390, y: 272 }],
+    [`${expectedTexture}-cashier`, { x: 222, y: 96 }]
+  ]);
+  for (const [staffId, position] of expectedStaff) {
+    const staff = npcs.find((candidate) => candidate.name === staffId);
+    const properties = new Map(
+      staff?.properties?.map((property) => [property.name, property.value]) ?? []
+    );
+    if (
+      !staff ||
+      staff.x !== position.x ||
+      staff.y !== position.y ||
+      properties.get("texture") !== expectedTexture ||
+      properties.get("movementType") !== "idle" ||
+      properties.get("facing") !== "down"
+    ) {
+      fail(`${shopId}/${staffId} has an invalid role or position`);
+    }
+  }
   const portal = maps
     .get(shopId)
     .layers.find((layer) => layer.name === "Portals")

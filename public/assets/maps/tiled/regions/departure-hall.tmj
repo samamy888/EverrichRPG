@@ -3129,23 +3129,18 @@
      ]
     },
     {
-     "height": 72,
+     "height": 76,
      "id": 10,
      "name": "departure-hall-map",
      "opacity": 1,
      "rotation": 0,
      "type": "",
      "visible": true,
-     "width": 96,
-     "x": 336,
+     "width": 176,
+     "x": 296,
      "y": 260,
-     "gid": 76,
+     "gid": 89,
      "properties": [
-      {
-       "name": "texture",
-       "type": "string",
-       "value": "airport-digital-map-kiosk-south"
-      },
       {
        "name": "label",
        "type": "string",
@@ -3165,6 +3160,31 @@
        "name": "interactionChoices",
        "type": "string",
        "value": "[{\"label\":\"免稅商店街\",\"responseLines\":[\"沿中央走道繼續往北，即可抵達三間免稅店。\"]},{\"label\":\"服務設施\",\"responseLines\":[\"右側通往洗手間、飲水機、候機座椅與手扶梯。\"]},{\"label\":\"先不用\",\"responseLines\":[\"祝你旅途愉快。\"]}]"
+      },
+      {
+       "name": "texture",
+       "type": "string",
+       "value": "airport-long-kiosk"
+      },
+      {
+       "name": "displayHeight",
+       "type": "float",
+       "value": 76
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "kioskPulse"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#56e7ff"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1500
       }
      ]
     },
@@ -3179,13 +3199,8 @@
      "width": 62,
      "x": 160,
      "y": 336,
-     "gid": 38,
+     "gid": 121,
      "properties": [
-      {
-       "name": "texture",
-       "type": "string",
-       "value": "airport-planter-east"
-      },
       {
        "name": "label",
        "type": "string",
@@ -3200,6 +3215,16 @@
        "name": "interactionLines",
        "type": "string",
        "value": "[\"寬闊的大廳裡，用植栽區分主要動線。\"]"
+      },
+      {
+       "name": "texture",
+       "type": "string",
+       "value": "airport-planter-animated-east"
+      },
+      {
+       "name": "displayHeight",
+       "type": "float",
+       "value": 100
       }
      ]
     },
@@ -3214,13 +3239,8 @@
      "width": 62,
      "x": 546,
      "y": 336,
-     "gid": 37,
+     "gid": 117,
      "properties": [
-      {
-       "name": "texture",
-       "type": "string",
-       "value": "airport-planter-west"
-      },
       {
        "name": "label",
        "type": "string",
@@ -3235,6 +3255,16 @@
        "name": "interactionLines",
        "type": "string",
        "value": "[\"這裡能聽見旅客腳步與遠方廣播聲。\"]"
+      },
+      {
+       "name": "texture",
+       "type": "string",
+       "value": "airport-planter-animated-west"
+      },
+      {
+       "name": "displayHeight",
+       "type": "float",
+       "value": 100
       }
      ]
     }
@@ -3390,8 +3420,8 @@
      "rotation": 0,
      "type": "",
      "visible": true,
-     "width": 32,
-     "x": 368,
+     "width": 112,
+     "x": 328,
      "y": 244,
      "properties": [
       {
@@ -3510,6 +3540,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-departure-hall"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ]
     },
@@ -3534,6 +3579,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-departure-hall"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ]
     },
@@ -3558,6 +3618,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-departure-hall"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ]
     },
@@ -3582,6 +3657,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-departure-hall"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ]
     }

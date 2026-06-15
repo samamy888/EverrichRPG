@@ -30,6 +30,7 @@ export interface PortalData {
   bounds: RectData;
   destinationRegionId: RegionId;
   destinationSpawnId: string;
+  visualEffect?: VisualEffectData;
 }
 
 export interface BoundaryData extends RectData {
@@ -119,6 +120,15 @@ export type MapObjectTexture =
   | "airport-digital-map-kiosk-west"
   | "airport-digital-map-kiosk-east"
   | "airport-digital-map-kiosk-north"
+  | "airport-long-kiosk"
+  | "airport-self-order-kiosk"
+  | "airport-restroom-animated"
+  | "airport-water-dispenser-animated"
+  | "airport-planter-animated-south"
+  | "airport-planter-animated-west"
+  | "airport-planter-animated-east"
+  | "airport-planter-animated-north"
+  | "airport-vending-machine"
   | "airport-sign-pillar-south"
   | "airport-sign-pillar-west"
   | "airport-sign-pillar-east"
@@ -158,12 +168,21 @@ export interface DialogueChoiceData {
 
 export type QuestDialogueStatus = "available" | "active" | "ready" | "completed";
 
+export type VisualEffectStyle = "kioskPulse" | "portalFlow";
+
+export interface VisualEffectData {
+  style: VisualEffectStyle;
+  color: number;
+  durationMs: number;
+}
+
 export interface MapObjectData {
   id: string;
   texture: MapObjectTexture;
   x: number;
   baselineY: number;
   displayWidth: number;
+  displayHeight?: number;
   collision: RectData;
   label?: string;
   interaction?: {
@@ -176,6 +195,7 @@ export interface MapObjectData {
   decorative?: boolean;
   depthOffset?: number;
   npcBehavior?: NpcBehaviorData;
+  visualEffect?: VisualEffectData;
 }
 
 export interface RegionData {

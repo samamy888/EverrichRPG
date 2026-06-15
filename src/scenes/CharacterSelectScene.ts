@@ -1,7 +1,12 @@
 import Phaser from "phaser";
+import { AnimationRegistry } from "../animation/AnimationRegistry";
+import { PhaserAnimationGateway } from "../animation/PhaserAnimationGateway";
+import { CHARACTER_SELECT_ANIMATION_DEFINITIONS } from "../animation/animationCatalog";
 import { CONFIG } from "../config";
 import { audioManager } from "../systems/audioManager";
 import type { PlayerVariant } from "../systems/prototypeSave";
+
+const BITMAP_FONT = "fusion-pixel-12-bitmap";
 
 export class CharacterSelectScene extends Phaser.Scene {
   private selected: PlayerVariant = "male";
@@ -9,7 +14,7 @@ export class CharacterSelectScene extends Phaser.Scene {
   private femaleCard!: Phaser.GameObjects.Rectangle;
   private malePortrait!: Phaser.GameObjects.Sprite;
   private femalePortrait!: Phaser.GameObjects.Sprite;
-  private hint!: Phaser.GameObjects.Text;
+  private hint!: Phaser.GameObjects.BitmapText;
   private readonly selectMaleHandler = (): void => this.setSelected("male");
   private readonly selectFemaleHandler = (): void => this.setSelected("female");
   private readonly confirmHandler = (): void => this.confirm();
@@ -50,15 +55,13 @@ export class CharacterSelectScene extends Phaser.Scene {
 
   create(): void {
     audioManager.setBgm("title");
-    this.createSelectionAnimations();
+    new AnimationRegistry(new PhaserAnimationGateway(this.anims)).register(
+      CHARACTER_SELECT_ANIMATION_DEFINITIONS
+    );
     this.cameras.main.setBackgroundColor("#17242b");
     this.add
-      .text(CONFIG.width / 2, 38, "選擇旅客", {
-        color: "#fff2c7",
-        fontFamily: "monospace",
-        fontSize: "22px",
-        fontStyle: "bold"
-      })
+      .bitmapText(CONFIG.width / 2, 38, BITMAP_FONT, "選擇旅客", 24)
+      .setTint(0xfff2c7)
       .setOrigin(0.5);
 
     this.maleCard = this.createCard(150, "男旅客", "character-select-male", "male");
@@ -69,11 +72,8 @@ export class CharacterSelectScene extends Phaser.Scene {
       "female"
     );
     this.hint = this.add
-      .text(CONFIG.width / 2, 278, "左右選擇 · A / Enter 確認", {
-        color: "#d9e3e8",
-        fontFamily: "monospace",
-        fontSize: "13px"
-      })
+      .bitmapText(CONFIG.width / 2, 278, BITMAP_FONT, "左右選擇 · A / Enter 確認", 12)
+      .setTint(0xd9e3e8)
       .setOrigin(0.5);
 
     this.input.keyboard?.on("keydown-LEFT", this.selectMaleHandler);
@@ -119,11 +119,8 @@ export class CharacterSelectScene extends Phaser.Scene {
       this.femalePortrait = portrait;
     }
     this.add
-      .text(x, 222, label, {
-        color: "#ffffff",
-        fontFamily: "monospace",
-        fontSize: "16px"
-      })
+      .bitmapText(x, 222, BITMAP_FONT, label, 12)
+      .setTint(0xffffff)
       .setOrigin(0.5);
 
     card.on("pointerdown", () => {
@@ -161,22 +158,6 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.hint.setText(
       `${this.selected === "male" ? "男旅客" : "女旅客"} · A / Enter 開始`
     );
-  }
-
-  private createSelectionAnimations(): void {
-    for (const variant of ["male", "female"] as const) {
-      const key = `${variant}-character-select-walk`;
-      if (this.anims.exists(key)) continue;
-      this.anims.create({
-        key,
-        frames: this.anims.generateFrameNumbers(`character-select-${variant}`, {
-          start: 0,
-          end: 3
-        }),
-        frameRate: 8,
-        repeat: -1
-      });
-    }
   }
 
   private confirm(): void {

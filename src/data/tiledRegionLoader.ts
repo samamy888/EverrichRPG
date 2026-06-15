@@ -15,6 +15,7 @@ import type {
   SpawnData,
   TileLayerData
 } from "./prototypeRegions";
+import type { VisualEffectData, VisualEffectStyle } from "./prototypeRegions";
 
 interface TiledProperty {
   name: string;
@@ -140,6 +141,8 @@ export function loadTiledRegion(scene: Phaser.Scene, regionId: RegionId): Region
     const interactionQuestLines = getString(object.properties, "interactionQuestLines");
     const foreground = getBoolean(object.properties, "foreground");
     const depthOffset = getNumber(object.properties, "depthOffset") ?? 0;
+    const displayHeight = getNumber(object.properties, "displayHeight");
+    const visualEffect = parseVisualEffect(object.properties);
     const movementType = getString(object.properties, "movementType");
     const npcBehavior = movementType
       ? {
@@ -156,6 +159,7 @@ export function loadTiledRegion(scene: Phaser.Scene, regionId: RegionId): Region
       x: object.x + object.width / 2,
       baselineY: object.y,
       displayWidth: object.width,
+      ...(displayHeight ? { displayHeight } : {}),
       collision: collision ?? { x: object.x, y: object.y, width: 0, height: 0 },
       ...(label ? { label } : {}),
       ...(interactionTitle
@@ -176,7 +180,8 @@ export function loadTiledRegion(scene: Phaser.Scene, regionId: RegionId): Region
       ,
       ...(decorative ? { decorative: true } : {}),
       ...(depthOffset ? { depthOffset } : {}),
-      ...(npcBehavior ? { npcBehavior } : {})
+      ...(npcBehavior ? { npcBehavior } : {}),
+      ...(visualEffect ? { visualEffect } : {})
     };
   });
 
@@ -185,15 +190,19 @@ export function loadTiledRegion(scene: Phaser.Scene, regionId: RegionId): Region
     texture: getRequiredString(object.properties, "texture") as BoundaryData["texture"]
   }));
 
-  const portals = getObjects(map, "Portals").map<PortalData>((object) => ({
-    id: object.name,
-    bounds: toRect(object),
-    destinationRegionId: getRequiredString(
-      object.properties,
-      "destinationRegionId"
-    ) as RegionId,
-    destinationSpawnId: getRequiredString(object.properties, "destinationSpawnId")
-  }));
+  const portals = getObjects(map, "Portals").map<PortalData>((object) => {
+    const visualEffect = parseVisualEffect(object.properties);
+    return {
+      id: object.name,
+      bounds: toRect(object),
+      destinationRegionId: getRequiredString(
+        object.properties,
+        "destinationRegionId"
+      ) as RegionId,
+      destinationSpawnId: getRequiredString(object.properties, "destinationSpawnId"),
+      ...(visualEffect ? { visualEffect } : {})
+    };
+  });
 
   const spawns = getObjects(map, "Spawns").map<SpawnData>((object) => ({
     id: object.name,
@@ -257,6 +266,20 @@ function getBoolean(properties: TiledProperty[] | undefined, name: string): bool
 function getNumber(properties: TiledProperty[] | undefined, name: string): number | undefined {
   const value = properties?.find((property) => property.name === name)?.value;
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function parseVisualEffect(
+  properties: TiledProperty[] | undefined
+): VisualEffectData | undefined {
+  const style = getString(properties, "visualEffect");
+  if (style !== "kioskPulse" && style !== "portalFlow") return undefined;
+  const colorValue = getString(properties, "effectColor") ?? "#56e7ff";
+  const parsedColor = Number.parseInt(colorValue.replace(/^#/, ""), 16);
+  return {
+    style: style as VisualEffectStyle,
+    color: Number.isFinite(parsedColor) ? parsedColor : 0x56e7ff,
+    durationMs: Math.max(500, getNumber(properties, "effectDurationMs") ?? 1400)
+  };
 }
 
 function parseMovementType(value: string): NpcMovementType {

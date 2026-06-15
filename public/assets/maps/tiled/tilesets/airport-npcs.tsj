@@ -3,7 +3,7 @@
   "version": "1.10",
   "tiledversion": "1.11.2",
   "name": "airport-npcs",
-  "tilecount": 5,
+  "tilecount": 14,
   "columns": 0,
   "grid": {
     "orientation": "orthogonal",
@@ -13,40 +13,94 @@
   "tiles": [
     {
       "id": 0,
-      "image": "../../../sprites/duty-free-clerks-v1/clerk-1.png",
-      "imagewidth": 96,
-      "imageheight": 96,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-1.png",
+      "imagewidth": 128,
+      "imageheight": 128,
       "properties": [
         {
           "name": "texture",
           "type": "string",
           "value": "clerk-beauty-01"
         }
+      ],
+      "animation": [
+        {
+          "duration": 286,
+          "tileid": 0
+        },
+        {
+          "duration": 286,
+          "tileid": 5
+        },
+        {
+          "duration": 286,
+          "tileid": 6
+        },
+        {
+          "duration": 286,
+          "tileid": 7
+        }
       ]
     },
     {
       "id": 1,
-      "image": "../../../sprites/duty-free-clerks-v1/clerk-2.png",
-      "imagewidth": 96,
-      "imageheight": 96,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-5.png",
+      "imagewidth": 128,
+      "imageheight": 128,
       "properties": [
         {
           "name": "texture",
           "type": "string",
           "value": "clerk-liquor-food-01"
         }
+      ],
+      "animation": [
+        {
+          "duration": 286,
+          "tileid": 1
+        },
+        {
+          "duration": 286,
+          "tileid": 8
+        },
+        {
+          "duration": 286,
+          "tileid": 9
+        },
+        {
+          "duration": 286,
+          "tileid": 10
+        }
       ]
     },
     {
       "id": 2,
-      "image": "../../../sprites/duty-free-clerks-v1/clerk-3.png",
-      "imagewidth": 96,
-      "imageheight": 96,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-9.png",
+      "imagewidth": 128,
+      "imageheight": 128,
       "properties": [
         {
           "name": "texture",
           "type": "string",
           "value": "clerk-gift-01"
+        }
+      ],
+      "animation": [
+        {
+          "duration": 286,
+          "tileid": 2
+        },
+        {
+          "duration": 286,
+          "tileid": 11
+        },
+        {
+          "duration": 286,
+          "tileid": 12
+        },
+        {
+          "duration": 286,
+          "tileid": 13
         }
       ]
     },
@@ -75,6 +129,60 @@
           "value": "traveler-female-npc"
         }
       ]
+    },
+    {
+      "id": 5,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-2.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 6,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-3.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 7,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-4.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 8,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-6.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 9,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-7.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 10,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-8.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 11,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-10.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 12,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-11.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 13,
+      "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-12.png",
+      "imagewidth": 128,
+      "imageheight": 128
     }
   ]
 }

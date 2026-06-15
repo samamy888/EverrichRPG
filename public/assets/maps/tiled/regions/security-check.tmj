@@ -2651,6 +2651,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-security"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ]
     },
@@ -2675,6 +2690,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-security"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ]
     }

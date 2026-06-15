@@ -1,8 +1,18 @@
+@font-face {
+  font-family: "Fusion Pixel 12";
+  src: url("/assets/fonts/fusion-pixel-12/fusion-pixel-12-zh-hant.woff2")
+    format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+}
+
 :root {
   color-scheme: dark;
   --ink: #102027;
   --cream: #fff2c7;
   --panel: rgba(16, 32, 39, 0.88);
+  --pixel-font: "Fusion Pixel 12", monospace;
 }
 
 * {
@@ -20,7 +30,8 @@ body {
   height: 100%;
   overflow: hidden;
   background: #0b1419;
-  font-family: monospace;
+  font-family: var(--pixel-font);
+  font-synthesis: none;
   touch-action: none;
 }
 
@@ -42,6 +53,13 @@ button {
 }
 
 #app canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: var(--touch-canvas-width, 480px) !important;
+  height: var(--touch-canvas-height, 320px) !important;
+  transform: translate(-50%, -50%);
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   box-shadow: 0 0 0 3px #263c46, 0 18px 60px rgba(0, 0, 0, 0.45);
@@ -81,13 +99,13 @@ button {
 
 .prototype-region {
   margin-top: 2px !important;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .prototype-status {
   margin-top: 2px !important;
   color: #bbd3d8;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .prototype-quest {
@@ -95,7 +113,7 @@ button {
   padding-top: 4px;
   color: #f6cf63;
   border-top: 1px solid rgba(246, 207, 99, 0.35);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .touch-controls {
@@ -168,13 +186,13 @@ button {
 
 .dialogue-title {
   color: #8b562b;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
 }
 
 .dialogue-text {
   margin-top: 5px;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -183,7 +201,7 @@ button {
   right: 10px;
   bottom: 5px;
   color: #59666b;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .dialogue-next.is-complete {
@@ -230,7 +248,7 @@ button {
 
 .menu-kicker {
   color: #c88d43;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: bold;
   letter-spacing: 0.12em;
 }
@@ -1028,13 +1046,6 @@ html.touch-layout #app {
 }
 
 html.touch-layout #app canvas {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: block;
-  width: var(--touch-canvas-width) !important;
-  height: var(--touch-canvas-height) !important;
-  transform: translate(-50%, -50%);
   box-shadow: none;
 }
 
@@ -1067,6 +1078,15 @@ html.title-screen .touch-controls {
 html.title-screen .mobile-actions {
   display: flex;
   align-items: end;
+}
+
+:is(.prototype-hud, .dialogue-box, .game-menu, .shop-panel),
+:is(.prototype-hud, .dialogue-box, .game-menu, .shop-panel) * {
+  font-size: 12px;
+}
+
+:is(.game-menu-main h2, .shop-title, .menu-close, .shop-close) {
+  font-size: 24px;
 }
 
 @media not all {

@@ -3,6 +3,8 @@ import { CONFIG } from "../config";
 import { audioManager } from "../systems/audioManager";
 import { loadPrototypeSave } from "../systems/prototypeSave";
 
+const BITMAP_FONT = "fusion-pixel-12-bitmap";
+
 export class TitleScene extends Phaser.Scene {
   private starting = false;
   private readonly actionHandler = (): void => this.startGame();
@@ -28,57 +30,48 @@ export class TitleScene extends Phaser.Scene {
     this.add.rectangle(CONFIG.width / 2, 48, CONFIG.width, 72, 0x17323b, 0.96);
     this.add.rectangle(CONFIG.width / 2, 84, CONFIG.width, 3, 0xd8b968);
     this.add
-      .text(CONFIG.width / 2, 34, "EVER RICH RPG", {
-        color: "#fff2c7",
-        fontFamily: "monospace",
-        fontSize: "28px",
-        fontStyle: "bold",
-        stroke: "#6d4b28",
-        strokeThickness: 3
-      })
+      .bitmapText(CONFIG.width / 2, 34, BITMAP_FONT, "EVER RICH RPG", 24)
+      .setTint(0xfff2c7)
+      .setDropShadow(2, 2, 0x6d4b28, 1)
       .setOrigin(0.5);
     this.add
-      .text(CONFIG.width / 2, 64, "免稅店旅客物語", {
-        color: "#f6cf63",
-        fontFamily: "monospace",
-        fontSize: "13px",
-        fontStyle: "bold"
-      })
+      .bitmapText(CONFIG.width / 2, 64, BITMAP_FONT, "免稅店旅客物語", 12)
+      .setTint(0xf6cf63)
       .setOrigin(0.5);
 
     this.add.rectangle(240, 158, 330, 100, 0x17242b, 0.9).setStrokeStyle(3, 0x57717a);
     this.add
-      .text(CONFIG.width / 2, 133, "歡迎來到機場免稅商店街", {
-        color: "#ffffff",
-        fontFamily: "monospace",
-        fontSize: "17px",
-        fontStyle: "bold"
-      })
+      .bitmapText(CONFIG.width / 2, 133, BITMAP_FONT, "歡迎來到機場免稅商店街", 24)
+      .setTint(0xffffff)
       .setOrigin(0.5);
     this.add
-      .text(CONFIG.width / 2, 163, "扮演旅客、探索店鋪，展開你的購物旅程。", {
-        align: "center",
-        color: "#bbd3d8",
-        fontFamily: "monospace",
-        fontSize: "11px"
-      })
+      .bitmapText(
+        CONFIG.width / 2,
+        163,
+        BITMAP_FONT,
+        "扮演旅客、探索店鋪，展開你的購物旅程。",
+        12,
+        Phaser.GameObjects.BitmapText.ALIGN_CENTER
+      )
+      .setTint(0xbbd3d8)
       .setOrigin(0.5);
 
-    const startButton = this.add
-      .text(CONFIG.width / 2, 226, "▶  開始旅程", {
-        color: "#17242b",
-        fontFamily: "monospace",
-        fontSize: "16px",
-        fontStyle: "bold",
-        backgroundColor: "#f6cf63",
-        padding: { x: 18, y: 9 }
-      })
-      .setOrigin(0.5)
+    const startButtonBackground = this.add
+      .rectangle(0, 0, 132, 34, 0xf6cf63)
       .setInteractive({ useHandCursor: true });
+    const startButtonLabel = this.add
+      .bitmapText(0, 0, BITMAP_FONT, "▶  開始旅程", 12)
+      .setTint(0x17242b)
+      .setOrigin(0.5);
+    const startButton = this.add.container(
+      CONFIG.width / 2,
+      226,
+      [startButtonBackground, startButtonLabel]
+    );
 
-    startButton.on("pointerover", () => startButton.setScale(1.04));
-    startButton.on("pointerout", () => startButton.setScale(1));
-    startButton.on("pointerdown", () => this.startGame());
+    startButtonBackground.on("pointerover", () => startButton.setScale(1.04));
+    startButtonBackground.on("pointerout", () => startButton.setScale(1));
+    startButtonBackground.on("pointerdown", () => this.startGame());
     this.tweens.add({
       targets: startButton,
       alpha: 0.72,
@@ -89,18 +82,12 @@ export class TitleScene extends Phaser.Scene {
     });
 
     this.add
-      .text(CONFIG.width / 2, 270, "Enter / Space / A", {
-        color: "#91aab1",
-        fontFamily: "monospace",
-        fontSize: "10px"
-      })
+      .bitmapText(CONFIG.width / 2, 270, BITMAP_FONT, "Enter / Space / A", 12)
+      .setTint(0x91aab1)
       .setOrigin(0.5);
     this.add
-      .text(CONFIG.width / 2, 302, "PHASE 5 · TRAVELER QUEST", {
-        color: "#547079",
-        fontFamily: "monospace",
-        fontSize: "9px"
-      })
+      .bitmapText(CONFIG.width / 2, 302, BITMAP_FONT, "PHASE 5 · TRAVELER QUEST", 12)
+      .setTint(0x547079)
       .setOrigin(0.5);
 
     this.input.keyboard?.on("keydown-ENTER", this.actionHandler);

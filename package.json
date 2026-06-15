@@ -15,6 +15,11 @@
     "tiled:departure": "node scripts/generate-departure-hall-maps.mjs",
     "tiled:ivory-walls": "node scripts/apply-ivory-walls.mjs",
     "tiled:quest-dialogue": "node scripts/apply-quest-dialogue.mjs",
+    "tiled:effects": "node scripts/apply-environment-effects.mjs",
+    "assets:planters": "python scripts/build-planter-animations.py",
+    "assets:bitmap-font": "python scripts/build-bitmap-font.py",
+    "tiled:animated-assets": "node scripts/apply-animated-assets.mjs && node scripts/apply-shop-staff.mjs",
+    "tiled:shop-staff": "node scripts/apply-shop-staff.mjs",
     "tiled:orient-props": "node scripts/orient-tiled-props.mjs",
     "tiled:verify": "node scripts/verify-tiled-maps.mjs",
     "shop:verify": "node scripts/verify-shop-data.mjs",
@@ -22,6 +27,9 @@
     "character:verify": "node scripts/verify-character-assets.mjs",
     "release:prep": "npm run map:slice && npm run world:verify && npm run build:iis",
     "preview": "vite preview",
+    "test": "vitest run",
+    "test:traveler": "vitest run src/systems/TravelerPopulation.test.ts",
+    "test:animation": "vitest run src/animation/AnimationRegistry.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -29,6 +37,7 @@
   },
   "devDependencies": {
     "typescript": "^5.9.2",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
   }
 }

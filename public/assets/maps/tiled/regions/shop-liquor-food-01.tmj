@@ -10,7 +10,7 @@
  "tileheight": 16,
  "infinite": false,
  "nextlayerid": 10,
- "nextobjectid": 26,
+ "nextobjectid": 32,
  "properties": [
   {
    "name": "regionId",
@@ -1742,15 +1742,11 @@
    "locked": false,
    "objects": [
     {
-     "name": "clerk-liquor-food-01",
-     "type": "",
-     "rotation": 0,
-     "visible": true,
      "gid": 201,
-     "x": 30,
-     "y": 272,
-     "width": 36,
      "height": 36,
+     "id": 26,
+     "name": "clerk-liquor-food-01-reception-left",
+     "opacity": 1,
      "properties": [
       {
        "name": "texture",
@@ -1760,22 +1756,17 @@
       {
        "name": "label",
        "type": "string",
-       "value": "食品店員"
+       "value": "酒食免稅店員・接待"
       },
       {
        "name": "interactionTitle",
        "type": "string",
-       "value": "食品店員"
+       "value": "酒食免稅店員・接待"
       },
       {
        "name": "interactionLines",
        "type": "string",
-       "value": "[\"鳳梨酥方便攜帶，是很受旅客歡迎的台灣伴手禮。\"]"
-      },
-      {
-       "name": "foreground",
-       "type": "bool",
-       "value": true
+       "value": "[\"歡迎光臨，酒類與伴手禮分別陳列在兩側櫃位。\"]"
       },
       {
        "name": "movementType",
@@ -1788,9 +1779,64 @@
        "value": "down"
       },
       {
+       "name": "animationKey",
+       "type": "string",
+       "value": "clerk-liquor-food-01"
+      },
+      {
        "name": "speed",
        "type": "float",
        "value": 0
+      },
+      {
+       "name": "foreground",
+       "type": "bool",
+       "value": true
+      }
+     ],
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 36,
+     "x": 54,
+     "y": 272
+    },
+    {
+     "gid": 201,
+     "height": 36,
+     "id": 28,
+     "name": "clerk-liquor-food-01-reception-right",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "texture",
+       "type": "string",
+       "value": "clerk-liquor-food-01"
+      },
+      {
+       "name": "label",
+       "type": "string",
+       "value": "酒食免稅店員・接待"
+      },
+      {
+       "name": "interactionTitle",
+       "type": "string",
+       "value": "酒食免稅店員・接待"
+      },
+      {
+       "name": "interactionLines",
+       "type": "string",
+       "value": "[\"歡迎光臨，酒類與伴手禮分別陳列在兩側櫃位。\"]"
+      },
+      {
+       "name": "movementType",
+       "type": "string",
+       "value": "idle"
+      },
+      {
+       "name": "facing",
+       "type": "string",
+       "value": "down"
       },
       {
        "name": "animationKey",
@@ -1798,12 +1844,87 @@
        "value": "clerk-liquor-food-01"
       },
       {
+       "name": "speed",
+       "type": "float",
+       "value": 0
+      },
+      {
+       "name": "foreground",
+       "type": "bool",
+       "value": true
+      }
+     ],
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 36,
+     "x": 390,
+     "y": 272
+    },
+    {
+     "gid": 201,
+     "height": 36,
+     "id": 30,
+     "name": "clerk-liquor-food-01-cashier",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "texture",
+       "type": "string",
+       "value": "clerk-liquor-food-01"
+      },
+      {
+       "name": "label",
+       "type": "string",
+       "value": "酒食免稅店員・收銀"
+      },
+      {
+       "name": "interactionTitle",
+       "type": "string",
+       "value": "酒食免稅店員・收銀"
+      },
+      {
+       "name": "interactionLines",
+       "type": "string",
+       "value": "[\"結帳前我會協助確認商品包裝與目前優惠。\"]"
+      },
+      {
        "name": "interactionQuestLines",
        "type": "string",
        "value": "{\"available\":[\"鳳梨酥方便攜帶，是很受旅客歡迎的台灣伴手禮。\"],\"active\":[\"你正在進行三店伴手禮巡禮吧？\",\"記得挑一盒台灣鳳梨酥。\"],\"ready\":[\"看來鳳梨酥已經準備好了，祝你順利完成巡禮。\"],\"completed\":[\"完成巡禮後，也別忘了把鳳梨酥分享給同行旅伴。\"]}"
+      },
+      {
+       "name": "movementType",
+       "type": "string",
+       "value": "idle"
+      },
+      {
+       "name": "facing",
+       "type": "string",
+       "value": "down"
+      },
+      {
+       "name": "animationKey",
+       "type": "string",
+       "value": "clerk-liquor-food-01"
+      },
+      {
+       "name": "speed",
+       "type": "float",
+       "value": 0
+      },
+      {
+       "name": "foreground",
+       "type": "bool",
+       "value": true
       }
      ],
-     "id": 17
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 36,
+     "x": 222,
+     "y": 96
     }
    ],
    "id": 6
@@ -1906,22 +2027,61 @@
      "id": 22
     },
     {
-     "name": "clerk-liquor-food-01-collision",
-     "type": "",
-     "rotation": 0,
-     "visible": true,
-     "x": 36,
-     "y": 248,
-     "width": 24,
      "height": 24,
+     "id": 27,
+     "name": "clerk-liquor-food-01-reception-left-collision",
+     "opacity": 1,
      "properties": [
       {
        "name": "ownerId",
        "type": "string",
-       "value": "clerk-liquor-food-01"
+       "value": "clerk-liquor-food-01-reception-left"
       }
      ],
-     "id": 23
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 24,
+     "x": 60,
+     "y": 248
+    },
+    {
+     "height": 24,
+     "id": 29,
+     "name": "clerk-liquor-food-01-reception-right-collision",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "ownerId",
+       "type": "string",
+       "value": "clerk-liquor-food-01-reception-right"
+      }
+     ],
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 24,
+     "x": 396,
+     "y": 248
+    },
+    {
+     "height": 24,
+     "id": 31,
+     "name": "clerk-liquor-food-01-cashier-collision",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "ownerId",
+       "type": "string",
+       "value": "clerk-liquor-food-01-cashier"
+      }
+     ],
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 24,
+     "x": 228,
+     "y": 72
     }
    ],
    "id": 7
@@ -1952,6 +2112,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-liquor-food"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ],
      "id": 24

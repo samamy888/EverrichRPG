@@ -11,7 +11,7 @@ interface TravelerAIOptions {
   object: MapObjectData;
   sprite: Phaser.GameObjects.Sprite;
   bounds: Phaser.Geom.Rectangle;
-  label: Phaser.GameObjects.Text | undefined;
+  label: Phaser.GameObjects.BitmapText | undefined;
   variant: "male" | "female";
   behavior: NpcBehaviorData;
   canOccupy: (traveler: TravelerAI, bounds: Phaser.Geom.Rectangle) => boolean;
@@ -38,7 +38,7 @@ export class TravelerAI {
   private readonly scene: Phaser.Scene;
   private readonly object: MapObjectData;
   private readonly sprite: Phaser.GameObjects.Sprite;
-  private readonly label: Phaser.GameObjects.Text | undefined;
+  private readonly label: Phaser.GameObjects.BitmapText | undefined;
   private readonly variant: "male" | "female";
   private readonly canOccupy: TravelerAIOptions["canOccupy"];
   private readonly behavior: NpcBehaviorData;

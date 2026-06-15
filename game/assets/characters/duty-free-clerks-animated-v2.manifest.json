@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "duty-free-clerks-animated-v2",
+  "skill": "generate2dsprite",
+  "assetType": "npc",
+  "action": "idle-work",
+  "view": "topdown",
+  "artStyle": "project-native-retro-pixel",
+  "anchor": "feet",
+  "source": "public/assets/sprites/duty-free-clerks-animated-v2/raw-sheet.png",
+  "transparentSheet": "public/assets/sprites/duty-free-clerks-animated-v2/sheet-transparent.png",
+  "layout": {
+    "rows": 3,
+    "columns": 4,
+    "frameWidth": 128,
+    "frameHeight": 128
+  },
+  "animations": [
+    { "id": "clerk-beauty-01-work", "frames": [0, 1, 2, 3] },
+    { "id": "clerk-liquor-food-01-work", "frames": [4, 5, 6, 7] },
+    { "id": "clerk-gift-01-work", "frames": [8, 9, 10, 11] }
+  ],
+  "qc": {
+    "sharedScale": true,
+    "edgeTouchFrames": []
+  }
+}

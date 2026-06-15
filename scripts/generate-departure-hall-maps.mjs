@@ -59,7 +59,31 @@ function makeProp(id, spec) {
         : []),
       ...(spec.foreground ? [property("foreground", true, "bool")] : []),
       ...(spec.decorative ? [property("decorative", true, "bool")] : []),
-      ...(spec.depthOffset ? [property("depthOffset", spec.depthOffset, "float")] : [])
+      ...(spec.depthOffset ? [property("depthOffset", spec.depthOffset, "float")] : []),
+      ...(spec.texture.startsWith("airport-digital-map-kiosk-")
+        ? [
+            property("visualEffect", "kioskPulse"),
+            property("effectColor", "#56e7ff"),
+            property("effectDurationMs", 1400, "int")
+          ]
+        : []),
+      ...(spec.texture === "airport-long-kiosk"
+        ? [
+            property("displayHeight", spec.height, "float"),
+            property("visualEffect", "kioskPulse"),
+            property("effectColor", "#56e7ff"),
+            property("effectDurationMs", 1500, "int")
+          ]
+        : [])
+      ,
+      ...(spec.texture === "airport-self-order-kiosk"
+        ? [
+            property("displayHeight", spec.height, "float"),
+            property("visualEffect", "kioskPulse"),
+            property("effectColor", "#ffd36b"),
+            property("effectDurationMs", 1500, "int")
+          ]
+        : [])
     ]
   });
 }
@@ -116,7 +140,10 @@ function makeMap(spec) {
     object(objectId++, entry.id, entry.x, entry.y, entry.width, entry.height, {
       properties: [
         property("destinationRegionId", entry.destinationRegionId),
-        property("destinationSpawnId", entry.destinationSpawnId)
+        property("destinationSpawnId", entry.destinationSpawnId),
+        property("visualEffect", "portalFlow"),
+        property("effectColor", "#fff2bc"),
+        property("effectDurationMs", 1150, "int")
       ]
     })
   );
@@ -457,14 +484,14 @@ const maps = [
       ),
       p(
         "departure-hall-map",
-        "airport-digital-map-kiosk-south",
+        "airport-long-kiosk",
         "第三航廈導覽",
         ["請選擇想查詢的方向。"],
-        336,
+        296,
         260,
-        96,
-        72,
-        { x: 368, y: 244, width: 32, height: 16 },
+        176,
+        76,
+        { x: 328, y: 244, width: 112, height: 16 },
         false,
         false,
         0,
@@ -680,6 +707,31 @@ const maps = [
         48,
         72,
         { x: 240, y: 112, width: 16, height: 16 }
+      ),
+      p(
+        "facilities-self-order-kiosk",
+        "airport-self-order-kiosk",
+        "自助點餐機",
+        ["螢幕正在輪播餐點與付款方式。"],
+        272,
+        144,
+        56,
+        112,
+        { x: 288, y: 112, width: 24, height: 16 },
+        false,
+        false,
+        0,
+        [
+          {
+            label: "查看餐點",
+            responseLines: ["目前提供麵食、飯食、點心與飲品分類。"]
+          },
+          {
+            label: "開始點餐",
+            responseLines: ["完整點餐與付款功能將在餐飲系統階段開放。"]
+          },
+          { label: "離開", responseLines: ["你離開了點餐畫面。"] }
+        ]
       ),
       p(
         "facilities-escalator",

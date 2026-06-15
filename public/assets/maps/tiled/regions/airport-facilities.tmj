@@ -1555,7 +1555,7 @@
    "draworder": "topdown",
    "objects": [
     {
-     "height": 68,
+     "height": 88,
      "id": 6,
      "name": "facilities-restroom",
      "opacity": 1,
@@ -1565,13 +1565,8 @@
      "width": 176,
      "x": 56,
      "y": 96,
-     "gid": 44,
+     "gid": 97,
      "properties": [
-      {
-       "name": "texture",
-       "type": "string",
-       "value": "airport-restroom-entrance-south"
-      },
       {
        "name": "label",
        "type": "string",
@@ -1591,11 +1586,21 @@
        "name": "foreground",
        "type": "bool",
        "value": true
+      },
+      {
+       "name": "texture",
+       "type": "string",
+       "value": "airport-restroom-animated"
+      },
+      {
+       "name": "displayHeight",
+       "type": "float",
+       "value": 88
       }
      ]
     },
     {
-     "height": 72,
+     "height": 88,
      "id": 7,
      "name": "facilities-water",
      "opacity": 1,
@@ -1605,13 +1610,8 @@
      "width": 48,
      "x": 224,
      "y": 128,
-     "gid": 40,
+     "gid": 101,
      "properties": [
-      {
-       "name": "texture",
-       "type": "string",
-       "value": "airport-water-dispenser-south"
-      },
       {
        "name": "label",
        "type": "string",
@@ -1626,6 +1626,16 @@
        "name": "interactionLines",
        "type": "string",
        "value": "[\"補充水分後再繼續旅程吧。\"]"
+      },
+      {
+       "name": "texture",
+       "type": "string",
+       "value": "airport-water-dispenser-animated"
+      },
+      {
+       "name": "displayHeight",
+       "type": "float",
+       "value": 88
       }
      ]
     },
@@ -1665,23 +1675,18 @@
      ]
     },
     {
-     "height": 100,
+     "height": 88,
      "id": 9,
      "name": "facilities-planter",
      "opacity": 1,
      "rotation": 0,
      "type": "",
      "visible": true,
-     "width": 62,
-     "x": 208,
+     "width": 96,
+     "x": 191,
      "y": 288,
-     "gid": 39,
+     "gid": 105,
      "properties": [
-      {
-       "name": "texture",
-       "type": "string",
-       "value": "airport-planter-north"
-      },
       {
        "name": "label",
        "type": "string",
@@ -1696,6 +1701,16 @@
        "name": "interactionLines",
        "type": "string",
        "value": "[\"設施區比中央大廳安靜一些。\"]"
+      },
+      {
+       "name": "texture",
+       "type": "string",
+       "value": "airport-planter-animated-north"
+      },
+      {
+       "name": "displayHeight",
+       "type": "float",
+       "value": 88
       }
      ]
     },
@@ -1733,6 +1748,126 @@
        "value": "[\"座椅旁設有簡易充電位置。\"]"
       }
      ]
+    },
+    {
+     "gid": 93,
+     "height": 112,
+     "id": 20,
+     "name": "facilities-self-order-kiosk",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "texture",
+       "type": "string",
+       "value": "airport-self-order-kiosk"
+      },
+      {
+       "name": "displayHeight",
+       "type": "float",
+       "value": 112
+      },
+      {
+       "name": "label",
+       "type": "string",
+       "value": "自助點餐機"
+      },
+      {
+       "name": "interactionTitle",
+       "type": "string",
+       "value": "自助點餐機"
+      },
+      {
+       "name": "interactionLines",
+       "type": "string",
+       "value": "[\"螢幕正在輪播餐點與付款方式。\"]"
+      },
+      {
+       "name": "interactionChoices",
+       "type": "string",
+       "value": "[{\"label\":\"查看餐點\",\"responseLines\":[\"目前提供麵食、飯食、點心與飲品分類。\"]},{\"label\":\"開始點餐\",\"responseLines\":[\"完整點餐與付款功能將在餐飲系統階段開放。\"]},{\"label\":\"離開\",\"responseLines\":[\"你離開了點餐畫面。\"]}]"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "kioskPulse"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#ffd36b"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1500
+      }
+     ],
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 56,
+     "x": 272,
+     "y": 144
+    },
+    {
+     "gid": 109,
+     "height": 96,
+     "id": 22,
+     "name": "facilities-vending-machine",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "texture",
+       "type": "string",
+       "value": "airport-vending-machine"
+      },
+      {
+       "name": "displayHeight",
+       "type": "float",
+       "value": 96
+      },
+      {
+       "name": "label",
+       "type": "string",
+       "value": "自動販賣機"
+      },
+      {
+       "name": "interactionTitle",
+       "type": "string",
+       "value": "自動販賣機"
+      },
+      {
+       "name": "interactionLines",
+       "type": "string",
+       "value": "[\"飲料與點心整齊排列，螢幕正播放著商品推薦。\"]"
+      },
+      {
+       "name": "interactionChoices",
+       "type": "string",
+       "value": "[{\"label\":\"看看飲料\",\"responseLines\":[\"冰涼的飲料在燈箱下閃閃發亮。\"]},{\"label\":\"看看點心\",\"responseLines\":[\"有幾款適合帶上旅途的小包裝點心。\"]},{\"label\":\"離開\",\"responseLines\":[\"你離開了販賣機。\"]}]"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "kioskPulse"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#56e7ff"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1600
+      }
+     ],
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 64,
+     "x": 48,
+     "y": 288
     }
    ]
   },
@@ -1931,6 +2066,44 @@
        "value": "facilities-resting-traveler"
       }
      ]
+    },
+    {
+     "height": 16,
+     "id": 21,
+     "name": "facilities-self-order-kiosk-collision",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "ownerId",
+       "type": "string",
+       "value": "facilities-self-order-kiosk"
+      }
+     ],
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 24,
+     "x": 288,
+     "y": 112
+    },
+    {
+     "height": 16,
+     "id": 23,
+     "name": "facilities-vending-machine-collision",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "ownerId",
+       "type": "string",
+       "value": "facilities-vending-machine"
+      }
+     ],
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 24,
+     "x": 68,
+     "y": 272
     }
    ]
   },
@@ -1965,6 +2138,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-facilities"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ]
     }
@@ -2004,7 +2192,7 @@
   }
  ],
  "nextlayerid": 9,
- "nextobjectid": 20,
+ "nextobjectid": 24,
  "orientation": "orthogonal",
  "properties": [
   {

@@ -1626,6 +1626,21 @@
        "name": "interactionLines",
        "type": "string",
        "value": "[\"中央大廳位於東側，北側通往免稅商店街。\"]"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "kioskPulse"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#56e7ff"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1400
       }
      ]
     }
@@ -1803,6 +1818,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-information"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ]
     }

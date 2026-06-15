@@ -2312,13 +2312,8 @@
      "width": 64,
      "x": 480,
      "y": 264,
-     "gid": 37,
+     "gid": 117,
      "properties": [
-      {
-       "name": "texture",
-       "type": "string",
-       "value": "airport-planter-west"
-      },
       {
        "name": "label",
        "type": "string",
@@ -2333,6 +2328,16 @@
        "name": "interactionLines",
        "type": "string",
        "value": "[\"翠綠植栽讓出境入口多了一點放鬆感。\"]"
+      },
+      {
+       "name": "texture",
+       "type": "string",
+       "value": "airport-planter-animated-west"
+      },
+      {
+       "name": "displayHeight",
+       "type": "float",
+       "value": 80
       }
      ]
     }
@@ -2529,6 +2534,21 @@
        "name": "destinationSpawnId",
        "type": "string",
        "value": "from-entrance"
+      },
+      {
+       "name": "visualEffect",
+       "type": "string",
+       "value": "portalFlow"
+      },
+      {
+       "name": "effectColor",
+       "type": "string",
+       "value": "#fff2bc"
+      },
+      {
+       "name": "effectDurationMs",
+       "type": "int",
+       "value": 1150
       }
      ]
     }
