@@ -92,20 +92,19 @@ Settings → Secrets and variables → Actions → Variables
 
 如果前端和 API 同網域，且 API 對外路徑是 `/api/v1`，`PRODUCTION_API_BASE_URL` 可以不填。
 
-`IIS_HEALTH_URL` 是在 Azure IIS 主機上的 self-hosted runner 執行，因此最穩的寫法通常是本機網址：
+若照本文件建議讓 API site 綁定 `localhost:5080`，`IIS_HEALTH_URL` 建議填：
 
 ```text
-http://localhost/api/v1/health
+http://localhost:5080/api/v1/health
 ```
 
-如果你的 IIS 尚未設定 HTTPS binding 或憑證，不要填 `https://伺服器IP/api/v1/health`。  
-如果 API 是掛在 IIS 子應用程式 `/api` 底下，實際 health URL 可能會變成：
+如果你想測外部反向代理結果，也可以填：
 
 ```text
-http://localhost/api/api/v1/health
+https://你的網域/api/v1/health
 ```
 
-請用瀏覽器或 PowerShell 在 Azure VM 內先確認哪一個 URL 能通，再填到 `IIS_HEALTH_URL`。
+但初期比較建議先用 `http://localhost:5080/api/v1/health`，因為它能直接確認 API site 本身是否正常。
 
 ## 4. IIS 建議設定
 
@@ -117,11 +116,25 @@ http://localhost/api/api/v1/health
 C:\inetpub\EverrichRPG\frontend
 ```
 
-前端包內會包含 `web.config`，用於 SPA fallback。
+前端包內會包含 `web.config`，用於：
+
+- SPA fallback
+- 將 `/api/*` 反向代理到 `http://localhost:5080/api/*`
+
+因此 Azure IIS 主機需要：
+
+- 安裝 IIS URL Rewrite Module
+- 安裝 Application Request Routing，並啟用 `Proxy`
 
 ### API
 
-API application 指向：
+建議把 API 建成獨立 IIS Site，binding 到本機 port：
+
+```text
+http://localhost:5080
+```
+
+API site physical path 指向：
 
 ```text
 C:\inetpub\EverrichRPG\api
@@ -132,6 +145,18 @@ API App Pool 建議：
 ```text
 .NET CLR version: No Managed Code
 Managed pipeline mode: Integrated
+```
+
+這樣外部網址會是：
+
+```text
+https://你的網域/api/v1/health
+```
+
+IIS 前端站台會反向代理到：
+
+```text
+http://localhost:5080/api/v1/health
 ```
 
 ## 5. 後端正式環境變數
