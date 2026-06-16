@@ -33,7 +33,7 @@
    "source": "../tilesets/airport-props.tsj"
   },
   {
-   "firstgid": 200,
+   "firstgid": 241,
    "source": "../tilesets/airport-npcs.tsj"
   }
  ],
@@ -1791,7 +1791,7 @@
    "locked": false,
    "objects": [
     {
-     "gid": 200,
+     "gid": 241,
      "height": 36,
      "id": 28,
      "name": "clerk-beauty-01-reception-left",
@@ -1851,7 +1851,7 @@
      "y": 272
     },
     {
-     "gid": 200,
+     "gid": 241,
      "height": 36,
      "id": 30,
      "name": "clerk-beauty-01-reception-right",
@@ -1911,7 +1911,7 @@
      "y": 272
     },
     {
-     "gid": 200,
+     "gid": 241,
      "height": 36,
      "id": 32,
      "name": "clerk-beauty-01-cashier",

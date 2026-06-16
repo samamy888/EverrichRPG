@@ -1,0 +1,1 @@
+﻿2x2 animation sheet. Redesigned flat airport moving walkway: wide, low, horizontal floor conveyor, cyan edge lights, no escalator slope. Solid #FF00FF background.

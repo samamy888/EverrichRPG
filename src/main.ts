@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { CONFIG } from "./config";
 import { syncShopCatalog } from "./data/shopCatalog";
+import { syncTravelerRoster } from "./data/travelerDirectory";
 import { BootScene } from "./scenes/BootScene";
 import { CharacterSelectScene } from "./scenes/CharacterSelectScene";
 import { TitleScene } from "./scenes/TitleScene";
@@ -53,7 +54,12 @@ window.addEventListener("orientationchange", syncFullscreenTouchLayout);
 const bootstrap = async (): Promise<void> => {
   await document.fonts.load('12px "Fusion Pixel 12"');
   await document.fonts.ready;
-  app.dataset.shopCatalogSource = await syncShopCatalog();
+  const [shopCatalogSource, travelerRosterSource] = await Promise.all([
+    syncShopCatalog(),
+    syncTravelerRoster()
+  ]);
+  app.dataset.shopCatalogSource = shopCatalogSource;
+  app.dataset.travelerRosterSource = travelerRosterSource;
 
   new UIOverlay(app);
 
@@ -75,7 +81,7 @@ const bootstrap = async (): Promise<void> => {
     scene: [BootScene, TitleScene, CharacterSelectScene, WorldScene],
     scale: {
       mode: Phaser.Scale.NONE,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
+      autoCenter: Phaser.Scale.NO_CENTER,
       width: CONFIG.width,
       height: CONFIG.height
     }

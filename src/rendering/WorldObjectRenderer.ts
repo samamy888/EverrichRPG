@@ -12,11 +12,18 @@ import type { WorldRenderPort } from "./WorldRenderer";
 export interface InteractiveObject {
   object: MapObjectData;
   bounds: Phaser.Geom.Rectangle;
+  getHitBounds: () => Phaser.Geom.Rectangle;
+}
+
+export interface ProximityLabel {
+  bounds: Phaser.Geom.Rectangle;
+  label: Phaser.GameObjects.BitmapText;
 }
 
 export interface WorldObjectRenderResult {
   collisionRects: Phaser.Geom.Rectangle[];
   interactiveObjects: InteractiveObject[];
+  proximityLabels: ProximityLabel[];
   travelerAIs: TravelerAI[];
 }
 
@@ -37,6 +44,7 @@ export class WorldObjectRenderer {
   render(region: RegionData): WorldObjectRenderResult {
     const collisionRects: Phaser.Geom.Rectangle[] = [];
     const interactiveObjects: InteractiveObject[] = [];
+    const proximityLabels: ProximityLabel[] = [];
     const travelerAIs: TravelerAI[] = [];
 
     for (const object of region.objects) {
@@ -47,7 +55,8 @@ export class WorldObjectRenderer {
       const hasIntegratedScreenAnimation =
         object.texture === "airport-long-kiosk" ||
         object.texture === "airport-self-order-kiosk" ||
-        object.texture === "airport-vending-machine";
+        object.texture === "airport-vending-machine" ||
+        object.texture === "airport-ad-column";
       const texture = isTraveler
         ? travelerVariant === "male"
           ? "traveler-male-sheet"
@@ -91,18 +100,6 @@ export class WorldObjectRenderer {
         object.collision.height
       );
       if (!isTraveler && !object.decorative) collisionRects.push(bounds);
-      if (
-        !object.decorative &&
-        (object.interaction ||
-          getShopIdForRegion(region.id) ||
-          this.options.collectibles.some(
-            (collectible) =>
-              collectible.regionId === region.id &&
-              collectible.objectId === object.id
-          ))
-      ) {
-        interactiveObjects.push({ object, bounds });
-      }
 
       const label = object.label
         ? this.options.scene.add
@@ -117,7 +114,28 @@ export class WorldObjectRenderer {
             .setDropShadow(1, 1, 0xfff8df, 1)
             .setOrigin(0.5, 1)
             .setDepth(image.depth + 1)
+            .setVisible(false)
         : undefined;
+      if (label) {
+        proximityLabels.push({ bounds, label });
+      }
+
+      if (
+        !object.decorative &&
+        (object.interaction ||
+          getShopIdForRegion(region.id) ||
+          this.options.collectibles.some(
+            (collectible) =>
+              collectible.regionId === region.id &&
+              collectible.objectId === object.id
+          ))
+      ) {
+        interactiveObjects.push({
+          object,
+          bounds,
+          getHitBounds: () => image.getBounds()
+        });
+      }
 
       if (isTraveler && image instanceof Phaser.GameObjects.Sprite) {
         travelerAIs.push(
@@ -140,7 +158,12 @@ export class WorldObjectRenderer {
       }
     }
 
-    return { collisionRects, interactiveObjects, travelerAIs };
+    return {
+      collisionRects,
+      interactiveObjects,
+      proximityLabels,
+      travelerAIs
+    };
   }
 
   private getTravelerVariant(

@@ -3246,128 +3246,7 @@
    "draworder": "topdown",
    "id": 5,
    "name": "NPCs",
-   "objects": [
-    {
-     "gid": 69,
-     "height": 36,
-     "id": 13,
-     "name": "browsing-traveler-01",
-     "opacity": 1,
-     "properties": [
-      {
-       "name": "foreground",
-       "type": "bool",
-       "value": true
-      },
-      {
-       "name": "interactionLines",
-       "type": "string",
-       "value": "[\"我先去左邊找鳳梨酥，你也可以看看。\"]"
-      },
-      {
-       "name": "interactionTitle",
-       "type": "string",
-       "value": "逛街旅客"
-      },
-      {
-       "name": "label",
-       "type": "string",
-       "value": "逛街旅客"
-      },
-      {
-       "name": "texture",
-       "type": "string",
-       "value": "traveler-male-npc"
-      },
-      {
-       "name": "movementType",
-       "type": "string",
-       "value": "wander"
-      },
-      {
-       "name": "facing",
-       "type": "string",
-       "value": "left"
-      },
-      {
-       "name": "speed",
-       "type": "float",
-       "value": 52
-      },
-      {
-       "name": "animationKey",
-       "type": "string",
-       "value": "traveler-male"
-      }
-     ],
-     "rotation": 0,
-     "type": "",
-     "visible": true,
-     "width": 36,
-     "x": 302,
-     "y": 288
-    },
-    {
-     "gid": 70,
-     "height": 36,
-     "id": 14,
-     "name": "browsing-traveler-02",
-     "opacity": 1,
-     "properties": [
-      {
-       "name": "foreground",
-       "type": "bool",
-       "value": true
-      },
-      {
-       "name": "interactionLines",
-       "type": "string",
-       "value": "[\"右邊的台灣禮品店有很適合收藏的明信片。\"]"
-      },
-      {
-       "name": "interactionTitle",
-       "type": "string",
-       "value": "逛街旅客"
-      },
-      {
-       "name": "label",
-       "type": "string",
-       "value": "逛街旅客"
-      },
-      {
-       "name": "texture",
-       "type": "string",
-       "value": "traveler-female-npc"
-      },
-      {
-       "name": "movementType",
-       "type": "string",
-       "value": "patrol"
-      },
-      {
-       "name": "facing",
-       "type": "string",
-       "value": "right"
-      },
-      {
-       "name": "speed",
-       "type": "float",
-       "value": 44
-      },
-      {
-       "name": "animationKey",
-       "type": "string",
-       "value": "traveler-female"
-      }
-     ],
-     "rotation": 0,
-     "type": "",
-     "visible": true,
-     "width": 36,
-     "x": 430,
-     "y": 288
-    }
-   ],
+   "objects": [],
    "opacity": 1,
    "type": "objectgroup",
    "visible": true,
@@ -3492,44 +3371,6 @@
      "width": 16,
      "x": 696,
      "y": 400
-    },
-    {
-     "height": 19.2,
-     "id": 21,
-     "name": "browsing-traveler-01-collision",
-     "opacity": 1,
-     "properties": [
-      {
-       "name": "ownerId",
-       "type": "string",
-       "value": "browsing-traveler-01"
-      }
-     ],
-     "rotation": 0,
-     "type": "",
-     "visible": true,
-     "width": 19.2,
-     "x": 310.4,
-     "y": 268.8
-    },
-    {
-     "height": 19.2,
-     "id": 22,
-     "name": "browsing-traveler-02-collision",
-     "opacity": 1,
-     "properties": [
-      {
-       "name": "ownerId",
-       "type": "string",
-       "value": "browsing-traveler-02"
-      }
-     ],
-     "rotation": 0,
-     "type": "",
-     "visible": true,
-     "width": 19.2,
-     "x": 438.4,
-     "y": 268.8
     }
    ],
    "opacity": 1,
@@ -3827,7 +3668,7 @@
    "source": "../tilesets/airport-props.tsj"
   },
   {
-   "firstgid": 66,
+   "firstgid": 150,
    "source": "../tilesets/airport-npcs.tsj"
   }
  ],

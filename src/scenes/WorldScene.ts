@@ -41,6 +41,7 @@ import {
 } from "../rendering/WorldRenderer";
 import {
   type InteractiveObject,
+  type ProximityLabel,
   WorldObjectRenderer
 } from "../rendering/WorldObjectRenderer";
 import { audioManager } from "../systems/audioManager";
@@ -65,6 +66,7 @@ const DIRECTION_VECTOR: Record<Facing, Phaser.Math.Vector2> = {
   right: new Phaser.Math.Vector2(1, 0)
 };
 const BITMAP_FONT = "fusion-pixel-12-bitmap";
+const LABEL_REVEAL_DISTANCE = CONFIG.tileSize * 3;
 
 export class WorldScene extends Phaser.Scene {
   private regionId: RegionId = "duty-free-entrance";
@@ -82,6 +84,7 @@ export class WorldScene extends Phaser.Scene {
   private collisionRects: Phaser.Geom.Rectangle[] = [];
   private portals: PortalData[] = [];
   private interactiveObjects: InteractiveObject[] = [];
+  private proximityLabels: ProximityLabel[] = [];
   private debugGraphics!: Phaser.GameObjects.Graphics;
   private interactionHint!: Phaser.GameObjects.Container;
   private interactionHintLabel!: Phaser.GameObjects.BitmapText;
@@ -154,6 +157,10 @@ export class WorldScene extends Phaser.Scene {
     this.menuOpen = false;
     this.scene.start("TitleScene");
   };
+  private readonly fastTravelHandler = (event: Event): void => {
+    const { regionId } = (event as CustomEvent<{ regionId: RegionId }>).detail;
+    this.tryFastTravel(regionId);
+  };
 
   constructor() {
     super("WorldScene");
@@ -220,7 +227,9 @@ export class WorldScene extends Phaser.Scene {
         this.checkPortal();
         this.updateInteractionHint();
       },
-      playFootstep: (running) => audioManager.playFootstep(running)
+      playFootstep: (running) => audioManager.playFootstep(running),
+      onPointerClick: (worldX, worldY) =>
+        this.handleWorldPointerClick(worldX, worldY)
     });
     this.playerMovement.bind();
     this.bindUiEvents();
@@ -236,6 +245,7 @@ export class WorldScene extends Phaser.Scene {
     for (const travelerAI of this.travelerAIs) {
       travelerAI.update(time, worldPaused);
     }
+    this.updateProximityLabels();
     if (this.debugVisible) this.drawDebug();
 
     if (Phaser.Input.Keyboard.JustDown(this.resetKey)) {
@@ -269,6 +279,7 @@ export class WorldScene extends Phaser.Scene {
     this.travelerAIs = [];
     this.portals = region.portals;
     this.interactiveObjects = [];
+    this.proximityLabels = [];
     this.physics.world.setBounds(0, 0, region.width, region.height);
     this.cameras.main.setBounds(0, 0, region.width, region.height);
     this.cameras.main.setBackgroundColor(
@@ -280,6 +291,7 @@ export class WorldScene extends Phaser.Scene {
     const renderedObjects = this.objectRenderer.render(region);
     this.collisionRects.push(...renderedObjects.collisionRects);
     this.interactiveObjects = renderedObjects.interactiveObjects;
+    this.proximityLabels = renderedObjects.proximityLabels;
     this.travelerAIs = renderedObjects.travelerAIs;
     this.worldRenderer.drawPortals(region);
     this.createPlayer(region, spawnId);
@@ -289,6 +301,7 @@ export class WorldScene extends Phaser.Scene {
 
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
     this.portalReadyAt = this.time.now + CONFIG.portalCooldownMs;
+    this.updateProximityLabels();
     this.updateInteractionHint();
     this.persist();
     this.emitStatus();
@@ -308,7 +321,10 @@ export class WorldScene extends Phaser.Scene {
       this.playerVariant === "male" ? "traveler-male-sheet" : "traveler-female-sheet";
     this.player = this.physics.add.sprite(spawn.x, spawn.y, texture).setDepth(20);
     this.player.setOrigin(0.5, 1);
-    this.player.setScale(0.42);
+    this.player.setDisplaySize(
+      CONFIG.characterDisplaySize,
+      CONFIG.characterDisplaySize
+    );
     this.player.setDepth(spawn.y);
     this.player.setTexture(`traveler-${this.playerVariant}-idle-sheet`);
     this.player.setFrame(getPlayerIdleFrame(this.facing));
@@ -333,29 +349,43 @@ export class WorldScene extends Phaser.Scene {
       .setScrollFactor(0)
       .setDepth(50);
 
+    const menuButtonWidth = 82;
+    const menuButtonHeight = 28;
+    const menuButtonX = CONFIG.width - menuButtonWidth - 8;
+    const menuButtonY = 8;
     const menuButtonBackground = this.add
-      .rectangle(0, 0, 82, 28, 0x17323b, 0.9)
-      .setInteractive({ useHandCursor: true });
+      .rectangle(0, 0, menuButtonWidth, menuButtonHeight, 0x17323b, 0.9)
+      .setOrigin(0);
     const menuButtonLabel = this.add
-      .bitmapText(0, 0, BITMAP_FONT, "☰ MENU", 12)
+      .bitmapText(menuButtonWidth / 2, menuButtonHeight / 2, BITMAP_FONT, "☰ MENU", 12)
       .setTint(0xfff2c7)
       .setOrigin(0.5);
-    this.add
-      .container(CONFIG.width - 49, 22, [menuButtonBackground, menuButtonLabel])
+    const menuButton = this.add
+      .container(menuButtonX, menuButtonY, [menuButtonBackground, menuButtonLabel])
+      .setSize(menuButtonWidth, menuButtonHeight)
+      .setInteractive(
+        new Phaser.Geom.Rectangle(0, 0, menuButtonWidth, menuButtonHeight),
+        Phaser.Geom.Rectangle.Contains
+      )
       .setScrollFactor(0)
       .setDepth(51);
 
-    menuButtonBackground.on("pointerover", () => {
+    const setMenuButtonActive = () => {
       menuButtonBackground.setFillStyle(0xf6cf63, 1);
       menuButtonLabel.setTint(0x17242b);
-    });
-    menuButtonBackground.on("pointerout", () => {
+    };
+    const setMenuButtonIdle = () => {
       menuButtonBackground.setFillStyle(0x17323b, 0.9);
       menuButtonLabel.setTint(0xfff2c7);
-    });
-    menuButtonBackground.on("pointerdown", () => {
+    };
+    const openMenu = () => {
+      this.playerMovement?.suppressNextClick();
       window.dispatchEvent(new CustomEvent("prototype:menu-open-request"));
-    });
+    };
+
+    menuButton.on("pointerover", setMenuButtonActive);
+    menuButton.on("pointerout", setMenuButtonIdle);
+    menuButton.on("pointerdown", openMenu);
   }
 
   private createInteractionHint(): void {
@@ -406,6 +436,7 @@ export class WorldScene extends Phaser.Scene {
     window.addEventListener("prototype:menu", this.menuHandler);
     window.addEventListener("prototype:menu-state", this.menuStateHandler);
     window.addEventListener("prototype:return-title", this.returnTitleHandler);
+    window.addEventListener("prototype:fast-travel", this.fastTravelHandler);
     window.addEventListener("prototype:dialogue-choice", this.dialogueChoiceHandler);
     window.addEventListener("prototype:shop-close", this.shopCloseHandler);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -416,6 +447,7 @@ export class WorldScene extends Phaser.Scene {
       window.removeEventListener("prototype:menu", this.menuHandler);
       window.removeEventListener("prototype:menu-state", this.menuStateHandler);
       window.removeEventListener("prototype:return-title", this.returnTitleHandler);
+      window.removeEventListener("prototype:fast-travel", this.fastTravelHandler);
       window.removeEventListener("prototype:dialogue-choice", this.dialogueChoiceHandler);
       window.removeEventListener("prototype:shop-close", this.shopCloseHandler);
     });
@@ -438,14 +470,14 @@ export class WorldScene extends Phaser.Scene {
     if (portal) this.tryPortal(portal);
   }
 
-  private interact(): void {
+  private interact(targetOverride?: InteractiveObject): void {
     if (this.transitioning || this.shopOpen) return;
     if (this.dialogue.isOpen) {
       this.advanceDialogue();
       return;
     }
 
-    const target = this.getInteractionTarget();
+    const target = targetOverride ?? this.getInteractionTarget();
     if (target) {
       explorationService.meetNpc(target.object);
       const collectible = explorationService.discoverCollectible(
@@ -487,6 +519,115 @@ export class WorldScene extends Phaser.Scene {
     }
 
     this.startDialogue(this.resolveInteractionDialogue(target.object), target.object.id);
+  }
+
+  private handleWorldPointerClick(worldX: number, worldY: number): void {
+    if (
+      this.transitioning ||
+      this.dialogue.isOpen ||
+      this.shopOpen ||
+      this.menuOpen
+    ) {
+      return;
+    }
+
+    const clickedTarget = this.interactiveObjects
+      .filter(({ getHitBounds }) => getHitBounds().contains(worldX, worldY))
+      .sort((left, right) => {
+        const leftDistance = Phaser.Math.Distance.Between(
+          worldX,
+          worldY,
+          left.bounds.centerX,
+          left.bounds.centerY
+        );
+        const rightDistance = Phaser.Math.Distance.Between(
+          worldX,
+          worldY,
+          right.bounds.centerX,
+          right.bounds.centerY
+        );
+        return leftDistance - rightDistance;
+      })[0];
+
+    if (!clickedTarget) {
+      this.playerMovement.moveTo({ x: worldX, y: worldY });
+      return;
+    }
+
+    const approachPoints = this.getInteractionApproachPoints(clickedTarget);
+    const clickedTraveler =
+      this.travelerAIs.find(
+        (traveler) => traveler.objectId === clickedTarget.object.id
+      ) ?? null;
+    clickedTraveler?.faceToward(this.player.x, this.player.y);
+    for (const point of approachPoints) {
+      if (
+        this.playerMovement.moveTo(
+          point,
+          () => {
+            this.faceObject(clickedTarget);
+            this.interact(clickedTarget);
+          },
+          () => clickedTraveler?.restoreFacing()
+        )
+      ) {
+        return;
+      }
+    }
+    clickedTraveler?.restoreFacing();
+  }
+
+  private getInteractionApproachPoints(
+    target: InteractiveObject
+  ): Array<{ x: number; y: number }> {
+    const distance = CONFIG.tileSize;
+    const points = [
+      {
+        x: target.bounds.centerX,
+        y: target.bounds.bottom + distance
+      },
+      {
+        x: target.bounds.centerX,
+        y: target.bounds.top - distance / 2
+      },
+      {
+        x: target.bounds.left - distance / 2,
+        y: target.bounds.centerY + 5
+      },
+      {
+        x: target.bounds.right + distance / 2,
+        y: target.bounds.centerY + 5
+      }
+    ];
+
+    return points.sort(
+      (left, right) =>
+        Phaser.Math.Distance.Between(
+          this.player.x,
+          this.player.y,
+          left.x,
+          left.y
+        ) -
+        Phaser.Math.Distance.Between(
+          this.player.x,
+          this.player.y,
+          right.x,
+          right.y
+        )
+    );
+  }
+
+  private faceObject(target: InteractiveObject): void {
+    const deltaX = target.bounds.centerX - this.player.x;
+    const deltaY = target.bounds.centerY - this.player.y;
+    this.facing =
+      Math.abs(deltaY) >= Math.abs(deltaX)
+        ? deltaY < 0
+          ? "up"
+          : "down"
+        : deltaX < 0
+          ? "left"
+          : "right";
   }
 
   private resolveInteractionDialogue(
@@ -596,6 +737,21 @@ export class WorldScene extends Phaser.Scene {
     }
   }
 
+  private updateProximityLabels(): void {
+    if (!this.player) return;
+    const labelsVisible = !this.transitioning && !this.menuOpen;
+
+    for (const { bounds, label } of this.proximityLabels) {
+      const distance = Phaser.Math.Distance.Between(
+        this.player.x,
+        this.player.y,
+        bounds.centerX,
+        bounds.centerY
+      );
+      label.setVisible(labelsVisible && distance <= LABEL_REVEAL_DISTANCE);
+    }
+  }
+
   private resetRuntimeState(): void {
     this.transitioning = false;
     this.dialogueTraveler = null;
@@ -604,6 +760,7 @@ export class WorldScene extends Phaser.Scene {
     this.menuOpen = false;
     this.hintedObjectId = null;
     this.travelerAIs = [];
+    this.proximityLabels = [];
     emitPrototypeInteractionHint({ available: false });
   }
 
@@ -686,6 +843,28 @@ export class WorldScene extends Phaser.Scene {
         playerVariant: this.playerVariant,
         regionId: portal.destinationRegionId,
         spawnId: portal.destinationSpawnId,
+        facing: this.facing,
+        movementMode: this.running ? "run" : "walk"
+      });
+    });
+  }
+
+  private tryFastTravel(regionId: RegionId): void {
+    if (this.transitioning || regionId === this.regionId) return;
+    this.menuOpen = false;
+    this.shopOpen = false;
+    this.closeDialogue();
+    this.playerMovement.resetInput();
+    this.transitioning = true;
+    audioManager.playDoor();
+    this.updateInteractionHint();
+    this.cameras.main.fadeOut(180, 0, 0, 0);
+    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+      this.scene.restart({
+        version: 1,
+        playerVariant: this.playerVariant,
+        regionId,
+        spawnId: "fast-travel",
         facing: this.facing,
         movementMode: this.running ? "run" : "walk"
       });

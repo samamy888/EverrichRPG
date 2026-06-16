@@ -22,7 +22,10 @@ public static class DatabaseInitializer
         var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
         var databaseProvider = configuration["Database:Provider"] ?? "PostgreSql";
 
-        if (databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
+        if (
+            databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase) ||
+            databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase)
+        )
         {
             await dbContext.Database.EnsureCreatedAsync(cancellationToken);
         }
@@ -33,5 +36,7 @@ public static class DatabaseInitializer
 
         var catalogSeeder = scope.ServiceProvider.GetRequiredService<CommerceCatalogSeeder>();
         await catalogSeeder.SeedAsync(cancellationToken);
+        var travelerSeeder = scope.ServiceProvider.GetRequiredService<TravelerRosterSeeder>();
+        await travelerSeeder.SeedAsync(cancellationToken);
     }
 }

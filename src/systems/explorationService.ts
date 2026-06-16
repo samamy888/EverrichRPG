@@ -1,5 +1,6 @@
 import { CONFIG } from "../config";
 import type { MapObjectData, RegionId } from "../data/prototypeRegions";
+import { gameStorage, type GameStorage } from "../storage/GameStorage";
 import collectibleData from "../../game/content/exploration/hidden-collectibles.json";
 
 export interface HiddenCollectible {
@@ -48,7 +49,11 @@ function createInitialState(): ExplorationSave {
 }
 
 export class ExplorationService {
-  private state = this.load();
+  private state: ExplorationSave;
+
+  constructor(private readonly storage: GameStorage = gameStorage) {
+    this.state = this.load();
+  }
 
   getState(): ExplorationSave {
     return structuredClone(this.state);
@@ -97,18 +102,19 @@ export class ExplorationService {
   }
 
   private load(): ExplorationSave {
-    const raw = localStorage.getItem(saveKey);
-    if (!raw) return createInitialState();
-    try {
-      const parsed = JSON.parse(raw) as ExplorationSave;
-      return parsed.version === 1 ? parsed : createInitialState();
-    } catch {
-      return createInitialState();
-    }
+    return this.storage.readJson(
+      saveKey,
+      createInitialState,
+      (value): value is ExplorationSave =>
+        typeof value === "object" &&
+        value !== null &&
+        "version" in value &&
+        value.version === 1
+    );
   }
 
   private persist(): void {
-    localStorage.setItem(saveKey, JSON.stringify(this.state));
+    this.storage.writeJson(saveKey, this.state);
     window.dispatchEvent(new CustomEvent("prototype:exploration-state"));
   }
 }

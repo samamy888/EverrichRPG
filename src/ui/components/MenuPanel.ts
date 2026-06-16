@@ -1,4 +1,5 @@
 import { SHOP_PRODUCTS } from "../../data/shopCatalog";
+import type { RegionId } from "../../data/prototypeRegions";
 import { audioManager } from "../../systems/audioManager";
 import {
   explorationService,
@@ -25,6 +26,7 @@ interface MenuPanelOptions {
   root: HTMLElement;
   onStateChange: (open: boolean) => void;
   onReturnTitle: () => void;
+  onFastTravel: (regionId: RegionId) => void;
   onBeforeOpen: () => void;
 }
 
@@ -93,24 +95,29 @@ export class MenuPanel {
       return;
     }
     if (this.activeView === "map") {
-      const node = (regionId: keyof typeof REGION_LABELS): string => {
+      const node = (regionId: RegionId): string => {
         const visited = explorationState.visitedRegionIds.includes(regionId);
         const current = explorationState.currentRegionId === regionId;
+        const canTravel = visited && !current;
         const stamp = HIDDEN_COLLECTIBLES.find(
           (collectible) => collectible.regionId === regionId
         );
         const stampFound = stamp
           ? explorationState.collectibleIds.includes(stamp.id)
           : false;
-        return `<article class="airport-map-node${visited ? " is-visited" : ""}${
+        return `<button type="button" class="airport-map-node${visited ? " is-visited" : ""}${
           current ? " is-current" : ""
-        }"><span>${current ? "目前位置" : visited ? "已到訪" : "未探索"}</span>
+        }${canTravel ? " is-travelable" : ""}" data-fast-travel-region="${regionId}"${
+          canTravel ? "" : " disabled"
+        } title="${canTravel ? `前往${REGION_LABELS[regionId]}` : current ? "目前所在區域" : "尚未探索，無法快速前往"}"><span>${
+          current ? "目前位置" : visited ? "點擊前往" : "未探索"
+        }</span>
           <strong>${visited || current ? REGION_LABELS[regionId] : "？？？？？"}</strong>
-          <small>${stampFound ? "★ 紀念章已發現" : "☆ 紀念章未發現"}</small></article>`;
+          <small>${stampFound ? "★ 紀念章已發現" : "☆ 紀念章未發現"}</small></button>`;
       };
       this.content.innerHTML = `
         <p class="menu-kicker">AIRPORT NAVIGATOR</p><h2>機場導覽</h2>
-        <p>實際走進區域後，導覽內容才會登錄。</p>
+        <p>已到訪的區域可以點擊快速前往；未探索區域會先保留為未知。</p>
         <div class="airport-map">
           <div class="map-top">${node("shop-beauty-01")}</div>
           <div class="map-middle">${node("shop-liquor-food-01")}${node("duty-free-central")}${node("shop-gift-01")}</div>
@@ -227,6 +234,15 @@ export class MenuPanel {
       if (action === "toggle-audio") {
         audioManager.toggleMuted();
         this.render();
+      }
+      const fastTravelRegion = target?.dataset.fastTravelRegion as
+        | RegionId
+        | undefined;
+      if (fastTravelRegion) {
+        if (target?.disabled) return;
+        audioManager.playConfirm();
+        this.close();
+        this.options.onFastTravel(fastTravelRegion);
       }
     });
     this.panel.addEventListener("input", (event) => {

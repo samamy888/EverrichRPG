@@ -4,6 +4,9 @@ dist/
 **/obj/
 .DS_Store
 *.log
+*.db
+*.db-shm
+*.db-wal
 coverage/
 __pycache__/
 *.pyc

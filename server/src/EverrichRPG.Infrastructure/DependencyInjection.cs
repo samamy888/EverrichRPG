@@ -25,9 +25,16 @@ public static class DependencyInjection
             var connectionString = configuration.GetConnectionString("GameDatabase")
                 ?? throw new InvalidOperationException(
                     "Connection string 'GameDatabase' is not configured.");
+            if (databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase))
+            {
+                options.UseSqlite(connectionString);
+                return;
+            }
+
             options.UseNpgsql(connectionString);
         });
         services.AddScoped<CommerceCatalogSeeder>();
+        services.AddScoped<TravelerRosterSeeder>();
 
         return services;
     }

@@ -4,6 +4,7 @@ import {
   SHOP_PRODUCTS,
   type ShopProduct
 } from "../data/shopCatalog";
+import { gameStorage, type GameStorage } from "../storage/GameStorage";
 
 export interface PurchasedItem {
   productId: string;
@@ -37,7 +38,11 @@ function createInitialState(): ShopSave {
 }
 
 export class ShopService {
-  private state = this.load();
+  private state: ShopSave;
+
+  constructor(private readonly storage: GameStorage = gameStorage) {
+    this.state = this.load();
+  }
 
   getState(): ShopSave {
     return structuredClone(this.state);
@@ -108,18 +113,19 @@ export class ShopService {
   }
 
   private load(): ShopSave {
-    const raw = localStorage.getItem(saveKey);
-    if (!raw) return createInitialState();
-    try {
-      const parsed = JSON.parse(raw) as ShopSave;
-      return parsed.version === 1 ? parsed : createInitialState();
-    } catch {
-      return createInitialState();
-    }
+    return this.storage.readJson(
+      saveKey,
+      createInitialState,
+      (value): value is ShopSave =>
+        typeof value === "object" &&
+        value !== null &&
+        "version" in value &&
+        value.version === 1
+    );
   }
 
   private persist(): void {
-    localStorage.setItem(saveKey, JSON.stringify(this.state));
+    this.storage.writeJson(saveKey, this.state);
     window.dispatchEvent(new CustomEvent("prototype:shop-state"));
   }
 }

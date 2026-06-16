@@ -1,5 +1,6 @@
 import { CONFIG } from "../config";
 import type { Facing, RegionId } from "../data/prototypeRegions";
+import { gameStorage } from "../storage/GameStorage";
 
 export type PlayerVariant = "male" | "female";
 
@@ -13,25 +14,24 @@ export interface PrototypeSave {
 }
 
 export function loadPrototypeSave(): PrototypeSave | null {
-  const raw = localStorage.getItem(CONFIG.saveKey);
-  if (!raw) {
-    return null;
-  }
-  try {
-    const parsed = JSON.parse(raw) as PrototypeSave;
-    return parsed.version === 1 ? parsed : null;
-  } catch {
-    return null;
-  }
+  return gameStorage.readJson(
+    CONFIG.saveKey,
+    () => null,
+    (value): value is PrototypeSave =>
+      typeof value === "object" &&
+      value !== null &&
+      "version" in value &&
+      value.version === 1
+  );
 }
 
 export function savePrototype(value: PrototypeSave): void {
-  localStorage.setItem(CONFIG.saveKey, JSON.stringify(value));
+  gameStorage.writeJson(CONFIG.saveKey, value);
 }
 
 export function clearPrototypeSave(): void {
-  localStorage.removeItem(CONFIG.saveKey);
-  localStorage.removeItem(`${CONFIG.saveKey}-shop`);
-  localStorage.removeItem(`${CONFIG.saveKey}-quest`);
-  localStorage.removeItem(`${CONFIG.saveKey}-exploration`);
+  gameStorage.remove(CONFIG.saveKey);
+  gameStorage.remove(`${CONFIG.saveKey}-shop`);
+  gameStorage.remove(`${CONFIG.saveKey}-quest`);
+  gameStorage.remove(`${CONFIG.saveKey}-exploration`);
 }

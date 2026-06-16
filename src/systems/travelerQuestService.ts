@@ -1,5 +1,6 @@
 import { CONFIG } from "../config";
 import type { ShopId } from "../data/shopCatalog";
+import { gameStorage, type GameStorage } from "../storage/GameStorage";
 import { shopService } from "./shopService";
 
 export type TravelerQuestStatus = "available" | "active" | "ready" | "completed";
@@ -61,9 +62,10 @@ function createInitialState(): TravelerQuestSave {
 }
 
 export class TravelerQuestService {
-  private state = this.load();
+  private state: TravelerQuestSave;
 
-  constructor() {
+  constructor(private readonly storage: GameStorage = gameStorage) {
+    this.state = this.load();
     window.addEventListener("prototype:shop-state", () => this.syncProgress());
   }
 
@@ -119,18 +121,19 @@ export class TravelerQuestService {
   }
 
   private load(): TravelerQuestSave {
-    const raw = localStorage.getItem(saveKey);
-    if (!raw) return createInitialState();
-    try {
-      const parsed = JSON.parse(raw) as TravelerQuestSave;
-      return parsed.version === 1 ? parsed : createInitialState();
-    } catch {
-      return createInitialState();
-    }
+    return this.storage.readJson(
+      saveKey,
+      createInitialState,
+      (value): value is TravelerQuestSave =>
+        typeof value === "object" &&
+        value !== null &&
+        "version" in value &&
+        value.version === 1
+    );
   }
 
   private persist(emit = true): void {
-    localStorage.setItem(saveKey, JSON.stringify(this.state));
+    this.storage.writeJson(saveKey, this.state);
     if (emit) window.dispatchEvent(new CustomEvent("prototype:quest-state"));
   }
 }

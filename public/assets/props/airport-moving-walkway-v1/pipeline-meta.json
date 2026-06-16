@@ -1,0 +1,155 @@
+{
+  "target": "asset",
+  "mode": "animated_prop",
+  "prompt": "",
+  "role": "",
+  "input": "public\\assets\\props\\airport-moving-walkway-v1\\raw-sheet.png",
+  "threshold": 100,
+  "edge_threshold": 150,
+  "duration": 260,
+  "rows": 2,
+  "cols": 2,
+  "cell_size": 128,
+  "fit_scale": 0.94,
+  "trim_border": 4,
+  "edge_clean_depth": 3,
+  "align": "center",
+  "shared_scale": true,
+  "component_mode": "all",
+  "component_padding": 4,
+  "min_component_area": 20,
+  "edge_touch_margin": 0,
+  "frame_labels": [
+    "moving-walkway-1",
+    "moving-walkway-2",
+    "moving-walkway-3",
+    "moving-walkway-4"
+  ],
+  "frames": [
+    {
+      "grid": [
+        0,
+        0
+      ],
+      "source_box": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "component_mode": "all",
+      "component_count": 1,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        73,
+        282,
+        573,
+        481
+      ],
+      "edge_touch": false,
+      "output_size": [
+        119,
+        47
+      ],
+      "paste_position": [
+        4,
+        40
+      ]
+    },
+    {
+      "grid": [
+        0,
+        1
+      ],
+      "source_box": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "component_mode": "all",
+      "component_count": 1,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        40,
+        282,
+        542,
+        481
+      ],
+      "edge_touch": false,
+      "output_size": [
+        120,
+        47
+      ],
+      "paste_position": [
+        4,
+        40
+      ]
+    },
+    {
+      "grid": [
+        1,
+        0
+      ],
+      "source_box": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "component_mode": "all",
+      "component_count": 1,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        73,
+        125,
+        573,
+        325
+      ],
+      "edge_touch": false,
+      "output_size": [
+        119,
+        47
+      ],
+      "paste_position": [
+        4,
+        40
+      ]
+    },
+    {
+      "grid": [
+        1,
+        1
+      ],
+      "source_box": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "component_mode": "all",
+      "component_count": 1,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        40,
+        125,
+        542,
+        325
+      ],
+      "edge_touch": false,
+      "output_size": [
+        120,
+        47
+      ],
+      "paste_position": [
+        4,
+        40
+      ]
+    }
+  ],
+  "edge_touch_frames": []
+}

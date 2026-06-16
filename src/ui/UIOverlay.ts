@@ -39,6 +39,7 @@ export class UIOverlay {
     this.dialoguePanel = new DialoguePanel({
       root: this.root,
       onChoice: (index) => this.dispatch("prototype:dialogue-choice", { index }),
+      onAdvance: () => this.dispatch("prototype:action"),
       onUnlockAudio: () => void audioManager.unlock(),
     });
 
@@ -58,6 +59,8 @@ export class UIOverlay {
       root: this.root,
       onStateChange: (open) => this.dispatch("prototype:menu-state", { open }),
       onReturnTitle: () => this.dispatch("prototype:return-title"),
+      onFastTravel: (regionId) =>
+        this.dispatch("prototype:fast-travel", { regionId }),
       onBeforeOpen: () => {
         this.shopPanel.close();
         this.dialoguePanel.hide();

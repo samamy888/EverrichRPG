@@ -276,8 +276,8 @@ propsLayer.objects.push({
   type: "",
   visible: true,
   width: 56,
-  x: 272,
-  y: 144
+  x: 64,
+  y: 280
 });
 collisionLayer.objects.push({
   height: 16,
@@ -291,8 +291,8 @@ collisionLayer.objects.push({
   type: "",
   visible: true,
   width: 24,
-  x: 288,
-  y: 112
+  x: 80,
+  y: 264
 });
 propsLayer.objects.push({
   gid: 9 + 100,
@@ -333,8 +333,8 @@ propsLayer.objects.push({
   type: "",
   visible: true,
   width: 64,
-  x: 48,
-  y: 288
+  x: 120,
+  y: 280
 });
 collisionLayer.objects.push({
   height: 16,
@@ -348,8 +348,8 @@ collisionLayer.objects.push({
   type: "",
   visible: true,
   width: 24,
-  x: 68,
-  y: 272
+  x: 140,
+  y: 264
 });
 facilities.nextobjectid = Math.max(facilities.nextobjectid ?? 0, nextObjectId + 4);
 

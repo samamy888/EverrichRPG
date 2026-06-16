@@ -1,29 +1,20 @@
 import { CONFIG } from "../config";
 import type {
-  Facing,
   MapObjectData,
   RectData,
-  RegionData,
-  RegionId
+  RegionData
 } from "../data/prototypeRegions";
+import {
+  getTravelersForRegion,
+  type TravelerProfile
+} from "../data/travelerDirectory";
 
-export type TravelerVariant = "male" | "female";
+export type { TravelerVariant } from "../data/travelerDirectory";
 
 export interface TravelerRandomSource {
   integer(minimum: number, maximum: number): number;
   pick<T>(values: readonly T[]): T;
 }
-
-const TRAVELER_VARIANTS: readonly TravelerVariant[] = ["male", "female"];
-const TRAVELER_FACING: readonly Facing[] = ["up", "down", "left", "right"];
-const TRAVELER_POPULATION: Partial<Record<RegionId, readonly [number, number]>> = {
-  "duty-free-entrance": [2, 4],
-  "security-check": [2, 4],
-  "departure-hall": [4, 7],
-  "information-core": [2, 4],
-  "airport-facilities": [2, 4],
-  "duty-free-central": [4, 7]
-};
 
 const defaultRandomSource: TravelerRandomSource = {
   integer(minimum, maximum) {
@@ -38,13 +29,15 @@ const defaultRandomSource: TravelerRandomSource = {
 
 export function createRandomTravelerPopulation(
   region: RegionData,
-  random: TravelerRandomSource = defaultRandomSource
+  random: TravelerRandomSource = defaultRandomSource,
+  roster: readonly TravelerProfile[] = getTravelersForRegion(region.id)
 ): MapObjectData[] {
   const travelerTemplates = region.objects.filter(isTravelerObject);
-  const populationRange = TRAVELER_POPULATION[region.id];
-  if (!populationRange || travelerTemplates.length === 0) return region.objects;
-
   const staticObjects = region.objects.filter((object) => !isTravelerObject(object));
+  if (roster.length === 0) {
+    return staticObjects;
+  }
+
   const blockedBounds = [
     ...region.boundaries.map<RectData>((boundary) => ({
       x: boundary.x,
@@ -58,38 +51,12 @@ export function createRandomTravelerPopulation(
   ];
   const portalBounds = region.portals.map((portal) => portal.bounds);
   const occupiedTravelerBounds: RectData[] = [];
-  const targetCount = random.integer(populationRange[0], populationRange[1]);
   const randomizedTravelers: MapObjectData[] = [];
 
-  for (let index = 0; index < targetCount; index += 1) {
-    const template = travelerTemplates[index % travelerTemplates.length]!;
-    const traveler = structuredClone(template);
-    const variant = random.pick(TRAVELER_VARIANTS);
-    const facing = random.pick(TRAVELER_FACING);
-    const isAmbientTraveler = index >= travelerTemplates.length;
-
-    traveler.id = isAmbientTraveler
-      ? `${region.id}-ambient-traveler-${index + 1}`
-      : template.id;
-    traveler.texture = `traveler-${variant}-npc`;
-    traveler.npcBehavior = {
-      movementType:
-        template.npcBehavior?.movementType === "idle" && !isAmbientTraveler
-          ? "idle"
-          : random.integer(0, 4) === 0
-            ? "patrol"
-            : "wander",
-      facing,
-      speed: random.integer(34, 58),
-      animationKey: `traveler-${variant}`
-    };
-
-    if (isAmbientTraveler) {
-      traveler.decorative = true;
-      delete traveler.label;
-      delete traveler.interaction;
-    }
-
+  for (const profile of roster) {
+    const template =
+      travelerTemplates[random.integer(0, Math.max(0, travelerTemplates.length - 1))];
+    const traveler = createTravelerObject(region, profile, template);
     const placement = findRandomTravelerPlacement(
       traveler,
       travelerTemplates,
@@ -120,6 +87,38 @@ export function isTravelerObject(object: MapObjectData): boolean {
   );
 }
 
+function createTravelerObject(
+  region: RegionData,
+  profile: TravelerProfile,
+  template?: MapObjectData
+): MapObjectData {
+  return {
+    id: profile.id,
+    texture: `traveler-${profile.variant}-npc`,
+    x: template?.x ?? region.width / 2,
+    baselineY: template?.baselineY ?? region.height / 2,
+    displayWidth: CONFIG.characterDisplaySize,
+    displayHeight: CONFIG.characterDisplaySize,
+    collision: template?.collision ?? {
+      x: region.width / 2 - 6,
+      y: region.height / 2 - 12,
+      width: 12,
+      height: 12
+    },
+    label: profile.name,
+    interaction: {
+      title: profile.name,
+      lines: [profile.dialogue]
+    },
+    npcBehavior: {
+      movementType: profile.movementType,
+      facing: profile.facing,
+      speed: profile.speed,
+      animationKey: `traveler-${profile.variant}`
+    }
+  };
+}
+
 function findRandomTravelerPlacement(
   traveler: MapObjectData,
   templates: MapObjectData[],
@@ -131,50 +130,118 @@ function findRandomTravelerPlacement(
 ): Pick<MapObjectData, "x" | "baselineY" | "collision"> | null {
   const margin = CONFIG.tileSize;
 
-  for (let attempt = 0; attempt < 36; attempt += 1) {
-    const anchor = random.pick(templates);
-    const deltaX = random.integer(-6, 6) * CONFIG.tileSize;
-    const deltaY = random.integer(-5, 5) * CONFIG.tileSize;
+  for (let attempt = 0; attempt < 80; attempt += 1) {
+    const anchor = templates.length > 0 ? random.pick(templates) : undefined;
+    const collisionX = anchor
+      ? anchor.collision.x + random.integer(-6, 6) * CONFIG.tileSize
+      : random.integer(
+          margin,
+          Math.max(margin, region.width - margin - traveler.collision.width)
+        );
+    const collisionY = anchor
+      ? anchor.collision.y + random.integer(-5, 5) * CONFIG.tileSize
+      : random.integer(
+          margin,
+          Math.max(margin, region.height - margin - traveler.collision.height)
+        );
     const collision: RectData = {
-      x: anchor.collision.x + deltaX,
-      y: anchor.collision.y + deltaY,
+      x: collisionX,
+      y: collisionY,
       width: traveler.collision.width,
       height: traveler.collision.height
     };
 
     if (
-      collision.x < margin ||
-      collision.y < margin ||
-      collision.x + collision.width > region.width - margin ||
-      collision.y + collision.height > region.height - margin
-    ) {
-      continue;
-    }
-    if (
-      blockedBounds.some((bounds) => rectanglesIntersect(bounds, collision)) ||
-      portalBounds.some((bounds) => rectanglesIntersect(bounds, collision)) ||
-      occupiedTravelerBounds.some((bounds) => rectanglesIntersect(bounds, collision)) ||
-      region.spawns.some(
-        (spawn) =>
-          distance(
-            collision.x + collision.width / 2,
-            collision.y + collision.height / 2,
-            spawn.x,
-            spawn.y
-          ) < CONFIG.tileSize * 2
+      !isTravelerPlacementAvailable(
+        collision,
+        region,
+        blockedBounds,
+        portalBounds,
+        occupiedTravelerBounds,
+        margin
       )
     ) {
       continue;
     }
 
-    return {
-      x: anchor.x + deltaX,
-      baselineY: anchor.baselineY + deltaY,
-      collision
-    };
+    return toTravelerPlacement(collision);
+  }
+
+  for (
+    let y = margin;
+    y <= region.height - margin - traveler.collision.height;
+    y += CONFIG.tileSize
+  ) {
+    for (
+      let x = margin;
+      x <= region.width - margin - traveler.collision.width;
+      x += CONFIG.tileSize
+    ) {
+      const collision = {
+        x,
+        y,
+        width: traveler.collision.width,
+        height: traveler.collision.height
+      };
+      if (
+        isTravelerPlacementAvailable(
+          collision,
+          region,
+          blockedBounds,
+          portalBounds,
+          occupiedTravelerBounds,
+          margin
+        )
+      ) {
+        return toTravelerPlacement(collision);
+      }
+    }
   }
 
   return null;
+}
+
+function isTravelerPlacementAvailable(
+  collision: RectData,
+  region: RegionData,
+  blockedBounds: RectData[],
+  portalBounds: RectData[],
+  occupiedTravelerBounds: RectData[],
+  margin: number
+): boolean {
+  if (
+    collision.x < margin ||
+    collision.y < margin ||
+    collision.x + collision.width > region.width - margin ||
+    collision.y + collision.height > region.height - margin
+  ) {
+    return false;
+  }
+
+  return !(
+    blockedBounds.some((bounds) => rectanglesIntersect(bounds, collision)) ||
+    portalBounds.some((bounds) => rectanglesIntersect(bounds, collision)) ||
+    occupiedTravelerBounds.some((bounds) => rectanglesIntersect(bounds, collision)) ||
+    region.spawns.some(
+      (spawn) =>
+        distance(
+          collision.x + collision.width / 2,
+          collision.y + collision.height / 2,
+          spawn.x,
+          spawn.y
+        ) < CONFIG.tileSize * 2
+    )
+  );
+}
+
+function toTravelerPlacement(
+  collision: RectData
+): Pick<MapObjectData, "x" | "baselineY" | "collision"> {
+  return {
+    x: collision.x + collision.width / 2,
+    baselineY: collision.y + collision.height,
+    collision
+  };
 }
 
 function rectanglesIntersect(left: RectData, right: RectData): boolean {

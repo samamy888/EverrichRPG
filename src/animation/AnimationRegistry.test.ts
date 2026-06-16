@@ -50,6 +50,15 @@ describe("AnimationRegistry", () => {
     expect(resolveObjectAnimation("airport-vending-machine")).toBe(
       "airport-vending-machine-cycle"
     );
+    expect(resolveObjectAnimation("airport-ad-column")).toBe(
+      "airport-ad-column-screen-cycle"
+    );
+    expect(resolveObjectAnimation("airport-moving-walkway")).toBe(
+      "airport-moving-walkway-cycle"
+    );
+    expect(resolveObjectAnimation("airport-escalator-animated-south")).toBe(
+      "airport-escalator-south-cycle"
+    );
     expect(getPlayerMovementAnimationKey("female", "left", true)).toBe(
       "female-left-run"
     );

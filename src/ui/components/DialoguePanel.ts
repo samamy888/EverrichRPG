@@ -3,6 +3,7 @@ import type { PrototypeDialogueDetail } from "../../core/prototypeEvents";
 interface DialoguePanelOptions {
   root: HTMLElement;
   onChoice: (index: number) => void;
+  onAdvance: () => void;
   onUnlockAudio: () => void;
 }
 
@@ -12,6 +13,7 @@ export class DialoguePanel {
   private readonly text: HTMLParagraphElement;
   private readonly choices: HTMLDivElement;
   private readonly next: HTMLSpanElement;
+  private choosing = false;
 
   constructor(private readonly options: DialoguePanelOptions) {
     this.panel = options.root.querySelector(".dialogue-box")!;
@@ -19,6 +21,19 @@ export class DialoguePanel {
     this.text = options.root.querySelector(".dialogue-text")!;
     this.choices = options.root.querySelector(".dialogue-choices")!;
     this.next = options.root.querySelector(".dialogue-next")!;
+    this.panel.addEventListener("pointerdown", (event) => {
+      if (
+        this.choosing ||
+        (event.target instanceof Element &&
+          event.target.closest("[data-dialogue-choice]"))
+      ) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      this.options.onUnlockAudio();
+      this.options.onAdvance();
+    });
   }
 
   show(detail: PrototypeDialogueDetail): void {
@@ -42,10 +57,10 @@ export class DialoguePanel {
           this.options.onChoice(Number(button.dataset.dialogueChoice));
         });
       });
-    const choosing = (detail.choices?.length ?? 0) > 0;
-    this.panel.classList.toggle("has-choices", choosing);
-    this.options.root.classList.toggle("dialogue-has-choices", choosing);
-    this.next.textContent = choosing
+    this.choosing = (detail.choices?.length ?? 0) > 0;
+    this.panel.classList.toggle("has-choices", this.choosing);
+    this.options.root.classList.toggle("dialogue-has-choices", this.choosing);
+    this.next.textContent = this.choosing
       ? "W / S 選擇 · A / Enter 確認"
       : detail.complete
         ? detail.page < detail.pageCount
@@ -58,6 +73,7 @@ export class DialoguePanel {
 
   close(): void {
     this.panel.hidden = true;
+    this.choosing = false;
     this.panel.classList.remove("has-choices");
     this.options.root.classList.remove("dialogue-has-choices");
     this.choices.innerHTML = "";

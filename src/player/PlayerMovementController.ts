@@ -5,6 +5,7 @@ import {
 } from "../animation/animationCatalog";
 import { CONFIG } from "../config";
 import type { Facing, RegionData } from "../data/prototypeRegions";
+import { findGridPath, type PathPoint } from "../navigation/GridPathfinder";
 
 export interface MovementState {
   up: boolean;
@@ -39,6 +40,7 @@ interface PlayerMovementControllerOptions {
   onBeforeMove: () => void;
   onAfterMove: () => void;
   playFootstep: (running: boolean) => void;
+  onPointerClick: (worldX: number, worldY: number) => void;
 }
 
 export class PlayerMovementController {
@@ -56,6 +58,13 @@ export class PlayerMovementController {
   };
   private joystickVector: JoystickVector = { x: 0, y: 0, strength: 0 };
   private mouseMovementActive = false;
+  private mousePointerDownAt = 0;
+  private mousePointerDownX = 0;
+  private mousePointerDownY = 0;
+  private navigationPath: PathPoint[] = [];
+  private navigationComplete: (() => void) | null = null;
+  private navigationCancelled: (() => void) | null = null;
+  private suppressNextPointerClick = false;
   private moving = false;
   private heldDirection: string | null = null;
   private repeatMoveAt = 0;
@@ -123,6 +132,7 @@ export class PlayerMovementController {
     this.touchState = { up: false, down: false, left: false, right: false };
     this.joystickVector = { x: 0, y: 0, strength: 0 };
     this.mouseMovementActive = false;
+    this.cancelNavigation();
     this.heldDirection = null;
     this.repeatMoveAt = 0;
   }
@@ -133,6 +143,45 @@ export class PlayerMovementController {
     this.options.onToggleRunning();
   }
 
+  moveTo(
+    destination: PathPoint,
+    onComplete?: () => void,
+    onCancel?: () => void
+  ): boolean {
+    const region = this.options.getRegion();
+    const path = findGridPath(
+      { x: this.player.x, y: this.player.y },
+      destination,
+      {
+        width: region.width,
+        height: region.height,
+        cellSize: CONFIG.tileSize,
+        isBlocked: (x, y) => this.isBlocked(x, y)
+      }
+    );
+    if (path.length === 0) return false;
+
+    this.cancelNavigation();
+    this.navigationPath = path;
+    this.navigationComplete = onComplete ?? null;
+    this.navigationCancelled = onCancel ?? null;
+    this.heldDirection = null;
+    this.repeatMoveAt = 0;
+    return true;
+  }
+
+  cancelNavigation(): void {
+    const onCancel = this.navigationCancelled;
+    this.navigationPath = [];
+    this.navigationComplete = null;
+    this.navigationCancelled = null;
+    onCancel?.();
+  }
+
+  suppressNextClick(): void {
+    this.suppressNextPointerClick = true;
+  }
+
   private readMovement(): MovementInput | null {
     let inputX =
       Number(this.cursors.right.isDown || this.wasd.D.isDown || this.touchState.right) -
@@ -141,6 +190,15 @@ export class PlayerMovementController {
       Number(this.cursors.down.isDown || this.wasd.S.isDown || this.touchState.down) -
       Number(this.cursors.up.isDown || this.wasd.W.isDown || this.touchState.up);
     let strength = 1;
+    let followingNavigation = false;
+    const manualInputActive =
+      inputX !== 0 ||
+      inputY !== 0 ||
+      this.joystickVector.strength > 0 ||
+      this.mouseMovementActive;
+    if (manualInputActive && this.navigationPath.length > 0) {
+      this.cancelNavigation();
+    }
 
     if (inputX === 0 && inputY === 0 && this.joystickVector.strength > 0) {
       inputX = this.joystickVector.x;
@@ -158,9 +216,29 @@ export class PlayerMovementController {
       inputY = pointer.worldY - this.player.y;
       if (Math.hypot(inputX, inputY) < CONFIG.tileSize * 0.7) return null;
     }
+    if (inputX === 0 && inputY === 0 && this.navigationPath.length > 0) {
+      followingNavigation = true;
+      const waypoint = this.navigationPath[0]!;
+      inputX = waypoint.x - this.player.x;
+      inputY = waypoint.y - this.player.y;
+      if (Math.hypot(inputX, inputY) < 1) {
+        this.navigationPath.shift();
+        if (this.navigationPath.length === 0) {
+          const onComplete = this.navigationComplete;
+          this.navigationComplete = null;
+          this.navigationCancelled = null;
+          onComplete?.();
+          return null;
+        }
+        return this.readMovement();
+      }
+    }
     if (inputX === 0 && inputY === 0) return null;
 
     const magnitude = Math.hypot(inputX, inputY);
+    if (followingNavigation) {
+      strength = Phaser.Math.Clamp(magnitude / CONFIG.tileSize, 0.05, 1);
+    }
     const x = inputX / magnitude;
     const y = inputY / magnitude;
     const facing =
@@ -187,7 +265,7 @@ export class PlayerMovementController {
     if (this.moving || this.options.isPaused()) return;
 
     const stepDistance =
-      CONFIG.tileSize * Phaser.Math.Clamp(movement.strength, 0.35, 1);
+      CONFIG.tileSize * Phaser.Math.Clamp(movement.strength, 0.05, 1);
     const targetX = this.player.x + movement.x * stepDistance;
     const targetY = this.player.y + movement.y * stepDistance;
     const isDiagonal = Math.abs(movement.x) > 0.2 && Math.abs(movement.y) > 0.2;
@@ -213,6 +291,25 @@ export class PlayerMovementController {
       onUpdate: () => this.player.setDepth(this.player.y),
       onComplete: () => {
         this.moving = false;
+        if (this.navigationPath.length > 0) {
+          const waypoint = this.navigationPath[0]!;
+          if (
+            Phaser.Math.Distance.Between(
+              this.player.x,
+              this.player.y,
+              waypoint.x,
+              waypoint.y
+            ) < 1
+          ) {
+            this.navigationPath.shift();
+            if (this.navigationPath.length === 0) {
+              const onComplete = this.navigationComplete;
+              this.navigationComplete = null;
+              this.navigationCancelled = null;
+              onComplete?.();
+            }
+          }
+        }
         if (!this.readMovement()) this.setIdleFrame();
         this.options.onAfterMove();
       }
@@ -266,18 +363,58 @@ export class PlayerMovementController {
   }
 
   private readonly handlePointerDown = (pointer: Phaser.Input.Pointer): void => {
+    if (this.isPointerOnMenuButton(pointer)) {
+      this.suppressNextClick();
+      return;
+    }
     const pointerType =
       "pointerType" in pointer.event ? String(pointer.event.pointerType) : "mouse";
     if (pointer.leftButtonDown() && pointerType === "mouse") {
-      this.mouseMovementActive = true;
+      this.mousePointerDownAt = this.scene.time.now;
+      this.mousePointerDownX = pointer.x;
+      this.mousePointerDownY = pointer.y;
+      this.scene.time.delayedCall(180, () => {
+        if (pointer.leftButtonDown()) {
+          this.cancelNavigation();
+          this.mouseMovementActive = true;
+        }
+      });
     }
   };
 
   private readonly handlePointerUp = (pointer: Phaser.Input.Pointer): void => {
-    if (!pointer.leftButtonDown()) this.mouseMovementActive = false;
+    if (this.isPointerOnMenuButton(pointer)) {
+      this.suppressNextPointerClick = false;
+      return;
+    }
+    const heldDuration = this.scene.time.now - this.mousePointerDownAt;
+    const movedDistance = Phaser.Math.Distance.Between(
+      this.mousePointerDownX,
+      this.mousePointerDownY,
+      pointer.x,
+      pointer.y
+    );
+    const wasLongPress = this.mouseMovementActive || heldDuration >= 180;
+    this.mouseMovementActive = false;
+    if (this.suppressNextPointerClick) {
+      this.suppressNextPointerClick = false;
+      return;
+    }
+    if (!wasLongPress && movedDistance <= 8) {
+      this.options.onPointerClick(pointer.worldX, pointer.worldY);
+    }
   };
 
   private readonly handleGameOut = (): void => {
     this.mouseMovementActive = false;
   };
+
+  private isPointerOnMenuButton(pointer: Phaser.Input.Pointer): boolean {
+    return (
+      pointer.x >= CONFIG.width - 90 &&
+      pointer.x <= CONFIG.width - 8 &&
+      pointer.y >= 8 &&
+      pointer.y <= 36
+    );
+  }
 }

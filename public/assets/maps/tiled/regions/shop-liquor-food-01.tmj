@@ -33,7 +33,7 @@
    "source": "../tilesets/airport-props.tsj"
   },
   {
-   "firstgid": 200,
+   "firstgid": 241,
    "source": "../tilesets/airport-npcs.tsj"
   }
  ],
@@ -1742,7 +1742,7 @@
    "locked": false,
    "objects": [
     {
-     "gid": 201,
+     "gid": 242,
      "height": 36,
      "id": 26,
      "name": "clerk-liquor-food-01-reception-left",
@@ -1802,7 +1802,7 @@
      "y": 272
     },
     {
-     "gid": 201,
+     "gid": 242,
      "height": 36,
      "id": 28,
      "name": "clerk-liquor-food-01-reception-right",
@@ -1862,7 +1862,7 @@
      "y": 272
     },
     {
-     "gid": 201,
+     "gid": 242,
      "height": 36,
      "id": 30,
      "name": "clerk-liquor-food-01-cashier",

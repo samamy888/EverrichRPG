@@ -72,7 +72,20 @@ const projectNativePropTextures = [
   "airport-planter-animated-west",
   "airport-planter-animated-east",
   "airport-planter-animated-north",
-  "airport-vending-machine"
+  "airport-vending-machine",
+  "airport-ad-column",
+  "airport-atrium-lamp",
+  "airport-moving-walkway",
+  "airport-escalator-animated-south",
+  "airport-waiting-bench-v2",
+  "airport-charging-pedestal",
+  "airport-luggage-carts",
+  "airport-cleaning-trolley",
+  "airport-queue-barrier-v2",
+  "airport-recycling-station",
+  "airport-emergency-cabinet",
+  "airport-gate-pedestal",
+  "airport-lamp-column"
 ];
 const legacyDirectionalPropTextures = [
   "dutyfree-curved-storefront-south",

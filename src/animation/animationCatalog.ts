@@ -23,7 +23,11 @@ const OBJECT_ANIMATION_BY_TEXTURE: Readonly<
   "airport-planter-animated-west": "airport-planter-west-sway",
   "airport-planter-animated-east": "airport-planter-east-sway",
   "airport-planter-animated-north": "airport-planter-north-sway",
-  "airport-vending-machine": "airport-vending-machine-cycle"
+  "airport-vending-machine": "airport-vending-machine-cycle",
+  "airport-ad-column": "airport-ad-column-screen-cycle",
+  "airport-atrium-lamp": "airport-atrium-lamp-light-cycle",
+  "airport-moving-walkway": "airport-moving-walkway-cycle",
+  "airport-escalator-animated-south": "airport-escalator-south-cycle"
 };
 
 export const WORLD_ANIMATION_DEFINITIONS: readonly AnimationDefinition[] = [
@@ -48,7 +52,11 @@ export const WORLD_ANIMATION_DEFINITIONS: readonly AnimationDefinition[] = [
   ...[
     ["airport-restroom-light-cycle", "airport-restroom-animated", 1.4],
     ["airport-water-dispenser-cycle", "airport-water-dispenser-animated", 2.4],
-    ["airport-vending-machine-cycle", "airport-vending-machine", 1.5]
+    ["airport-vending-machine-cycle", "airport-vending-machine", 1.5],
+    ["airport-ad-column-screen-cycle", "airport-ad-column", 1.25],
+    ["airport-atrium-lamp-light-cycle", "airport-atrium-lamp", 1.55],
+    ["airport-moving-walkway-cycle", "airport-moving-walkway", 4],
+    ["airport-escalator-south-cycle", "airport-escalator-animated-south", 3.4]
   ].map<AnimationDefinition>(([key, texture, frameRate]) => ({
     key: String(key),
     texture: String(texture),

@@ -65,13 +65,14 @@ button {
   box-shadow: 0 0 0 3px #263c46, 0 18px 60px rgba(0, 0, 0, 0.45);
 }
 
-#ui-overlay {
+.prototype-ui {
   pointer-events: none;
   position: absolute;
   inset: 0;
+  z-index: 10;
 }
 
-#ui-overlay.dialogue-has-choices {
+.prototype-ui.dialogue-has-choices {
   pointer-events: auto;
 }
 
@@ -127,12 +128,13 @@ button {
   justify-content: space-between;
 }
 
-#ui-overlay.menu-is-open .touch-controls {
+.prototype-ui.menu-is-open .touch-controls {
   display: none;
 }
 
 .dialogue-box {
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
   position: absolute;
   right: max(18px, env(safe-area-inset-right));
   bottom: max(18px, env(safe-area-inset-bottom));
@@ -448,6 +450,7 @@ button {
 }
 
 .airport-map-node {
+  appearance: none;
   position: relative;
   display: grid;
   gap: 5px;
@@ -457,6 +460,7 @@ button {
   background: #d8d3c4;
   border: 2px dashed #9b8b68;
   text-align: center;
+  font: inherit;
 }
 
 .airport-map-node.is-visited {
@@ -464,6 +468,23 @@ button {
   background: #e8f1ec;
   border-style: solid;
   border-color: #4d756d;
+}
+
+.airport-map-node.is-travelable {
+  cursor: pointer;
+}
+
+.airport-map-node.is-travelable:hover,
+.airport-map-node.is-travelable:focus-visible {
+  color: #17242b;
+  background: #fff6cf;
+  border-color: #c99b2d;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(246, 207, 99, 0.45);
+}
+
+.airport-map-node:disabled {
+  cursor: default;
 }
 
 .airport-map-node.is-current {
@@ -1049,7 +1070,7 @@ html.touch-layout #app canvas {
   box-shadow: none;
 }
 
-html.touch-layout #ui-overlay {
+html.touch-layout .prototype-ui {
   z-index: 10;
 }
 

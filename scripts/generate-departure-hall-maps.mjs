@@ -690,11 +690,11 @@ const maps = [
         "airport-restroom-entrance-south",
         "洗手間",
         ["洗手間入口嵌在北側牆面。"],
-        56,
-        96,
+        64,
+        80,
         176,
         68,
-        { x: 64, y: 64, width: 160, height: 32 },
+        { x: 72, y: 64, width: 160, height: 24 },
         true
       ),
       p(
@@ -702,22 +702,22 @@ const maps = [
         "airport-water-dispenser-south",
         "飲水機",
         ["補充水分後再繼續旅程吧。"],
-        224,
-        128,
+        248,
+        80,
         48,
         72,
-        { x: 240, y: 112, width: 16, height: 16 }
+        { x: 264, y: 64, width: 16, height: 16 }
       ),
       p(
         "facilities-self-order-kiosk",
         "airport-self-order-kiosk",
         "自助點餐機",
         ["螢幕正在輪播餐點與付款方式。"],
-        272,
-        144,
+        64,
+        280,
         56,
         112,
-        { x: 288, y: 112, width: 24, height: 16 },
+        { x: 80, y: 264, width: 24, height: 16 },
         false,
         false,
         0,
@@ -738,49 +738,36 @@ const maps = [
         "airport-escalator-south",
         "手扶梯",
         ["其他樓層尚未開放。"],
-        336,
-        144,
+        368,
+        96,
         112,
         96,
-        { x: 352, y: 112, width: 80, height: 32 }
+        { x: 384, y: 80, width: 80, height: 32 }
       ),
       p(
         "facilities-planter",
         "airport-planter-north",
         "休息區植栽",
         ["設施區比中央大廳安靜一些。"],
-        208,
-        288,
-        62,
-        100,
-        { x: 232, y: 272, width: 16, height: 16 }
+        176,
+        296,
+        96,
+        88,
+        { x: 216, y: 280, width: 16, height: 16 }
       ),
       p(
         "facilities-waiting-seats",
         "airport-waiting-seats",
         "候機座椅",
         ["座椅旁設有簡易充電位置。"],
-        288,
+        304,
         304,
         176,
         72,
-        { x: 296, y: 272, width: 160, height: 24 }
+        { x: 312, y: 288, width: 152, height: 16 }
       )
     ],
-    npcs: [
-      n(
-        "facilities-resting-traveler",
-        "traveler-female-npc",
-        "休息中的旅客",
-        ["我來裝水，等等再去逛免稅店。"],
-        "traveler-female",
-        144,
-        272,
-        { x: 152, y: 253, width: 20, height: 20 },
-        "idle",
-        "up"
-      )
-    ],
+    npcs: [],
     portals: [
       {
         id: "to-departure-hall",

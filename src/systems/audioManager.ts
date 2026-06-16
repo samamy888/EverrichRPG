@@ -1,3 +1,5 @@
+import { gameStorage, type GameStorage } from "../storage/GameStorage";
+
 export type BgmTrack = "title" | "concourse" | "shop";
 
 interface TrackDefinition {
@@ -50,8 +52,13 @@ class AudioManager {
   private activeSources = new Set<OscillatorNode>();
   private currentTrack: BgmTrack | null = null;
   private requestedTrack: BgmTrack = "title";
-  private muted = localStorage.getItem(MUTED_KEY) === "true";
-  private musicVolume = this.loadMusicVolume();
+  private muted: boolean;
+  private musicVolume: number;
+
+  constructor(private readonly storage: GameStorage = gameStorage) {
+    this.muted = storage.readString(MUTED_KEY) === "true";
+    this.musicVolume = this.loadMusicVolume();
+  }
 
   isMuted(): boolean {
     return this.muted;
@@ -63,7 +70,7 @@ class AudioManager {
 
   setMusicVolume(volume: number): void {
     this.musicVolume = Math.min(1, Math.max(0, volume));
-    localStorage.setItem(MUSIC_VOLUME_KEY, String(this.musicVolume));
+    this.storage.writeString(MUSIC_VOLUME_KEY, String(this.musicVolume));
     if (!this.musicBus || !this.context) return;
     this.musicBus.gain.cancelScheduledValues(this.context.currentTime);
     this.musicBus.gain.setTargetAtTime(
@@ -75,7 +82,7 @@ class AudioManager {
 
   toggleMuted(): boolean {
     this.muted = !this.muted;
-    localStorage.setItem(MUTED_KEY, String(this.muted));
+    this.storage.writeString(MUTED_KEY, String(this.muted));
     if (this.master && this.context) {
       this.master.gain.cancelScheduledValues(this.context.currentTime);
       this.master.gain.setTargetAtTime(
@@ -266,7 +273,7 @@ class AudioManager {
   }
 
   private loadMusicVolume(): number {
-    const stored = Number(localStorage.getItem(MUSIC_VOLUME_KEY));
+    const stored = Number(this.storage.readString(MUSIC_VOLUME_KEY));
     return Number.isFinite(stored) ? Math.min(1, Math.max(0, stored)) : 0.55;
   }
 }

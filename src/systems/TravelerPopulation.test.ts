@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { CONFIG } from "../config";
 import type { MapObjectData, RegionData } from "../data/prototypeRegions";
+import type { TravelerProfile } from "../data/travelerDirectory";
 import {
   createRandomTravelerPopulation,
   isTravelerObject,
@@ -40,6 +42,18 @@ const travelerTemplate: MapObjectData = {
   }
 };
 
+function createProfiles(count: number): TravelerProfile[] {
+  return Array.from({ length: count }, (_, index) => ({
+    id: `traveler-${index + 1}`,
+    name: `旅客${index + 1}`,
+    variant: index % 2 === 0 ? "male" : "female",
+    dialogue: "我正在找伴手禮。",
+    movementType: "wander",
+    facing: "down",
+    speed: 40 + index
+  }));
+}
+
 function createRegion(): RegionData {
   return {
     id: "departure-hall",
@@ -74,25 +88,32 @@ function createRegion(): RegionData {
 }
 
 describe("TravelerPopulation", () => {
-  it("creates the configured number of travelers with deterministic randomness", () => {
+  it("creates every traveler from the selected persistent roster", () => {
     const region = createRegion();
     const objects = createRandomTravelerPopulation(
       region,
-      new SequenceRandom([0, 0, 0, 1, 2, 3, 4, 5, 6, 7])
+      new SequenceRandom([0, 0, 1, 2, 3, 4, 5, 6, 7]),
+      createProfiles(4)
     );
     const travelers = objects.filter(isTravelerObject);
 
     expect(travelers).toHaveLength(4);
-    expect(travelers[0]?.id).toBe("story-traveler");
-    expect(travelers.slice(1).every((traveler) => traveler.decorative)).toBe(true);
-    expect(travelers.slice(1).every((traveler) => !traveler.interaction)).toBe(true);
+    expect(travelers[0]?.id).toBe("traveler-1");
+    expect(travelers[0]?.displayWidth).toBe(CONFIG.characterDisplaySize);
+    expect(travelers[0]?.displayHeight).toBe(CONFIG.characterDisplaySize);
+    expect(travelers.every((traveler) => Boolean(traveler.label))).toBe(true);
+    expect(travelers.every((traveler) => traveler.interaction?.title === traveler.label)).toBe(
+      true
+    );
+    expect(travelers.some((traveler) => traveler.id === "story-traveler")).toBe(false);
   });
 
   it("does not place travelers inside solid objects or portals", () => {
     const region = createRegion();
     const objects = createRandomTravelerPopulation(
       region,
-      new SequenceRandom([2, 1, 3, 8, 7, 5, 4, 6, 9, 10])
+      new SequenceRandom([2, 1, 3, 8, 7, 5, 4, 6, 9, 10]),
+      createProfiles(4)
     );
     const travelers = objects.filter(isTravelerObject);
     const counter = region.objects.find((object) => object.id === "counter")!;
@@ -104,11 +125,35 @@ describe("TravelerPopulation", () => {
     }
   });
 
-  it("leaves shop regions without traveler population settings unchanged", () => {
+  it("creates interactive travelers inside shops without fixed templates", () => {
     const region = createRegion();
     region.id = "shop-beauty-01";
+    region.objects = region.objects.filter((object) => !isTravelerObject(object));
+    region.boundaries = [];
+    region.portals = [];
+    region.spawns = [];
 
-    expect(createRandomTravelerPopulation(region)).toBe(region.objects);
+    const objects = createRandomTravelerPopulation(
+      region,
+      new SequenceRandom([0, 1, 2, 3, 4, 5, 6, 7]),
+      createProfiles(1)
+    );
+    const travelers = objects.filter(isTravelerObject);
+
+    expect(travelers).toHaveLength(1);
+    expect(travelers[0]?.interaction?.title).toBe("旅客1");
+    expect(travelers[0]?.id).toBe("traveler-1");
+  });
+
+  it("does not create anonymous travelers without a selected roster", () => {
+    const region = createRegion();
+    const objects = createRandomTravelerPopulation(
+      region,
+      new SequenceRandom([0]),
+      []
+    );
+
+    expect(objects.filter(isTravelerObject)).toHaveLength(0);
   });
 });
 

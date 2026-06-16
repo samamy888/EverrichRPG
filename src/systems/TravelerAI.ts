@@ -5,6 +5,7 @@ import type {
   MapObjectData,
   NpcBehaviorData
 } from "../data/prototypeRegions";
+import { resolveFacingToward } from "./resolveFacingToward";
 
 interface TravelerAIOptions {
   scene: Phaser.Scene;
@@ -113,16 +114,15 @@ export class TravelerAI {
 
   faceToward(x: number, y: number): void {
     if (this.dialogueFacing === null) this.dialogueFacing = this.facing;
-    const deltaX = x - this.sprite.x;
-    const deltaY = y - this.sprite.y;
-    this.facing =
-      Math.abs(deltaX) > Math.abs(deltaY)
-        ? deltaX < 0
-          ? "left"
-          : "right"
-        : deltaY < 0
-          ? "up"
-          : "down";
+    this.paused = true;
+    this.moveTween?.pause();
+    this.sprite.anims.stop();
+    this.facing = resolveFacingToward(
+      this.sprite.x,
+      this.sprite.y,
+      x,
+      y
+    );
     this.setIdleFrame();
   }
 

@@ -92,6 +92,22 @@ export const WORLD_IMAGE_ASSETS: readonly ImageAssetDefinition[] = [
     "/assets/props/airport-directional-v2/restroom-wall-south.png"
   ),
   ...[
+    "airport-waiting-bench-v2",
+    "airport-charging-pedestal",
+    "airport-luggage-carts",
+    "airport-cleaning-trolley",
+    "airport-queue-barrier-v2",
+    "airport-recycling-station",
+    "airport-emergency-cabinet",
+    "airport-gate-pedestal",
+    "airport-lamp-column"
+  ].map((name) =>
+    image(
+      name,
+      `/assets/props/airport-terminal-details-v1/${name}/prop.png`
+    )
+  ),
+  ...[
     "airport-planter-south",
     "airport-planter-west",
     "airport-planter-east",
@@ -201,6 +217,30 @@ export const WORLD_SPRITESHEET_ASSETS: readonly SpriteSheetAssetDefinition[] = [
   sheet(
     "airport-vending-machine",
     "/assets/props/airport-vending-machine-v1/sheet-transparent.png",
+    128,
+    128
+  ),
+  sheet(
+    "airport-ad-column",
+    "/assets/props/airport-ad-column-v1/sheet-transparent.png",
+    128,
+    128
+  ),
+  sheet(
+    "airport-atrium-lamp",
+    "/assets/props/airport-atrium-lamp-v1/sheet-transparent.png",
+    128,
+    128
+  ),
+  sheet(
+    "airport-moving-walkway",
+    "/assets/props/airport-moving-walkway-v1/sheet-transparent.png",
+    128,
+    128
+  ),
+  sheet(
+    "airport-escalator-animated-south",
+    "/assets/props/airport-escalator-animated-south-v1/sheet-transparent.png",
     128,
     128
   ),

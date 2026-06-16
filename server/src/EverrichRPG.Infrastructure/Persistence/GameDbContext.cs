@@ -1,5 +1,6 @@
 using EverrichRPG.Domain.Commerce;
 using EverrichRPG.Domain.Players;
+using EverrichRPG.Domain.Travelers;
 using Microsoft.EntityFrameworkCore;
 
 namespace EverrichRPG.Infrastructure.Persistence;
@@ -11,6 +12,7 @@ public sealed class GameDbContext(DbContextOptions<GameDbContext> options)
     public DbSet<PlayerSave> PlayerSaves => Set<PlayerSave>();
     public DbSet<Shop> Shops => Set<Shop>();
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<Traveler> Travelers => Set<Traveler>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

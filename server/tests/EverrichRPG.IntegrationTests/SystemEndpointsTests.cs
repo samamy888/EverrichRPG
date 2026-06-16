@@ -1,15 +1,13 @@
 using System.Net;
 using System.Net.Http.Json;
 using EverrichRPG.Api.Controllers;
-using Microsoft.AspNetCore.Mvc.Testing;
-
 namespace EverrichRPG.IntegrationTests;
 
-public sealed class SystemEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
+public sealed class SystemEndpointsTests : IClassFixture<ApiFactory>
 {
     private readonly HttpClient client;
 
-    public SystemEndpointsTests(WebApplicationFactory<Program> factory)
+    public SystemEndpointsTests(ApiFactory factory)
     {
         client = factory.CreateClient();
     }

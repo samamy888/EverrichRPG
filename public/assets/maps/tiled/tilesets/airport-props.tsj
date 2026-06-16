@@ -3,7 +3,7 @@
   "version": "1.10",
   "tiledversion": "1.11.2",
   "name": "airport-props",
-  "tilecount": 116,
+  "tilecount": 141,
   "columns": 0,
   "grid": {
     "orientation": "orthogonal",
@@ -1489,6 +1489,319 @@
     {
       "id": 115,
       "image": "../../../props/airport-planter-animated-v2/east/planter-east-4.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 116,
+      "image": "../../../props/airport-terminal-details-v1/airport-waiting-bench-v2/prop.png",
+      "imagewidth": 328,
+      "imageheight": 242,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-waiting-bench-v2"
+        }
+      ]
+    },
+    {
+      "id": 117,
+      "image": "../../../props/airport-terminal-details-v1/airport-charging-pedestal/prop.png",
+      "imagewidth": 126,
+      "imageheight": 266,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-charging-pedestal"
+        }
+      ]
+    },
+    {
+      "id": 118,
+      "image": "../../../props/airport-terminal-details-v1/airport-luggage-carts/prop.png",
+      "imagewidth": 242,
+      "imageheight": 278,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-luggage-carts"
+        }
+      ]
+    },
+    {
+      "id": 119,
+      "image": "../../../props/airport-terminal-details-v1/airport-cleaning-trolley/prop.png",
+      "imagewidth": 225,
+      "imageheight": 307,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-cleaning-trolley"
+        }
+      ]
+    },
+    {
+      "id": 120,
+      "image": "../../../props/airport-terminal-details-v1/airport-queue-barrier-v2/prop.png",
+      "imagewidth": 229,
+      "imageheight": 214,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-queue-barrier-v2"
+        }
+      ]
+    },
+    {
+      "id": 121,
+      "image": "../../../props/airport-terminal-details-v1/airport-recycling-station/prop.png",
+      "imagewidth": 288,
+      "imageheight": 158,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-recycling-station"
+        }
+      ]
+    },
+    {
+      "id": 122,
+      "image": "../../../props/airport-terminal-details-v1/airport-emergency-cabinet/prop.png",
+      "imagewidth": 172,
+      "imageheight": 252,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-emergency-cabinet"
+        }
+      ]
+    },
+    {
+      "id": 123,
+      "image": "../../../props/airport-terminal-details-v1/airport-gate-pedestal/prop.png",
+      "imagewidth": 130,
+      "imageheight": 285,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-gate-pedestal"
+        }
+      ]
+    },
+    {
+      "id": 124,
+      "image": "../../../props/airport-terminal-details-v1/airport-lamp-column/prop.png",
+      "imagewidth": 189,
+      "imageheight": 285,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-lamp-column"
+        }
+      ]
+    },
+    {
+      "id": 125,
+      "image": "../../../props/airport-ad-column-v1/ad-column-1.png",
+      "imagewidth": 128,
+      "imageheight": 128,
+      "animation": [
+        {
+          "duration": 800,
+          "tileid": 125
+        },
+        {
+          "duration": 800,
+          "tileid": 126
+        },
+        {
+          "duration": 800,
+          "tileid": 127
+        },
+        {
+          "duration": 800,
+          "tileid": 128
+        }
+      ],
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-ad-column"
+        }
+      ]
+    },
+    {
+      "id": 126,
+      "image": "../../../props/airport-ad-column-v1/ad-column-2.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 127,
+      "image": "../../../props/airport-ad-column-v1/ad-column-3.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 128,
+      "image": "../../../props/airport-ad-column-v1/ad-column-4.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 129,
+      "image": "../../../props/airport-atrium-lamp-v1/atrium-lamp-1.png",
+      "imagewidth": 128,
+      "imageheight": 128,
+      "animation": [
+        {
+          "duration": 650,
+          "tileid": 129
+        },
+        {
+          "duration": 650,
+          "tileid": 130
+        },
+        {
+          "duration": 650,
+          "tileid": 131
+        },
+        {
+          "duration": 650,
+          "tileid": 132
+        }
+      ],
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-atrium-lamp"
+        }
+      ]
+    },
+    {
+      "id": 130,
+      "image": "../../../props/airport-atrium-lamp-v1/atrium-lamp-2.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 131,
+      "image": "../../../props/airport-atrium-lamp-v1/atrium-lamp-3.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 132,
+      "image": "../../../props/airport-atrium-lamp-v1/atrium-lamp-4.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 133,
+      "image": "../../../props/airport-moving-walkway-v1/moving-walkway-1.png",
+      "imagewidth": 128,
+      "imageheight": 128,
+      "animation": [
+        {
+          "duration": 260,
+          "tileid": 133
+        },
+        {
+          "duration": 260,
+          "tileid": 134
+        },
+        {
+          "duration": 260,
+          "tileid": 135
+        },
+        {
+          "duration": 260,
+          "tileid": 136
+        }
+      ],
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-moving-walkway"
+        }
+      ]
+    },
+    {
+      "id": 134,
+      "image": "../../../props/airport-moving-walkway-v1/moving-walkway-2.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 135,
+      "image": "../../../props/airport-moving-walkway-v1/moving-walkway-3.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 136,
+      "image": "../../../props/airport-moving-walkway-v1/moving-walkway-4.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 137,
+      "image": "../../../props/airport-escalator-animated-south-v1/escalator-south-1.png",
+      "imagewidth": 128,
+      "imageheight": 128,
+      "animation": [
+        {
+          "duration": 300,
+          "tileid": 137
+        },
+        {
+          "duration": 300,
+          "tileid": 138
+        },
+        {
+          "duration": 300,
+          "tileid": 139
+        },
+        {
+          "duration": 300,
+          "tileid": 140
+        }
+      ],
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-escalator-animated-south"
+        }
+      ]
+    },
+    {
+      "id": 138,
+      "image": "../../../props/airport-escalator-animated-south-v1/escalator-south-2.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 139,
+      "image": "../../../props/airport-escalator-animated-south-v1/escalator-south-3.png",
+      "imagewidth": 128,
+      "imageheight": 128
+    },
+    {
+      "id": 140,
+      "image": "../../../props/airport-escalator-animated-south-v1/escalator-south-4.png",
       "imagewidth": 128,
       "imageheight": 128
     }
