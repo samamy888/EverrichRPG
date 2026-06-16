@@ -214,9 +214,35 @@ jobs:
         if: ${{ vars.IIS_HEALTH_URL != '' }}
         shell: powershell
         run: |
-          $response = Invoke-WebRequest -Uri $env:HEALTH_URL -UseBasicParsing -TimeoutSec 30
-          if ($response.StatusCode -lt 200 -or $response.StatusCode -ge 300) {
-            throw "Health check failed with status code $($response.StatusCode)."
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+          $maxAttempts = 10
+          $delaySeconds = 6
+          $lastError = $null
+
+          for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+            try {
+              Write-Host "Health check attempt $attempt/$maxAttempts: $env:HEALTH_URL"
+              $response = Invoke-WebRequest -Uri $env:HEALTH_URL -UseBasicParsing -TimeoutSec 30
+
+              if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300) {
+                Write-Host "Health check passed with status code $($response.StatusCode)."
+                exit 0
+              }
+
+              $lastError = "Health check returned status code $($response.StatusCode)."
+            }
+            catch {
+              $lastError = $_.Exception.Message
+              Write-Host "Health check failed: $lastError"
+            }
+
+            if ($attempt -lt $maxAttempts) {
+              Start-Sleep -Seconds $delaySeconds
+            }
+          }
+
+          throw "Health check did not pass after $maxAttempts attempts. Last error: $lastError. Check IIS binding, HTTP/HTTPS port, firewall/NSG, and IIS_HEALTH_URL."
           }
 
       - name: Deployment summary

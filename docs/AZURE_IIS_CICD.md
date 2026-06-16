@@ -92,6 +92,21 @@ Settings → Secrets and variables → Actions → Variables
 
 如果前端和 API 同網域，且 API 對外路徑是 `/api/v1`，`PRODUCTION_API_BASE_URL` 可以不填。
 
+`IIS_HEALTH_URL` 是在 Azure IIS 主機上的 self-hosted runner 執行，因此最穩的寫法通常是本機網址：
+
+```text
+http://localhost/api/v1/health
+```
+
+如果你的 IIS 尚未設定 HTTPS binding 或憑證，不要填 `https://伺服器IP/api/v1/health`。  
+如果 API 是掛在 IIS 子應用程式 `/api` 底下，實際 health URL 可能會變成：
+
+```text
+http://localhost/api/api/v1/health
+```
+
+請用瀏覽器或 PowerShell 在 Azure VM 內先確認哪一個 URL 能通，再填到 `IIS_HEALTH_URL`。
+
 ## 4. IIS 建議設定
 
 ### 前端
