@@ -222,7 +222,7 @@ jobs:
 
           for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
             try {
-              Write-Host "Health check attempt $attempt/$maxAttempts: $env:HEALTH_URL"
+              Write-Host ("Health check attempt {0}/{1}: {2}" -f $attempt, $maxAttempts, $env:HEALTH_URL)
               $response = Invoke-WebRequest -Uri $env:HEALTH_URL -UseBasicParsing -TimeoutSec 30
 
               if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300) {
@@ -243,7 +243,6 @@ jobs:
           }
 
           throw "Health check did not pass after $maxAttempts attempts. Last error: $lastError. Check IIS binding, HTTP/HTTPS port, firewall/NSG, and IIS_HEALTH_URL."
-          }
 
       - name: Deployment summary
         shell: powershell
