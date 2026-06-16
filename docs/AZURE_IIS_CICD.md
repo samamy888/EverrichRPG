@@ -184,5 +184,6 @@ IIS_BACKUP_ROOT/yyyyMMdd-HHmmss/api
 
 - self-hosted runner 的 Windows 帳號需要有 IIS 資料夾寫入權限。
 - runner 帳號需要能執行 `C:\Windows\System32\inetsrv\appcmd.exe`。
+- 部署段使用 Windows 內建 `powershell`，不需要另外安裝 PowerShell 7 `pwsh`。
 - 如果 Health Check 失敗，workflow 會失敗，但目前不會自動 rollback。
 - 若你之後想做自動 rollback，可以再加一個失敗時還原 `BACKUP_PATH` 的 step。
