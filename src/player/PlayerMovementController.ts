@@ -549,6 +549,13 @@ export class PlayerMovementController {
       this.suppressNextPointerClick = false;
       return;
     }
+    const pointerType =
+      "pointerType" in pointer.event ? String(pointer.event.pointerType) : "mouse";
+    if (pointerType !== "mouse") {
+      this.mouseMovementActive = false;
+      this.suppressNextPointerClick = false;
+      return;
+    }
     const heldDuration = this.scene.time.now - this.mousePointerDownAt;
     const movedDistance = Phaser.Math.Distance.Between(
       this.mousePointerDownX,

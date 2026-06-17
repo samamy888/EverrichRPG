@@ -84,16 +84,28 @@ export class TouchControls {
 
     stick.addEventListener("pointerdown", (event) => {
       event.preventDefault();
+      event.stopPropagation();
       this.options.onUnlockAudio();
       stick.setPointerCapture(event.pointerId);
       stick.classList.add("is-active");
       updateStick(event);
     });
     stick.addEventListener("pointermove", (event) => {
-      if (stick.hasPointerCapture(event.pointerId)) updateStick(event);
+      if (!stick.hasPointerCapture(event.pointerId)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      updateStick(event);
     });
-    stick.addEventListener("pointerup", releaseStick);
-    stick.addEventListener("pointercancel", releaseStick);
+    stick.addEventListener("pointerup", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      releaseStick();
+    });
+    stick.addEventListener("pointercancel", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      releaseStick();
+    });
     stick.addEventListener("lostpointercapture", releaseStick);
 
     this.options.root
@@ -101,8 +113,17 @@ export class TouchControls {
       .forEach((button) => {
         button.addEventListener("pointerdown", (event) => {
           event.preventDefault();
+          event.stopPropagation();
           this.options.onUnlockAudio();
           if (button.dataset.action) this.options.onAction(button.dataset.action);
+        });
+        button.addEventListener("pointerup", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+        button.addEventListener("pointercancel", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
         });
       });
   }

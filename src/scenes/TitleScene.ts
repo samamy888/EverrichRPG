@@ -79,6 +79,7 @@ export class TitleScene extends Phaser.Scene {
     startButtonBackground.on("pointerover", () => startButton.setScale(1.04));
     startButtonBackground.on("pointerout", () => startButton.setScale(1));
     startButtonBackground.on("pointerdown", () => this.startGame());
+    this.input.on("pointerdown", this.actionHandler);
     this.tweens.add({
       targets: startButton,
       alpha: 0.72,
@@ -102,6 +103,7 @@ export class TitleScene extends Phaser.Scene {
     window.addEventListener("prototype:action", this.actionHandler);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       document.documentElement.classList.remove("title-screen");
+      this.input.off("pointerdown", this.actionHandler);
       this.input.keyboard?.off("keydown-ENTER", this.actionHandler);
       this.input.keyboard?.off("keydown-SPACE", this.actionHandler);
       window.removeEventListener("prototype:action", this.actionHandler);

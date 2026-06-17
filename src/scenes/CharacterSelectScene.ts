@@ -119,6 +119,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     const portrait = this.add
       .sprite(x, 150, texture)
       .setDisplaySize(88, 88)
+      .setInteractive({ useHandCursor: true })
       .play(`${variant}-character-select-walk`);
     if (variant === "male") {
       this.malePortrait = portrait;
@@ -130,14 +131,16 @@ export class CharacterSelectScene extends Phaser.Scene {
       .setTint(0xffffff)
       .setOrigin(0.5);
 
-    card.on("pointerdown", () => {
+    const choose = () => {
       audioManager.unlock();
       if (this.selected === variant) {
         this.confirm();
       } else {
         this.setSelected(variant);
       }
-    });
+    };
+    card.on("pointerdown", choose);
+    portrait.on("pointerdown", choose);
     return card;
   }
 

@@ -1106,6 +1106,7 @@ html.portrait-touch-layout #app {
 html.title-screen .touch-controls,
 html.character-select-screen .touch-controls {
   display: none;
+  pointer-events: none;
 }
 
 html.title-screen .touch-controls {
