@@ -345,8 +345,10 @@ export class PlayerMovementController {
     this.options.onBeforeMove();
     if (this.moving || this.options.isPaused()) return;
 
+    const normalizedStrength = Phaser.Math.Clamp(movement.strength, 0.2, 1);
     const speed = this.options.isRunning() ? 168 : 112;
-    const distance = speed * Phaser.Math.Clamp(movement.strength, 0.35, 1) * deltaSeconds;
+    const distance =
+      speed * Math.pow(normalizedStrength, 0.9) * deltaSeconds;
     const targetX = this.player.x + movement.x * distance;
     const targetY = this.player.y + movement.y * distance;
     const moved = this.moveWithSlide(targetX, targetY);

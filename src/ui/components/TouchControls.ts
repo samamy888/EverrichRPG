@@ -13,6 +13,7 @@ interface TouchControlsOptions {
 export class TouchControls {
   private readonly actionButton: HTMLButtonElement;
   private readonly runButton: HTMLButtonElement;
+  private joystickVector = { x: 0, y: 0, strength: 0 };
 
   constructor(private readonly options: TouchControlsOptions) {
     this.actionButton = options.root.querySelector(".action-button")!;
@@ -50,21 +51,33 @@ export class TouchControls {
       const scale = distance > maxDistance ? maxDistance / distance : 1;
       const x = offsetX * scale;
       const y = offsetY * scale;
-      const deadZone = bounds.width * 0.08;
+      const deadZone = bounds.width * 0.11;
+      const normalizedLength = Math.hypot(x, y) || 1;
       const strength = Math.max(
         0,
         Math.min(1, (distance - deadZone) / (maxDistance - deadZone))
       );
-      const magnitude = Math.hypot(x, y) || 1;
-      this.options.onJoystick(
-        strength > 0
-          ? { x: x / magnitude, y: y / magnitude, strength }
-          : { x: 0, y: 0, strength: 0 }
-      );
+      if (strength < 0.2) {
+        this.joystickVector = { x: 0, y: 0, strength: 0 };
+        this.options.onJoystick(this.joystickVector);
+        knob.style.transform = "translate(0, 0)";
+        return;
+      }
+
+      const smoothX = this.joystickVector.x * 0.55 + (x / normalizedLength) * 0.45;
+      const smoothY = this.joystickVector.y * 0.55 + (y / normalizedLength) * 0.45;
+      const smoothStrength = this.joystickVector.strength * 0.55 + strength * 0.45;
+      this.joystickVector = {
+        x: smoothX,
+        y: smoothY,
+        strength: smoothStrength
+      };
+      this.options.onJoystick(this.joystickVector);
       knob.style.transform = `translate(${x}px, ${y}px)`;
     };
     const releaseStick = (): void => {
       this.options.onJoystick({ x: 0, y: 0, strength: 0 });
+      this.joystickVector = { x: 0, y: 0, strength: 0 };
       knob.style.transform = "translate(0, 0)";
       stick.classList.remove("is-active");
     };

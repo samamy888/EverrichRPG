@@ -54,6 +54,7 @@ export class CharacterSelectScene extends Phaser.Scene {
   }
 
   create(): void {
+    document.documentElement.classList.add("character-select-screen");
     audioManager.setBgm("title");
     new AnimationRegistry(new PhaserAnimationGateway(this.anims)).register(
       CHARACTER_SELECT_ANIMATION_DEFINITIONS
@@ -90,6 +91,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     window.addEventListener("prototype:joystick", this.joystickHandler);
     window.addEventListener("prototype:action", this.actionHandler);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      document.documentElement.classList.remove("character-select-screen");
       this.input.keyboard?.off("keydown-LEFT", this.selectMaleHandler);
       this.input.keyboard?.off("keydown-RIGHT", this.selectFemaleHandler);
       this.input.keyboard?.off("keydown-A", this.selectMaleHandler);

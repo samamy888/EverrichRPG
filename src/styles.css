@@ -1103,14 +1103,17 @@ html.portrait-touch-layout #app {
   transform-origin: center;
 }
 
-html.title-screen .prototype-hud,
-html.title-screen .virtual-stick,
-html.title-screen .back-button {
+html.title-screen .touch-controls,
+html.character-select-screen .touch-controls {
   display: none;
 }
 
 html.title-screen .touch-controls {
   justify-content: flex-end;
+}
+
+html.character-select-screen .touch-controls {
+  justify-content: space-between;
 }
 
 html.title-screen .mobile-actions {

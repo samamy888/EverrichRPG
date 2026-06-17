@@ -181,6 +181,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   create(): void {
+    document.documentElement.classList.remove("title-screen", "character-select-screen");
     new AnimationRegistry(new PhaserAnimationGateway(this.anims)).register(
       WORLD_ANIMATION_DEFINITIONS
     );
