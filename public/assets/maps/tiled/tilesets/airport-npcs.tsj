@@ -3,7 +3,7 @@
   "version": "1.10",
   "tiledversion": "1.11.2",
   "name": "airport-npcs",
-  "tilecount": 14,
+  "tilecount": 18,
   "columns": 0,
   "grid": {
     "orientation": "orthogonal",
@@ -30,15 +30,15 @@
         },
         {
           "duration": 286,
-          "tileid": 5
+          "tileid": 9
         },
         {
           "duration": 286,
-          "tileid": 6
+          "tileid": 10
         },
         {
           "duration": 286,
-          "tileid": 7
+          "tileid": 11
         }
       ]
     },
@@ -61,15 +61,15 @@
         },
         {
           "duration": 286,
-          "tileid": 8
+          "tileid": 12
         },
         {
           "duration": 286,
-          "tileid": 9
+          "tileid": 13
         },
         {
           "duration": 286,
-          "tileid": 10
+          "tileid": 14
         }
       ]
     },
@@ -92,15 +92,15 @@
         },
         {
           "duration": 286,
-          "tileid": 11
+          "tileid": 15
         },
         {
           "duration": 286,
-          "tileid": 12
+          "tileid": 16
         },
         {
           "duration": 286,
-          "tileid": 13
+          "tileid": 17
         }
       ]
     },
@@ -132,54 +132,106 @@
     },
     {
       "id": 5,
+      "image": "../../../sprites/traveler-child-male-v1/traveler-child-male-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "traveler-child-male-npc"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "image": "../../../sprites/traveler-child-female-v1/traveler-child-female-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "traveler-child-female-npc"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "image": "../../../sprites/traveler-elder-male-v1/traveler-elder-male-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "traveler-elder-male-npc"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "image": "../../../sprites/traveler-elder-female-v1/traveler-elder-female-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "traveler-elder-female-npc"
+        }
+      ]
+    },
+    {
+      "id": 9,
       "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-2.png",
       "imagewidth": 128,
       "imageheight": 128
     },
     {
-      "id": 6,
+      "id": 10,
       "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-3.png",
       "imagewidth": 128,
       "imageheight": 128
     },
     {
-      "id": 7,
+      "id": 11,
       "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-4.png",
       "imagewidth": 128,
       "imageheight": 128
     },
     {
-      "id": 8,
+      "id": 12,
       "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-6.png",
       "imagewidth": 128,
       "imageheight": 128
     },
     {
-      "id": 9,
+      "id": 13,
       "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-7.png",
       "imagewidth": 128,
       "imageheight": 128
     },
     {
-      "id": 10,
+      "id": 14,
       "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-8.png",
       "imagewidth": 128,
       "imageheight": 128
     },
     {
-      "id": 11,
+      "id": 15,
       "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-10.png",
       "imagewidth": 128,
       "imageheight": 128
     },
     {
-      "id": 12,
+      "id": 16,
       "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-11.png",
       "imagewidth": 128,
       "imageheight": 128
     },
     {
-      "id": 13,
+      "id": 17,
       "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-12.png",
       "imagewidth": 128,
       "imageheight": 128

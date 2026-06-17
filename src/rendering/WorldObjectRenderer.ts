@@ -4,6 +4,10 @@ import {
   resolveObjectAnimation
 } from "../animation/animationCatalog";
 import type { MapObjectData, RegionData } from "../data/prototypeRegions";
+import {
+  isTravelerVariant,
+  type TravelerVariant
+} from "../data/travelerDirectory";
 import { getShopIdForRegion } from "../interaction/InteractionPolicy";
 import type { HiddenCollectible } from "../systems/explorationService";
 import { TravelerAI } from "../systems/TravelerAI";
@@ -58,9 +62,7 @@ export class WorldObjectRenderer {
         object.texture === "airport-vending-machine" ||
         object.texture === "airport-ad-column";
       const texture = isTraveler
-        ? travelerVariant === "male"
-          ? "traveler-male-sheet"
-          : "traveler-female-sheet"
+        ? `traveler-${travelerVariant}-sheet`
         : isClerk
           ? "duty-free-clerks-animated-v2"
           : object.texture;
@@ -225,22 +227,18 @@ export class WorldObjectRenderer {
     );
   }
 
-  private getTravelerVariant(
-    object: MapObjectData
-  ): "male" | "female" | null {
+  private getTravelerVariant(object: MapObjectData): TravelerVariant | null {
     const animationKey = object.npcBehavior?.animationKey;
-    if (
-      animationKey === "traveler-male" ||
-      object.texture === "traveler-male-npc"
-    ) {
-      return "male";
-    }
-    if (
-      animationKey === "traveler-female" ||
-      object.texture === "traveler-female-npc"
-    ) {
-      return "female";
-    }
+    const animationVariant =
+      animationKey?.startsWith("traveler-") ? animationKey.slice(9) : undefined;
+    if (animationVariant && isTravelerVariant(animationVariant)) return animationVariant;
+
+    const textureVariant =
+      object.texture.startsWith("traveler-") && object.texture.endsWith("-npc")
+        ? object.texture.slice(9, -4)
+        : undefined;
+    if (textureVariant && isTravelerVariant(textureVariant)) return textureVariant;
+
     return null;
   }
 }

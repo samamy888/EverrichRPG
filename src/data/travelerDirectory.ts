@@ -5,7 +5,13 @@ import type {
   RegionId
 } from "./prototypeRegions";
 
-export type TravelerVariant = "male" | "female";
+export type TravelerVariant =
+  | "male"
+  | "female"
+  | "child-male"
+  | "child-female"
+  | "elder-male"
+  | "elder-female";
 
 export interface TravelerProfile {
   id: string;
@@ -29,11 +35,28 @@ export function isTravelerNameCompatibleWithVariant(
   variant: TravelerVariant
 ): boolean {
   const givenNames =
-    variant === "male"
+    getTravelerGender(variant) === "male"
       ? TRAVELER_MALE_GIVEN_NAMES
       : TRAVELER_FEMALE_GIVEN_NAMES;
   return givenNames.some((givenName) => name.endsWith(givenName));
 }
+
+export function isTravelerVariant(value: string): value is TravelerVariant {
+  return (TRAVELER_VARIANTS as readonly string[]).includes(value);
+}
+
+export function getTravelerGender(variant: TravelerVariant): "male" | "female" {
+  return variant === "male" || variant.endsWith("-male") ? "male" : "female";
+}
+
+export const TRAVELER_VARIANTS = [
+  "male",
+  "female",
+  "child-male",
+  "child-female",
+  "elder-male",
+  "elder-female"
+] as const satisfies readonly TravelerVariant[];
 
 const POPULATION_RANGES: Record<RegionId, readonly [number, number]> = {
   "duty-free-entrance": [2, 4],
@@ -175,18 +198,18 @@ function resetSessionPool(travelers: readonly TravelerProfile[]): void {
 }
 
 function createLocalSessionPool(): TravelerProfile[] {
-  const variants: TravelerVariant[] = Array.from(
+  const variants = Array.from(
     { length: SESSION_POOL_SIZE },
-    (_, index) => (index % 2 === 0 ? "male" : "female")
+    (_, index) => TRAVELER_VARIANTS[index % TRAVELER_VARIANTS.length]!
   );
-  const namesByVariant: Record<TravelerVariant, string[]> = {
+  const namesByGender: Record<ReturnType<typeof getTravelerGender>, string[]> = {
     male: createNames(TRAVELER_MALE_GIVEN_NAMES),
     female: createNames(TRAVELER_FEMALE_GIVEN_NAMES)
   };
 
   return variants.map((variant, index) => ({
     id: `local-traveler-${index + 1}`,
-    name: namesByVariant[variant].pop()!,
+    name: namesByGender[getTravelerGender(variant)].pop()!,
     variant,
     dialogue: DIALOGUE[index % DIALOGUE.length]!,
     movementType: MOVEMENT_TYPES[index % MOVEMENT_TYPES.length]!,
@@ -213,7 +236,7 @@ function isTravelerRoster(value: TravelerRosterResponse): boolean {
         typeof traveler.id === "string" &&
         typeof traveler.name === "string" &&
         traveler.name.trim().length > 0 &&
-        (traveler.variant === "male" || traveler.variant === "female") &&
+        isTravelerVariant(traveler.variant) &&
         isTravelerNameCompatibleWithVariant(traveler.name, traveler.variant) &&
         typeof traveler.dialogue === "string" &&
         (traveler.movementType === "idle" ||

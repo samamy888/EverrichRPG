@@ -5,6 +5,7 @@ import type {
   MapObjectData,
   NpcBehaviorData
 } from "../data/prototypeRegions";
+import type { TravelerVariant } from "../data/travelerDirectory";
 import { resolveFacingToward } from "./resolveFacingToward";
 
 interface TravelerAIOptions {
@@ -13,7 +14,7 @@ interface TravelerAIOptions {
   sprite: Phaser.GameObjects.Sprite;
   bounds: Phaser.Geom.Rectangle;
   label: Phaser.GameObjects.BitmapText | undefined;
-  variant: "male" | "female";
+  variant: TravelerVariant;
   behavior: NpcBehaviorData;
   canOccupy: (traveler: TravelerAI, bounds: Phaser.Geom.Rectangle) => boolean;
 }
@@ -40,7 +41,7 @@ export class TravelerAI {
   private readonly object: MapObjectData;
   private readonly sprite: Phaser.GameObjects.Sprite;
   private readonly label: Phaser.GameObjects.BitmapText | undefined;
-  private readonly variant: "male" | "female";
+  private readonly variant: TravelerVariant;
   private readonly canOccupy: TravelerAIOptions["canOccupy"];
   private readonly behavior: NpcBehaviorData;
   private readonly origin: Phaser.Math.Vector2;

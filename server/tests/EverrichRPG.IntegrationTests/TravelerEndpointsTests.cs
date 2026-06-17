@@ -25,7 +25,7 @@ public sealed class TravelerEndpointsTests : IClassFixture<ApiFactory>
         Assert.All(roster.Travelers, traveler =>
         {
             Assert.False(string.IsNullOrWhiteSpace(traveler.Name));
-            Assert.Contains(traveler.Variant, new[] { "male", "female" });
+            Assert.Contains(traveler.Variant, TravelerRosterSeeder.Variants);
             Assert.True(
                 TravelerRosterSeeder.IsNameCompatibleWithVariant(
                     traveler.Name,
@@ -38,6 +38,8 @@ public sealed class TravelerEndpointsTests : IClassFixture<ApiFactory>
         Assert.Equal(
             roster.Travelers.Length,
             roster.Travelers.Select(traveler => traveler.Name).Distinct().Count());
+        Assert.Contains(roster.Travelers, traveler => traveler.Variant.StartsWith("child-"));
+        Assert.Contains(roster.Travelers, traveler => traveler.Variant.StartsWith("elder-"));
     }
 
     [Fact]

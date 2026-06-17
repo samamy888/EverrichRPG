@@ -261,6 +261,10 @@ NPCS = [
     ("clerk-gift-01", "duty-free-clerks-v1/clerk-3.png"),
     ("traveler-male-npc", "player-traveler-male-v1/traveler-male-1.png"),
     ("traveler-female-npc", "player-traveler-female-v1/traveler-female-1.png"),
+    ("traveler-child-male-npc", "traveler-child-male-v1/traveler-child-male-1.png"),
+    ("traveler-child-female-npc", "traveler-child-female-v1/traveler-child-female-1.png"),
+    ("traveler-elder-male-npc", "traveler-elder-male-v1/traveler-elder-male-1.png"),
+    ("traveler-elder-female-npc", "traveler-elder-female-v1/traveler-elder-female-1.png"),
 ]
 
 REGION_NAMES = {

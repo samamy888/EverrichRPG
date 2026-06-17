@@ -22,4 +22,17 @@ describe("traveler name compatibility", () => {
     expect(isTravelerNameCompatibleWithVariant("林雅婷", "female")).toBe(true);
     expect(isTravelerNameCompatibleWithVariant("林雅婷", "male")).toBe(false);
   });
+
+  it("matches child and elder variants by gender", () => {
+    const maleName = `??${TRAVELER_MALE_GIVEN_NAMES[0]}`;
+    const femaleName = `??${TRAVELER_FEMALE_GIVEN_NAMES[0]}`;
+
+    expect(isTravelerNameCompatibleWithVariant(maleName, "child-male")).toBe(true);
+    expect(isTravelerNameCompatibleWithVariant(maleName, "elder-male")).toBe(true);
+    expect(isTravelerNameCompatibleWithVariant(maleName, "child-female")).toBe(false);
+    expect(isTravelerNameCompatibleWithVariant(femaleName, "child-female")).toBe(true);
+    expect(isTravelerNameCompatibleWithVariant(femaleName, "elder-female")).toBe(true);
+    expect(isTravelerNameCompatibleWithVariant(femaleName, "elder-male")).toBe(false);
+  });
+
 });

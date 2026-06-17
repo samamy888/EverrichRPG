@@ -1,4 +1,5 @@
 import type { Facing, MapObjectTexture } from "../data/prototypeRegions";
+import { TRAVELER_VARIANTS } from "../data/travelerDirectory";
 import type { PlayerVariant } from "../systems/prototypeSave";
 import type { AnimationDefinition } from "./AnimationDefinition";
 
@@ -47,7 +48,7 @@ const OBJECT_ANIMATION_BY_TEXTURE: Readonly<
 };
 
 export const WORLD_ANIMATION_DEFINITIONS: readonly AnimationDefinition[] = [
-  ...createPlayerAnimationDefinitions(),
+  ...createTravelerAnimationDefinitions(),
   ...createClerkAnimationDefinitions(),
   {
     key: "airport-long-kiosk-screen-cycle",
@@ -132,9 +133,9 @@ export function isDiagonalPlayerFacing(
   return facing in DIAGONAL_FACING_ROWS;
 }
 
-function createPlayerAnimationDefinitions(): AnimationDefinition[] {
+function createTravelerAnimationDefinitions(): AnimationDefinition[] {
   const definitions: AnimationDefinition[] = [];
-  for (const variant of ["male", "female"] as const) {
+  for (const variant of TRAVELER_VARIANTS) {
     for (const [facing, row] of Object.entries(FACING_ROWS) as Array<
       [Facing, number]
     >) {
@@ -152,6 +153,7 @@ function createPlayerAnimationDefinitions(): AnimationDefinition[] {
         });
       }
     }
+    if (variant !== "male" && variant !== "female") continue;
     for (const [facing, row] of Object.entries(DIAGONAL_FACING_ROWS) as Array<
       [Exclude<PlayerAnimationFacing, Facing>, number]
     >) {

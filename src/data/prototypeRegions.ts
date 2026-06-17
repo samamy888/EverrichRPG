@@ -158,7 +158,11 @@ export type MapObjectTexture =
   | "clerk-liquor-food-01"
   | "clerk-gift-01"
   | "traveler-male-npc"
-  | "traveler-female-npc";
+  | "traveler-female-npc"
+  | "traveler-child-male-npc"
+  | "traveler-child-female-npc"
+  | "traveler-elder-male-npc"
+  | "traveler-elder-female-npc";
 
 export interface TileLayerData {
   name: string;

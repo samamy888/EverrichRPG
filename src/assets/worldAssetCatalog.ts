@@ -1,4 +1,5 @@
 import type { SpriteSheetFrameConfig } from "./AssetLoadPort";
+import { TRAVELER_VARIANTS } from "../data/travelerDirectory";
 
 export interface ImageAssetDefinition {
   key: string;
@@ -199,6 +200,13 @@ export const WORLD_IMAGE_ASSETS: readonly ImageAssetDefinition[] = [
   image(
     "traveler-female-npc",
     "/assets/sprites/player-traveler-female-v1/traveler-female-1.png"
+  ),
+  ...(["child-male", "child-female", "elder-male", "elder-female"] as const).map(
+    (variant) =>
+      image(
+        `traveler-${variant}-npc`,
+        `/assets/sprites/traveler-${variant}-v1/traveler-${variant}-1.png`
+      )
   )
 ];
 
@@ -271,13 +279,17 @@ export const WORLD_SPRITESHEET_ASSETS: readonly SpriteSheetAssetDefinition[] = [
     128,
     128
   ),
-  ...(["male", "female"] as const).flatMap((variant) => [
+  ...TRAVELER_VARIANTS.map((variant) =>
     sheet(
       `traveler-${variant}-sheet`,
-      `/assets/sprites/player-traveler-${variant}-v1/sheet-transparent.png`,
+      variant === "male" || variant === "female"
+        ? `/assets/sprites/player-traveler-${variant}-v1/sheet-transparent.png`
+        : `/assets/sprites/traveler-${variant}-v1/sheet-transparent.png`,
       96,
       96
-    ),
+    )
+  ),
+  ...(["male", "female"] as const).flatMap((variant) => [
     sheet(
       `traveler-${variant}-diagonal-sheet`,
       `/assets/sprites/player-traveler-${variant}-diagonal-v1/sheet-transparent.png`,

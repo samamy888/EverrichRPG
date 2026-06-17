@@ -43,10 +43,18 @@ const travelerTemplate: MapObjectData = {
 };
 
 function createProfiles(count: number): TravelerProfile[] {
+  const variants: TravelerProfile["variant"][] = [
+    "male",
+    "female",
+    "child-male",
+    "child-female",
+    "elder-male",
+    "elder-female"
+  ];
   return Array.from({ length: count }, (_, index) => ({
     id: `traveler-${index + 1}`,
     name: `旅客${index + 1}`,
-    variant: index % 2 === 0 ? "male" : "female",
+    variant: variants[index % variants.length]!,
     dialogue: "我正在找伴手禮。",
     movementType: "wander",
     facing: "down",
@@ -101,6 +109,12 @@ describe("TravelerPopulation", () => {
     expect(travelers[0]?.id).toBe("traveler-1");
     expect(travelers[0]?.displayWidth).toBe(CONFIG.characterDisplaySize);
     expect(travelers[0]?.displayHeight).toBe(CONFIG.characterDisplaySize);
+    expect(travelers.map((traveler) => traveler.texture)).toContain(
+      "traveler-child-male-npc"
+    );
+    expect(travelers.map((traveler) => traveler.npcBehavior?.animationKey)).toContain(
+      "traveler-child-male"
+    );
     expect(travelers.every((traveler) => Boolean(traveler.label))).toBe(true);
     expect(travelers.every((traveler) => traveler.interaction?.title === traveler.label)).toBe(
       true

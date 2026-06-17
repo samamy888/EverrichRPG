@@ -1,0 +1,5 @@
+Create one canonical 4-direction walking sprite sheet for a CHILD GIRL airport traveler NPC, matching the visible EverrichRPG traveler sprite style: polished GBA-era retro pixel art, chibi proportions, crisp dark outline, clean modern airport RPG palette, same pixel density as the shown male/female traveler sheets. Exact 4 columns x 4 rows sheet on a solid pure #FF00FF magenta background, no visible grid, no labels, no UI, no props detached from the body.
+
+Character: Taiwanese girl traveler, about 7-9 years old, shorter than adult traveler, dark brown bob or short ponytail, cheerful casual yellow cardigan over light shirt, teal skirt or shorts, sneakers, tiny pink backpack. Keep her clearly a child but not a baby. Full body centered in every invisible 96x96-style cell, stable feet/bottom anchor, consistent scale, generous magenta padding.
+
+Rows top to bottom: 1 down/front walking, 2 left walking, 3 right walking, 4 up/back walking. Each row has 4 walk frames: contact, passing, opposite contact, passing. The same identity, outfit, backpack, and height in all 16 frames. No shadows, no floor, no text.

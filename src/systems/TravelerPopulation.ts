@@ -6,6 +6,7 @@ import type {
 } from "../data/prototypeRegions";
 import {
   getTravelersForRegion,
+  isTravelerVariant,
   type TravelerProfile
 } from "../data/travelerDirectory";
 
@@ -80,10 +81,8 @@ export function createRandomTravelerPopulation(
 
 export function isTravelerObject(object: MapObjectData): boolean {
   return (
-    object.texture === "traveler-male-npc" ||
-    object.texture === "traveler-female-npc" ||
-    object.npcBehavior?.animationKey === "traveler-male" ||
-    object.npcBehavior?.animationKey === "traveler-female"
+    isTravelerTexture(object.texture) ||
+    isTravelerAnimationKey(object.npcBehavior?.animationKey)
   );
 }
 
@@ -94,7 +93,7 @@ function createTravelerObject(
 ): MapObjectData {
   return {
     id: profile.id,
-    texture: `traveler-${profile.variant}-npc`,
+    texture: `traveler-${profile.variant}-npc` as MapObjectData["texture"],
     x: template?.x ?? region.width / 2,
     baselineY: template?.baselineY ?? region.height / 2,
     displayWidth: CONFIG.characterDisplaySize,
@@ -117,6 +116,22 @@ function createTravelerObject(
       animationKey: `traveler-${profile.variant}`
     }
   };
+}
+
+function isTravelerTexture(texture: MapObjectData["texture"]): boolean {
+  return (
+    texture.startsWith("traveler-") &&
+    texture.endsWith("-npc") &&
+    isTravelerVariant(texture.slice(9, -4))
+  );
+}
+
+function isTravelerAnimationKey(value: string | undefined): boolean {
+  return (
+    typeof value === "string" &&
+    value.startsWith("traveler-") &&
+    isTravelerVariant(value.slice(9))
+  );
 }
 
 function findRandomTravelerPlacement(

@@ -5,7 +5,7 @@ namespace EverrichRPG.Infrastructure.Persistence;
 
 public sealed class TravelerRosterSeeder(GameDbContext dbContext)
 {
-    public const int PoolSize = 100;
+    public const int PoolSize = 160;
 
     private static readonly string[] FamilyNames =
         ["陳", "林", "黃", "張", "李", "王", "吳", "劉", "蔡", "楊", "許", "鄭"];
@@ -28,7 +28,8 @@ public sealed class TravelerRosterSeeder(GameDbContext dbContext)
         "逛完這一區，我就要去結帳了。"
     ];
 
-    private static readonly string[] Variants = ["male", "female"];
+    public static readonly string[] Variants =
+        ["male", "female", "child-male", "child-female", "elder-male", "elder-female"];
     private static readonly string[] MovementTypes = ["wander", "wander", "wander", "patrol", "idle"];
     private static readonly string[] Facings = ["up", "down", "left", "right"];
 
@@ -57,7 +58,7 @@ public sealed class TravelerRosterSeeder(GameDbContext dbContext)
 
         for (var index = existingTravelers.Length; index < PoolSize; index++)
         {
-            var variant = Pick(random, Variants);
+            var variant = Variants[index % Variants.Length];
             travelers.Add(new Traveler(
                 Guid.NewGuid(),
                 CreateUniqueName(random, usedNames, variant),
@@ -111,12 +112,12 @@ public sealed class TravelerRosterSeeder(GameDbContext dbContext)
     {
         return variant switch
         {
-            "male" => MaleGivenNames,
-            "female" => FemaleGivenNames,
+            "male" or "child-male" or "elder-male" => MaleGivenNames,
+            "female" or "child-female" or "elder-female" => FemaleGivenNames,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(variant),
                 variant,
-                "Traveler variant must be male or female.")
+                "Traveler variant must be one of the supported traveler appearances.")
         };
     }
 

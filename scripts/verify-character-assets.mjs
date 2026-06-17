@@ -76,15 +76,33 @@ if (selfOrderKioskPipeline.edge_touch_frames.length > 0) {
 }
 
 for (const [tileId, expectedFrames] of [
-  [0, [0, 5, 6, 7]],
-  [1, [1, 8, 9, 10]],
-  [2, [2, 11, 12, 13]]
+  [0, [0, 9, 10, 11]],
+  [1, [1, 12, 13, 14]],
+  [2, [2, 15, 16, 17]]
 ]) {
   const tile = npcTileset.tiles.find((candidate) => candidate.id === tileId);
   const actualFrames = tile?.animation?.map((frame) => frame.tileid);
   if (JSON.stringify(actualFrames) !== JSON.stringify(expectedFrames)) {
     fail(`Tiled clerk tile ${tileId} animation is out of sync`);
   }
+}
+
+for (const variant of ["child-male", "child-female", "elder-male", "elder-female"]) {
+  const directory = resolve(root, `public/assets/sprites/traveler-${variant}-v1`);
+  const sheet = resolve(directory, "sheet-transparent.png");
+  const metadataPath = resolve(directory, "pipeline-meta.json");
+  if (!existsSync(sheet)) fail(`Missing ${variant} traveler sheet`);
+  if (!existsSync(metadataPath)) fail(`Missing ${variant} traveler metadata`);
+  const metadata = JSON.parse(readFileSync(metadataPath, "utf8"));
+  if (metadata.frames.length !== 16) fail(`${variant} traveler sheet must have 16 frames`);
+
+  const tile = npcTileset.tiles.find((candidate) =>
+    candidate.properties?.some(
+      (property) =>
+        property.name === "texture" && property.value === `traveler-${variant}-npc`
+    )
+  );
+  if (!tile) fail(`Missing ${variant} traveler in Tiled NPC tileset`);
 }
 const kioskTile = propTileset.tiles.find((tile) => tile.id === 80);
 if (
