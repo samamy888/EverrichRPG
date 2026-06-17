@@ -333,6 +333,35 @@ jobs:
 
           Write-Warning $message
 
+      - name: Check public API smoke endpoints
+        if: ${{ vars.IIS_HEALTH_URL != '' }}
+        shell: powershell
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+          $healthUri = [Uri]$env:PUBLIC_HEALTH_URL
+          $apiBaseUrl = $healthUri.AbsoluteUri -replace "/health(/ready)?$", ""
+          $endpoints = @(
+            "$apiBaseUrl/shops/catalog",
+            "$apiBaseUrl/travelers/random?count=3"
+          )
+
+          foreach ($endpoint in $endpoints) {
+            Write-Host "API smoke check: $endpoint"
+            try {
+              $response = Invoke-WebRequest -Uri $endpoint -UseBasicParsing -TimeoutSec 30
+              if ($response.StatusCode -lt 200 -or $response.StatusCode -ge 300) {
+                throw "Unexpected status code $($response.StatusCode)."
+              }
+              if (-not $response.Content -or $response.Content.Length -lt 10) {
+                throw "Response body was empty or too short."
+              }
+            }
+            catch {
+              throw "API smoke check failed for $endpoint. Last error: $($_.Exception.Message)"
+            }
+          }
+
       - name: Deployment summary
         shell: powershell
         run: |

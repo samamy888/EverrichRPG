@@ -5,6 +5,10 @@ import { CHARACTER_SELECT_ANIMATION_DEFINITIONS } from "../animation/animationCa
 import { CONFIG } from "../config";
 import { audioManager } from "../systems/audioManager";
 import type { PlayerVariant } from "../systems/prototypeSave";
+import {
+  isPortraitTouchLayout,
+  mapPointerToGamePoint
+} from "../ui/touchCoordinateMapper";
 
 const BITMAP_FONT = "fusion-pixel-12-bitmap";
 
@@ -20,9 +24,7 @@ export class CharacterSelectScene extends Phaser.Scene {
   private readonly selectFemaleHandler = (): void => this.setSelected("female");
   private readonly confirmHandler = (): void => this.confirm();
   private readonly portraitPointerHandler = (event: PointerEvent): void => {
-    if (!document.documentElement.classList.contains("portrait-touch-layout")) {
-      return;
-    }
+    if (!isPortraitTouchLayout()) return;
 
     const point = this.getPortraitGamePoint(event);
     if (!point) return;
@@ -166,17 +168,7 @@ export class CharacterSelectScene extends Phaser.Scene {
 
   private getPortraitGamePoint(event: PointerEvent): { x: number; y: number } | null {
     const canvas = document.querySelector<HTMLCanvasElement>("#app canvas");
-    const bounds = canvas?.getBoundingClientRect();
-    if (!bounds || bounds.width <= 0 || bounds.height <= 0) return null;
-
-    const screenX = (event.clientX - bounds.left) / bounds.width;
-    const screenY = (event.clientY - bounds.top) / bounds.height;
-    if (screenX < 0 || screenX > 1 || screenY < 0 || screenY > 1) return null;
-
-    return {
-      x: CONFIG.width * screenY,
-      y: CONFIG.height * (1 - screenX)
-    };
+    return mapPointerToGamePoint(event, canvas, CONFIG);
   }
 
   private getVariantAtPoint(x: number, y: number): PlayerVariant | null {

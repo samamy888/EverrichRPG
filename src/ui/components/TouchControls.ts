@@ -2,6 +2,7 @@ import type {
   PrototypeInteractionHintDetail,
   PrototypeMovementModeDetail
 } from "../../core/prototypeEvents";
+import { mapScreenVectorToGameVector } from "../touchCoordinateMapper";
 
 interface TouchControlsOptions {
   root: HTMLElement;
@@ -49,15 +50,15 @@ export class TouchControls {
       const bounds = stick.getBoundingClientRect();
       const offsetX = event.clientX - this.stickStartX;
       const offsetY = event.clientY - this.stickStartY;
-      const portraitTouchLayout =
-        document.documentElement.classList.contains("portrait-touch-layout");
-      const gameOffsetX = portraitTouchLayout ? offsetY : offsetX;
-      const gameOffsetY = portraitTouchLayout ? -offsetX : offsetY;
+      const gameVector = mapScreenVectorToGameVector({
+        x: offsetX,
+        y: offsetY
+      });
       const maxDistance = bounds.width * 0.28;
-      const distance = Math.hypot(gameOffsetX, gameOffsetY);
+      const distance = Math.hypot(gameVector.x, gameVector.y);
       const scale = distance > maxDistance ? maxDistance / distance : 1;
-      const x = gameOffsetX * scale;
-      const y = gameOffsetY * scale;
+      const x = gameVector.x * scale;
+      const y = gameVector.y * scale;
       const deadZone = bounds.width * 0.11;
       const normalizedLength = Math.hypot(x, y) || 1;
       const strength = Math.max(
