@@ -13,3 +13,4 @@ __pycache__/
 *.tiled-session
 /tmp/
 /tools/agent-sprite-forge/
+.codex-remote-attachments/
