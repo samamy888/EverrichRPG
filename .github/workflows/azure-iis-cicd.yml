@@ -196,7 +196,12 @@ jobs:
           $grant = "$($appPoolIdentity):(OI)(CI)M"
           & icacls $env:API_DATA_PATH /grant $grant | Write-Host
           if ($LASTEXITCODE -ne 0) {
-            throw "Failed to grant modify permission on $env:API_DATA_PATH to $appPoolIdentity."
+            Write-Warning "Failed to grant modify permission on $env:API_DATA_PATH to $appPoolIdentity. Falling back to IIS_IUSRS."
+            $global:LASTEXITCODE = 0
+            & icacls $env:API_DATA_PATH /grant "IIS_IUSRS:(OI)(CI)M" | Write-Host
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to grant modify permission on $env:API_DATA_PATH to IIS_IUSRS."
+            }
           }
 
           $appOfflinePath = Join-Path $env:API_PATH "app_offline.htm"
