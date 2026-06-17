@@ -177,9 +177,16 @@ export class PlayerMovementController {
       }
     );
     if (path.length === 0) return false;
+    const destinationIsOpen = !this.isBlocked(destination.x, destination.y);
+    const navigationPath = destinationIsOpen
+      ? [...path.slice(0, -1), destination]
+      : path;
 
     this.cancelNavigation();
-    this.navigationPath = path;
+    this.navigationPath = this.smoothNavigationPath([
+      { x: this.player.x, y: this.player.y },
+      ...navigationPath
+    ]);
     this.navigationComplete = onComplete ?? null;
     this.navigationCancelled = onCancel ?? null;
     this.heldDirection = null;
@@ -400,6 +407,44 @@ export class PlayerMovementController {
     }
 
     return false;
+  }
+
+  private smoothNavigationPath(path: PathPoint[]): PathPoint[] {
+    if (path.length <= 2) return path.slice(1);
+
+    const smoothed: PathPoint[] = [];
+    let anchorIndex = 0;
+    while (anchorIndex < path.length - 1) {
+      let nextIndex = anchorIndex + 1;
+      for (
+        let candidateIndex = path.length - 1;
+        candidateIndex > anchorIndex;
+        candidateIndex -= 1
+      ) {
+        if (this.hasLineOfSight(path[anchorIndex]!, path[candidateIndex]!)) {
+          nextIndex = candidateIndex;
+          break;
+        }
+      }
+      smoothed.push(path[nextIndex]!);
+      anchorIndex = nextIndex;
+    }
+
+    return smoothed;
+  }
+
+  private hasLineOfSight(start: PathPoint, end: PathPoint): boolean {
+    const distance = Phaser.Math.Distance.Between(start.x, start.y, end.x, end.y);
+    const steps = Math.max(1, Math.ceil(distance / (CONFIG.tileSize / 4)));
+
+    for (let step = 1; step <= steps; step += 1) {
+      const t = step / steps;
+      const x = Phaser.Math.Linear(start.x, end.x, t);
+      const y = Phaser.Math.Linear(start.y, end.y, t);
+      if (this.isBlocked(x, y)) return false;
+    }
+
+    return true;
   }
 
   private advanceNavigationWaypoint(): void {
