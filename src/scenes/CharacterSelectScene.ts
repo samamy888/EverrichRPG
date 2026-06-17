@@ -78,7 +78,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       "female"
     );
     this.hint = this.add
-      .bitmapText(CONFIG.width / 2, 278, BITMAP_FONT, "左右選擇 · A / Enter 確認", 12)
+      .bitmapText(CONFIG.width / 2, 278, BITMAP_FONT, "左右選擇 · Enter / 點擊確認", 12)
       .setTint(0xd9e3e8)
       .setOrigin(0.5);
 
@@ -173,7 +173,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.femalePortrait.anims.timeScale =
       this.selected === "female" ? 1.15 : 0.72;
     this.hint.setText(
-      `${this.selected === "male" ? "男旅客" : "女旅客"} · A / Enter 開始`
+      `${this.selected === "male" ? "男旅客" : "女旅客"} · Enter / 點擊開始`
     );
   }
 

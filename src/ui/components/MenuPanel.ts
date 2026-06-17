@@ -225,7 +225,7 @@ export class MenuPanel {
       <dl class="menu-controls-list">
         <div><dt>移動</dt><dd>WASD / 方向鍵 / 滑鼠長按 / 虛擬蘑菇頭</dd></div>
         <div><dt>點擊移動</dt><dd>滑鼠點擊地面可移動到目的地</dd></div>
-        <div><dt>互動</dt><dd>A / Enter / Space / 滑鼠點擊物件</dd></div>
+        <div><dt>互動</dt><dd>電腦 Enter / Space / 滑鼠點擊物件，手機 A</dd></div>
         <div><dt>走路與跑步</dt><dd>Shift / B</dd></div>
         <div><dt>選單</dt><dd>M / 右上角 MENU</dd></div>
         <div><dt>關閉視窗</dt><dd>Escape</dd></div>

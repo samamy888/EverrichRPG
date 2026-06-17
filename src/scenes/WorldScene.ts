@@ -66,7 +66,14 @@ const DIRECTION_VECTOR: Record<Facing, Phaser.Math.Vector2> = {
   right: new Phaser.Math.Vector2(1, 0)
 };
 const BITMAP_FONT = "fusion-pixel-12-bitmap";
+const FIXED_HUD_DEPTH = 3000;
 const LABEL_REVEAL_DISTANCE = CONFIG.tileSize * 3;
+
+function getInteractionPromptKey(): "A" | "Enter" {
+  return window.matchMedia("(pointer: coarse) and (hover: none)").matches
+    ? "A"
+    : "Enter";
+}
 
 export class WorldScene extends Phaser.Scene {
   private regionId: RegionId = "duty-free-entrance";
@@ -336,7 +343,7 @@ export class WorldScene extends Phaser.Scene {
       .bitmapText(15, 13, BITMAP_FONT, region.name, 12)
       .setTint(0x13252b)
       .setScrollFactor(0)
-      .setDepth(51);
+      .setDepth(FIXED_HUD_DEPTH + 1);
     this.add
       .rectangle(
         10,
@@ -348,7 +355,7 @@ export class WorldScene extends Phaser.Scene {
       )
       .setOrigin(0)
       .setScrollFactor(0)
-      .setDepth(50);
+      .setDepth(FIXED_HUD_DEPTH);
 
     const menuButtonWidth = 82;
     const menuButtonHeight = 28;
@@ -369,7 +376,7 @@ export class WorldScene extends Phaser.Scene {
         Phaser.Geom.Rectangle.Contains
       )
       .setScrollFactor(0)
-      .setDepth(51);
+      .setDepth(FIXED_HUD_DEPTH + 1);
 
     const setMenuButtonActive = () => {
       menuButtonBackground.setFillStyle(0xf6cf63, 1);
@@ -396,10 +403,10 @@ export class WorldScene extends Phaser.Scene {
       .setDropShadow(1, 1, 0x5f4216, 1)
       .setOrigin(0.5);
     const hintBackground = this.add
-      .rectangle(0, 22, 58, 20, 0x1a272b, 0.9)
+      .rectangle(0, 22, 78, 20, 0x1a272b, 0.9)
       .setStrokeStyle(1, 0x6d5422);
     this.interactionHintLabel = this.add
-      .bitmapText(0, 22, BITMAP_FONT, "A 互動", 12)
+      .bitmapText(0, 22, BITMAP_FONT, `${getInteractionPromptKey()} 互動`, 12)
       .setTint(0xfff5c7)
       .setOrigin(0.5);
     this.interactionHint = this.add
@@ -514,7 +521,7 @@ export class WorldScene extends Phaser.Scene {
     if (!target?.object.interaction) {
       this.startDialogue({
         title: "目前沒有可互動的內容",
-        lines: ["靠近櫃台、商品或指示牌時，畫面會出現 A 互動提示。"]
+        lines: [`靠近櫃台、商品或指示牌時，畫面會出現 ${getInteractionPromptKey()} 互動提示。`]
       });
       return;
     }
@@ -729,7 +736,7 @@ export class WorldScene extends Phaser.Scene {
       target.bounds.left + 8,
       target.bounds.right - 8
     );
-    this.interactionHintLabel.setText(`A ${label}`);
+    this.interactionHintLabel.setText(`${getInteractionPromptKey()} ${label}`);
     this.interactionHint.setPosition(promptX, target.bounds.top - 18).setVisible(true);
 
     if (this.hintedObjectId !== nextObjectId) {
@@ -827,7 +834,7 @@ export class WorldScene extends Phaser.Scene {
   private emitStatus(): void {
     emitPrototypeStatus({
       regionName: this.currentRegion.name,
-      message: `${this.running ? "跑步" : "走路"}模式 · WASD / 滑鼠按住移動 · A 互動`,
+      message: `${this.running ? "跑步" : "走路"}模式 · WASD / 滑鼠按住移動 · ${getInteractionPromptKey()} 互動`,
       playerVariant: this.playerVariant
     });
   }

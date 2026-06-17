@@ -1,5 +1,11 @@
 import type { PrototypeDialogueDetail } from "../../core/prototypeEvents";
 
+function getActionPromptKey(): "A" | "Enter" {
+  return window.matchMedia("(pointer: coarse) and (hover: none)").matches
+    ? "A"
+    : "Enter";
+}
+
 interface DialoguePanelOptions {
   root: HTMLElement;
   onChoice: (index: number) => void;
@@ -63,12 +69,12 @@ export class DialoguePanel {
     this.panel.classList.toggle("has-choices", this.choosing);
     this.options.root.classList.toggle("dialogue-has-choices", this.choosing);
     this.next.textContent = this.choosing
-      ? "W / S 選擇 · A / Enter 確認"
+      ? `W / S 選擇 · ${getActionPromptKey()} 確認`
       : detail.complete
         ? detail.page < detail.pageCount
-          ? "A / Enter / 點擊：下一句"
-          : "A / Enter / 點擊：結束"
-        : "A / Enter：快速顯示";
+          ? `${getActionPromptKey()} / 點擊：下一句`
+          : `${getActionPromptKey()} / 點擊：結束`
+        : `${getActionPromptKey()}：快速顯示`;
     this.next.classList.toggle("is-complete", detail.complete);
     this.panel.hidden = false;
   }
