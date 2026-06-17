@@ -242,11 +242,11 @@ const placements = {
       label: "電動步道",
       lines: ["步道持續向前運轉。"],
       x: 304,
-      y: 272,
+      y: 288,
       width: 144,
       height: 48,
       displayHeight: 48,
-      collision: [336, 256, 80, 16]
+      collision: [336, 272, 80, 16]
     },
     {
       name: "facilities-recycling-station",
@@ -254,10 +254,10 @@ const placements = {
       label: "分類回收站",
       lines: ["不同顏色代表不同回收分類。"],
       x: 192,
-      y: 304,
+      y: 320,
       width: 80,
       height: 64,
-      collision: [200, 288, 64, 16]
+      collision: [200, 304, 64, 16]
     },
     {
       name: "facilities-charging-pedestal",
@@ -265,10 +265,10 @@ const placements = {
       label: "充電站",
       lines: ["旅客可以在這裡替裝置充電。"],
       x: 240,
-      y: 280,
+      y: 296,
       width: 48,
       height: 80,
-      collision: [256, 264, 16, 16]
+      collision: [256, 280, 16, 16]
     },
     {
       name: "facilities-cleaning-trolley",
@@ -277,10 +277,10 @@ const placements = {
       label: "清潔推車",
       lines: ["清潔用品收納得很整齊。"],
       x: 376,
-      y: 80,
+      y: 96,
       width: 64,
       height: 72,
-      collision: [392, 64, 32, 16]
+      collision: [392, 80, 32, 16]
     },
     {
       name: "facilities-emergency-cabinet",
@@ -289,10 +289,10 @@ const placements = {
       label: "緊急設備",
       lines: ["僅供緊急狀況使用。"],
       x: 304,
-      y: 80,
+      y: 96,
       width: 48,
       height: 72,
-      collision: [320, 64, 16, 16]
+      collision: [320, 80, 16, 16]
     }
   ]
 };

@@ -1564,7 +1564,7 @@
           "visible": true,
           "width": 176,
           "x": 64,
-          "y": 80,
+          "y": 96,
           "gid": 97,
           "properties": [
             {
@@ -1614,7 +1614,7 @@
           "visible": true,
           "width": 56,
           "x": 248,
-          "y": 80,
+          "y": 96,
           "gid": 101,
           "properties": [
             {
@@ -1704,7 +1704,7 @@
           "visible": true,
           "width": 96,
           "x": 176,
-          "y": 296,
+          "y": 312,
           "gid": 105,
           "properties": [
             {
@@ -1744,7 +1744,7 @@
           "visible": true,
           "width": 176,
           "x": 304,
-          "y": 304,
+          "y": 320,
           "gid": 85,
           "properties": [
             {
@@ -1827,7 +1827,7 @@
           "visible": true,
           "width": 72,
           "x": 56,
-          "y": 280
+          "y": 296
         },
         {
           "gid": 109,
@@ -1887,7 +1887,7 @@
           "visible": true,
           "width": 64,
           "x": 120,
-          "y": 280
+          "y": 296
         },
         {
           "gid": 142,
@@ -1927,7 +1927,7 @@
           "visible": true,
           "width": 144,
           "x": 304,
-          "y": 272
+          "y": 288
         },
         {
           "gid": 130,
@@ -1962,7 +1962,7 @@
           "visible": true,
           "width": 80,
           "x": 192,
-          "y": 304
+          "y": 320
         },
         {
           "gid": 126,
@@ -1997,7 +1997,7 @@
           "visible": true,
           "width": 48,
           "x": 240,
-          "y": 280
+          "y": 296
         },
         {
           "gid": 128,
@@ -2037,7 +2037,7 @@
           "visible": true,
           "width": 64,
           "x": 376,
-          "y": 80
+          "y": 96
         },
         {
           "gid": 131,
@@ -2077,7 +2077,7 @@
           "visible": true,
           "width": 48,
           "x": 304,
-          "y": 80
+          "y": 96
         }
       ]
     },
@@ -2112,7 +2112,7 @@
           "visible": true,
           "width": 160,
           "x": 72,
-          "y": 64,
+          "y": 80,
           "properties": [
             {
               "name": "ownerId",
@@ -2131,7 +2131,7 @@
           "visible": true,
           "width": 24,
           "x": 264,
-          "y": 64,
+          "y": 80,
           "properties": [
             {
               "name": "ownerId",
@@ -2169,7 +2169,7 @@
           "visible": true,
           "width": 16,
           "x": 216,
-          "y": 280,
+          "y": 296,
           "properties": [
             {
               "name": "ownerId",
@@ -2188,7 +2188,7 @@
           "visible": true,
           "width": 152,
           "x": 312,
-          "y": 288,
+          "y": 304,
           "properties": [
             {
               "name": "ownerId",
@@ -2214,7 +2214,7 @@
           "visible": true,
           "width": 32,
           "x": 76,
-          "y": 264
+          "y": 280
         },
         {
           "height": 16,
@@ -2233,7 +2233,7 @@
           "visible": true,
           "width": 24,
           "x": 140,
-          "y": 264
+          "y": 280
         },
         {
           "height": 16,
@@ -2252,7 +2252,7 @@
           "visible": true,
           "width": 80,
           "x": 336,
-          "y": 256
+          "y": 272
         },
         {
           "height": 16,
@@ -2271,7 +2271,7 @@
           "visible": true,
           "width": 64,
           "x": 200,
-          "y": 288
+          "y": 304
         },
         {
           "height": 16,
@@ -2290,7 +2290,7 @@
           "visible": true,
           "width": 16,
           "x": 256,
-          "y": 264
+          "y": 280
         },
         {
           "height": 16,
@@ -2309,7 +2309,7 @@
           "visible": true,
           "width": 32,
           "x": 392,
-          "y": 64
+          "y": 80
         },
         {
           "height": 16,
@@ -2328,7 +2328,7 @@
           "visible": true,
           "width": 16,
           "x": 320,
-          "y": 64
+          "y": 80
         }
       ]
     },

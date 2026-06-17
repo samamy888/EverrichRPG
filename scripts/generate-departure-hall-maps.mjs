@@ -691,10 +691,10 @@ const maps = [
         "洗手間",
         ["洗手間入口嵌在北側牆面。"],
         64,
-        80,
+        96,
         176,
         68,
-        { x: 72, y: 64, width: 160, height: 24 },
+        { x: 72, y: 80, width: 160, height: 24 },
         true
       ),
       p(
@@ -703,10 +703,10 @@ const maps = [
         "飲水機",
         ["補充水分後再繼續旅程吧。"],
         248,
-        80,
+        96,
         48,
         72,
-        { x: 264, y: 64, width: 16, height: 16 }
+        { x: 264, y: 80, width: 16, height: 16 }
       ),
       p(
         "facilities-self-order-kiosk",
@@ -714,10 +714,10 @@ const maps = [
         "自助點餐機",
         ["螢幕正在輪播餐點與付款方式。"],
         64,
-        280,
+        296,
         56,
         112,
-        { x: 80, y: 264, width: 24, height: 16 },
+        { x: 80, y: 280, width: 24, height: 16 },
         false,
         false,
         0,
@@ -750,10 +750,10 @@ const maps = [
         "休息區植栽",
         ["設施區比中央大廳安靜一些。"],
         176,
-        296,
+        312,
         96,
         88,
-        { x: 216, y: 280, width: 16, height: 16 }
+        { x: 216, y: 296, width: 16, height: 16 }
       ),
       p(
         "facilities-waiting-seats",
@@ -761,10 +761,10 @@ const maps = [
         "候機座椅",
         ["座椅旁設有簡易充電位置。"],
         304,
-        304,
+        320,
         176,
         72,
-        { x: 312, y: 288, width: 152, height: 16 }
+        { x: 312, y: 304, width: 152, height: 16 }
       )
     ],
     npcs: [],
