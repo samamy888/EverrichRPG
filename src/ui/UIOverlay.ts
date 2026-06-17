@@ -4,11 +4,11 @@ import {
   type PrototypeInteractionHintDetail,
   type PrototypeMovementModeDetail,
   type PrototypeShopOpenDetail,
-  type PrototypeStatusDetail,
+  type PrototypeStatusDetail
 } from "../core/prototypeEvents";
 import {
   TRAVELER_QUEST,
-  travelerQuestService,
+  travelerQuestService
 } from "../systems/travelerQuestService";
 import { DialoguePanel } from "./components/DialoguePanel";
 import { MenuPanel } from "./components/MenuPanel";
@@ -32,27 +32,29 @@ export class UIOverlay {
     this.root.innerHTML = OVERLAY_TEMPLATE;
     parent.appendChild(this.root);
 
-    this.regionLabel = this.getElement<HTMLParagraphElement>(".prototype-region");
-    this.statusLabel = this.getElement<HTMLParagraphElement>(".prototype-status");
+    this.regionLabel =
+      this.getElement<HTMLParagraphElement>(".prototype-region");
+    this.statusLabel =
+      this.getElement<HTMLParagraphElement>(".prototype-status");
     this.questHud = this.getElement<HTMLDivElement>(".prototype-quest");
 
     this.dialoguePanel = new DialoguePanel({
       root: this.root,
       onChoice: (index) => this.dispatch("prototype:dialogue-choice", { index }),
       onAdvance: () => this.dispatch("prototype:action"),
-      onUnlockAudio: () => void audioManager.unlock(),
+      onUnlockAudio: () => void audioManager.unlock()
     });
 
     this.touchControls = new TouchControls({
       root: this.root,
       onJoystick: (vector) => this.dispatch("prototype:joystick", vector),
       onAction: (action) => this.dispatch(`prototype:${action}`),
-      onUnlockAudio: () => void audioManager.unlock(),
+      onUnlockAudio: () => void audioManager.unlock()
     });
 
     this.shopPanel = new ShopPanel({
       root: this.root,
-      onClose: () => this.dispatch("prototype:shop-close"),
+      onClose: () => this.dispatch("prototype:shop-close")
     });
 
     this.menuPanel = new MenuPanel({
@@ -64,7 +66,7 @@ export class UIOverlay {
       onBeforeOpen: () => {
         this.shopPanel.close();
         this.dialoguePanel.hide();
-      },
+      }
     });
 
     this.bindGameEvents();
@@ -92,20 +94,20 @@ export class UIOverlay {
 
     window.addEventListener("prototype:dialogue", (event) => {
       this.dialoguePanel.show(
-        (event as CustomEvent<PrototypeDialogueDetail>).detail,
+        (event as CustomEvent<PrototypeDialogueDetail>).detail
       );
     });
     window.addEventListener("prototype:dialogue-close", () =>
-      this.dialoguePanel.close(),
+      this.dialoguePanel.close()
     );
     window.addEventListener("prototype:interaction-hint", (event) => {
       this.touchControls.setInteractionHint(
-        (event as CustomEvent<PrototypeInteractionHintDetail>).detail,
+        (event as CustomEvent<PrototypeInteractionHintDetail>).detail
       );
     });
     window.addEventListener("prototype:movement-mode", (event) => {
       this.touchControls.setMovementMode(
-        (event as CustomEvent<PrototypeMovementModeDetail>).detail,
+        (event as CustomEvent<PrototypeMovementModeDetail>).detail
       );
     });
     window.addEventListener("prototype:shop-open", (event) => {
@@ -115,13 +117,13 @@ export class UIOverlay {
     window.addEventListener("prototype:shop-state", () => this.renderState());
     window.addEventListener("prototype:quest-state", () => this.renderState());
     window.addEventListener("prototype:exploration-state", () =>
-      this.menuPanel.render(),
+      this.menuPanel.render()
     );
     window.addEventListener("prototype:shop-dismiss", () =>
-      this.shopPanel.close(),
+      this.shopPanel.close()
     );
     window.addEventListener("prototype:menu-open-request", () =>
-      this.menuPanel.open(),
+      this.menuPanel.open()
     );
   }
 
@@ -146,10 +148,10 @@ export class UIOverlay {
     const state = travelerQuestService.getState();
     const completed = travelerQuestService.getCompletedObjectiveIds().length;
     this.questHud.textContent = {
-      available: "任務：到美妝香氛店接受推薦",
-      active: `任務：三店伴手禮巡禮 ${completed}/3`,
-      ready: "任務：回美妝香氛店領取獎勵",
-      completed: `任務完成：${TRAVELER_QUEST.rewardCollectibleName}`,
+      available: "任務：到美妝香氛免稅店看看有沒有小委託。",
+      active: `任務：免稅店小巡禮 ${completed}/3`,
+      ready: "任務：商品已買齊，回美妝香氛免稅店回報。",
+      completed: `任務完成：${TRAVELER_QUEST.rewardCollectibleName}`
     }[state.status];
   }
 

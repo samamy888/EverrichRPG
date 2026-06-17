@@ -14,6 +14,20 @@ export class DialoguePanel {
   private readonly choices: HTMLDivElement;
   private readonly next: HTMLSpanElement;
   private choosing = false;
+  private readonly globalPointerHandler = (event: PointerEvent): void => {
+    if (this.panel.hidden || this.choosing) return;
+    if (
+      event.target instanceof Element &&
+      event.target.closest("[data-dialogue-choice]")
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    this.options.onUnlockAudio();
+    this.options.onAdvance();
+  };
 
   constructor(private readonly options: DialoguePanelOptions) {
     this.panel = options.root.querySelector(".dialogue-box")!;
@@ -21,19 +35,7 @@ export class DialoguePanel {
     this.text = options.root.querySelector(".dialogue-text")!;
     this.choices = options.root.querySelector(".dialogue-choices")!;
     this.next = options.root.querySelector(".dialogue-next")!;
-    this.panel.addEventListener("pointerdown", (event) => {
-      if (
-        this.choosing ||
-        (event.target instanceof Element &&
-          event.target.closest("[data-dialogue-choice]"))
-      ) {
-        return;
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      this.options.onUnlockAudio();
-      this.options.onAdvance();
-    });
+    window.addEventListener("pointerdown", this.globalPointerHandler, true);
   }
 
   show(detail: PrototypeDialogueDetail): void {

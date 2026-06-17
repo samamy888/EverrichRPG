@@ -79,6 +79,20 @@ export class ShopPanel {
     if (!shop) return;
 
     const state = shopService.getState();
+    const questState = travelerQuestService.getState();
+    const completedObjectiveIds =
+      travelerQuestService.getCompletedObjectiveIds();
+    const activeQuestTargetIds = new Set(
+      questState.status === "active" || questState.status === "ready"
+        ? TRAVELER_QUEST.objectives
+            .filter(
+              (objective) =>
+                objective.shopId === shop.id &&
+                !completedObjectiveIds.includes(objective.productId)
+            )
+            .map((objective) => objective.productId)
+        : []
+    );
     const products = getShopProducts(shop.id);
     this.title.textContent = shop.name;
     this.dataSource.textContent =
@@ -122,9 +136,10 @@ export class ShopPanel {
               : "一般售價";
 
         return `
-          <article class="product-card${product.id === this.focusProductId ? " is-focused" : ""}">
+          <article class="product-card${product.id === this.focusProductId ? " is-focused" : ""}${activeQuestTargetIds.has(product.id) ? " is-quest-target" : ""}">
             <div class="product-icon">${this.getCategoryIcon(product.category)}</div>
             <div class="product-copy">
+              ${activeQuestTargetIds.has(product.id) ? `<span class="quest-target-badge">任務目標</span>` : ""}
               <span class="product-sku">商品品號：${product.sku}</span>
               <strong class="product-name">${product.name}</strong>
               <p class="product-description">${product.description}</p>
