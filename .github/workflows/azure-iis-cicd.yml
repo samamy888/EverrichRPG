@@ -108,7 +108,9 @@ jobs:
       API_PATH: ${{ vars.IIS_API_PATH }}
       FRONTEND_APP_POOL: ${{ vars.IIS_FRONTEND_APP_POOL }}
       API_APP_POOL: ${{ vars.IIS_API_APP_POOL }}
-      HEALTH_URL: ${{ vars.IIS_HEALTH_URL }}
+      INTERNAL_HEALTH_URL: ${{ vars.IIS_INTERNAL_HEALTH_URL || 'http://localhost:5080/api/v1/health' }}
+      PUBLIC_HEALTH_URL: ${{ vars.IIS_HEALTH_URL }}
+      REQUIRE_PUBLIC_HEALTH: ${{ vars.IIS_REQUIRE_PUBLIC_HEALTH || 'false' }}
       BACKUP_ROOT: ${{ vars.IIS_BACKUP_ROOT }}
 
     steps:
@@ -136,6 +138,10 @@ jobs:
           if (-not $env:BACKUP_ROOT) {
             $env:BACKUP_ROOT = Join-Path $env:RUNNER_TEMP "everrich-rpg-backups"
             "BACKUP_ROOT=$env:BACKUP_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          }
+
+          if (-not $env:INTERNAL_HEALTH_URL) {
+            "INTERNAL_HEALTH_URL=http://localhost:5080/api/v1/health" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           }
 
       - name: Stop IIS app pools
@@ -210,8 +216,7 @@ jobs:
             }
           }
 
-      - name: Check production health
-        if: ${{ vars.IIS_HEALTH_URL != '' }}
+      - name: Check internal API health
         shell: powershell
         run: |
           [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -222,19 +227,19 @@ jobs:
 
           for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
             try {
-              Write-Host ("Health check attempt {0}/{1}: {2}" -f $attempt, $maxAttempts, $env:HEALTH_URL)
-              $response = Invoke-WebRequest -Uri $env:HEALTH_URL -UseBasicParsing -TimeoutSec 30
+              Write-Host ("Internal health check attempt {0}/{1}: {2}" -f $attempt, $maxAttempts, $env:INTERNAL_HEALTH_URL)
+              $response = Invoke-WebRequest -Uri $env:INTERNAL_HEALTH_URL -UseBasicParsing -TimeoutSec 30
 
               if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300) {
-                Write-Host "Health check passed with status code $($response.StatusCode)."
+                Write-Host "Internal health check passed with status code $($response.StatusCode)."
                 exit 0
               }
 
-              $lastError = "Health check returned status code $($response.StatusCode)."
+              $lastError = "Internal health check returned status code $($response.StatusCode)."
             }
             catch {
               $lastError = $_.Exception.Message
-              Write-Host "Health check failed: $lastError"
+              Write-Host "Internal health check failed: $lastError"
             }
 
             if ($attempt -lt $maxAttempts) {
@@ -242,7 +247,57 @@ jobs:
             }
           }
 
-          throw "Health check did not pass after $maxAttempts attempts. Last error: $lastError. Check IIS binding, HTTP/HTTPS port, firewall/NSG, and IIS_HEALTH_URL."
+          $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
+          if (Test-Path $appcmd) {
+            Write-Host "IIS app pools:"
+            & $appcmd list apppool
+            Write-Host "IIS sites:"
+            & $appcmd list site
+          }
+
+          Write-Host "Listening TCP ports:"
+          netstat -ano | Select-String -Pattern "LISTENING|:5080"
+
+          throw "Internal API health check did not pass after $maxAttempts attempts. Last error: $lastError. Check API IIS binding, port 5080, API app pool, and IIS_INTERNAL_HEALTH_URL."
+
+      - name: Check public health endpoint
+        if: ${{ vars.IIS_HEALTH_URL != '' }}
+        shell: powershell
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+          $maxAttempts = 5
+          $delaySeconds = 6
+          $lastError = $null
+
+          for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+            try {
+              Write-Host ("Public health check attempt {0}/{1}: {2}" -f $attempt, $maxAttempts, $env:PUBLIC_HEALTH_URL)
+              $response = Invoke-WebRequest -Uri $env:PUBLIC_HEALTH_URL -UseBasicParsing -TimeoutSec 30
+
+              if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300) {
+                Write-Host "Public health check passed with status code $($response.StatusCode)."
+                exit 0
+              }
+
+              $lastError = "Public health check returned status code $($response.StatusCode)."
+            }
+            catch {
+              $lastError = $_.Exception.Message
+              Write-Host "Public health check failed: $lastError"
+            }
+
+            if ($attempt -lt $maxAttempts) {
+              Start-Sleep -Seconds $delaySeconds
+            }
+          }
+
+          $message = "Public health check did not pass after $maxAttempts attempts. Last error: $lastError. Check URL Rewrite, ARR proxy, HTTPS binding, firewall/NSG, and IIS_HEALTH_URL."
+          if ($env:REQUIRE_PUBLIC_HEALTH -eq "true") {
+            throw $message
+          }
+
+          Write-Warning $message
 
       - name: Deployment summary
         shell: powershell
@@ -252,4 +307,5 @@ jobs:
           "- Frontend path: ``$env:FRONTEND_PATH``" >> $env:GITHUB_STEP_SUMMARY
           "- API path: ``$env:API_PATH``" >> $env:GITHUB_STEP_SUMMARY
           "- Backup path: ``$env:BACKUP_PATH``" >> $env:GITHUB_STEP_SUMMARY
-          "- Health URL: ``$env:HEALTH_URL``" >> $env:GITHUB_STEP_SUMMARY
+          "- Internal health URL: ``$env:INTERNAL_HEALTH_URL``" >> $env:GITHUB_STEP_SUMMARY
+          "- Public health URL: ``$env:PUBLIC_HEALTH_URL``" >> $env:GITHUB_STEP_SUMMARY

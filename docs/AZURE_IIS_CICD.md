@@ -1,19 +1,20 @@
-# Azure IIS CI/CD 設定
+# Azure IIS CI/CD 部署說明
 
-本專案提供完整 GitHub Actions CI/CD：
+這份文件說明如何把 Everrich RPG 部署到 Azure Windows VM + IIS，並透過 GitHub Actions self-hosted runner 自動建置、發布與健康檢查。
+
+## 部署架構
 
 ```text
-push main/master
+GitHub push main/master
 → 建置前端
 → 測試前端
-→ 測試後端
-→ publish ASP.NET Core API
-→ 上傳部署包
-→ Azure IIS self-hosted runner 下載部署包
-→ 備份舊站台
-→ 覆蓋 frontend / api 資料夾
+→ 建置 ASP.NET Core API
+→ 測試 API
+→ 打包 frontend / api
+→ self-hosted runner 複製到 IIS 目錄
 → 重啟 IIS App Pool
-→ 健康檢查
+→ 檢查 API 內部健康狀態
+→ 選擇性檢查公開網址反向代理
 ```
 
 Workflow 檔案：
@@ -22,27 +23,17 @@ Workflow 檔案：
 .github/workflows/azure-iis-cicd.yml
 ```
 
-## 1. 推薦架構
+## IIS 必要元件
 
-建議在 Azure Windows VM / IIS 主機上安裝 GitHub self-hosted runner。
-
-優點：
-
-- 不需要開 Web Deploy 連接埠。
-- 不需要把 IIS 帳密放到 GitHub。
-- 可以直接操作本機 IIS App Pool 與資料夾。
-- 部署流程最接近真實 IIS。
-
-## 2. Azure IIS 主機需求
-
-請在 Azure IIS VM 安裝：
+Azure Windows VM / IIS 需要安裝：
 
 - IIS
 - IIS URL Rewrite Module
-- ASP.NET Core Hosting Bundle，版本需相容 `global.json`
+- Application Request Routing，並啟用 `Proxy`
+- ASP.NET Core Hosting Bundle，版本需符合 `global.json`
 - GitHub Actions self-hosted runner
 
-Runner labels 建議設定：
+Runner labels 需要包含：
 
 ```text
 self-hosted
@@ -50,94 +41,84 @@ windows
 iis
 ```
 
-Workflow 的 deploy job 會找：
+## GitHub Variables
 
-```yaml
-runs-on:
-  - self-hosted
-  - windows
-  - iis
-```
-
-## 3. GitHub Variables
-
-到 GitHub repo：
+請到 GitHub repo：
 
 ```text
-Settings → Environments → New environment → production
+Settings → Environments → production → Variables
 ```
 
-在 `production` environment 裡設定 IIS 部署用 Variables：
+設定部署用變數：
 
-| Variable | 必填 | 範例 | 說明 |
+| Variable | 必填 | 建議值 | 說明 |
 | --- | --- | --- | --- |
-| `IIS_FRONTEND_PATH` | 是 | `C:\inetpub\EverrichRPG\frontend` | 前端站台資料夾 |
-| `IIS_API_PATH` | 是 | `C:\inetpub\EverrichRPG\api` | API 應用程式資料夾 |
+| `IIS_FRONTEND_PATH` | 是 | `C:\inetpub\EverrichRPG\frontend` | 前端 IIS 站台目錄 |
+| `IIS_API_PATH` | 是 | `C:\inetpub\EverrichRPG\api` | API IIS 站台目錄 |
 | `IIS_API_APP_POOL` | 是 | `EverrichRPG.Api` | API App Pool 名稱 |
-| `IIS_FRONTEND_APP_POOL` | 否 | `EverrichRPG.Frontend` | 前端 App Pool 名稱，若前端純靜態且共用可留空 |
-| `IIS_HEALTH_URL` | 否 | `https://你的網域/api/v1/health` | 部署後健康檢查 URL |
-| `IIS_BACKUP_ROOT` | 否 | `D:\IISBackups\EverrichRPG` | 舊版備份位置 |
+| `IIS_FRONTEND_APP_POOL` | 否 | `EverrichRPG.Frontend` | 前端 App Pool 名稱 |
+| `IIS_BACKUP_ROOT` | 否 | `D:\IISBackups\EverrichRPG` | 部署前備份目錄 |
+| `IIS_INTERNAL_HEALTH_URL` | 否 | `http://localhost:5080/api/v1/health` | runner 在 IIS 主機上直接檢查 API |
+| `IIS_HEALTH_URL` | 否 | `https://www.biudream.com/api/v1/health` | 公開網址健康檢查 |
+| `IIS_REQUIRE_PUBLIC_HEALTH` | 否 | `false` | 是否讓公開網址健康檢查失敗時中止部署 |
 
-另外到：
+Repository variables 可另外設定：
 
-```text
-Settings → Secrets and variables → Actions → Variables
-```
-
-可選擇設定 Repository Variable：
-
-| Variable | 必填 | 範例 | 說明 |
+| Variable | 必填 | 建議值 | 說明 |
 | --- | --- | --- | --- |
-| `PRODUCTION_API_BASE_URL` | 否 | `https://你的網域/api/v1` | 前端 build 時使用的 API URL |
+| `PRODUCTION_API_BASE_URL` | 否 | 空白或 `/api/v1` | 前端 build 使用的 API base URL |
 
-如果前端和 API 同網域，且 API 對外路徑是 `/api/v1`，`PRODUCTION_API_BASE_URL` 可以不填。
+目前建議先讓 `IIS_INTERNAL_HEALTH_URL` 維持預設值，確認 API 本身可運作後，再設定 `IIS_HEALTH_URL` 檢查公開網域。
 
-若照本文件建議讓 API site 綁定 `localhost:5080`，`IIS_HEALTH_URL` 建議填：
+## IIS 站台設定
 
-```text
-http://localhost:5080/api/v1/health
-```
+### 前端站台
 
-如果你想測外部反向代理結果，也可以填：
-
-```text
-https://你的網域/api/v1/health
-```
-
-但初期比較建議先用 `http://localhost:5080/api/v1/health`，因為它能直接確認 API site 本身是否正常。
-
-## 4. IIS 建議設定
-
-### 前端
-
-前端 site 指向：
+前端 physical path：
 
 ```text
 C:\inetpub\EverrichRPG\frontend
 ```
 
-前端包內會包含 `web.config`，用於：
+前端站台負責：
 
+- 提供 Vite build 後的靜態檔案
 - SPA fallback
-- 將 `/api/*` 反向代理到 `http://localhost:5080/api/*`
+- 透過 `web.config` 將 `/api/*` 反向代理到 API 站台
+- 提供 `.tmj` / `.tsj` Tiled 地圖與 tileset JSON
 
-因此 Azure IIS 主機需要：
-
-- 安裝 IIS URL Rewrite Module
-- 安裝 Application Request Routing，並啟用 `Proxy`
-
-### API
-
-建議把 API 建成獨立 IIS Site，binding 到本機 port：
+`web.config` 目前會把：
 
 ```text
-http://localhost:5080
+https://www.biudream.com/api/v1/health
 ```
 
-API site physical path 指向：
+反向代理到：
+
+```text
+http://localhost:5080/api/v1/health
+```
+
+如果公開健康檢查回 502，通常代表其中一項有問題：
+
+- API 站台沒有聽在 `localhost:5080`
+- API App Pool 沒有成功啟動
+- IIS 沒安裝或沒啟用 Application Request Routing Proxy
+- URL Rewrite 規則沒有套用
+- 防火牆、NSG 或 HTTPS binding 設定不完整
+
+### API 站台
+
+API physical path：
 
 ```text
 C:\inetpub\EverrichRPG\api
+```
+
+API binding 建議：
+
+```text
+http://localhost:5080
 ```
 
 API App Pool 建議：
@@ -147,51 +128,54 @@ API App Pool 建議：
 Managed pipeline mode: Integrated
 ```
 
-這樣外部網址會是：
+先在 IIS 主機上測試：
 
-```text
-https://你的網域/api/v1/health
+```powershell
+Invoke-WebRequest http://localhost:5080/api/v1/health -UseBasicParsing
 ```
 
-IIS 前端站台會反向代理到：
+這個通過後，再測試公開網址：
 
-```text
-http://localhost:5080/api/v1/health
+```powershell
+Invoke-WebRequest https://www.biudream.com/api/v1/health -UseBasicParsing
 ```
 
-## 5. 後端正式環境變數
+## API 環境變數
 
-在 IIS API App Pool 或站台設定正式環境變數：
+在 API App Pool 或系統環境變數設定：
 
 ```text
 ASPNETCORE_ENVIRONMENT=Production
-ConnectionStrings__GameDatabase=你的正式資料庫連線字串
+ConnectionStrings__GameDatabase=你的資料庫連線字串
 Database__Provider=PostgreSql
 Database__ApplyMigrations=false
-Cors__AllowedOrigins__0=https://你的前端網域
+Cors__AllowedOrigins__0=https://www.biudream.com
 ```
 
-如果你要讓 API 啟動時自動 migration：
+如果要讓 API 啟動時自動套用 migration：
 
 ```text
 Database__ApplyMigrations=true
 ```
 
-正式環境通常建議先手動控管 migration，再部署 API。
+正式環境建議先備份資料庫，再開啟自動 migration。
 
-## 6. 執行部署
+## 健康檢查策略
 
-### 自動部署
+CI/CD 現在有兩層健康檢查：
 
-push 到 `main` 或 `master`：
+1. `Check internal API health`：必要，直接打 `http://localhost:5080/api/v1/health`，用來確認 API 站台本身有起來。
+2. `Check public health endpoint`：選擇性，打 `IIS_HEALTH_URL`，用來確認前端站台、URL Rewrite、ARR Proxy、HTTPS binding 都正常。
+
+如果公開健康檢查失敗但 `IIS_REQUIRE_PUBLIC_HEALTH=false`，workflow 會警告但不會判定部署失敗。
+
+若要公開檢查失敗也讓部署失敗，設定：
 
 ```text
-git push origin main
+IIS_REQUIRE_PUBLIC_HEALTH=true
 ```
 
-就會自動執行完整 CI/CD。
-
-### 手動部署
+## 手動部署
 
 到 GitHub：
 
@@ -199,31 +183,19 @@ git push origin main
 Actions → Azure IIS CI/CD → Run workflow
 ```
 
-如果需要覆蓋 API URL，可以填：
+如果沒有特殊需求，`api_base_url` 留空，讓前端使用 `/api/v1` 即可。
 
-```text
-api_base_url=https://你的網域/api/v1
-```
+## Rollback
 
-## 7. Rollback
-
-每次部署前 workflow 會備份：
+每次部署前會備份目前 IIS 目錄：
 
 ```text
 IIS_BACKUP_ROOT/yyyyMMdd-HHmmss/frontend
 IIS_BACKUP_ROOT/yyyyMMdd-HHmmss/api
 ```
 
-如果部署後有問題：
+需要 rollback 時：
 
-1. 停止 App Pool。
-2. 把備份資料夾內容複製回 IIS 對應資料夾。
-3. 啟動 App Pool。
-
-## 8. 注意事項
-
-- self-hosted runner 的 Windows 帳號需要有 IIS 資料夾寫入權限。
-- runner 帳號需要能執行 `C:\Windows\System32\inetsrv\appcmd.exe`。
-- 部署段使用 Windows 內建 `powershell`，不需要另外安裝 PowerShell 7 `pwsh`。
-- 如果 Health Check 失敗，workflow 會失敗，但目前不會自動 rollback。
-- 若你之後想做自動 rollback，可以再加一個失敗時還原 `BACKUP_PATH` 的 step。
+1. 停止 frontend / api App Pool。
+2. 將備份資料夾複製回 IIS physical path。
+3. 重新啟動 App Pool。
