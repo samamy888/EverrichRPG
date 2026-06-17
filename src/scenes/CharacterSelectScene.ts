@@ -15,9 +15,25 @@ export class CharacterSelectScene extends Phaser.Scene {
   private malePortrait!: Phaser.GameObjects.Sprite;
   private femalePortrait!: Phaser.GameObjects.Sprite;
   private hint!: Phaser.GameObjects.BitmapText;
+  private confirming = false;
   private readonly selectMaleHandler = (): void => this.setSelected("male");
   private readonly selectFemaleHandler = (): void => this.setSelected("female");
   private readonly confirmHandler = (): void => this.confirm();
+  private readonly portraitPointerHandler = (event: PointerEvent): void => {
+    if (!document.documentElement.classList.contains("portrait-touch-layout")) {
+      return;
+    }
+
+    const point = this.getPortraitGamePoint(event);
+    if (!point) return;
+
+    const variant = this.getVariantAtPoint(point.x, point.y);
+    if (!variant) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    this.chooseVariant(variant);
+  };
   private readonly joystickHandler = (event: Event): void => {
     const detail = (
       event as CustomEvent<{
@@ -88,6 +104,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.input.keyboard?.on("keydown-D", this.selectFemaleHandler);
     this.input.keyboard?.on("keydown-ENTER", this.confirmHandler);
     this.input.keyboard?.on("keydown-SPACE", this.confirmHandler);
+    window.addEventListener("pointerdown", this.portraitPointerHandler, true);
     window.addEventListener("prototype:joystick", this.joystickHandler);
     window.addEventListener("prototype:action", this.actionHandler);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -98,6 +115,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       this.input.keyboard?.off("keydown-D", this.selectFemaleHandler);
       this.input.keyboard?.off("keydown-ENTER", this.confirmHandler);
       this.input.keyboard?.off("keydown-SPACE", this.confirmHandler);
+      window.removeEventListener("pointerdown", this.portraitPointerHandler, true);
       window.removeEventListener("prototype:joystick", this.joystickHandler);
       window.removeEventListener("prototype:action", this.actionHandler);
     });
@@ -131,17 +149,41 @@ export class CharacterSelectScene extends Phaser.Scene {
       .setTint(0xffffff)
       .setOrigin(0.5);
 
-    const choose = () => {
-      audioManager.unlock();
-      if (this.selected === variant) {
-        this.confirm();
-      } else {
-        this.setSelected(variant);
-      }
-    };
+    const choose = () => this.chooseVariant(variant);
     card.on("pointerdown", choose);
     portrait.on("pointerdown", choose);
     return card;
+  }
+
+  private chooseVariant(variant: PlayerVariant): void {
+    audioManager.unlock();
+    if (this.selected === variant) {
+      this.confirm();
+    } else {
+      this.setSelected(variant);
+    }
+  }
+
+  private getPortraitGamePoint(event: PointerEvent): { x: number; y: number } | null {
+    const canvas = document.querySelector<HTMLCanvasElement>("#app canvas");
+    const bounds = canvas?.getBoundingClientRect();
+    if (!bounds || bounds.width <= 0 || bounds.height <= 0) return null;
+
+    const screenX = (event.clientX - bounds.left) / bounds.width;
+    const screenY = (event.clientY - bounds.top) / bounds.height;
+    if (screenX < 0 || screenX > 1 || screenY < 0 || screenY > 1) return null;
+
+    return {
+      x: CONFIG.width * screenY,
+      y: CONFIG.height * (1 - screenX)
+    };
+  }
+
+  private getVariantAtPoint(x: number, y: number): PlayerVariant | null {
+    if (y < 78 || y > 242) return null;
+    if (x >= 84 && x <= 216) return "male";
+    if (x >= 264 && x <= 396) return "female";
+    return null;
   }
 
   private setSelected(variant: PlayerVariant): void {
@@ -181,6 +223,8 @@ export class CharacterSelectScene extends Phaser.Scene {
   }
 
   private confirm(): void {
+    if (this.confirming) return;
+    this.confirming = true;
     audioManager.playConfirm();
     this.cameras.main.fadeOut(180, 0, 0, 0);
     this.cameras.main.once(

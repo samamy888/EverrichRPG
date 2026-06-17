@@ -14,6 +14,9 @@ export class TouchControls {
   private readonly actionButton: HTMLButtonElement;
   private readonly runButton: HTMLButtonElement;
   private joystickVector = { x: 0, y: 0, strength: 0 };
+  private stickPointerId: number | null = null;
+  private stickStartX = 0;
+  private stickStartY = 0;
 
   constructor(private readonly options: TouchControlsOptions) {
     this.actionButton = options.root.querySelector(".action-button")!;
@@ -44,13 +47,17 @@ export class TouchControls {
       this.options.root.querySelector<HTMLElement>(".virtual-stick-knob")!;
     const updateStick = (event: PointerEvent): void => {
       const bounds = stick.getBoundingClientRect();
-      const offsetX = event.clientX - (bounds.left + bounds.width / 2);
-      const offsetY = event.clientY - (bounds.top + bounds.height / 2);
+      const offsetX = event.clientX - this.stickStartX;
+      const offsetY = event.clientY - this.stickStartY;
+      const portraitTouchLayout =
+        document.documentElement.classList.contains("portrait-touch-layout");
+      const gameOffsetX = portraitTouchLayout ? offsetY : offsetX;
+      const gameOffsetY = portraitTouchLayout ? -offsetX : offsetY;
       const maxDistance = bounds.width * 0.28;
-      const distance = Math.hypot(offsetX, offsetY);
+      const distance = Math.hypot(gameOffsetX, gameOffsetY);
       const scale = distance > maxDistance ? maxDistance / distance : 1;
-      const x = offsetX * scale;
-      const y = offsetY * scale;
+      const x = gameOffsetX * scale;
+      const y = gameOffsetY * scale;
       const deadZone = bounds.width * 0.11;
       const normalizedLength = Math.hypot(x, y) || 1;
       const strength = Math.max(
@@ -78,6 +85,7 @@ export class TouchControls {
     const releaseStick = (): void => {
       this.options.onJoystick({ x: 0, y: 0, strength: 0 });
       this.joystickVector = { x: 0, y: 0, strength: 0 };
+      this.stickPointerId = null;
       knob.style.transform = "translate(0, 0)";
       stick.classList.remove("is-active");
     };
@@ -86,12 +94,20 @@ export class TouchControls {
       event.preventDefault();
       event.stopPropagation();
       this.options.onUnlockAudio();
+      this.stickPointerId = event.pointerId;
+      this.stickStartX = event.clientX;
+      this.stickStartY = event.clientY;
       stick.setPointerCapture(event.pointerId);
       stick.classList.add("is-active");
       updateStick(event);
     });
     stick.addEventListener("pointermove", (event) => {
-      if (!stick.hasPointerCapture(event.pointerId)) return;
+      if (
+        this.stickPointerId !== event.pointerId ||
+        !stick.hasPointerCapture(event.pointerId)
+      ) {
+        return;
+      }
       event.preventDefault();
       event.stopPropagation();
       updateStick(event);
