@@ -30,9 +30,10 @@ export interface TravelerQuestSave {
 
 export const TRAVELER_QUEST: TravelerQuestDefinition = {
   id: "duty-free-gift-tour",
-  title: "三店伴手禮巡禮",
+  title: "免稅店小巡禮",
   giverShopId: "shop-beauty-01",
-  description: "依照美妝店員的推薦，到三間免稅店各挑一件指定商品，再回來分享成果。",
+  description:
+    "從香氛、伴手禮到明信片，完成一趟輕巧的免稅店巡禮，替旅程留下第一份紀念。",
   objectives: [
     {
       productId: "perfume-travel-10ml",
@@ -41,7 +42,7 @@ export const TRAVELER_QUEST: TravelerQuestDefinition = {
     },
     {
       productId: "food-pineapple-cake-box",
-      label: "台灣鳳梨酥",
+      label: "鳳梨酥禮盒",
       shopId: "shop-liquor-food-01"
     },
     {
@@ -52,7 +53,7 @@ export const TRAVELER_QUEST: TravelerQuestDefinition = {
   ],
   rewardMoney: 300,
   rewardCollectibleId: "airport-shopping-pass",
-  rewardCollectibleName: "機場購物達人徽章"
+  rewardCollectibleName: "EVERRICH 旅程購物章"
 };
 
 const saveKey = `${CONFIG.saveKey}-quest`;

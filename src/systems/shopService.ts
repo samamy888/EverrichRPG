@@ -49,10 +49,15 @@ export class ShopService {
   }
 
   getCartTotal(): number {
-    return Object.entries(this.state.cart).reduce((total, [productId, quantity]) => {
-      const product = SHOP_PRODUCTS.find((candidate) => candidate.id === productId);
-      return total + (product ? getProductSalePrice(product) : 0) * quantity;
-    }, 0);
+    return Object.entries(this.state.cart).reduce(
+      (total, [productId, quantity]) => {
+        const product = SHOP_PRODUCTS.find(
+          (candidate) => candidate.id === productId
+        );
+        return total + (product ? getProductSalePrice(product) : 0) * quantity;
+      },
+      0
+    );
   }
 
   hasPurchased(productId: string): boolean {
@@ -81,11 +86,20 @@ export class ShopService {
 
   checkout(): CheckoutResult {
     const total = this.getCartTotal();
-    if (total <= 0) return { ok: false, message: "購物車目前是空的。" };
-    if (total > this.state.balance) return { ok: false, message: "旅費不足，請調整購物車內容。" };
+    if (total <= 0) {
+      return { ok: false, message: "購物籃還是空的，先挑幾樣商品吧。" };
+    }
+    if (total > this.state.balance) {
+      return {
+        ok: false,
+        message: "旅費不足，先移除部分商品或之後再回來購買。"
+      };
+    }
 
     for (const [productId, quantity] of Object.entries(this.state.cart)) {
-      const existing = this.state.purchasedItems.find((item) => item.productId === productId);
+      const existing = this.state.purchasedItems.find(
+        (item) => item.productId === productId
+      );
       if (existing) existing.quantity += quantity;
       else this.state.purchasedItems.push({ productId, quantity });
     }
@@ -94,7 +108,10 @@ export class ShopService {
     this.state.cart = {};
     this.state.completedCheckouts += 1;
     this.persist();
-    return { ok: true, message: `結帳完成，共支付 NT$ ${total}。商品已放入旅行袋。` };
+    return {
+      ok: true,
+      message: `結帳完成，已扣除 NT$ ${total}，商品已放入旅行袋。`
+    };
   }
 
   credit(amount: number): void {

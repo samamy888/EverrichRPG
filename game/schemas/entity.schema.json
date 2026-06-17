@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://everrich.local/schemas/entity.schema.json",
-  "title": "Everrich RPG Region Entity",
+  "title": "EVERRICH RPG Region Entity",
   "type": "object",
   "additionalProperties": false,
   "required": ["id", "type", "position", "spriteId", "interaction"],

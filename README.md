@@ -1,4 +1,4 @@
-# EverrichRPG Rewrite
+# EVERRICH RPG
 
 Phaser + TypeScript + Vite based rewrite baseline for a modular 2D RPG.
 

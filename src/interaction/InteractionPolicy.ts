@@ -35,7 +35,7 @@ export function getInteractionLabel(
   regionId: RegionId
 ): string {
   if (object.texture === "checkout-counter-base") return "結帳";
-  if (getShopIdForRegion(regionId)) return "選購";
+  if (getShopIdForRegion(regionId)) return "查看";
   if (
     object.texture === "shop-doorway" ||
     object.texture === "curved-duty-free-storefront-v2" ||

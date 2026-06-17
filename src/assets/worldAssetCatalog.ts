@@ -252,6 +252,12 @@ export const WORLD_SPRITESHEET_ASSETS: readonly SpriteSheetAssetDefinition[] = [
       96
     ),
     sheet(
+      `traveler-${variant}-diagonal-sheet`,
+      `/assets/sprites/player-traveler-${variant}-diagonal-v1/sheet-transparent.png`,
+      96,
+      96
+    ),
+    sheet(
       `traveler-${variant}-idle-sheet`,
       `/assets/sprites/player-traveler-${variant}-idle-v1/sheet-transparent.png`,
       96,

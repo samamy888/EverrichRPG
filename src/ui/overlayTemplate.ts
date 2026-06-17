@@ -1,9 +1,9 @@
 export const OVERLAY_TEMPLATE = `
   <section class="prototype-hud">
-    <p class="prototype-title">EVER RICH RPG · PHASE 5</p>
-    <p class="prototype-region">準備進入免稅店</p>
-    <p class="prototype-status">讀取旅客資料中</p>
-    <p class="prototype-quest">任務：尚未接受</p>
+    <p class="prototype-title">EVERRICH RPG · AIRPORT QUEST</p>
+    <p class="prototype-region">準備進入免稅航廈</p>
+    <p class="prototype-status">走路模式 · WASD / 方向鍵移動</p>
+    <p class="prototype-quest">靠近可互動物件時會顯示提示</p>
   </section>
   <section class="dialogue-box" aria-live="polite" hidden>
     <p class="dialogue-title"></p>
@@ -18,7 +18,7 @@ export const OVERLAY_TEMPLATE = `
         <h2>旅客選單</h2>
       </div>
       <nav>
-        <button type="button" data-menu-view="home">總覽</button>
+        <button type="button" data-menu-view="home">旅程總覽</button>
         <button type="button" data-menu-view="map">機場導覽</button>
         <button type="button" data-menu-view="passport">旅客護照</button>
         <button type="button" data-menu-view="bag">旅行袋</button>
@@ -26,7 +26,7 @@ export const OVERLAY_TEMPLATE = `
         <button type="button" data-menu-view="settings">設定</button>
         <button type="button" data-menu-view="controls">操作說明</button>
       </nav>
-      <button class="menu-return-title" type="button" data-menu-action="return-title">回到角色選擇</button>
+      <button class="menu-return-title" type="button" data-menu-action="return-title">回到主畫面</button>
     </aside>
     <main class="game-menu-main">
       <button class="menu-close" type="button" data-menu-action="close" aria-label="關閉選單">×</button>
@@ -42,33 +42,33 @@ export const OVERLAY_TEMPLATE = `
         <p class="shop-welcome"></p>
         <p class="shop-clerk"></p>
       </div>
-      <button class="shop-close" type="button" aria-label="關閉商店">×</button>
+      <button class="shop-close" type="button" aria-label="離開商店">×</button>
     </header>
     <div class="shop-content">
       <div class="shop-products">
         <section class="quest-panel"></section>
-        <h3>商品</h3>
+        <h3>商品清單</h3>
         <div class="product-list"></div>
       </div>
       <aside class="shop-cart">
         <div class="shop-balance">旅費 <strong>NT$ <span></span></strong></div>
-        <h3>購物車</h3>
+        <h3>購物籃</h3>
         <div class="cart-list"></div>
         <div class="cart-total">合計 <strong>NT$ <span>0</span></strong></div>
         <button class="checkout-button" type="button">結帳</button>
         <p class="checkout-message" aria-live="polite"></p>
-        <h3>旅行袋</h3>
+        <h3>已購買</h3>
         <div class="purchased-list"></div>
       </aside>
     </div>
   </section>
-  <section class="touch-controls" aria-label="行動裝置操作">
-    <div class="virtual-stick" role="group" aria-label="虛擬方向蘑菇頭">
+  <section class="touch-controls" aria-label="手機虛擬操作">
+    <div class="virtual-stick" role="group" aria-label="虛擬蘑菇頭方向控制">
       <div class="virtual-stick-ring" aria-hidden="true"></div>
       <div class="virtual-stick-knob" aria-hidden="true"></div>
     </div>
     <div class="mobile-actions">
-      <button class="back-button" data-action="back" aria-label="切換跑步">B</button>
+      <button class="back-button" data-action="back" aria-label="切換走路與跑步">B</button>
       <button class="action-button" data-action="action" aria-label="互動">A</button>
     </div>
   </section>

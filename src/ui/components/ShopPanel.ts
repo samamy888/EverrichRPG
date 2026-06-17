@@ -5,6 +5,7 @@ import {
   getShopProducts,
   isProductPromotionActive,
   SHOP_PRODUCTS,
+  type ProductCategory,
   type ShopId
 } from "../../data/shopCatalog";
 import { audioManager } from "../../systems/audioManager";
@@ -59,6 +60,7 @@ export class ShopPanel {
     this.activeShopId = shopId;
     this.focusProductId = focusProductId;
     this.message.textContent = "";
+    this.message.classList.remove("is-success");
     this.render();
     this.panel.hidden = false;
   }
@@ -75,22 +77,24 @@ export class ShopPanel {
     if (!this.activeShopId) return;
     const shop = getShop(this.activeShopId);
     if (!shop) return;
+
     const state = shopService.getState();
     const products = getShopProducts(shop.id);
     this.title.textContent = shop.name;
     this.dataSource.textContent =
       getShopCatalogSource() === "api"
-        ? "商品資料：後端 API"
+        ? "商品資料：已連線後端"
         : "商品資料：本機備援";
     this.dataSource.classList.toggle(
       "is-fallback",
       getShopCatalogSource() === "local"
     );
     this.welcome.textContent = shop.welcome;
-    this.clerk.textContent = `店員推薦：${shop.clerkMessage}`;
+    this.clerk.textContent = `店員提醒：${shop.clerkMessage}`;
     this.balance.textContent = String(state.balance);
     this.total.textContent = String(shopService.getCartTotal());
     this.renderQuest();
+
     this.products.innerHTML = products
       .map((product) => {
         const cartQuantity = state.cart[product.id] ?? 0;
@@ -102,20 +106,21 @@ export class ShopPanel {
         const hasPromotion = isProductPromotionActive(product);
         const promotionPeriod =
           product.promotionStartAt && product.promotionEndAt
-            ? `${this.formatDate(product.promotionStartAt)}－${this.formatDate(
+            ? `${this.formatDate(product.promotionStartAt)}～${this.formatDate(
                 product.promotionEndAt
               )}`
             : null;
         const promotionLabel = hasPromotion
-          ? `特價期間：${promotionPeriod}`
+          ? `限時特價：${promotionPeriod}`
           : product.promotionStartAt &&
               product.promotionEndAt &&
               Date.now() < Date.parse(product.promotionStartAt)
-            ? `特價預告：${promotionPeriod}`
+            ? `即將特價：${promotionPeriod}`
             : product.promotionEndAt &&
                 Date.now() > Date.parse(product.promotionEndAt)
               ? "特價已結束"
-              : "目前無促銷";
+              : "一般售價";
+
         return `
           <article class="product-card${product.id === this.focusProductId ? " is-focused" : ""}">
             <div class="product-icon">${this.getCategoryIcon(product.category)}</div>
@@ -128,7 +133,7 @@ export class ShopPanel {
                 <span>促銷價 <b class="${hasPromotion ? "promotion-price" : ""}">${
                   hasPromotion ? `NT$ ${salePrice}` : "—"
                 }</b></span>
-                <span>庫存數 <b class="${remainingStock === 0 ? "out-of-stock" : ""}">${remainingStock}</b></span>
+                <span>庫存 <b class="${remainingStock === 0 ? "out-of-stock" : ""}">${remainingStock}</b></span>
               </div>
               <small class="promotion-period${hasPromotion ? " is-active" : ""}">${promotionLabel}</small>
             </div>
@@ -138,23 +143,25 @@ export class ShopPanel {
           </article>`;
       })
       .join("");
+
     const cartEntries = Object.entries(state.cart);
     this.cart.innerHTML =
       cartEntries.length === 0
-        ? `<p class="cart-empty">購物車還是空的。</p>`
+        ? `<p class="cart-empty">購物籃還是空的。</p>`
         : cartEntries
             .map(([productId, quantity]) => {
               const product = SHOP_PRODUCTS.find(
                 (candidate) => candidate.id === productId
               );
               return product
-                ? `<div class="cart-row"><span>${product.name} × ${quantity}</span><button type="button" data-remove-product="${product.id}" aria-label="移除一件">−</button></div>`
+                ? `<div class="cart-row"><span>${product.name} × ${quantity}</span><button type="button" data-remove-product="${product.id}" aria-label="移除一件商品">−</button></div>`
                 : "";
             })
             .join("");
+
     this.purchased.innerHTML =
       state.purchasedItems.length === 0
-        ? `<p class="cart-empty">結帳後，商品會收進旅行袋。</p>`
+        ? `<p class="cart-empty">完成結帳後，商品會放進旅行袋。</p>`
         : state.purchasedItems
             .map((item) => {
               const product = SHOP_PRODUCTS.find(
@@ -176,27 +183,30 @@ export class ShopPanel {
       .map(
         (objective) => `<li class="${
           completedIds.includes(objective.productId) ? "is-complete" : ""
-        }">${completedIds.includes(objective.productId) ? "✓" : "○"} ${
+        }">${completedIds.includes(objective.productId) ? "✓" : "□"} ${
           objective.label
         }</li>`
       )
       .join("");
+
     let action = "";
     if (state.status === "available" && isGiverShop) {
-      action = `<button type="button" data-quest-action="start">接受推薦</button>`;
+      action = `<button type="button" data-quest-action="start">接下任務</button>`;
     } else if (state.status === "ready" && isGiverShop) {
-      action = `<button type="button" data-quest-action="complete">回報並領獎</button>`;
+      action = `<button type="button" data-quest-action="complete">回報任務</button>`;
     }
+
     const statusCopy = {
       available: isGiverShop
-        ? "店員有一個旅行推薦。"
-        : "先到美妝香氛店找店員。",
+        ? "店員看起來有一個小小的購物委託。"
+        : "先到美妝香氛免稅店看看，或許有人需要幫忙。",
       active: `進度 ${completedIds.length}/${TRAVELER_QUEST.objectives.length}`,
       ready: isGiverShop
-        ? "商品都買齊了，可以回報。"
-        : "回美妝香氛店找店員。",
-      completed: `已完成，獲得 ${TRAVELER_QUEST.rewardCollectibleName}。`
+        ? "巡禮商品都準備好了，可以回報任務。"
+        : "商品都買齊了，回美妝香氛免稅店回報吧。",
+      completed: `已完成，取得 ${TRAVELER_QUEST.rewardCollectibleName}。`
     }[state.status];
+
     this.quest.innerHTML = `<div>
       <p class="quest-kicker">TRAVELER QUEST</p>
       <h3>${TRAVELER_QUEST.title}</h3><p>${statusCopy}</p>
@@ -224,7 +234,8 @@ export class ShopPanel {
       if (!button?.dataset.addProduct) return;
       shopService.addToCart(button.dataset.addProduct);
       audioManager.playConfirm();
-      this.message.textContent = "已加入購物車。";
+      this.message.textContent = "已加入購物籃。";
+      this.message.classList.remove("is-success");
     });
     this.cart.addEventListener("click", (event) => {
       const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
@@ -233,6 +244,7 @@ export class ShopPanel {
       if (!button?.dataset.removeProduct) return;
       shopService.removeFromCart(button.dataset.removeProduct);
       this.message.textContent = "";
+      this.message.classList.remove("is-success");
     });
     this.quest.addEventListener("click", (event) => {
       const action = (event.target as HTMLElement)
@@ -241,13 +253,14 @@ export class ShopPanel {
       if (action === "start") {
         travelerQuestService.start();
         audioManager.playConfirm();
-        this.message.textContent = "已接受店員推薦任務。";
+        this.message.textContent = "已接下任務：完成一趟免稅店小巡禮。";
+        this.message.classList.add("is-success");
       }
       if (action === "complete" && this.activeShopId) {
         const completed = travelerQuestService.complete(this.activeShopId);
         if (completed) {
           audioManager.playConfirm();
-          this.message.textContent = `任務完成！獲得 NT$ ${TRAVELER_QUEST.rewardMoney} 與「${TRAVELER_QUEST.rewardCollectibleName}」。`;
+          this.message.textContent = `任務完成！獲得 NT$ ${TRAVELER_QUEST.rewardMoney} 與 ${TRAVELER_QUEST.rewardCollectibleName}。`;
           this.message.classList.add("is-success");
         }
       }
@@ -257,13 +270,14 @@ export class ShopPanel {
     });
   }
 
-  private getCategoryIcon(category: string): string {
-    if (category === "perfume") return "✦";
-    if (category === "liquor") return "◒";
-    if (category === "food") return "◆";
+  private getCategoryIcon(category: ProductCategory): string {
+    if (category === "beauty") return "✦";
+    if (category === "perfume") return "❀";
+    if (category === "liquor") return "◆";
+    if (category === "food") return "●";
     if (category === "souvenir") return "★";
     if (category === "travel") return "▣";
-    return "●";
+    return "•";
   }
 
   private formatDate(value: string): string {

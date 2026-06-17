@@ -1,7 +1,9 @@
 import Phaser from "phaser";
 import {
   getPlayerIdleFrame,
-  getPlayerMovementAnimationKey
+  getPlayerMovementAnimationKey,
+  isDiagonalPlayerFacing,
+  type PlayerAnimationFacing
 } from "../animation/animationCatalog";
 import { CONFIG } from "../config";
 import type { Facing, RegionData } from "../data/prototypeRegions";
@@ -22,6 +24,7 @@ export interface JoystickVector {
 
 export interface MovementInput extends JoystickVector {
   facing: Facing;
+  animationFacing: PlayerAnimationFacing;
   key: string;
 }
 
@@ -65,6 +68,7 @@ export class PlayerMovementController {
   private navigationComplete: (() => void) | null = null;
   private navigationCancelled: (() => void) | null = null;
   private suppressNextPointerClick = false;
+  private animationFacing: PlayerAnimationFacing = "down";
   private moving = false;
   private heldDirection: string | null = null;
   private repeatMoveAt = 0;
@@ -249,18 +253,21 @@ export class PlayerMovementController {
         : x < 0
           ? "left"
           : "right";
+    const animationFacing = this.getAnimationFacing(x, y, facing);
     const angle = Math.atan2(y, x);
     return {
       x,
       y,
       strength,
       facing,
+      animationFacing,
       key: `${Math.round(angle * 12)},${Math.round(strength * 4)}`
     };
   }
 
   private tryMove(movement: MovementInput): void {
     this.options.setFacing(movement.facing);
+    this.animationFacing = movement.animationFacing;
     this.options.onBeforeMove();
     if (this.moving || this.options.isPaused()) return;
 
@@ -343,10 +350,12 @@ export class PlayerMovementController {
   }
 
   private playMovementAnimation(): void {
-    const texture = `traveler-${this.options.playerVariant}-sheet`;
+    const texture = isDiagonalPlayerFacing(this.animationFacing)
+      ? `traveler-${this.options.playerVariant}-diagonal-sheet`
+      : `traveler-${this.options.playerVariant}-sheet`;
     const key = getPlayerMovementAnimationKey(
       this.options.playerVariant,
-      this.options.getFacing(),
+      this.animationFacing,
       this.options.isRunning()
     );
     if (this.player.texture.key !== texture) this.player.setTexture(texture);
@@ -416,5 +425,18 @@ export class PlayerMovementController {
       pointer.y >= 8 &&
       pointer.y <= 36
     );
+  }
+
+  private getAnimationFacing(
+    x: number,
+    y: number,
+    fallback: Facing
+  ): PlayerAnimationFacing {
+    if (Math.abs(x) < 0.35 || Math.abs(y) < 0.35) return fallback;
+    if (y > 0 && x < 0) return "down-left";
+    if (y > 0 && x > 0) return "down-right";
+    if (y < 0 && x < 0) return "up-left";
+    if (y < 0 && x > 0) return "up-right";
+    return fallback;
   }
 }

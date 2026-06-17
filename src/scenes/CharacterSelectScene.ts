@@ -64,7 +64,12 @@ export class CharacterSelectScene extends Phaser.Scene {
       .setTint(0xfff2c7)
       .setOrigin(0.5);
 
-    this.maleCard = this.createCard(150, "男旅客", "character-select-male", "male");
+    this.maleCard = this.createCard(
+      150,
+      "男旅客",
+      "character-select-male",
+      "male"
+    );
     this.femaleCard = this.createCard(
       330,
       "女旅客",
@@ -140,10 +145,19 @@ export class CharacterSelectScene extends Phaser.Scene {
   }
 
   private renderSelection(): void {
-    this.maleCard.setStrokeStyle(4, this.selected === "male" ? 0xffd166 : 0x59727d);
-    this.femaleCard.setStrokeStyle(4, this.selected === "female" ? 0xffd166 : 0x59727d);
+    this.maleCard.setStrokeStyle(
+      4,
+      this.selected === "male" ? 0xffd166 : 0x59727d
+    );
+    this.femaleCard.setStrokeStyle(
+      4,
+      this.selected === "female" ? 0xffd166 : 0x59727d
+    );
     this.malePortrait
-      .setDisplaySize(this.selected === "male" ? 88 : 80, this.selected === "male" ? 88 : 80)
+      .setDisplaySize(
+        this.selected === "male" ? 88 : 80,
+        this.selected === "male" ? 88 : 80
+      )
       .setAlpha(this.selected === "male" ? 1 : 0.72)
       .setY(this.selected === "male" ? 148 : 152);
     this.malePortrait.anims.timeScale = this.selected === "male" ? 1.15 : 0.72;
@@ -154,7 +168,8 @@ export class CharacterSelectScene extends Phaser.Scene {
       )
       .setAlpha(this.selected === "female" ? 1 : 0.72)
       .setY(this.selected === "female" ? 148 : 152);
-    this.femalePortrait.anims.timeScale = this.selected === "female" ? 1.15 : 0.72;
+    this.femalePortrait.anims.timeScale =
+      this.selected === "female" ? 1.15 : 0.72;
     this.hint.setText(
       `${this.selected === "male" ? "男旅客" : "女旅客"} · A / Enter 開始`
     );
@@ -163,14 +178,17 @@ export class CharacterSelectScene extends Phaser.Scene {
   private confirm(): void {
     audioManager.playConfirm();
     this.cameras.main.fadeOut(180, 0, 0, 0);
-    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-      this.scene.start("WorldScene", {
-        version: 1,
-        playerVariant: this.selected,
-        regionId: "duty-free-entrance",
-        spawnId: "start",
-        facing: "up"
-      });
-    });
+    this.cameras.main.once(
+      Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
+      () => {
+        this.scene.start("WorldScene", {
+          version: 1,
+          playerVariant: this.selected,
+          regionId: "duty-free-entrance",
+          spawnId: "start",
+          facing: "up"
+        });
+      }
+    );
   }
 }

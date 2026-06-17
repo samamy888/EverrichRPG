@@ -2,11 +2,27 @@ import type { Facing, MapObjectTexture } from "../data/prototypeRegions";
 import type { PlayerVariant } from "../systems/prototypeSave";
 import type { AnimationDefinition } from "./AnimationDefinition";
 
+export type PlayerAnimationFacing =
+  | Facing
+  | "down-left"
+  | "down-right"
+  | "up-left"
+  | "up-right";
+
 const FACING_ROWS: Readonly<Record<Facing, number>> = {
   down: 0,
   left: 1,
   right: 2,
   up: 3
+};
+
+const DIAGONAL_FACING_ROWS: Readonly<
+  Record<Exclude<PlayerAnimationFacing, Facing>, number>
+> = {
+  "down-left": 0,
+  "down-right": 1,
+  "up-left": 2,
+  "up-right": 3
 };
 
 const OBJECT_ANIMATION_BY_TEXTURE: Readonly<
@@ -104,10 +120,16 @@ export function getPlayerIdleFrame(facing: Facing): number {
 
 export function getPlayerMovementAnimationKey(
   variant: PlayerVariant,
-  facing: Facing,
+  facing: PlayerAnimationFacing,
   running: boolean
 ): string {
   return `${variant}-${facing}-${running ? "run" : "walk"}`;
+}
+
+export function isDiagonalPlayerFacing(
+  facing: PlayerAnimationFacing
+): facing is Exclude<PlayerAnimationFacing, Facing> {
+  return facing in DIAGONAL_FACING_ROWS;
 }
 
 function createPlayerAnimationDefinitions(): AnimationDefinition[] {
@@ -123,6 +145,23 @@ function createPlayerAnimationDefinitions(): AnimationDefinition[] {
         definitions.push({
           key: `${variant}-${facing}-${speed}`,
           texture: `traveler-${variant}-sheet`,
+          startFrame: row * 4,
+          endFrame: row * 4 + 3,
+          frameRate,
+          repeat: -1
+        });
+      }
+    }
+    for (const [facing, row] of Object.entries(DIAGONAL_FACING_ROWS) as Array<
+      [Exclude<PlayerAnimationFacing, Facing>, number]
+    >) {
+      for (const [speed, frameRate] of [
+        ["walk", 13],
+        ["run", 22]
+      ] as const) {
+        definitions.push({
+          key: `${variant}-${facing}-${speed}`,
+          texture: `traveler-${variant}-diagonal-sheet`,
           startFrame: row * 4,
           endFrame: row * 4 + 3,
           frameRate,

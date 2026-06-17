@@ -8,6 +8,7 @@ import {
   CHARACTER_SELECT_ANIMATION_DEFINITIONS,
   getPlayerIdleFrame,
   getPlayerMovementAnimationKey,
+  isDiagonalPlayerFacing,
   resolveObjectAnimation,
   WORLD_ANIMATION_DEFINITIONS
 } from "./animationCatalog";
@@ -62,6 +63,10 @@ describe("AnimationRegistry", () => {
     expect(getPlayerMovementAnimationKey("female", "left", true)).toBe(
       "female-left-run"
     );
+    expect(getPlayerMovementAnimationKey("male", "up-right", false)).toBe(
+      "male-up-right-walk"
+    );
+    expect(isDiagonalPlayerFacing("up-right")).toBe(true);
     expect(getPlayerIdleFrame("up")).toBe(3);
   });
 });

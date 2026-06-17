@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://everrich.local/schemas/region.schema.json",
-  "title": "Everrich RPG Region",
+  "title": "EVERRICH RPG Region",
   "type": "object",
   "additionalProperties": false,
   "required": [

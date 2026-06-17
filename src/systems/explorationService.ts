@@ -20,9 +20,9 @@ export interface ExplorationSave {
 }
 
 export const REGION_LABELS: Record<RegionId, string> = {
-  "duty-free-entrance": "免稅商店入口區",
+  "duty-free-entrance": "免稅商店街入口",
   "security-check": "安全檢查區",
-  "departure-hall": "中央出境大廳",
+  "departure-hall": "三樓出境大廳",
   "information-core": "旅客服務中心",
   "airport-facilities": "機場設施區",
   "duty-free-central": "中央免稅商店街",
@@ -72,17 +72,24 @@ export class ExplorationService {
 
   meetNpc(object: MapObjectData): void {
     const isNpc =
-      object.texture.startsWith("clerk-") || object.texture.startsWith("traveler-");
+      object.texture.startsWith("clerk-") ||
+      object.texture.startsWith("traveler-");
     if (!isNpc || this.state.metNpcIds.includes(object.id)) return;
     this.state.metNpcIds.push(object.id);
     this.persist();
   }
 
-  discoverCollectible(regionId: RegionId, objectId: string): HiddenCollectible | null {
+  discoverCollectible(
+    regionId: RegionId,
+    objectId: string
+  ): HiddenCollectible | null {
     const collectible = HIDDEN_COLLECTIBLES.find(
-      (candidate) => candidate.regionId === regionId && candidate.objectId === objectId
+      (candidate) =>
+        candidate.regionId === regionId && candidate.objectId === objectId
     );
-    if (!collectible || this.state.collectibleIds.includes(collectible.id)) return null;
+    if (!collectible || this.state.collectibleIds.includes(collectible.id)) {
+      return null;
+    }
     this.state.collectibleIds.push(collectible.id);
     this.persist();
     return collectible;
@@ -93,7 +100,9 @@ export class ExplorationService {
     const npcPoints = this.state.metNpcIds.length;
     const collectiblePoints = this.state.collectibleIds.length;
     const total = REGION_ORDER.length + 11 + HIDDEN_COLLECTIBLES.length;
-    return Math.round(((regionPoints + npcPoints + collectiblePoints) / total) * 100);
+    return Math.round(
+      ((regionPoints + npcPoints + collectiblePoints) / total) * 100
+    );
   }
 
   reset(): void {

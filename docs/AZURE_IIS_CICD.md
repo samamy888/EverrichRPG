@@ -1,6 +1,6 @@
 # Azure IIS CI/CD 部署說明
 
-這份文件說明如何把 Everrich RPG 部署到 Azure Windows VM + IIS，並透過 GitHub Actions self-hosted runner 自動建置、發布與健康檢查。
+這份文件說明如何把 EVERRICH RPG 部署到 Azure Windows VM + IIS，並透過 GitHub Actions self-hosted runner 自動建置、發布與健康檢查。
 
 ## 部署架構
 

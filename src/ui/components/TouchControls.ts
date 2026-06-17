@@ -33,7 +33,7 @@ export class TouchControls {
     this.runButton.textContent = detail.running ? "RUN" : "B";
     this.runButton.setAttribute(
       "aria-label",
-      detail.running ? "目前為跑步" : "切換跑步"
+      detail.running ? "切換為走路" : "切換為跑步"
     );
   }
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://everrich.local/schemas/portal.schema.json",
-  "title": "Everrich RPG Portal",
+  "title": "EVERRICH RPG Portal",
   "type": "object",
   "additionalProperties": false,
   "required": ["id", "type", "bounds", "destination", "transition"],

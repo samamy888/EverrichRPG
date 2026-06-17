@@ -64,9 +64,9 @@ export class DialoguePanel {
       ? "W / S 選擇 · A / Enter 確認"
       : detail.complete
         ? detail.page < detail.pageCount
-          ? "▼  A / Enter 下一頁"
-          : "▼  A / Enter 結束"
-        : "A / Enter 快速顯示";
+          ? "A / Enter / 點擊：下一句"
+          : "A / Enter / 點擊：結束"
+        : "A / Enter：快速顯示";
     this.next.classList.toggle("is-complete", detail.complete);
     this.panel.hidden = false;
   }

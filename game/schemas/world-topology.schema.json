@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://everrich.local/schemas/world-topology.schema.json",
-  "title": "Everrich RPG World Topology",
+  "title": "EVERRICH RPG World Topology",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "startRegionId", "regions", "connections"],

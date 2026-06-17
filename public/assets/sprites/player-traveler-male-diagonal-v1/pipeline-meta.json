@@ -1,0 +1,34 @@
+{
+  "input": "D:\\Project\\EverrichRPG\\public\\assets\\sprites\\player-traveler-male-v1\\sheet-transparent.png",
+  "output": "D:\\Project\\EverrichRPG\\public\\assets\\sprites\\player-traveler-male-diagonal-v1\\sheet-transparent.png",
+  "method": "deterministic assembly from accepted cardinal walk frames",
+  "rows": 4,
+  "cols": 4,
+  "frameWidth": 96,
+  "frameHeight": 96,
+  "directions": [
+    "down-left",
+    "down-right",
+    "up-left",
+    "up-right"
+  ],
+  "frames": [
+    "traveler-male-diagonal-1.png",
+    "traveler-male-diagonal-2.png",
+    "traveler-male-diagonal-3.png",
+    "traveler-male-diagonal-4.png",
+    "traveler-male-diagonal-5.png",
+    "traveler-male-diagonal-6.png",
+    "traveler-male-diagonal-7.png",
+    "traveler-male-diagonal-8.png",
+    "traveler-male-diagonal-9.png",
+    "traveler-male-diagonal-10.png",
+    "traveler-male-diagonal-11.png",
+    "traveler-male-diagonal-12.png",
+    "traveler-male-diagonal-13.png",
+    "traveler-male-diagonal-14.png",
+    "traveler-male-diagonal-15.png",
+    "traveler-male-diagonal-16.png"
+  ],
+  "idlePolicy": "runtime uses traveler-male-idle-sheet when movement stops"
+}

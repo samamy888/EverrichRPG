@@ -1,0 +1,1 @@
+Deterministic diagonal-safe male sheet assembled from accepted cardinal male walking frames. Rows: down-left, down-right, up-left, up-right. Stop/idle uses cardinal idle sheet.
