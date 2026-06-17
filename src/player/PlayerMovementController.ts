@@ -72,6 +72,8 @@ export class PlayerMovementController {
   private moving = false;
   private heldDirection: string | null = null;
   private repeatMoveAt = 0;
+  private lastUpdateAt = 0;
+  private lastFootstepAt = 0;
 
   constructor(options: PlayerMovementControllerOptions) {
     this.options = options;
@@ -103,6 +105,9 @@ export class PlayerMovementController {
     if (Phaser.Input.Keyboard.JustDown(this.runKey)) {
       this.toggleMovementMode();
     }
+    const deltaSeconds =
+      this.lastUpdateAt > 0 ? Math.min((time - this.lastUpdateAt) / 1000, 0.05) : 0;
+    this.lastUpdateAt = time;
     if (this.options.isPaused()) return;
 
     const movement = this.readMovement();
@@ -112,6 +117,12 @@ export class PlayerMovementController {
       if (!this.moving && this.player.anims.isPlaying) this.setIdleFrame();
       return;
     }
+
+    if (this.navigationPath.length === 0 && deltaSeconds > 0) {
+      this.moveContinuously(movement, deltaSeconds, time);
+      return;
+    }
+
     if (movement.key !== this.heldDirection) {
       this.heldDirection = movement.key;
       this.tryMove(movement);
@@ -139,6 +150,7 @@ export class PlayerMovementController {
     this.cancelNavigation();
     this.heldDirection = null;
     this.repeatMoveAt = 0;
+    this.lastFootstepAt = 0;
   }
 
   toggleMovementMode(): void {
@@ -321,6 +333,67 @@ export class PlayerMovementController {
         this.options.onAfterMove();
       }
     });
+  }
+
+  private moveContinuously(
+    movement: MovementInput,
+    deltaSeconds: number,
+    time: number
+  ): void {
+    this.options.setFacing(movement.facing);
+    this.animationFacing = movement.animationFacing;
+    this.options.onBeforeMove();
+    if (this.moving || this.options.isPaused()) return;
+
+    const speed = this.options.isRunning() ? 168 : 112;
+    const distance = speed * Phaser.Math.Clamp(movement.strength, 0.35, 1) * deltaSeconds;
+    const targetX = this.player.x + movement.x * distance;
+    const targetY = this.player.y + movement.y * distance;
+    const moved = this.moveWithSlide(targetX, targetY);
+
+    if (!moved) {
+      this.setIdleFrame();
+      this.options.onAfterMove();
+      return;
+    }
+
+    this.playMovementAnimation();
+    this.player.setDepth(this.player.y);
+    if (time - this.lastFootstepAt >= (this.options.isRunning() ? 180 : 260)) {
+      this.lastFootstepAt = time;
+      this.options.playFootstep(this.options.isRunning());
+    }
+    this.options.onAfterMove();
+  }
+
+  private moveWithSlide(targetX: number, targetY: number): boolean {
+    if (!this.isBlocked(targetX, targetY)) {
+      this.player.setPosition(targetX, targetY);
+      return true;
+    }
+
+    const canMoveX = !this.isBlocked(targetX, this.player.y);
+    const canMoveY = !this.isBlocked(this.player.x, targetY);
+
+    if (canMoveX && canMoveY) {
+      const deltaX = Math.abs(targetX - this.player.x);
+      const deltaY = Math.abs(targetY - this.player.y);
+      if (deltaX >= deltaY) this.player.x = targetX;
+      else this.player.y = targetY;
+      return true;
+    }
+
+    if (canMoveX) {
+      this.player.x = targetX;
+      return true;
+    }
+
+    if (canMoveY) {
+      this.player.y = targetY;
+      return true;
+    }
+
+    return false;
   }
 
   private isBlocked(x: number, y: number): boolean {

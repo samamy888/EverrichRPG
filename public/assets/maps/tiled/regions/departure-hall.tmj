@@ -3465,7 +3465,7 @@
         },
         {
           "gid": 127,
-          "height": 80,
+          "height": 48,
           "id": 38,
           "name": "departure-luggage-carts",
           "opacity": 1,
@@ -3478,24 +3478,24 @@
             {
               "name": "label",
               "type": "string",
-              "value": "行李推車"
+              "value": "\u884c\u674e\u63a8\u8eca"
             },
             {
               "name": "interactionTitle",
               "type": "string",
-              "value": "行李推車"
+              "value": "\u884c\u674e\u63a8\u8eca"
             },
             {
               "name": "interactionLines",
               "type": "string",
-              "value": "[\"推車整齊地疊放在一起。\"]"
+              "value": "[\"\u63a8\u8eca\u6574\u9f4a\u5730\u758a\u653e\u5728\u4e00\u8d77\uff0c\u9069\u5408\u653e\u7f6e\u5927\u578b\u884c\u674e\u3002\"]"
             }
           ],
           "rotation": 0,
           "type": "",
           "visible": true,
-          "width": 80,
-          "x": 592,
+          "width": 76,
+          "x": 594,
           "y": 400
         }
       ]
@@ -3847,8 +3847,8 @@
           "rotation": 0,
           "type": "",
           "visible": true,
-          "width": 40,
-          "x": 612,
+          "width": 28,
+          "x": 618,
           "y": 384
         }
       ]

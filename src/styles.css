@@ -188,14 +188,14 @@ button {
 
 .dialogue-title {
   color: #8b562b;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
 }
 
 .dialogue-text {
   margin-top: 5px;
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: 18px;
+  line-height: 1.7;
 }
 
 .dialogue-next {
@@ -1128,12 +1128,12 @@ html.title-screen .mobile-actions {
 }
 
 .dialogue-box .dialogue-title {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .dialogue-box .dialogue-text {
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: 18px;
+  line-height: 1.7;
 }
 
 .dialogue-box .dialogue-next {

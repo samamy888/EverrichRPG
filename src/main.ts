@@ -71,7 +71,7 @@ const bootstrap = async (): Promise<void> => {
     backgroundColor: "#101820",
     pixelArt: true,
     antialias: false,
-    roundPixels: true,
+    roundPixels: false,
     physics: {
       default: "arcade",
       arcade: {

@@ -299,7 +299,7 @@ export class WorldScene extends Phaser.Scene {
     this.createInteractionHint();
     this.debugGraphics = this.add.graphics().setDepth(100).setVisible(false);
 
-    this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
+    this.cameras.main.startFollow(this.player, true, 1, 1);
     this.portalReadyAt = this.time.now + CONFIG.portalCooldownMs;
     this.updateProximityLabels();
     this.updateInteractionHint();
