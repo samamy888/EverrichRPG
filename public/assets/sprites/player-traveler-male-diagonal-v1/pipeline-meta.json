@@ -1,34 +1,327 @@
 {
-  "input": "D:\\Project\\EverrichRPG\\public\\assets\\sprites\\player-traveler-male-v1\\sheet-transparent.png",
-  "output": "D:\\Project\\EverrichRPG\\public\\assets\\sprites\\player-traveler-male-diagonal-v1\\sheet-transparent.png",
-  "method": "deterministic assembly from accepted cardinal walk frames",
-  "rows": 4,
-  "cols": 4,
-  "frameWidth": 96,
-  "frameHeight": 96,
-  "directions": [
-    "down-left",
-    "down-right",
-    "up-left",
-    "up-right"
+  "generatedAt": "2026-06-18T00:33:42+0800",
+  "source": "image_gen + PIL chroma-key/postprocess",
+  "rawSheet": "raw-sheet.png",
+  "sheet": "sheet-transparent.png",
+  "cellSize": [
+    96,
+    96
   ],
+  "layout": {
+    "columns": 4,
+    "rows": [
+      "down-left",
+      "down-right",
+      "up-left",
+      "up-right"
+    ]
+  },
+  "targetCharacterHeight": 76,
+  "baseline": 88,
   "frames": [
-    "traveler-male-diagonal-1.png",
-    "traveler-male-diagonal-2.png",
-    "traveler-male-diagonal-3.png",
-    "traveler-male-diagonal-4.png",
-    "traveler-male-diagonal-5.png",
-    "traveler-male-diagonal-6.png",
-    "traveler-male-diagonal-7.png",
-    "traveler-male-diagonal-8.png",
-    "traveler-male-diagonal-9.png",
-    "traveler-male-diagonal-10.png",
-    "traveler-male-diagonal-11.png",
-    "traveler-male-diagonal-12.png",
-    "traveler-male-diagonal-13.png",
-    "traveler-male-diagonal-14.png",
-    "traveler-male-diagonal-15.png",
-    "traveler-male-diagonal-16.png"
-  ],
-  "idlePolicy": "runtime uses traveler-male-idle-sheet when movement stops"
+    {
+      "file": "traveler-male-diagonal-1.png",
+      "row": 0,
+      "col": 0,
+      "source_bbox": [
+        97,
+        46,
+        232,
+        285
+      ],
+      "target_size": [
+        43,
+        76
+      ],
+      "anchor": [
+        26,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-2.png",
+      "row": 0,
+      "col": 1,
+      "source_bbox": [
+        87,
+        49,
+        219,
+        286
+      ],
+      "target_size": [
+        42,
+        76
+      ],
+      "anchor": [
+        27,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-3.png",
+      "row": 0,
+      "col": 2,
+      "source_bbox": [
+        86,
+        49,
+        220,
+        286
+      ],
+      "target_size": [
+        43,
+        76
+      ],
+      "anchor": [
+        26,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-4.png",
+      "row": 0,
+      "col": 3,
+      "source_bbox": [
+        79,
+        49,
+        214,
+        286
+      ],
+      "target_size": [
+        43,
+        76
+      ],
+      "anchor": [
+        26,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-5.png",
+      "row": 1,
+      "col": 0,
+      "source_bbox": [
+        96,
+        28,
+        229,
+        267
+      ],
+      "target_size": [
+        42,
+        76
+      ],
+      "anchor": [
+        27,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-6.png",
+      "row": 1,
+      "col": 1,
+      "source_bbox": [
+        87,
+        28,
+        217,
+        266
+      ],
+      "target_size": [
+        42,
+        76
+      ],
+      "anchor": [
+        27,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-7.png",
+      "row": 1,
+      "col": 2,
+      "source_bbox": [
+        86,
+        28,
+        218,
+        266
+      ],
+      "target_size": [
+        42,
+        76
+      ],
+      "anchor": [
+        27,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-8.png",
+      "row": 1,
+      "col": 3,
+      "source_bbox": [
+        81,
+        28,
+        215,
+        266
+      ],
+      "target_size": [
+        43,
+        76
+      ],
+      "anchor": [
+        26,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-9.png",
+      "row": 2,
+      "col": 0,
+      "source_bbox": [
+        112,
+        4,
+        224,
+        313
+      ],
+      "target_size": [
+        28,
+        76
+      ],
+      "anchor": [
+        34,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-10.png",
+      "row": 2,
+      "col": 1,
+      "source_bbox": [
+        94,
+        4,
+        206,
+        313
+      ],
+      "target_size": [
+        28,
+        76
+      ],
+      "anchor": [
+        34,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-11.png",
+      "row": 2,
+      "col": 2,
+      "source_bbox": [
+        97,
+        4,
+        210,
+        313
+      ],
+      "target_size": [
+        28,
+        76
+      ],
+      "anchor": [
+        34,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-12.png",
+      "row": 2,
+      "col": 3,
+      "source_bbox": [
+        98,
+        4,
+        210,
+        313
+      ],
+      "target_size": [
+        28,
+        76
+      ],
+      "anchor": [
+        34,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-13.png",
+      "row": 3,
+      "col": 0,
+      "source_bbox": [
+        97,
+        0,
+        210,
+        216
+      ],
+      "target_size": [
+        40,
+        76
+      ],
+      "anchor": [
+        28,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-14.png",
+      "row": 3,
+      "col": 1,
+      "source_bbox": [
+        87,
+        0,
+        205,
+        216
+      ],
+      "target_size": [
+        42,
+        76
+      ],
+      "anchor": [
+        27,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-15.png",
+      "row": 3,
+      "col": 2,
+      "source_bbox": [
+        86,
+        0,
+        201,
+        216
+      ],
+      "target_size": [
+        40,
+        76
+      ],
+      "anchor": [
+        28,
+        12
+      ]
+    },
+    {
+      "file": "traveler-male-diagonal-16.png",
+      "row": 3,
+      "col": 3,
+      "source_bbox": [
+        84,
+        0,
+        201,
+        216
+      ],
+      "target_size": [
+        41,
+        76
+      ],
+      "anchor": [
+        27,
+        12
+      ]
+    }
+  ]
 }
