@@ -109,6 +109,16 @@ button {
   font-size: 12px;
 }
 
+.prototype-data-source {
+  margin-top: 2px !important;
+  color: #b9f7d4;
+  font-size: 11px;
+}
+
+.prototype-data-source.is-fallback {
+  color: #ffe2a8;
+}
+
 .prototype-quest {
   margin-top: 5px !important;
   padding-top: 4px;

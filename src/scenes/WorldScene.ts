@@ -686,13 +686,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private getInteractionTarget(): InteractiveObject | null {
-    const vector = DIRECTION_VECTOR[this.facing];
-    const sensor = new Phaser.Geom.Rectangle(
-      this.player.x + vector.x * CONFIG.tileSize - 6,
-      this.player.y + vector.y * CONFIG.tileSize - 12,
-      12,
-      12
-    );
+    const sensor = this.getInteractionSensor();
     const candidates = this.interactiveObjects.filter(({ bounds }) =>
       Phaser.Geom.Intersects.RectangleToRectangle(bounds, sensor)
     );
@@ -884,6 +878,26 @@ export class WorldScene extends Phaser.Scene {
     this.debugGraphics.setVisible(this.debugVisible);
     if (!this.debugVisible) return;
 
+    const interactionSensor = this.getInteractionSensor();
+    const currentTarget = this.getInteractionTarget();
+
+    this.debugGraphics.lineStyle(1, 0x4aa3ff, 1);
+    this.debugGraphics.strokeCircle(this.player.x, this.player.y - 8, CONFIG.tileSize);
+    this.debugGraphics.lineStyle(1, 0x66ccff, 1);
+    this.debugGraphics.fillStyle(0x66ccff, 0.12);
+    this.debugGraphics.strokeRect(
+      interactionSensor.x,
+      interactionSensor.y,
+      interactionSensor.width,
+      interactionSensor.height
+    );
+    this.debugGraphics.fillRect(
+      interactionSensor.x,
+      interactionSensor.y,
+      interactionSensor.width,
+      interactionSensor.height
+    );
+
     this.debugGraphics.lineStyle(1, 0xff3344, 1);
     this.debugGraphics.fillStyle(0xff3344, 0.14);
     for (const rect of this.collisionRects) {
@@ -896,6 +910,51 @@ export class WorldScene extends Phaser.Scene {
       const bounds = traveler.getBounds();
       this.debugGraphics.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
       this.debugGraphics.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+    }
+    this.debugGraphics.lineStyle(1, 0xf6cf63, 1);
+    this.debugGraphics.fillStyle(0xf6cf63, 0.1);
+    for (const target of this.interactiveObjects) {
+      const hitBounds = target.getHitBounds();
+      this.debugGraphics.strokeRect(
+        target.bounds.x,
+        target.bounds.y,
+        target.bounds.width,
+        target.bounds.height
+      );
+      this.debugGraphics.strokeRect(
+        hitBounds.x,
+        hitBounds.y,
+        hitBounds.width,
+        hitBounds.height
+      );
+    }
+    if (currentTarget) {
+      this.debugGraphics.lineStyle(2, 0x7cff6b, 1);
+      this.debugGraphics.fillStyle(0x7cff6b, 0.18);
+      this.debugGraphics.strokeRect(
+        currentTarget.bounds.x,
+        currentTarget.bounds.y,
+        currentTarget.bounds.width,
+        currentTarget.bounds.height
+      );
+      this.debugGraphics.fillRect(
+        currentTarget.bounds.x,
+        currentTarget.bounds.y,
+        currentTarget.bounds.width,
+        currentTarget.bounds.height
+      );
+    }
+    const navigationPath = this.playerMovement.getNavigationPath();
+    if (navigationPath.length > 0) {
+      this.debugGraphics.lineStyle(2, 0xb983ff, 0.9);
+      let previousX = this.player.x;
+      let previousY = this.player.y;
+      for (const waypoint of navigationPath) {
+        this.debugGraphics.lineBetween(previousX, previousY, waypoint.x, waypoint.y);
+        this.debugGraphics.strokeCircle(waypoint.x, waypoint.y, 3);
+        previousX = waypoint.x;
+        previousY = waypoint.y;
+      }
     }
     this.debugGraphics.lineStyle(1, 0x44ff88, 1);
     this.debugGraphics.fillStyle(0x44ff88, 0.18);
@@ -913,6 +972,16 @@ export class WorldScene extends Phaser.Scene {
         portal.bounds.height
       );
     }
+  }
+
+  private getInteractionSensor(): Phaser.Geom.Rectangle {
+    const vector = DIRECTION_VECTOR[this.facing];
+    return new Phaser.Geom.Rectangle(
+      this.player.x + vector.x * CONFIG.tileSize - 6,
+      this.player.y + vector.y * CONFIG.tileSize - 12,
+      12,
+      12
+    );
   }
 
   private persist(): void {

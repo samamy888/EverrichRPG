@@ -3,6 +3,7 @@ export const OVERLAY_TEMPLATE = `
     <p class="prototype-title">EVERRICH RPG · AIRPORT QUEST</p>
     <p class="prototype-region">準備進入免稅航廈</p>
     <p class="prototype-status">走路模式 · WASD / 方向鍵移動</p>
+    <p class="prototype-data-source">資料來源檢查中</p>
     <p class="prototype-quest">靠近可互動物件時會顯示提示</p>
   </section>
   <section class="dialogue-box" aria-live="polite" hidden>

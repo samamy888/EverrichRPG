@@ -20,6 +20,7 @@ export class UIOverlay {
   private readonly root: HTMLDivElement;
   private readonly regionLabel: HTMLParagraphElement;
   private readonly statusLabel: HTMLParagraphElement;
+  private readonly dataSourceLabel: HTMLParagraphElement;
   private readonly questHud: HTMLDivElement;
   private readonly dialoguePanel: DialoguePanel;
   private readonly touchControls: TouchControls;
@@ -36,6 +37,8 @@ export class UIOverlay {
       this.getElement<HTMLParagraphElement>(".prototype-region");
     this.statusLabel =
       this.getElement<HTMLParagraphElement>(".prototype-status");
+    this.dataSourceLabel =
+      this.getElement<HTMLParagraphElement>(".prototype-data-source");
     this.questHud = this.getElement<HTMLDivElement>(".prototype-quest");
 
     this.dialoguePanel = new DialoguePanel({
@@ -71,6 +74,7 @@ export class UIOverlay {
 
     this.bindGameEvents();
     this.bindAudioUnlock();
+    this.renderDataSourceHud();
     this.renderQuestHud();
   }
 
@@ -141,7 +145,23 @@ export class UIOverlay {
   private renderState(): void {
     this.shopPanel.render();
     this.menuPanel.render();
+    this.renderDataSourceHud();
     this.renderQuestHud();
+  }
+
+  private renderDataSourceHud(): void {
+    const dataRoot = this.root.parentElement;
+    const shopSource = dataRoot?.dataset.shopCatalogSource;
+    const travelerSource = dataRoot?.dataset.travelerRosterSource;
+    const bothApi = shopSource === "api" && travelerSource === "api";
+    const partialApi = shopSource === "api" || travelerSource === "api";
+
+    this.dataSourceLabel.textContent = bothApi
+      ? "資料來源：後端 API"
+      : partialApi
+        ? "資料來源：部分 API / 本機備援"
+        : "資料來源：本機備援";
+    this.dataSourceLabel.classList.toggle("is-fallback", !bothApi);
   }
 
   private renderQuestHud(): void {

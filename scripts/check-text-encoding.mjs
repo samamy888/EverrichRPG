@@ -3,6 +3,7 @@ import { extname, relative, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 
 const root = process.cwd();
+const args = new Set(process.argv.slice(2));
 const allowedExtensions = new Set([
   ".css",
   ".html",
@@ -19,7 +20,8 @@ const allowedExtensions = new Set([
 ]);
 const suspiciousPatterns = [
   /\uFFFD/u,
-  /鈭|嚗|蝣|摰|撌|隞|璈|頝|甇|銝|閮|暺|蝘/u
+  /[鈭嚗蝣摰撌隞璈頝甇銝閮暺蝘]/u,
+  /[\uE000-\uF8FF]/u
 ];
 
 const files = execFileSync("git", ["ls-files"], {
@@ -28,7 +30,9 @@ const files = execFileSync("git", ["ls-files"], {
 })
   .split(/\r?\n/u)
   .filter(Boolean)
-  .filter((file) => allowedExtensions.has(extname(file)));
+  .filter((file) => allowedExtensions.has(extname(file)))
+  .filter((file) => !args.has("--src-only") || file.startsWith("src/"))
+  .filter((file) => file !== "scripts/check-text-encoding.mjs");
 
 const findings = [];
 
@@ -57,5 +61,5 @@ if (findings.length > 0) {
   }
   process.exitCode = 1;
 } else {
-  console.log("[text:scan] OK");
+  console.log(`[text:scan] OK${args.has("--src-only") ? " (src-only)" : ""}`);
 }

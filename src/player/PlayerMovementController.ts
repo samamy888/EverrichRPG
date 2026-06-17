@@ -202,6 +202,10 @@ export class PlayerMovementController {
     onCancel?.();
   }
 
+  getNavigationPath(): readonly PathPoint[] {
+    return this.navigationPath;
+  }
+
   suppressNextClick(): void {
     this.suppressNextPointerClick = true;
   }

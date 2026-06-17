@@ -33,6 +33,7 @@
     "test:traveler": "vitest run src/systems/TravelerPopulation.test.ts",
     "test:animation": "vitest run src/animation/AnimationRegistry.test.ts",
     "text:scan": "node scripts/check-text-encoding.mjs",
+    "text:scan:src": "node scripts/check-text-encoding.mjs --src-only",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
