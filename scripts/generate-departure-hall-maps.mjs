@@ -757,7 +757,7 @@ const maps = [
       ),
       p(
         "facilities-waiting-seats",
-        "airport-waiting-seats",
+        "airport-waiting-seats-horizontal",
         "候機座椅",
         ["座椅旁設有簡易充電位置。"],
         304,

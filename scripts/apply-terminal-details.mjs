@@ -8,19 +8,23 @@ const tileset = JSON.parse(readFileSync(tilesetPath, "utf8"));
 const oldNpcFirstGid = 66;
 
 const staticAssets = [
-  "airport-waiting-bench-v2",
-  "airport-charging-pedestal",
-  "airport-luggage-carts",
+  {
+    texture: "airport-luggage-carts-side",
+    image: "../../../props/airport-directional-v2/luggage-carts-side.png"
+  },
   "airport-cleaning-trolley",
   "airport-queue-barrier-v2",
   "airport-recycling-station",
-  "airport-emergency-cabinet",
   "airport-gate-pedestal",
   "airport-lamp-column"
-].map((texture) => ({
-  texture,
-  image: `../../../props/airport-terminal-details-v1/${texture}/prop.png`
-}));
+].map((asset) =>
+  typeof asset === "string"
+    ? {
+        texture: asset,
+        image: `../../../props/airport-terminal-details-v1/${asset}/prop.png`
+      }
+    : asset
+);
 
 const animatedAssets = [
   {
@@ -128,6 +132,9 @@ function object(id, spec) {
       ...(spec.displayHeight
         ? [property("displayHeight", spec.displayHeight, "float")]
         : []),
+      ...(spec.wallAttachment
+        ? [property("wallAttachment", spec.wallAttachment)]
+        : []),
       ...(spec.decorative ? [property("decorative", true, "bool")] : [])
     ],
     rotation: 0,
@@ -207,18 +214,18 @@ const placements = {
     },
     {
       name: "departure-waiting-bench",
-      texture: "airport-waiting-bench-v2",
+      texture: "airport-waiting-seats-horizontal",
       label: "候機座椅",
       lines: ["可以在這裡稍作休息。"],
       x: 80,
       y: 384,
-      width: 128,
+      width: 176,
       height: 72,
-      collision: [88, 360, 112, 24]
+      collision: [92, 360, 152, 16]
     },
     {
       name: "departure-luggage-carts",
-      texture: "airport-luggage-carts",
+      texture: "airport-luggage-carts-side",
       label: "行李推車",
       lines: ["推車整齊地疊放在一起。"],
       x: 592,
@@ -254,7 +261,7 @@ const placements = {
     },
     {
       name: "facilities-charging-pedestal",
-      texture: "airport-charging-pedestal",
+      texture: "airport-charging-station-front",
       label: "充電站",
       lines: ["旅客可以在這裡替裝置充電。"],
       x: 240,
@@ -265,6 +272,7 @@ const placements = {
     },
     {
       name: "facilities-cleaning-trolley",
+      wallAttachment: "north",
       texture: "airport-cleaning-trolley",
       label: "清潔推車",
       lines: ["清潔用品收納得很整齊。"],
@@ -276,7 +284,8 @@ const placements = {
     },
     {
       name: "facilities-emergency-cabinet",
-      texture: "airport-emergency-cabinet",
+      wallAttachment: "north",
+      texture: "airport-emergency-cabinet-front",
       label: "緊急設備",
       lines: ["僅供緊急狀況使用。"],
       x: 304,
@@ -329,11 +338,15 @@ for (const filename of Object.keys(placements)) {
     entry.height = 128;
     entry.properties = entry.properties ?? [];
     entry.properties = entry.properties.filter(
-      (item) => item.name !== "texture" && item.name !== "displayHeight"
+      (item) =>
+        item.name !== "texture" &&
+        item.name !== "displayHeight" &&
+        item.name !== "wallAttachment"
     );
     entry.properties.unshift(
       property("texture", "airport-escalator-animated-south"),
-      property("displayHeight", 128, "float")
+      property("displayHeight", 128, "float"),
+      property("wallAttachment", "north")
     );
   }
   for (const entry of collisions.objects) {

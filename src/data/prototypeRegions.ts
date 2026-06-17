@@ -133,13 +133,17 @@ export type MapObjectTexture =
   | "airport-ad-column"
   | "airport-atrium-lamp"
   | "airport-moving-walkway"
-  | "airport-waiting-bench-v2"
-  | "airport-charging-pedestal"
-  | "airport-luggage-carts"
+  | "airport-waiting-seats-horizontal"
+  | "airport-waiting-seats-vertical"
+  | "airport-charging-station-side"
+  | "airport-charging-station-front"
+  | "airport-luggage-carts-front"
+  | "airport-luggage-carts-side"
   | "airport-cleaning-trolley"
   | "airport-queue-barrier-v2"
   | "airport-recycling-station"
-  | "airport-emergency-cabinet"
+  | "airport-emergency-cabinet-side"
+  | "airport-emergency-cabinet-front"
   | "airport-gate-pedestal"
   | "airport-lamp-column"
   | "airport-sign-pillar-south"
@@ -148,7 +152,6 @@ export type MapObjectTexture =
   | "airport-sign-pillar-north"
   | "airport-overhead-wayfinding"
   | "airport-floor-wayfinding"
-  | "airport-waiting-seats"
   | "airport-queue-barriers"
   | "airport-ceiling-skylight"
   | "clerk-beauty-01"
@@ -207,6 +210,7 @@ export interface MapObjectData {
   foreground?: boolean;
   decorative?: boolean;
   depthOffset?: number;
+  wallAttachment?: "north" | "west" | "east";
   npcBehavior?: NpcBehaviorData;
   visualEffect?: VisualEffectData;
 }

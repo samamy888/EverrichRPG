@@ -3,7 +3,7 @@
   "version": "1.10",
   "tiledversion": "1.11.2",
   "name": "airport-props",
-  "tilecount": 141,
+  "tilecount": 143,
   "columns": 0,
   "grid": {
     "orientation": "orthogonal",
@@ -1001,14 +1001,14 @@
     },
     {
       "id": 76,
-      "image": "../../../props/airport-atrium-v1/waiting-seats.png",
-      "imagewidth": 176,
-      "imageheight": 72,
+      "image": "../../../props/airport-directional-v2/waiting-seats-horizontal.png",
+      "imagewidth": 167,
+      "imageheight": 71,
       "properties": [
         {
           "name": "texture",
           "type": "string",
-          "value": "airport-waiting-seats"
+          "value": "airport-waiting-seats-horizontal"
         }
       ]
     },
@@ -1494,40 +1494,40 @@
     },
     {
       "id": 116,
-      "image": "../../../props/airport-terminal-details-v1/airport-waiting-bench-v2/prop.png",
-      "imagewidth": 328,
-      "imageheight": 242,
+      "image": "../../../props/airport-directional-v2/waiting-seats-vertical.png",
+      "imagewidth": 71,
+      "imageheight": 167,
       "properties": [
         {
           "name": "texture",
           "type": "string",
-          "value": "airport-waiting-bench-v2"
+          "value": "airport-waiting-seats-vertical"
         }
       ]
     },
     {
       "id": 117,
-      "image": "../../../props/airport-terminal-details-v1/airport-charging-pedestal/prop.png",
-      "imagewidth": 126,
-      "imageheight": 266,
+      "image": "../../../props/airport-directional-v2/charging-station-front.png",
+      "imagewidth": 48,
+      "imageheight": 80,
       "properties": [
         {
           "name": "texture",
           "type": "string",
-          "value": "airport-charging-pedestal"
+          "value": "airport-charging-station-front"
         }
       ]
     },
     {
       "id": 118,
-      "image": "../../../props/airport-terminal-details-v1/airport-luggage-carts/prop.png",
-      "imagewidth": 242,
-      "imageheight": 278,
+      "image": "../../../props/airport-directional-v2/luggage-carts-side.png",
+      "imagewidth": 76,
+      "imageheight": 48,
       "properties": [
         {
           "name": "texture",
           "type": "string",
-          "value": "airport-luggage-carts"
+          "value": "airport-luggage-carts-side"
         }
       ]
     },
@@ -1572,14 +1572,14 @@
     },
     {
       "id": 122,
-      "image": "../../../props/airport-terminal-details-v1/airport-emergency-cabinet/prop.png",
-      "imagewidth": 172,
-      "imageheight": 252,
+      "image": "../../../props/airport-directional-v2/emergency-cabinet-front.png",
+      "imagewidth": 48,
+      "imageheight": 72,
       "properties": [
         {
           "name": "texture",
           "type": "string",
-          "value": "airport-emergency-cabinet"
+          "value": "airport-emergency-cabinet-front"
         }
       ]
     },
@@ -1804,6 +1804,45 @@
       "image": "../../../props/airport-escalator-animated-south-v1/escalator-south-4.png",
       "imagewidth": 128,
       "imageheight": 128
+    },
+    {
+      "id": 141,
+      "image": "../../../props/airport-directional-v2/charging-station-side.png",
+      "imagewidth": 34,
+      "imageheight": 80,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-charging-station-side"
+        }
+      ]
+    },
+    {
+      "id": 142,
+      "image": "../../../props/airport-directional-v2/emergency-cabinet-side.png",
+      "imagewidth": 28,
+      "imageheight": 72,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-emergency-cabinet-side"
+        }
+      ]
+    },
+    {
+      "id": 143,
+      "image": "../../../props/airport-directional-v2/luggage-carts-front.png",
+      "imagewidth": 52,
+      "imageheight": 56,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-luggage-carts-front"
+        }
+      ]
     }
   ]
 }

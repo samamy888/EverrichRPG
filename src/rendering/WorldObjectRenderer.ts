@@ -83,6 +83,7 @@ export class WorldObjectRenderer {
         (object.foreground ? object.baselineY + 10 : object.baselineY) +
           (object.depthOffset ?? 0)
       );
+      this.drawWallAttachmentShadow(object, image);
       if (objectAnimationKey && image instanceof Phaser.GameObjects.Sprite) {
         image.play(objectAnimationKey);
       }
@@ -164,6 +165,64 @@ export class WorldObjectRenderer {
       proximityLabels,
       travelerAIs
     };
+  }
+
+  private drawWallAttachmentShadow(
+    object: MapObjectData,
+    image: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite
+  ): void {
+    if (!object.wallAttachment) return;
+
+    const bounds = image.getBounds();
+    const shadow = this.options.scene.add
+      .graphics()
+      .setDepth(image.depth - 0.35);
+
+    if (object.wallAttachment === "north") {
+      const wallFootY = object.collision.y;
+      shadow.fillStyle(0x3d342b, 0.16);
+      shadow.fillRoundedRect(
+        bounds.x + bounds.width * 0.08,
+        wallFootY - 3,
+        bounds.width * 0.84,
+        8,
+        4
+      );
+      shadow.fillStyle(0x2a211b, 0.12);
+      shadow.fillRoundedRect(
+        bounds.x + bounds.width * 0.12,
+        wallFootY + 1,
+        bounds.width * 0.76,
+        5,
+        3
+      );
+      shadow.fillStyle(0x1f1712, 0.14);
+      shadow.fillEllipse(
+        object.x,
+        object.baselineY - Math.max(3, object.collision.height * 0.15),
+        Math.max(18, object.collision.width * 1.35),
+        8
+      );
+      return;
+    }
+
+    const isWest = object.wallAttachment === "west";
+    const sideX = isWest ? bounds.x + bounds.width - 5 : bounds.x + 1;
+    shadow.fillStyle(0x3d342b, 0.14);
+    shadow.fillRoundedRect(
+      sideX,
+      bounds.y + bounds.height * 0.14,
+      7,
+      bounds.height * 0.72,
+      4
+    );
+    shadow.fillStyle(0x1f1712, 0.12);
+    shadow.fillEllipse(
+      object.x,
+      object.baselineY - Math.max(3, object.collision.height * 0.12),
+      Math.max(16, object.collision.width * 1.25),
+      7
+    );
   }
 
   private getTravelerVariant(

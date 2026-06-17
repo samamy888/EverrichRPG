@@ -1596,6 +1596,11 @@
               "name": "displayHeight",
               "type": "float",
               "value": 88
+            },
+            {
+              "name": "wallAttachment",
+              "type": "string",
+              "value": "north"
             }
           ]
         },
@@ -1636,6 +1641,11 @@
               "name": "displayHeight",
               "type": "float",
               "value": 88
+            },
+            {
+              "name": "wallAttachment",
+              "type": "string",
+              "value": "north"
             }
           ]
         },
@@ -1676,6 +1686,11 @@
               "name": "interactionLines",
               "type": "string",
               "value": "[\"其他樓層尚未開放。\"]"
+            },
+            {
+              "name": "wallAttachment",
+              "type": "string",
+              "value": "north"
             }
           ]
         },
@@ -1735,7 +1750,7 @@
             {
               "name": "texture",
               "type": "string",
-              "value": "airport-waiting-seats"
+              "value": "airport-waiting-seats-horizontal"
             },
             {
               "name": "label",
@@ -1959,7 +1974,7 @@
             {
               "name": "texture",
               "type": "string",
-              "value": "airport-charging-pedestal"
+              "value": "airport-charging-station-front"
             },
             {
               "name": "label",
@@ -2010,6 +2025,11 @@
               "name": "interactionLines",
               "type": "string",
               "value": "[\"清潔用品收納得很整齊。\"]"
+            },
+            {
+              "name": "wallAttachment",
+              "type": "string",
+              "value": "north"
             }
           ],
           "rotation": 0,
@@ -2029,7 +2049,7 @@
             {
               "name": "texture",
               "type": "string",
-              "value": "airport-emergency-cabinet"
+              "value": "airport-emergency-cabinet-front"
             },
             {
               "name": "label",
@@ -2045,6 +2065,11 @@
               "name": "interactionLines",
               "type": "string",
               "value": "[\"僅供緊急狀況使用。\"]"
+            },
+            {
+              "name": "wallAttachment",
+              "type": "string",
+              "value": "north"
             }
           ],
           "rotation": 0,

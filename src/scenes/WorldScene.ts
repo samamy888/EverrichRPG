@@ -289,10 +289,8 @@ export class WorldScene extends Phaser.Scene {
     this.interactiveObjects = [];
     this.proximityLabels = [];
     this.physics.world.setBounds(0, 0, region.width, region.height);
-    this.cameras.main.setBounds(0, 0, region.width, region.height);
-    this.cameras.main.setBackgroundColor(
-      region.floorTexture === "floor-terrazzo" ? 0xa8aaad : 0xefe4cf
-    );
+    this.configureCameraBounds(region);
+    this.cameras.main.setBackgroundColor(0x050506);
 
     this.worldRenderer.drawFloor(region);
     this.collisionRects.push(...this.worldRenderer.drawBoundaries(region));
@@ -314,6 +312,19 @@ export class WorldScene extends Phaser.Scene {
     this.persist();
     this.emitStatus();
     emitPrototypeMovementMode({ running: this.running });
+  }
+
+  private configureCameraBounds(region: RegionData): void {
+    const camera = this.cameras.main;
+    const horizontalPadding = camera.width / 2;
+    const verticalPadding = camera.height / 2;
+
+    camera.setBounds(
+      -horizontalPadding,
+      -verticalPadding,
+      region.width + horizontalPadding * 2,
+      region.height + verticalPadding * 2
+    );
   }
 
   private getBgmForRegion(regionId: RegionId): "concourse" | "shop" {
@@ -368,15 +379,16 @@ export class WorldScene extends Phaser.Scene {
       .bitmapText(menuButtonWidth / 2, menuButtonHeight / 2, BITMAP_FONT, "☰ MENU", 12)
       .setTint(0xfff2c7)
       .setOrigin(0.5);
-    const menuButton = this.add
+    this.add
       .container(menuButtonX, menuButtonY, [menuButtonBackground, menuButtonLabel])
-      .setSize(menuButtonWidth, menuButtonHeight)
-      .setInteractive(
-        new Phaser.Geom.Rectangle(0, 0, menuButtonWidth, menuButtonHeight),
-        Phaser.Geom.Rectangle.Contains
-      )
       .setScrollFactor(0)
       .setDepth(FIXED_HUD_DEPTH + 1);
+    const menuButtonHitArea = this.add
+      .zone(menuButtonX, menuButtonY, menuButtonWidth, menuButtonHeight)
+      .setOrigin(0)
+      .setInteractive({ useHandCursor: true })
+      .setScrollFactor(0)
+      .setDepth(FIXED_HUD_DEPTH + 2);
 
     const setMenuButtonActive = () => {
       menuButtonBackground.setFillStyle(0xf6cf63, 1);
@@ -391,9 +403,9 @@ export class WorldScene extends Phaser.Scene {
       window.dispatchEvent(new CustomEvent("prototype:menu-open-request"));
     };
 
-    menuButton.on("pointerover", setMenuButtonActive);
-    menuButton.on("pointerout", setMenuButtonIdle);
-    menuButton.on("pointerdown", openMenu);
+    menuButtonHitArea.on("pointerover", setMenuButtonActive);
+    menuButtonHitArea.on("pointerout", setMenuButtonIdle);
+    menuButtonHitArea.on("pointerdown", openMenu);
   }
 
   private createInteractionHint(): void {
@@ -403,10 +415,10 @@ export class WorldScene extends Phaser.Scene {
       .setDropShadow(1, 1, 0x5f4216, 1)
       .setOrigin(0.5);
     const hintBackground = this.add
-      .rectangle(0, 22, 78, 20, 0x1a272b, 0.9)
+      .rectangle(0, 22, 58, 20, 0x1a272b, 0.9)
       .setStrokeStyle(1, 0x6d5422);
     this.interactionHintLabel = this.add
-      .bitmapText(0, 22, BITMAP_FONT, `${getInteractionPromptKey()} 互動`, 12)
+      .bitmapText(0, 22, BITMAP_FONT, "互動", 12)
       .setTint(0xfff5c7)
       .setOrigin(0.5);
     this.interactionHint = this.add
@@ -521,7 +533,7 @@ export class WorldScene extends Phaser.Scene {
     if (!target?.object.interaction) {
       this.startDialogue({
         title: "目前沒有可互動的內容",
-        lines: [`靠近櫃台、商品或指示牌時，畫面會出現 ${getInteractionPromptKey()} 互動提示。`]
+        lines: [`靠近櫃台、商品或指示牌時，畫面會出現按 ${getInteractionPromptKey()} 互動提示。`]
       });
       return;
     }
@@ -730,7 +742,7 @@ export class WorldScene extends Phaser.Scene {
       target.bounds.left + 8,
       target.bounds.right - 8
     );
-    this.interactionHintLabel.setText(`${getInteractionPromptKey()} ${label}`);
+    this.interactionHintLabel.setText(label);
     this.interactionHint.setPosition(promptX, target.bounds.top - 18).setVisible(true);
 
     if (this.hintedObjectId !== nextObjectId) {
@@ -828,7 +840,7 @@ export class WorldScene extends Phaser.Scene {
   private emitStatus(): void {
     emitPrototypeStatus({
       regionName: this.currentRegion.name,
-      message: `${this.running ? "跑步" : "走路"}模式 · WASD / 滑鼠按住移動 · ${getInteractionPromptKey()} 互動`,
+      message: `${this.running ? "跑步" : "走路"}模式 · WASD / 滑鼠按住移動 · 按 ${getInteractionPromptKey()} 互動`,
       playerVariant: this.playerVariant
     });
   }

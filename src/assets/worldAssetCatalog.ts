@@ -74,7 +74,6 @@ export const WORLD_IMAGE_ASSETS: readonly ImageAssetDefinition[] = [
   ),
   ...[
     "airport-overhead-wayfinding",
-    "airport-waiting-seats",
     "airport-queue-barriers",
     "airport-ceiling-skylight"
   ].map((name) =>
@@ -91,14 +90,42 @@ export const WORLD_IMAGE_ASSETS: readonly ImageAssetDefinition[] = [
     "airport-restroom-entrance-south",
     "/assets/props/airport-directional-v2/restroom-wall-south.png"
   ),
+  image(
+    "airport-waiting-seats-horizontal",
+    "/assets/props/airport-directional-v2/waiting-seats-horizontal.png"
+  ),
+  image(
+    "airport-waiting-seats-vertical",
+    "/assets/props/airport-directional-v2/waiting-seats-vertical.png"
+  ),
+  image(
+    "airport-charging-station-side",
+    "/assets/props/airport-directional-v2/charging-station-side.png"
+  ),
+  image(
+    "airport-charging-station-front",
+    "/assets/props/airport-directional-v2/charging-station-front.png"
+  ),
+  image(
+    "airport-emergency-cabinet-side",
+    "/assets/props/airport-directional-v2/emergency-cabinet-side.png"
+  ),
+  image(
+    "airport-emergency-cabinet-front",
+    "/assets/props/airport-directional-v2/emergency-cabinet-front.png"
+  ),
+  image(
+    "airport-luggage-carts-front",
+    "/assets/props/airport-directional-v2/luggage-carts-front.png"
+  ),
+  image(
+    "airport-luggage-carts-side",
+    "/assets/props/airport-directional-v2/luggage-carts-side.png"
+  ),
   ...[
-    "airport-waiting-bench-v2",
-    "airport-charging-pedestal",
-    "airport-luggage-carts",
     "airport-cleaning-trolley",
     "airport-queue-barrier-v2",
     "airport-recycling-station",
-    "airport-emergency-cabinet",
     "airport-gate-pedestal",
     "airport-lamp-column"
   ].map((name) =>

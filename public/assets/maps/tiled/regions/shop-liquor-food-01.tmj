@@ -1277,7 +1277,7 @@
      "x": 0,
      "y": 0,
      "width": 480,
-     "height": 32,
+     "height": 48,
      "properties": [
       {
        "name": "texture",
@@ -1294,7 +1294,7 @@
      "visible": true,
      "x": 0,
      "y": 0,
-     "width": 32,
+     "width": 48,
      "height": 320,
      "properties": [
       {
@@ -1310,9 +1310,9 @@
      "type": "",
      "rotation": 0,
      "visible": true,
-     "x": 448,
+     "x": 432,
      "y": 0,
-     "width": 32,
+     "width": 48,
      "height": 320,
      "properties": [
       {
@@ -1329,9 +1329,9 @@
      "rotation": 0,
      "visible": true,
      "x": 0,
-     "y": 288,
+     "y": 272,
      "width": 208,
-     "height": 32,
+     "height": 48,
      "properties": [
       {
        "name": "texture",
@@ -1347,9 +1347,9 @@
      "rotation": 0,
      "visible": true,
      "x": 272,
-     "y": 288,
+     "y": 272,
      "width": 208,
-     "height": 32,
+     "height": 48,
      "properties": [
       {
        "name": "texture",

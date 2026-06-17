@@ -16,6 +16,9 @@ export interface WorldRenderPort {
   ): void;
 }
 
+const TOP_WALL_VISUAL_HEIGHT_MULTIPLIER = 3;
+const SIDE_WALL_VISUAL_WIDTH_MULTIPLIER = 1.5;
+
 export class PhaserWorldRenderer implements WorldRenderPort {
   constructor(private readonly scene: Phaser.Scene) {}
 
@@ -58,16 +61,30 @@ export class PhaserWorldRenderer implements WorldRenderPort {
 
   drawBoundaries(region: RegionData): Phaser.Geom.Rectangle[] {
     return region.boundaries.map((boundary) => {
-      this.scene.add
-        .tileSprite(
-          boundary.x,
-          boundary.y,
-          boundary.width,
-          boundary.height,
-          boundary.texture
-        )
-        .setOrigin(0, 0)
-        .setDepth(1);
+      if (boundary.texture === "wall-ivory-panel") {
+        if (this.isBottomWall(boundary)) {
+          return new Phaser.Geom.Rectangle(
+            boundary.x,
+            boundary.y,
+            boundary.width,
+            boundary.height
+          );
+        }
+        const wallBounds = this.getIvoryWallVisualBounds(boundary);
+        this.drawIvoryWall(boundary, wallBounds);
+        return this.getIvoryWallCollisionBounds(boundary, wallBounds);
+      } else {
+        this.scene.add
+          .tileSprite(
+            boundary.x,
+            boundary.y,
+            boundary.width,
+            boundary.height,
+            boundary.texture
+          )
+          .setOrigin(0, 0)
+          .setDepth(1);
+      }
       return new Phaser.Geom.Rectangle(
         boundary.x,
         boundary.y,
@@ -77,6 +94,203 @@ export class PhaserWorldRenderer implements WorldRenderPort {
     });
   }
 
+  private isBottomWall(boundary: RegionData["boundaries"][number]): boolean {
+    return boundary.width >= boundary.height && boundary.y > 0;
+  }
+
+  private getIvoryWallCollisionBounds(
+    boundary: RegionData["boundaries"][number],
+    visualBounds: Phaser.Geom.Rectangle
+  ): Phaser.Geom.Rectangle {
+    const horizontal = boundary.width >= boundary.height;
+    const isBottomWall = horizontal && boundary.y > 0;
+    if (isBottomWall) {
+      return new Phaser.Geom.Rectangle(
+        boundary.x,
+        boundary.y,
+        boundary.width,
+        boundary.height
+      );
+    }
+    return visualBounds;
+  }
+
+  private getIvoryWallVisualBounds(
+    boundary: RegionData["boundaries"][number]
+  ): Phaser.Geom.Rectangle {
+    const horizontal = boundary.width >= boundary.height;
+    const visualWidth = horizontal
+      ? boundary.width
+      : Math.max(
+          boundary.width * SIDE_WALL_VISUAL_WIDTH_MULTIPLIER,
+          CONFIG.tileSize * 1.5
+        );
+    const visualHeight = horizontal
+      ? Math.max(
+          boundary.height * TOP_WALL_VISUAL_HEIGHT_MULTIPLIER,
+          CONFIG.tileSize * 1.5
+        )
+      : boundary.height;
+    const visualX =
+      horizontal || boundary.x === 0
+        ? boundary.x
+        : boundary.x - (visualWidth - boundary.width);
+    const visualY =
+      !horizontal || boundary.y === 0
+        ? boundary.y
+        : boundary.y - (visualHeight - boundary.height);
+
+    return new Phaser.Geom.Rectangle(
+      visualX,
+      visualY,
+      visualWidth,
+      visualHeight
+    );
+  }
+
+  private drawIvoryWall(
+    boundary: RegionData["boundaries"][number],
+    visualBounds: Phaser.Geom.Rectangle
+  ): void {
+    const horizontal = boundary.width >= boundary.height;
+    const visualX = visualBounds.x;
+    const visualY = visualBounds.y;
+    const visualWidth = visualBounds.width;
+    const visualHeight = visualBounds.height;
+
+    this.scene.add
+      .tileSprite(
+        visualX,
+        visualY,
+        visualWidth,
+        visualHeight,
+        boundary.texture
+      )
+      .setOrigin(0, 0)
+      .setDepth(1);
+
+    const wall = this.scene.add.graphics().setDepth(2);
+    const x = visualX;
+    const y = visualY;
+    const width = visualWidth;
+    const height = visualHeight;
+
+    if (horizontal) {
+      if (boundary.y === 0) {
+        wall.fillStyle(0x050506, 0.72);
+        wall.fillRect(x, y, width, Math.min(4, height));
+      }
+      this.drawHorizontalInteriorWall(wall, x, y, width, height);
+    } else {
+      wall.fillStyle(0x050506, 0.44);
+      wall.fillRect(boundary.x === 0 ? x : x + width - 4, y, 4, height);
+      this.drawVerticalInteriorWall(wall, x, y, width, height, boundary.x === 0);
+    }
+  }
+
+  private drawHorizontalInteriorWall(
+    wall: Phaser.GameObjects.Graphics,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ): void {
+    const capHeight = Math.min(12, Math.max(8, height * 0.22));
+    const baseHeight = Math.min(8, Math.max(5, height * 0.16));
+    const faceY = y + capHeight;
+    const faceHeight = Math.max(1, height - capHeight - baseHeight);
+    const baseY = y + height - baseHeight;
+
+    wall.fillStyle(0x5a3440, 0.9);
+    wall.fillRect(x, y, width, capHeight);
+    wall.fillStyle(0x2b1720, 0.35);
+    wall.fillRect(x, y + capHeight - 3, width, 3);
+    wall.fillStyle(0xfdfaf2, 0.66);
+    wall.fillRect(x, faceY, width, faceHeight);
+    wall.fillStyle(0xe8dfce, 0.34);
+    wall.fillRect(x, faceY + Math.max(2, faceHeight * 0.48), width, 2);
+    wall.fillStyle(0x9a6a55, 0.52);
+    wall.fillRect(x, baseY, width, baseHeight);
+    wall.fillStyle(0x3c2430, 0.26);
+    wall.fillRect(x, baseY, width, 2);
+    wall.fillStyle(0x27171e, 0.18);
+    wall.fillRect(x, y + height - 2, width, 2);
+
+    for (
+      let seamX = x + CONFIG.tileSize;
+      seamX < x + width;
+      seamX += CONFIG.tileSize
+    ) {
+      wall.fillStyle(0xd5c9b8, 0.28);
+      wall.fillRect(seamX, faceY + 2, 1, Math.max(1, faceHeight - 4));
+      wall.fillStyle(0xffffff, 0.18);
+      wall.fillRect(seamX + 1, faceY + 2, 1, Math.max(1, faceHeight - 4));
+    }
+
+    const pillarWidth = Math.min(10, Math.max(6, height * 0.2));
+    for (const pillarX of [x, x + width - pillarWidth]) {
+      if (width < CONFIG.tileSize * 2 && pillarX !== x) continue;
+      wall.fillStyle(0x5d3440, 0.82);
+      wall.fillRect(pillarX, y, pillarWidth, height);
+      wall.fillStyle(0x2c1820, 0.24);
+      wall.fillRect(pillarX + pillarWidth - 2, y, 2, height);
+      wall.fillStyle(0xffffff, 0.13);
+      wall.fillRect(pillarX + 2, y + 2, 1, Math.max(1, height - 4));
+    }
+  }
+
+  private drawVerticalInteriorWall(
+    wall: Phaser.GameObjects.Graphics,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    isLeftWall: boolean
+  ): void {
+    const capWidth = Math.min(12, Math.max(8, width * 0.24));
+    const baseWidth = Math.min(8, Math.max(5, width * 0.16));
+    const capX = isLeftWall ? x : x + width - capWidth;
+    const baseX = isLeftWall ? x + width - baseWidth : x;
+    const faceX = isLeftWall ? x + capWidth : x + baseWidth;
+    const faceWidth = Math.max(1, width - capWidth - baseWidth);
+
+    wall.fillStyle(0x5a3440, 0.88);
+    wall.fillRect(capX, y, capWidth, height);
+    wall.fillStyle(0x2b1720, 0.28);
+    wall.fillRect(
+      isLeftWall ? capX + capWidth - 3 : capX,
+      y,
+      3,
+      height
+    );
+    wall.fillStyle(0xfdfaf2, 0.52);
+    wall.fillRect(faceX, y, faceWidth, height);
+    wall.fillStyle(0x9a6a55, 0.42);
+    wall.fillRect(baseX, y, baseWidth, height);
+    wall.fillStyle(0x3c2430, 0.22);
+    wall.fillRect(isLeftWall ? baseX : baseX + baseWidth - 2, y, 2, height);
+
+    for (
+      let seamY = y + CONFIG.tileSize;
+      seamY < y + height;
+      seamY += CONFIG.tileSize
+    ) {
+      wall.fillStyle(0xd5c9b8, 0.24);
+      wall.fillRect(faceX + 2, seamY, Math.max(1, faceWidth - 4), 1);
+      wall.fillStyle(0xffffff, 0.13);
+      wall.fillRect(faceX + 2, seamY + 1, Math.max(1, faceWidth - 4), 1);
+    }
+
+    const pillarHeight = Math.min(10, Math.max(6, width * 0.22));
+    for (const pillarY of [y, y + height - pillarHeight]) {
+      if (height < CONFIG.tileSize * 2 && pillarY !== y) continue;
+      wall.fillStyle(0x5d3440, 0.7);
+      wall.fillRect(x, pillarY, width, pillarHeight);
+      wall.fillStyle(0x2c1820, 0.18);
+      wall.fillRect(x, pillarY + pillarHeight - 2, width, 2);
+    }
+  }
+
   drawPortals(region: RegionData): void {
     const edgeThreshold = CONFIG.tileSize * 3;
     for (const portal of region.portals) {
@@ -84,67 +298,49 @@ export class PhaserWorldRenderer implements WorldRenderPort {
       const isTop = y <= edgeThreshold;
       const isBottom = y + height >= region.height - edgeThreshold;
       const isLeft = x <= edgeThreshold;
-      const horizontal = isTop || isBottom;
+      const isRight = x + width >= region.width - edgeThreshold;
       const glow = this.scene.add
         .graphics()
-        .setDepth(3)
-        .setBlendMode(Phaser.BlendModes.ADD);
+        .setDepth(3);
 
-      glow.fillStyle(0xfffdf1, 0.16);
-      if (horizontal) {
-        glow.fillRoundedRect(x - 8, y - 5, width + 16, height + 10, 8);
-        glow.fillStyle(0xffffff, 0.32);
-        glow.fillRoundedRect(x + 3, y, Math.max(10, width - 6), height, 5);
-        glow.fillStyle(0xfff2bc, 0.18);
-        glow.fillEllipse(
-          x + width / 2,
-          isTop ? y + height - 3 : y - 13,
-          width + 18,
-          28
-        );
-        glow.fillStyle(0xffffff, 0.72);
-        glow.fillRect(
-          x + 5,
-          isTop ? y + height - 3 : y + 1,
-          Math.max(8, width - 10),
-          3
-        );
-      } else {
-        glow.fillRoundedRect(x - 5, y - 8, width + 10, height + 16, 8);
-        glow.fillStyle(0xffffff, 0.32);
-        glow.fillRoundedRect(x, y + 3, width, Math.max(10, height - 6), 5);
-        glow.fillStyle(0xfff2bc, 0.18);
-        glow.fillEllipse(
-          isLeft ? x + width - 3 : x - 13,
-          y + height / 2,
-          28,
-          height + 18
-        );
-        glow.fillStyle(0xffffff, 0.72);
-        glow.fillRect(
-          isLeft ? x + width - 3 : x + 1,
-          y + 5,
-          3,
-          Math.max(8, height - 10)
-        );
-      }
-
-      this.scene.tweens.add({
-        targets: glow,
-        alpha: { from: 0.48, to: 0.82 },
-        duration: 1050,
-        ease: "Sine.InOut",
-        yoyo: true,
-        repeat: -1
+      this.drawPortalThreshold(glow, portal.bounds, {
+        isTop,
+        isBottom,
+        isLeft,
+        isRight
       });
-      if (portal.visualEffect?.style === "portalFlow") {
-        this.createPortalFlowEffect(portal, {
-          isTop,
-          isLeft,
-          horizontal
-        });
-      }
     }
+  }
+
+  private drawPortalThreshold(
+    graphics: Phaser.GameObjects.Graphics,
+    bounds: PortalData["bounds"],
+    orientation: {
+      isTop: boolean;
+      isBottom: boolean;
+      isLeft: boolean;
+      isRight: boolean;
+    }
+  ): void {
+    const { x, y, width, height } = bounds;
+    if (orientation.isTop) {
+      graphics.fillStyle(0x050506, 0.95);
+      graphics.fillRect(x, 0, width, y + height);
+      return;
+    }
+
+    if (orientation.isLeft || orientation.isRight) {
+      graphics.fillStyle(0x050506, 0.92);
+      graphics.fillRect(
+        orientation.isLeft ? 0 : x,
+        y,
+        orientation.isLeft ? x + width : width,
+        height
+      );
+      return;
+    }
+
+    if (orientation.isBottom) return;
   }
 
   createKioskVisualEffect(
@@ -240,55 +436,4 @@ export class PhaserWorldRenderer implements WorldRenderPort {
     });
   }
 
-  private createPortalFlowEffect(
-    portal: PortalData,
-    orientation: {
-      isTop: boolean;
-      isLeft: boolean;
-      horizontal: boolean;
-    }
-  ): void {
-    const effect = portal.visualEffect;
-    if (!effect) return;
-    const { x, y, width, height } = portal.bounds;
-    const markerCount = 3;
-
-    for (let index = 0; index < markerCount; index += 1) {
-      const ratio = (index + 1) / (markerCount + 1);
-      const marker = this.scene.add
-        .rectangle(
-          orientation.horizontal ? x + width * ratio : x + width / 2,
-          orientation.horizontal ? y + height / 2 : y + height * ratio,
-          orientation.horizontal ? Math.max(4, width * 0.12) : 2,
-          orientation.horizontal ? 2 : Math.max(4, height * 0.12),
-          effect.color,
-          0.9
-        )
-        .setDepth(4)
-        .setBlendMode(Phaser.BlendModes.ADD);
-      const distance = 10;
-      const deltaX = orientation.horizontal
-        ? 0
-        : orientation.isLeft
-          ? -distance
-          : distance;
-      const deltaY = orientation.horizontal
-        ? orientation.isTop
-          ? -distance
-          : distance
-        : 0;
-
-      this.scene.tweens.add({
-        targets: marker,
-        x: marker.x + deltaX,
-        y: marker.y + deltaY,
-        alpha: { from: 0.15, to: 0.95 },
-        duration: effect.durationMs,
-        delay: index * Math.round(effect.durationMs / markerCount),
-        repeat: -1,
-        yoyo: true,
-        ease: "Sine.InOut"
-      });
-    }
-  }
 }

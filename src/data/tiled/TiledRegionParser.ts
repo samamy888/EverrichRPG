@@ -151,6 +151,9 @@ export class TiledRegionParser {
     const movementType = properties.string("movementType");
     const displayHeight = properties.number("displayHeight");
     const depthOffset = properties.number("depthOffset") ?? 0;
+    const wallAttachment = this.parseWallAttachment(
+      properties.string("wallAttachment"),
+    );
     const visualEffect = this.parseVisualEffect(properties);
     const npcBehavior = movementType
       ? {
@@ -197,9 +200,19 @@ export class TiledRegionParser {
       ...(properties.boolean("foreground") ? { foreground: true } : {}),
       ...(decorative ? { decorative: true } : {}),
       ...(depthOffset ? { depthOffset } : {}),
+      ...(wallAttachment ? { wallAttachment } : {}),
       ...(npcBehavior ? { npcBehavior } : {}),
       ...(visualEffect ? { visualEffect } : {}),
     };
+  }
+
+  private parseWallAttachment(
+    value: string | undefined,
+  ): MapObjectData["wallAttachment"] {
+    if (value === "north" || value === "west" || value === "east") {
+      return value;
+    }
+    return undefined;
   }
 
   private parsePortal(object: TiledObject): PortalData {

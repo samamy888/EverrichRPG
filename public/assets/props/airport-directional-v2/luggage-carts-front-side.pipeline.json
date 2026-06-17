@@ -1,0 +1,44 @@
+{
+  "source": "public/assets/props/airport-directional-v2/luggage-carts-front-side.raw-imagegen.png",
+  "sourceSize": [
+    1774,
+    887
+  ],
+  "pipeline": "image_gen raw 1x2 sheet -> chroma key -> split -> trim -> resize to Tiled object display size",
+  "assets": [
+    {
+      "slug": "luggage-carts-front",
+      "cell": [
+        0,
+        0,
+        887,
+        887
+      ],
+      "trimmedSize": [
+        323,
+        565
+      ],
+      "outputSize": [
+        52,
+        56
+      ]
+    },
+    {
+      "slug": "luggage-carts-side",
+      "cell": [
+        887,
+        0,
+        1774,
+        887
+      ],
+      "trimmedSize": [
+        501,
+        565
+      ],
+      "outputSize": [
+        76,
+        48
+      ]
+    }
+  ]
+}
