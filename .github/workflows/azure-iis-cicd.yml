@@ -190,16 +190,36 @@ jobs:
           New-Item -ItemType Directory -Force $env:FRONTEND_PATH | Out-Null
           New-Item -ItemType Directory -Force $env:API_PATH | Out-Null
 
+          $appOfflinePath = Join-Path $env:API_PATH "app_offline.htm"
+          @"
+          <html>
+            <head><title>Everrich RPG API is updating</title></head>
+            <body>Everrich RPG API is updating. Please retry shortly.</body>
+          </html>
+          "@ | Set-Content -Path $appOfflinePath -Encoding UTF8
+
+          Write-Host "app_offline.htm created. Waiting for ASP.NET Core process to release locked files..."
+          Start-Sleep -Seconds 12
+
           robocopy deploy-package\frontend $env:FRONTEND_PATH /MIR /R:3 /W:3 /NFL /NDL /NP
           if ($LASTEXITCODE -le 7) { $global:LASTEXITCODE = 0 } else { exit $LASTEXITCODE }
 
-          robocopy deploy-package\api $env:API_PATH /MIR /R:3 /W:3 /NFL /NDL /NP
+          robocopy deploy-package\api $env:API_PATH /MIR /XF app_offline.htm /R:10 /W:5 /NFL /NDL /NP
           if ($LASTEXITCODE -le 7) { $global:LASTEXITCODE = 0 } else { exit $LASTEXITCODE }
+
+          if (Test-Path $appOfflinePath) {
+            Remove-Item -LiteralPath $appOfflinePath -Force
+          }
 
       - name: Start IIS app pools
         if: always()
         shell: powershell
         run: |
+          $appOfflinePath = Join-Path $env:API_PATH "app_offline.htm"
+          if (Test-Path $appOfflinePath) {
+            Remove-Item -LiteralPath $appOfflinePath -Force
+          }
+
           $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
           if (Test-Path $appcmd) {
             & $appcmd start apppool /apppool.name:"$env:API_APP_POOL"

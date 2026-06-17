@@ -175,6 +175,29 @@ CI/CD 現在有兩層健康檢查：
 IIS_REQUIRE_PUBLIC_HEALTH=true
 ```
 
+## DLL 被鎖定
+
+如果部署時出現：
+
+```text
+ERROR 32 (0x00000020)
+The process cannot access the file because it is being used by another process.
+```
+
+代表 IIS / ASP.NET Core 還在使用 API 的 `.dll`。Workflow 會在複製 API 前先放入：
+
+```text
+app_offline.htm
+```
+
+ASP.NET Core Module 看到這個檔案後會卸載應用程式，釋放 DLL 鎖定。部署完成後 workflow 會自動刪除 `app_offline.htm`，再重新啟動 App Pool。
+
+如果仍然發生鎖定，請到 IIS 主機確認：
+
+- `EverrichRPG.Api` App Pool 確實有被停止。
+- 沒有其他 IIS Site 或手動啟動的 `dotnet` process 指向同一個 API 目錄。
+- GitHub runner 帳號有權限寫入與刪除 `C:\inetpub\EverrichRPG\api\app_offline.htm`。
+
 ## 手動部署
 
 到 GitHub：
