@@ -26,6 +26,7 @@ export interface MovementInput extends JoystickVector {
   facing: Facing;
   animationFacing: PlayerAnimationFacing;
   key: string;
+  navigationDistance?: number;
 }
 
 interface PlayerMovementControllerOptions {
@@ -118,7 +119,7 @@ export class PlayerMovementController {
       return;
     }
 
-    if (this.navigationPath.length === 0 && deltaSeconds > 0) {
+    if (deltaSeconds > 0) {
       this.moveContinuously(movement, deltaSeconds, time);
       return;
     }
@@ -207,6 +208,7 @@ export class PlayerMovementController {
       Number(this.cursors.up.isDown || this.wasd.W.isDown || this.touchState.up);
     let strength = 1;
     let followingNavigation = false;
+    let navigationDistance: number | undefined;
     const manualInputActive =
       inputX !== 0 ||
       inputY !== 0 ||
@@ -254,6 +256,7 @@ export class PlayerMovementController {
     const magnitude = Math.hypot(inputX, inputY);
     if (followingNavigation) {
       strength = Phaser.Math.Clamp(magnitude / CONFIG.tileSize, 0.05, 1);
+      navigationDistance = magnitude;
     }
     const x = inputX / magnitude;
     const y = inputY / magnitude;
@@ -273,7 +276,8 @@ export class PlayerMovementController {
       strength,
       facing,
       animationFacing,
-      key: `${Math.round(angle * 12)},${Math.round(strength * 4)}`
+      key: `${Math.round(angle * 12)},${Math.round(strength * 4)}`,
+      ...(navigationDistance !== undefined ? { navigationDistance } : {})
     };
   }
 
@@ -321,12 +325,7 @@ export class PlayerMovementController {
             ) < 1
           ) {
             this.navigationPath.shift();
-            if (this.navigationPath.length === 0) {
-              const onComplete = this.navigationComplete;
-              this.navigationComplete = null;
-              this.navigationCancelled = null;
-              onComplete?.();
-            }
+            this.completeNavigationIfFinished();
           }
         }
         if (!this.readMovement()) this.setIdleFrame();
@@ -347,8 +346,12 @@ export class PlayerMovementController {
 
     const normalizedStrength = Phaser.Math.Clamp(movement.strength, 0.2, 1);
     const speed = this.options.isRunning() ? 168 : 112;
-    const distance =
+    const intendedDistance =
       speed * Math.pow(normalizedStrength, 0.9) * deltaSeconds;
+    const distance =
+      movement.navigationDistance !== undefined
+        ? Math.min(intendedDistance, movement.navigationDistance)
+        : intendedDistance;
     const targetX = this.player.x + movement.x * distance;
     const targetY = this.player.y + movement.y * distance;
     const moved = this.moveWithSlide(targetX, targetY);
@@ -361,6 +364,7 @@ export class PlayerMovementController {
 
     this.playMovementAnimation();
     this.player.setDepth(this.player.y);
+    this.advanceNavigationWaypoint();
     if (time - this.lastFootstepAt >= (this.options.isRunning() ? 180 : 260)) {
       this.lastFootstepAt = time;
       this.options.playFootstep(this.options.isRunning());
@@ -396,6 +400,35 @@ export class PlayerMovementController {
     }
 
     return false;
+  }
+
+  private advanceNavigationWaypoint(): void {
+    if (this.navigationPath.length === 0) return;
+
+    const waypoint = this.navigationPath[0]!;
+    if (
+      Phaser.Math.Distance.Between(
+        this.player.x,
+        this.player.y,
+        waypoint.x,
+        waypoint.y
+      ) >= 1
+    ) {
+      return;
+    }
+
+    this.player.setPosition(waypoint.x, waypoint.y);
+    this.navigationPath.shift();
+    this.completeNavigationIfFinished();
+  }
+
+  private completeNavigationIfFinished(): void {
+    if (this.navigationPath.length > 0) return;
+
+    const onComplete = this.navigationComplete;
+    this.navigationComplete = null;
+    this.navigationCancelled = null;
+    onComplete?.();
   }
 
   private isBlocked(x: number, y: number): boolean {

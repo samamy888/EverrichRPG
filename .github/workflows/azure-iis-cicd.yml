@@ -106,9 +106,10 @@ jobs:
     env:
       FRONTEND_PATH: ${{ vars.IIS_FRONTEND_PATH }}
       API_PATH: ${{ vars.IIS_API_PATH }}
+      API_DATA_PATH: ${{ vars.IIS_API_DATA_PATH || 'D:\EverrichRPGData' }}
       FRONTEND_APP_POOL: ${{ vars.IIS_FRONTEND_APP_POOL }}
       API_APP_POOL: ${{ vars.IIS_API_APP_POOL }}
-      INTERNAL_HEALTH_URL: ${{ vars.IIS_INTERNAL_HEALTH_URL || 'http://localhost:5080/api/v1/health' }}
+      INTERNAL_HEALTH_URL: ${{ vars.IIS_INTERNAL_HEALTH_URL || 'http://localhost:5080/api/v1/health/ready' }}
       PUBLIC_HEALTH_URL: ${{ vars.IIS_HEALTH_URL }}
       REQUIRE_PUBLIC_HEALTH: ${{ vars.IIS_REQUIRE_PUBLIC_HEALTH || 'false' }}
       BACKUP_ROOT: ${{ vars.IIS_BACKUP_ROOT }}
@@ -141,7 +142,7 @@ jobs:
           }
 
           if (-not $env:INTERNAL_HEALTH_URL) {
-            "INTERNAL_HEALTH_URL=http://localhost:5080/api/v1/health" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "INTERNAL_HEALTH_URL=http://localhost:5080/api/v1/health/ready" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           }
 
       - name: Stop IIS app pools
@@ -189,6 +190,14 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force $env:FRONTEND_PATH | Out-Null
           New-Item -ItemType Directory -Force $env:API_PATH | Out-Null
+          New-Item -ItemType Directory -Force $env:API_DATA_PATH | Out-Null
+
+          $appPoolIdentity = "IIS AppPool\$($env:API_APP_POOL)"
+          $grant = "$($appPoolIdentity):(OI)(CI)M"
+          & icacls $env:API_DATA_PATH /grant $grant | Write-Host
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to grant modify permission on $env:API_DATA_PATH to $appPoolIdentity."
+          }
 
           $appOfflinePath = Join-Path $env:API_PATH "app_offline.htm"
           @"
