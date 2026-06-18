@@ -323,5 +323,186 @@
         12
       ]
     }
-  ]
+  ],
+  "updatedAt": "2026-06-18T08:49:09+0800",
+  "upDiagonalRework": {
+    "source": "raw-up-diagonal-rework.png",
+    "prompt": "prompt-up-diagonal-rework.txt",
+    "replacedRows": [
+      "up-left",
+      "up-right"
+    ],
+    "targetCharacterHeight": 76,
+    "baseline": 88,
+    "frames": [
+      {
+        "file": "traveler-male-diagonal-9.png",
+        "row": 2,
+        "col": 0,
+        "source": "raw-up-diagonal-rework.png",
+        "source_row": 0,
+        "source_bbox": [
+          156,
+          72,
+          318,
+          405
+        ],
+        "target_size": [
+          37,
+          76
+        ],
+        "anchor": [
+          29,
+          12
+        ]
+      },
+      {
+        "file": "traveler-male-diagonal-10.png",
+        "row": 2,
+        "col": 1,
+        "source": "raw-up-diagonal-rework.png",
+        "source_row": 0,
+        "source_bbox": [
+          142,
+          70,
+          306,
+          404
+        ],
+        "target_size": [
+          37,
+          76
+        ],
+        "anchor": [
+          29,
+          12
+        ]
+      },
+      {
+        "file": "traveler-male-diagonal-11.png",
+        "row": 2,
+        "col": 2,
+        "source": "raw-up-diagonal-rework.png",
+        "source_row": 0,
+        "source_bbox": [
+          134,
+          72,
+          299,
+          405
+        ],
+        "target_size": [
+          38,
+          76
+        ],
+        "anchor": [
+          29,
+          12
+        ]
+      },
+      {
+        "file": "traveler-male-diagonal-12.png",
+        "row": 2,
+        "col": 3,
+        "source": "raw-up-diagonal-rework.png",
+        "source_row": 0,
+        "source_bbox": [
+          122,
+          70,
+          284,
+          406
+        ],
+        "target_size": [
+          37,
+          76
+        ],
+        "anchor": [
+          29,
+          12
+        ]
+      },
+      {
+        "file": "traveler-male-diagonal-13.png",
+        "row": 3,
+        "col": 0,
+        "source": "raw-up-diagonal-rework.png",
+        "source_row": 1,
+        "source_bbox": [
+          158,
+          42,
+          318,
+          376
+        ],
+        "target_size": [
+          36,
+          76
+        ],
+        "anchor": [
+          30,
+          12
+        ]
+      },
+      {
+        "file": "traveler-male-diagonal-14.png",
+        "row": 3,
+        "col": 1,
+        "source": "raw-up-diagonal-rework.png",
+        "source_row": 1,
+        "source_bbox": [
+          138,
+          42,
+          300,
+          375
+        ],
+        "target_size": [
+          37,
+          76
+        ],
+        "anchor": [
+          29,
+          12
+        ]
+      },
+      {
+        "file": "traveler-male-diagonal-15.png",
+        "row": 3,
+        "col": 2,
+        "source": "raw-up-diagonal-rework.png",
+        "source_row": 1,
+        "source_bbox": [
+          134,
+          42,
+          291,
+          378
+        ],
+        "target_size": [
+          36,
+          76
+        ],
+        "anchor": [
+          30,
+          12
+        ]
+      },
+      {
+        "file": "traveler-male-diagonal-16.png",
+        "row": 3,
+        "col": 3,
+        "source": "raw-up-diagonal-rework.png",
+        "source_row": 1,
+        "source_bbox": [
+          114,
+          42,
+          273,
+          378
+        ],
+        "target_size": [
+          36,
+          76
+        ],
+        "anchor": [
+          30,
+          12
+        ]
+      }
+    ]
+  }
 }

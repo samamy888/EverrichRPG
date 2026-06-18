@@ -1,0 +1,9 @@
+Create a pixel-art RPG character animation sprite sheet ONLY for the male airport traveler walking diagonally upward, matching the visible EverrichRPG male traveler style exactly: chibi young adult male, dark brown tousled hair, blue travel jacket over light shirt, dark pants, sneakers, small brown crossbody bag/backpack strap, crisp dark outline, polished GBA-era retro pixel art.
+
+Exact layout: 4 columns x 2 rows on solid pure #FF00FF magenta background, no visible grid, no labels, no UI, no shadows, no floor. Each invisible cell should match a 96x96 RPG frame with the character centered, consistent scale, stable feet/bottom anchor, full body inside the cell.
+
+Rows:
+1) walking diagonally up-left: back and left side visible, head/torso angled 45 degrees away toward upper-left, NOT a thin straight side view, NOT front-facing.
+2) walking diagonally up-right: back and right side visible, head/torso angled 45 degrees away toward upper-right, NOT a thin straight side view, NOT front-facing.
+
+Columns per row: contact, passing, opposite contact, passing. Keep the same character identity and clothing across all 8 frames. Make the upper-body backpack strap and back of jacket visible so the direction reads as walking away diagonally. Avoid overly narrow silhouettes; keep a readable chibi body width similar to the existing up/back walking row.
