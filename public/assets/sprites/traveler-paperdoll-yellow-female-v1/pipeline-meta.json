@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-06-18T12:16:06+08:00",
+  "source": "manifest-built accepted paperdoll composite",
+  "spec": "docs/CHARACTER_ASSET_SPEC.md",
+  "recipe": "paperdoll-yellow-female",
+  "bodyType": "adult-female",
+  "appearance": {
+    "gender": "female",
+    "ageGroup": "adult",
+    "hairStyle": "bob-brown",
+    "top": "yellow-cardigan",
+    "pants": "teal-skirt"
+  },
+  "cellSize": [
+    96,
+    96
+  ],
+  "rows": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "columns": [
+    "stand",
+    "step-a",
+    "stand",
+    "step-b"
+  ],
+  "layers": [
+    "base-body",
+    "pants-teal-skirt",
+    "top-yellow-cardigan",
+    "hair-bob-brown"
+  ],
+  "sheet": "sheet-transparent.png",
+  "shared_scale": true,
+  "edge_touch_frames": [],
+  "acceptance": {
+    "standFramesUseClosedFootPose": true,
+    "clothingFitsBaseGuide": true,
+    "travelerScaleMatchesPlayer": true,
+    "fallbackSafe": true
+  },
+  "frames": [
+    "traveler-paperdoll-yellow-female-1.png",
+    "traveler-paperdoll-yellow-female-2.png",
+    "traveler-paperdoll-yellow-female-3.png",
+    "traveler-paperdoll-yellow-female-4.png",
+    "traveler-paperdoll-yellow-female-5.png",
+    "traveler-paperdoll-yellow-female-6.png",
+    "traveler-paperdoll-yellow-female-7.png",
+    "traveler-paperdoll-yellow-female-8.png",
+    "traveler-paperdoll-yellow-female-9.png",
+    "traveler-paperdoll-yellow-female-10.png",
+    "traveler-paperdoll-yellow-female-11.png",
+    "traveler-paperdoll-yellow-female-12.png",
+    "traveler-paperdoll-yellow-female-13.png",
+    "traveler-paperdoll-yellow-female-14.png",
+    "traveler-paperdoll-yellow-female-15.png",
+    "traveler-paperdoll-yellow-female-16.png"
+  ]
+}

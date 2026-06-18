@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-06-18T11:10:11+08:00",
+  "source": "postprocessed from accepted generated composite sheet",
+  "spec": "docs/CHARACTER_ASSET_SPEC.md",
+  "paperdollLayer": "pants-charcoal-pants",
+  "cellSize": [
+    96,
+    96
+  ],
+  "rows": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "columns": [
+    "stand",
+    "step-a",
+    "stand",
+    "step-b"
+  ],
+  "shared_scale": true,
+  "edge_touch_frames": [],
+  "frames": [
+    "pants-charcoal-pants-1.png",
+    "pants-charcoal-pants-2.png",
+    "pants-charcoal-pants-3.png",
+    "pants-charcoal-pants-4.png",
+    "pants-charcoal-pants-5.png",
+    "pants-charcoal-pants-6.png",
+    "pants-charcoal-pants-7.png",
+    "pants-charcoal-pants-8.png",
+    "pants-charcoal-pants-9.png",
+    "pants-charcoal-pants-10.png",
+    "pants-charcoal-pants-11.png",
+    "pants-charcoal-pants-12.png",
+    "pants-charcoal-pants-13.png",
+    "pants-charcoal-pants-14.png",
+    "pants-charcoal-pants-15.png",
+    "pants-charcoal-pants-16.png"
+  ]
+}

@@ -164,7 +164,12 @@ export type MapObjectTexture =
   | "traveler-elder-male-npc"
   | "traveler-elder-female-npc"
   | "traveler-paperdoll-blue-male-npc"
-  | "traveler-paperdoll-green-male-npc";
+  | "traveler-paperdoll-green-male-npc"
+  | "traveler-paperdoll-beige-male-npc"
+  | "traveler-paperdoll-yellow-male-npc"
+  | "traveler-paperdoll-coral-female-npc"
+  | "traveler-paperdoll-yellow-female-npc"
+  | "traveler-paperdoll-lavender-female-npc";
 
 export interface TileLayerData {
   name: string;

@@ -1,1 +1,1 @@
-Composite generated from paperdoll adult-male-v1 layers.
+Built from paperdoll recipe defined in D:\Project\EverrichRPG\public\assets\sprites\paperdoll\adult-male-v1\paperdoll-manifest.json.

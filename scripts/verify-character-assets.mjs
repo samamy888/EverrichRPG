@@ -6,6 +6,31 @@ function fail(message) {
   process.exit(1);
 }
 
+function readPngSize(path) {
+  const buffer = readFileSync(path);
+  const pngSignature = "89504e470d0a1a0a";
+  if (buffer.subarray(0, 8).toString("hex") !== pngSignature) {
+    fail(`${path} is not a PNG file`);
+  }
+  return {
+    width: buffer.readUInt32BE(16),
+    height: buffer.readUInt32BE(20)
+  };
+}
+
+function assertPngSize(path, expectedWidth, expectedHeight, label) {
+  const size = readPngSize(path);
+  if (size.width !== expectedWidth || size.height !== expectedHeight) {
+    fail(`${label} must be ${expectedWidth}x${expectedHeight}, got ${size.width}x${size.height}`);
+  }
+}
+
+function assertArrayEquals(actual, expected, label) {
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+    fail(`${label} must be ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+  }
+}
+
 const root = process.cwd();
 const manifestPath = resolve(root, "game/assets/characters/duty-free-clerks-v1.manifest.json");
 const pipelinePath = resolve(
@@ -52,6 +77,10 @@ const npcTileset = JSON.parse(
 const propTileset = JSON.parse(
   readFileSync(resolve(root, "public/assets/maps/tiled/tilesets/airport-props.tsj"), "utf8")
 );
+const paperdollRecipeSource = readFileSync(
+  resolve(root, "src/data/paperdollRecipes.ts"),
+  "utf8"
+);
 
 if (manifest.sprites.length !== 3) fail("Expected three clerk sprites");
 for (const sprite of manifest.sprites) {
@@ -93,7 +122,12 @@ for (const variant of [
   "elder-male",
   "elder-female",
   "paperdoll-blue-male",
-  "paperdoll-green-male"
+  "paperdoll-green-male",
+  "paperdoll-beige-male",
+  "paperdoll-yellow-male",
+  "paperdoll-coral-female",
+  "paperdoll-yellow-female",
+  "paperdoll-lavender-female"
 ]) {
   const directory = resolve(root, `public/assets/sprites/traveler-${variant}-v1`);
   const sheet = resolve(directory, "sheet-transparent.png");
@@ -112,14 +146,109 @@ for (const variant of [
   if (!tile) fail(`Missing ${variant} traveler in Tiled NPC tileset`);
 }
 
-const paperdollManifestPath = resolve(
-  root,
-  "public/assets/sprites/paperdoll/adult-male-v1/paperdoll-manifest.json"
-);
-if (!existsSync(paperdollManifestPath)) fail("Missing adult male paperdoll manifest");
-const paperdollManifest = JSON.parse(readFileSync(paperdollManifestPath, "utf8"));
-if (paperdollManifest.layers.length < 5) fail("Paperdoll POC must include base, hair, and outfit layers");
-if (paperdollManifest.recipes.length < 2) fail("Paperdoll POC must include at least two recipes");
+for (const bodyType of ["adult-male", "adult-female"]) {
+  const paperdollRoot = `public/assets/sprites/paperdoll/${bodyType}-v1`;
+  const paperdollManifestPath = resolve(root, paperdollRoot, "paperdoll-manifest.json");
+  if (!existsSync(paperdollManifestPath)) fail(`Missing ${bodyType} paperdoll manifest`);
+  const paperdollManifest = JSON.parse(readFileSync(paperdollManifestPath, "utf8"));
+  if (paperdollManifest.schemaVersion !== 3) {
+    fail(`${bodyType} paperdoll manifest must use schemaVersion 3`);
+  }
+  if (paperdollManifest.spec !== "docs/CHARACTER_ASSET_SPEC.md") {
+    fail(`${bodyType} paperdoll manifest must reference CHARACTER_ASSET_SPEC.md`);
+  }
+  if (paperdollManifest.bodyType !== bodyType) {
+    fail(`${bodyType} paperdoll manifest bodyType is out of sync`);
+  }
+  assertArrayEquals(paperdollManifest.cellSize, [96, 96], `${bodyType} paperdoll cell size`);
+  assertArrayEquals(paperdollManifest.rows, ["down", "left", "right", "up"], `${bodyType} paperdoll rows`);
+  assertArrayEquals(
+    paperdollManifest.columns,
+    ["stand", "step-a", "stand", "step-b"],
+    `${bodyType} paperdoll columns`
+  );
+  assertArrayEquals(
+    paperdollManifest.layerOrder,
+    [
+      "accessory-back",
+      "base-body",
+      "pants",
+      "shoes",
+      "top",
+      "hair",
+      "accessory-front"
+    ],
+    `${bodyType} paperdoll layer order`
+  );
+  if (paperdollManifest.layers.length < 4) {
+    fail(`${bodyType} paperdoll manifest must include base, hair, top, and pants layers`);
+  }
+  for (const layer of paperdollManifest.layers) {
+    if (!["base-body", "hair", "top", "pants", "shoes", "accessory-back", "accessory-front"].includes(layer.slot)) {
+      fail(`Paperdoll layer ${layer.id} has unsupported slot ${layer.slot}`);
+    }
+    const layerSheet = resolve(root, paperdollRoot, layer.path);
+    if (!existsSync(layerSheet)) fail(`Missing paperdoll layer sheet ${layer.id}`);
+    assertPngSize(layerSheet, 384, 384, `${layer.id} layer sheet`);
+  }
+  if (paperdollManifest.recipes.length < 1) {
+    fail(`${bodyType} paperdoll manifest must include at least one recipe`);
+  }
+  for (const recipe of paperdollManifest.recipes) {
+    for (const slot of ["base-body", "hair", "top", "pants"]) {
+      if (!recipe.slots?.[slot]) fail(`${recipe.id} must define ${slot} slot`);
+    }
+    if (
+      !recipe.appearance ||
+      !["male", "female"].includes(recipe.appearance.gender) ||
+      !["adult", "child", "elder"].includes(recipe.appearance.ageGroup) ||
+      typeof recipe.appearance.hairStyle !== "string" ||
+      typeof recipe.appearance.top !== "string" ||
+      typeof recipe.appearance.pants !== "string"
+    ) {
+      fail(`${recipe.id} must define a valid appearance object`);
+    }
+    if (recipe.status !== "manifest-built-v1") {
+      fail(`${recipe.id} must use manifest-built-v1 status`);
+    }
+    const output = resolve(root, recipe.output);
+    if (!existsSync(output)) fail(`Missing ${recipe.id} output sheet`);
+    assertPngSize(output, 384, 384, `${recipe.id} output sheet`);
+    const recipeDirectory = resolve(root, `public/assets/sprites/traveler-${recipe.id}-v1`);
+    const metadataPath = resolve(recipeDirectory, "pipeline-meta.json");
+    if (!existsSync(metadataPath)) fail(`Missing ${recipe.id} metadata`);
+    const metadata = JSON.parse(readFileSync(metadataPath, "utf8"));
+    if (metadata.spec !== "docs/CHARACTER_ASSET_SPEC.md") {
+      fail(`${recipe.id} metadata must reference CHARACTER_ASSET_SPEC.md`);
+    }
+    assertArrayEquals(metadata.cellSize, [96, 96], `${recipe.id} cell size`);
+    assertArrayEquals(metadata.rows, ["down", "left", "right", "up"], `${recipe.id} rows`);
+    assertArrayEquals(
+      metadata.columns,
+      ["stand", "step-a", "stand", "step-b"],
+      `${recipe.id} columns`
+    );
+    if (metadata.frames.length !== 16) fail(`${recipe.id} must have 16 frames`);
+    if (!metadata.shared_scale) fail(`${recipe.id} must use shared scale`);
+    if (metadata.edge_touch_frames.length > 0) fail(`${recipe.id} touches a cell edge`);
+    if (JSON.stringify(metadata.appearance) !== JSON.stringify(recipe.appearance)) {
+      fail(`${recipe.id} metadata appearance is out of sync with manifest`);
+    }
+    for (const value of [
+      recipe.id,
+      recipe.bodyType,
+      recipe.appearance.gender,
+      recipe.appearance.ageGroup,
+      recipe.appearance.hairStyle,
+      recipe.appearance.top,
+      recipe.appearance.pants
+    ]) {
+      if (!paperdollRecipeSource.includes(`"${value}"`)) {
+        fail(`${recipe.id} is missing ${value} in src/data/paperdollRecipes.ts`);
+      }
+    }
+  }
+}
 const kioskTile = propTileset.tiles.find((tile) => tile.id === 80);
 if (
   JSON.stringify(kioskTile?.animation?.map((frame) => frame.tileid)) !==

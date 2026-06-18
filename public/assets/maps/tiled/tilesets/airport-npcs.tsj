@@ -3,7 +3,7 @@
   "version": "1.10",
   "tiledversion": "1.11.2",
   "name": "airport-npcs",
-  "tilecount": 20,
+  "tilecount": 25,
   "columns": 0,
   "grid": {
     "orientation": "orthogonal",
@@ -261,6 +261,71 @@
       "image": "../../../sprites/duty-free-clerks-animated-v2/clerk-work-12.png",
       "imagewidth": 128,
       "imageheight": 128
+    },
+    {
+      "id": 20,
+      "image": "../../../sprites/traveler-paperdoll-coral-female-v1/traveler-paperdoll-coral-female-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "traveler-paperdoll-coral-female-npc"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "image": "../../../sprites/traveler-paperdoll-beige-male-v1/traveler-paperdoll-beige-male-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "traveler-paperdoll-beige-male-npc"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "image": "../../../sprites/traveler-paperdoll-yellow-male-v1/traveler-paperdoll-yellow-male-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "traveler-paperdoll-yellow-male-npc"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "image": "../../../sprites/traveler-paperdoll-yellow-female-v1/traveler-paperdoll-yellow-female-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "traveler-paperdoll-yellow-female-npc"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "image": "../../../sprites/traveler-paperdoll-lavender-female-v1/traveler-paperdoll-lavender-female-1.png",
+      "imagewidth": 96,
+      "imageheight": 96,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "traveler-paperdoll-lavender-female-npc"
+        }
+      ]
     }
   ]
 }

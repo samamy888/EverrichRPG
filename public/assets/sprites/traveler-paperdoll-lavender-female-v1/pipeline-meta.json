@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-06-18T12:16:06+08:00",
+  "source": "manifest-built accepted paperdoll composite",
+  "spec": "docs/CHARACTER_ASSET_SPEC.md",
+  "recipe": "paperdoll-lavender-female",
+  "bodyType": "adult-female",
+  "appearance": {
+    "gender": "female",
+    "ageGroup": "adult",
+    "hairStyle": "silver-bob",
+    "top": "lavender-cardigan",
+    "pants": "dark-skirt"
+  },
+  "cellSize": [
+    96,
+    96
+  ],
+  "rows": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "columns": [
+    "stand",
+    "step-a",
+    "stand",
+    "step-b"
+  ],
+  "layers": [
+    "base-body",
+    "pants-dark-skirt",
+    "top-lavender-cardigan",
+    "hair-silver-bob"
+  ],
+  "sheet": "sheet-transparent.png",
+  "shared_scale": true,
+  "edge_touch_frames": [],
+  "acceptance": {
+    "standFramesUseClosedFootPose": true,
+    "clothingFitsBaseGuide": true,
+    "travelerScaleMatchesPlayer": true,
+    "fallbackSafe": true
+  },
+  "frames": [
+    "traveler-paperdoll-lavender-female-1.png",
+    "traveler-paperdoll-lavender-female-2.png",
+    "traveler-paperdoll-lavender-female-3.png",
+    "traveler-paperdoll-lavender-female-4.png",
+    "traveler-paperdoll-lavender-female-5.png",
+    "traveler-paperdoll-lavender-female-6.png",
+    "traveler-paperdoll-lavender-female-7.png",
+    "traveler-paperdoll-lavender-female-8.png",
+    "traveler-paperdoll-lavender-female-9.png",
+    "traveler-paperdoll-lavender-female-10.png",
+    "traveler-paperdoll-lavender-female-11.png",
+    "traveler-paperdoll-lavender-female-12.png",
+    "traveler-paperdoll-lavender-female-13.png",
+    "traveler-paperdoll-lavender-female-14.png",
+    "traveler-paperdoll-lavender-female-15.png",
+    "traveler-paperdoll-lavender-female-16.png"
+  ]
+}

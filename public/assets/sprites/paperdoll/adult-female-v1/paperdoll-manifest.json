@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 3,
+  "spec": "docs/CHARACTER_ASSET_SPEC.md",
+  "bodyType": "adult-female",
+  "cellSize": [
+    96,
+    96
+  ],
+  "rows": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "columns": [
+    "stand",
+    "step-a",
+    "stand",
+    "step-b"
+  ],
+  "layerOrder": [
+    "accessory-back",
+    "base-body",
+    "pants",
+    "shoes",
+    "top",
+    "hair",
+    "accessory-front"
+  ],
+  "layers": [
+    {
+      "id": "base-body",
+      "slot": "base-body",
+      "path": "layers/base-body/sheet-transparent.png"
+    },
+    {
+      "id": "hair-bob-brown",
+      "slot": "hair",
+      "path": "layers/hair-bob-brown/sheet-transparent.png"
+    },
+    {
+      "id": "hair-silver-bob",
+      "slot": "hair",
+      "path": "layers/hair-silver-bob/sheet-transparent.png"
+    },
+    {
+      "id": "top-coral-jacket",
+      "slot": "top",
+      "path": "layers/top-coral-jacket/sheet-transparent.png"
+    },
+    {
+      "id": "top-yellow-cardigan",
+      "slot": "top",
+      "path": "layers/top-yellow-cardigan/sheet-transparent.png"
+    },
+    {
+      "id": "top-lavender-cardigan",
+      "slot": "top",
+      "path": "layers/top-lavender-cardigan/sheet-transparent.png"
+    },
+    {
+      "id": "pants-navy-pants",
+      "slot": "pants",
+      "path": "layers/pants-navy-pants/sheet-transparent.png"
+    },
+    {
+      "id": "pants-teal-skirt",
+      "slot": "pants",
+      "path": "layers/pants-teal-skirt/sheet-transparent.png"
+    },
+    {
+      "id": "pants-dark-skirt",
+      "slot": "pants",
+      "path": "layers/pants-dark-skirt/sheet-transparent.png"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "paperdoll-coral-female",
+      "bodyType": "adult-female",
+      "appearance": {
+        "gender": "female",
+        "ageGroup": "adult",
+        "hairStyle": "bob-brown",
+        "top": "coral-jacket",
+        "pants": "navy-pants"
+      },
+      "slots": {
+        "base-body": "base-body",
+        "hair": "hair-bob-brown",
+        "top": "top-coral-jacket",
+        "pants": "pants-navy-pants"
+      },
+      "output": "public/assets/sprites/traveler-paperdoll-coral-female-v1/sheet-transparent.png",
+      "status": "manifest-built-v1"
+    },
+    {
+      "id": "paperdoll-yellow-female",
+      "bodyType": "adult-female",
+      "appearance": {
+        "gender": "female",
+        "ageGroup": "adult",
+        "hairStyle": "bob-brown",
+        "top": "yellow-cardigan",
+        "pants": "teal-skirt"
+      },
+      "slots": {
+        "base-body": "base-body",
+        "hair": "hair-bob-brown",
+        "top": "top-yellow-cardigan",
+        "pants": "pants-teal-skirt"
+      },
+      "output": "public/assets/sprites/traveler-paperdoll-yellow-female-v1/sheet-transparent.png",
+      "status": "manifest-built-v1"
+    },
+    {
+      "id": "paperdoll-lavender-female",
+      "bodyType": "adult-female",
+      "appearance": {
+        "gender": "female",
+        "ageGroup": "adult",
+        "hairStyle": "silver-bob",
+        "top": "lavender-cardigan",
+        "pants": "dark-skirt"
+      },
+      "slots": {
+        "base-body": "base-body",
+        "hair": "hair-silver-bob",
+        "top": "top-lavender-cardigan",
+        "pants": "pants-dark-skirt"
+      },
+      "output": "public/assets/sprites/traveler-paperdoll-lavender-female-v1/sheet-transparent.png",
+      "status": "manifest-built-v1"
+    }
+  ],
+  "acceptanceChecklist": [
+    "allFramesAre96x96",
+    "sheetIs4x4",
+    "standFramesUseClosedFootPose",
+    "clothingFitsBaseGuide",
+    "travelerScaleMatchesPlayer",
+    "noMagentaResidue",
+    "recipeMatchesTravelerAppearance"
+  ]
+}

@@ -11,7 +11,12 @@ public sealed class TravelerConfiguration : IEntityTypeConfiguration<Traveler>
         builder.ToTable("Travelers");
         builder.HasKey(traveler => traveler.Id);
         builder.Property(traveler => traveler.Name).HasMaxLength(80);
-        builder.Property(traveler => traveler.Variant).HasMaxLength(16);
+        builder.Property(traveler => traveler.Variant).HasMaxLength(40);
+        builder.Property(traveler => traveler.Gender).HasMaxLength(16);
+        builder.Property(traveler => traveler.AgeGroup).HasMaxLength(16);
+        builder.Property(traveler => traveler.HairStyle).HasMaxLength(40);
+        builder.Property(traveler => traveler.Top).HasMaxLength(40);
+        builder.Property(traveler => traveler.Pants).HasMaxLength(40);
         builder.Property(traveler => traveler.Dialogue).HasMaxLength(500);
         builder.Property(traveler => traveler.MovementType).HasMaxLength(16);
         builder.Property(traveler => traveler.Facing).HasMaxLength(16);

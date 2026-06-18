@@ -10,6 +10,11 @@ public sealed class Traveler
         Guid id,
         string name,
         string variant,
+        string gender,
+        string ageGroup,
+        string hairStyle,
+        string top,
+        string pants,
         string dialogue,
         string movementType,
         string facing,
@@ -18,6 +23,11 @@ public sealed class Traveler
         Id = id;
         Name = name;
         Variant = variant;
+        Gender = gender;
+        AgeGroup = ageGroup;
+        HairStyle = hairStyle;
+        Top = top;
+        Pants = pants;
         Dialogue = dialogue;
         MovementType = movementType;
         Facing = facing;
@@ -28,6 +38,11 @@ public sealed class Traveler
     public Guid Id { get; private set; }
     public string Name { get; private set; } = "";
     public string Variant { get; private set; } = "";
+    public string Gender { get; private set; } = "";
+    public string AgeGroup { get; private set; } = "";
+    public string HairStyle { get; private set; } = "";
+    public string Top { get; private set; } = "";
+    public string Pants { get; private set; } = "";
     public string Dialogue { get; private set; } = "";
     public string MovementType { get; private set; } = "";
     public string Facing { get; private set; } = "";
@@ -38,5 +53,21 @@ public sealed class Traveler
     public void Rename(string name)
     {
         Name = name;
+    }
+
+    public void ChangeAppearance(
+        string variant,
+        string gender,
+        string ageGroup,
+        string hairStyle,
+        string top,
+        string pants)
+    {
+        Variant = variant;
+        Gender = gender;
+        AgeGroup = ageGroup;
+        HairStyle = hairStyle;
+        Top = top;
+        Pants = pants;
     }
 }

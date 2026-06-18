@@ -17,6 +17,7 @@
     "tiled:quest-dialogue": "node scripts/apply-quest-dialogue.mjs",
     "tiled:effects": "node scripts/apply-environment-effects.mjs",
     "assets:planters": "python scripts/build-planter-animations.py",
+    "assets:paperdoll": "python scripts/build-paperdoll-assets.py",
     "assets:bitmap-font": "python scripts/build-bitmap-font.py",
     "tiled:animated-assets": "node scripts/apply-animated-assets.mjs && node scripts/apply-shop-staff.mjs",
     "tiled:terminal-details": "node scripts/apply-terminal-details.mjs",

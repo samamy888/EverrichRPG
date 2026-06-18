@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-06-18T11:10:12+08:00",
+  "source": "postprocessed from accepted generated composite sheet",
+  "spec": "docs/CHARACTER_ASSET_SPEC.md",
+  "paperdollLayer": "top-lavender-cardigan",
+  "cellSize": [
+    96,
+    96
+  ],
+  "rows": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "columns": [
+    "stand",
+    "step-a",
+    "stand",
+    "step-b"
+  ],
+  "shared_scale": true,
+  "edge_touch_frames": [],
+  "frames": [
+    "top-lavender-cardigan-1.png",
+    "top-lavender-cardigan-2.png",
+    "top-lavender-cardigan-3.png",
+    "top-lavender-cardigan-4.png",
+    "top-lavender-cardigan-5.png",
+    "top-lavender-cardigan-6.png",
+    "top-lavender-cardigan-7.png",
+    "top-lavender-cardigan-8.png",
+    "top-lavender-cardigan-9.png",
+    "top-lavender-cardigan-10.png",
+    "top-lavender-cardigan-11.png",
+    "top-lavender-cardigan-12.png",
+    "top-lavender-cardigan-13.png",
+    "top-lavender-cardigan-14.png",
+    "top-lavender-cardigan-15.png",
+    "top-lavender-cardigan-16.png"
+  ]
+}

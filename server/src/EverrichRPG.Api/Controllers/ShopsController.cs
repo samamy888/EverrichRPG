@@ -72,18 +72,24 @@ public sealed class ShopsController(GameDbContext dbContext) : ControllerBase
             return NotFound();
         }
 
-        var products = await QueryProducts()
-            .Where(product => product.StoreId == shopId)
+        var products = await QueryProducts(shopId)
             .ToArrayAsync(cancellationToken);
 
         return Ok(products);
     }
 
-    private IQueryable<ProductResponse> QueryProducts()
+    private IQueryable<ProductResponse> QueryProducts(string? shopId = null)
     {
-        return dbContext.Products
+        var query = dbContext.Products
             .AsNoTracking()
-            .Where(product => product.IsActive && product.Shop.IsActive)
+            .Where(product => product.IsActive && product.Shop.IsActive);
+
+        if (!string.IsNullOrWhiteSpace(shopId))
+        {
+            query = query.Where(product => product.ShopId == shopId);
+        }
+
+        return query
             .OrderBy(product => product.ShopId)
             .ThenBy(product => product.DisplayOrder)
             .Select(product => new ProductResponse(

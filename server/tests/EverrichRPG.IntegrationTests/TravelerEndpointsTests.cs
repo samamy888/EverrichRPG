@@ -26,6 +26,11 @@ public sealed class TravelerEndpointsTests : IClassFixture<ApiFactory>
         {
             Assert.False(string.IsNullOrWhiteSpace(traveler.Name));
             Assert.Contains(traveler.Variant, TravelerRosterSeeder.Variants);
+            Assert.False(string.IsNullOrWhiteSpace(traveler.Appearance.Gender));
+            Assert.False(string.IsNullOrWhiteSpace(traveler.Appearance.AgeGroup));
+            Assert.False(string.IsNullOrWhiteSpace(traveler.Appearance.HairStyle));
+            Assert.False(string.IsNullOrWhiteSpace(traveler.Appearance.Top));
+            Assert.False(string.IsNullOrWhiteSpace(traveler.Appearance.Pants));
             Assert.True(
                 TravelerRosterSeeder.IsNameCompatibleWithVariant(
                     traveler.Name,

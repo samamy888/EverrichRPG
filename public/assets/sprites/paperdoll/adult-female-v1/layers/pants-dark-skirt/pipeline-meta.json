@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-06-18T11:10:12+08:00",
+  "source": "postprocessed from accepted generated composite sheet",
+  "spec": "docs/CHARACTER_ASSET_SPEC.md",
+  "paperdollLayer": "pants-dark-skirt",
+  "cellSize": [
+    96,
+    96
+  ],
+  "rows": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "columns": [
+    "stand",
+    "step-a",
+    "stand",
+    "step-b"
+  ],
+  "shared_scale": true,
+  "edge_touch_frames": [],
+  "frames": [
+    "pants-dark-skirt-1.png",
+    "pants-dark-skirt-2.png",
+    "pants-dark-skirt-3.png",
+    "pants-dark-skirt-4.png",
+    "pants-dark-skirt-5.png",
+    "pants-dark-skirt-6.png",
+    "pants-dark-skirt-7.png",
+    "pants-dark-skirt-8.png",
+    "pants-dark-skirt-9.png",
+    "pants-dark-skirt-10.png",
+    "pants-dark-skirt-11.png",
+    "pants-dark-skirt-12.png",
+    "pants-dark-skirt-13.png",
+    "pants-dark-skirt-14.png",
+    "pants-dark-skirt-15.png",
+    "pants-dark-skirt-16.png"
+  ]
+}

@@ -6,6 +6,7 @@ import type {
 } from "../data/prototypeRegions";
 import {
   getTravelersForRegion,
+  getTravelerVariantForAppearance,
   isTravelerVariant,
   type TravelerProfile
 } from "../data/travelerDirectory";
@@ -91,9 +92,13 @@ function createTravelerObject(
   profile: TravelerProfile,
   template?: MapObjectData
 ): MapObjectData {
+  const resolvedVariant = getTravelerVariantForAppearance(
+    profile.appearance,
+    profile.variant
+  );
   return {
     id: profile.id,
-    texture: `traveler-${profile.variant}-npc` as MapObjectData["texture"],
+    texture: `traveler-${resolvedVariant}-npc` as MapObjectData["texture"],
     x: template?.x ?? region.width / 2,
     baselineY: template?.baselineY ?? region.height / 2,
     displayWidth: CONFIG.characterDisplaySize,
@@ -113,7 +118,7 @@ function createTravelerObject(
       movementType: profile.movementType,
       facing: profile.facing,
       speed: profile.speed,
-      animationKey: `traveler-${profile.variant}`
+      animationKey: `traveler-${resolvedVariant}`
     }
   };
 }

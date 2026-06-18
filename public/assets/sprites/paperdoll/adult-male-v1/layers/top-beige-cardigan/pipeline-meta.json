@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-06-18T11:10:11+08:00",
+  "source": "postprocessed from accepted generated composite sheet",
+  "spec": "docs/CHARACTER_ASSET_SPEC.md",
+  "paperdollLayer": "top-beige-cardigan",
+  "cellSize": [
+    96,
+    96
+  ],
+  "rows": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "columns": [
+    "stand",
+    "step-a",
+    "stand",
+    "step-b"
+  ],
+  "shared_scale": true,
+  "edge_touch_frames": [],
+  "frames": [
+    "top-beige-cardigan-1.png",
+    "top-beige-cardigan-2.png",
+    "top-beige-cardigan-3.png",
+    "top-beige-cardigan-4.png",
+    "top-beige-cardigan-5.png",
+    "top-beige-cardigan-6.png",
+    "top-beige-cardigan-7.png",
+    "top-beige-cardigan-8.png",
+    "top-beige-cardigan-9.png",
+    "top-beige-cardigan-10.png",
+    "top-beige-cardigan-11.png",
+    "top-beige-cardigan-12.png",
+    "top-beige-cardigan-13.png",
+    "top-beige-cardigan-14.png",
+    "top-beige-cardigan-15.png",
+    "top-beige-cardigan-16.png"
+  ]
+}

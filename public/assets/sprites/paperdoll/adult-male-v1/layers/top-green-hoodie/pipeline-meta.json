@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-06-18T11:10:11+08:00",
+  "source": "postprocessed from accepted generated composite sheet",
+  "spec": "docs/CHARACTER_ASSET_SPEC.md",
+  "paperdollLayer": "top-green-hoodie",
+  "cellSize": [
+    96,
+    96
+  ],
+  "rows": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "columns": [
+    "stand",
+    "step-a",
+    "stand",
+    "step-b"
+  ],
+  "shared_scale": true,
+  "edge_touch_frames": [],
+  "frames": [
+    "top-green-hoodie-1.png",
+    "top-green-hoodie-2.png",
+    "top-green-hoodie-3.png",
+    "top-green-hoodie-4.png",
+    "top-green-hoodie-5.png",
+    "top-green-hoodie-6.png",
+    "top-green-hoodie-7.png",
+    "top-green-hoodie-8.png",
+    "top-green-hoodie-9.png",
+    "top-green-hoodie-10.png",
+    "top-green-hoodie-11.png",
+    "top-green-hoodie-12.png",
+    "top-green-hoodie-13.png",
+    "top-green-hoodie-14.png",
+    "top-green-hoodie-15.png",
+    "top-green-hoodie-16.png"
+  ]
+}

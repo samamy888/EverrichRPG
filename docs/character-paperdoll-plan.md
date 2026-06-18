@@ -1,32 +1,35 @@
 # 角色紙娃娃系統 POC
 
+> 角色資產的正式規格以 `docs/CHARACTER_ASSET_SPEC.md` 為準。本文件只記錄目前 POC 的做法與落地狀態；之後新增或重畫資產時，必須先符合主規格。
+
 ## 目標
 
-用「素體 + 髮型 + 衣褲鞋 + 配件」組合出更多旅客外觀，降低每次新增旅客都要重畫整套角色的成本，並為未來試衣間、換裝、店員制服切換預留擴充點。
+- 用「身體 + 髮型 + 上衣 + 褲子」組合旅客外觀。
+- 先採離線合成，讓現有旅客系統可直接吃完整 sprite sheet。
+- 後續再評估是否改為 runtime layer 疊圖。
 
-## 第一版範圍
+## 目前資料欄位
 
-- Body：`adult-male`
-- Base：安全素體，保留簡化內搭，不使用裸身細節
-- Hair：`hair-tousled-brown`、`hair-sidepart-black`
-- Outfit：`outfit-blue-travel`、`outfit-green-hoodie`
-- Recipe：`paperdoll-blue-male`、`paperdoll-green-male`
+- `gender`：`male`、`female`
+- `ageGroup`：`adult`、`child`、`elder`
+- `hairStyle`：髮型 slug
+- `top`：上衣 slug
+- `pants`：褲子 slug
 
-## 資產規格
+## 目前資產狀態
 
-- 每張 layer 都是 `4x4`、每格 `96x96`
-- Row 順序：`down`、`left`、`right`、`up`
-- Column 順序：`contact`、`passing`、`opposite-contact`、`passing`
-- 背景使用 `#FF00FF`，後處理轉透明
-- 合成順序：`base-body` → `outfit` → `hair`
+- 目前已有少量 POC 紙娃娃配方可對應旅客資料。
+- 若資料組合沒有對應紙娃娃資產，系統會 fallback 到既有 `variant`，避免旅客消失。
+- `paperdoll-blue-male` 已改成規格化 v2 成品，沿用原本遊戲路徑 `public/assets/sprites/traveler-paperdoll-blue-male-v1/sheet-transparent.png`，不用改前端載入邏輯。
+- `paperdoll-green-male` 已改成同骨架的合身 v2 成品，沿用原本遊戲路徑 `public/assets/sprites/traveler-paperdoll-green-male-v1/sheet-transparent.png`。
+- `paperdoll-beige-male`、`paperdoll-yellow-male` 已加入男性成人旅客池。
+- `paperdoll-coral-female` 已建立 `adult-female` 規格化成品，沿用 `public/assets/sprites/traveler-paperdoll-coral-female-v1/sheet-transparent.png`。
+- `paperdoll-yellow-female`、`paperdoll-lavender-female` 已加入女性成人旅客池。
+- `top` / `pants` layer 已從乾淨 outfit layer 拆出，並由 `npm run assets:paperdoll` 重建。
+- 目前看到的「衣服與身體比例不對」屬於 layer 生成時沒有固定 base guide 的問題，後續重畫要依照 `docs/CHARACTER_ASSET_SPEC.md` 重新產生。
 
-## 現階段策略
+## 下一步
 
-目前先採「離線合成」：layer 會保留在 `public/assets/sprites/paperdoll/adult-male-v1`，再輸出成可被現有旅客系統直接使用的完整 sheet。這樣可以先驗證美術與資料格式，不必立刻重寫 `TravelerAI` 的單 sprite 架構。
-
-## 後續方向
-
-- 加入女性、兒童、老人 body base
-- 將 hair、top、bottom、shoes、accessory 拆得更細
-- 後端旅客資料改存 `bodyType` 與 `wardrobeRecipe`
-- 前端可選擇維持離線合成，或升級成 runtime 多 layer sprite 疊圖
+1. 補齊 `adult-female` 更多髮型與服裝 recipe。
+2. 產生合成 preview，人工確認合身後才接入旅客池。
+3. 再擴充 `child` 與 `elder` 的男女 body type。

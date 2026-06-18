@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-06-18T11:10:11+08:00",
+  "source": "postprocessed from accepted generated composite sheet",
+  "spec": "docs/CHARACTER_ASSET_SPEC.md",
+  "paperdollLayer": "top-blue-travel-jacket",
+  "cellSize": [
+    96,
+    96
+  ],
+  "rows": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "columns": [
+    "stand",
+    "step-a",
+    "stand",
+    "step-b"
+  ],
+  "shared_scale": true,
+  "edge_touch_frames": [],
+  "frames": [
+    "top-blue-travel-jacket-1.png",
+    "top-blue-travel-jacket-2.png",
+    "top-blue-travel-jacket-3.png",
+    "top-blue-travel-jacket-4.png",
+    "top-blue-travel-jacket-5.png",
+    "top-blue-travel-jacket-6.png",
+    "top-blue-travel-jacket-7.png",
+    "top-blue-travel-jacket-8.png",
+    "top-blue-travel-jacket-9.png",
+    "top-blue-travel-jacket-10.png",
+    "top-blue-travel-jacket-11.png",
+    "top-blue-travel-jacket-12.png",
+    "top-blue-travel-jacket-13.png",
+    "top-blue-travel-jacket-14.png",
+    "top-blue-travel-jacket-15.png",
+    "top-blue-travel-jacket-16.png"
+  ]
+}

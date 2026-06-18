@@ -48,6 +48,9 @@ Install the .NET 10 Hosting Bundle on Windows Server, create an IIS application 
 
 - `ConnectionStrings__GameDatabase`
 - `Database__Provider=PostgreSql`
+
+For a remotely maintainable production database, use PostgreSQL instead of SQLite.
+See `../docs/PRODUCTION_DATABASE.md` for DBeaver, firewall, and GitHub Actions settings.
 - `Database__ApplyMigrations=false`
 - `Cors__AllowedOrigins__0`
 

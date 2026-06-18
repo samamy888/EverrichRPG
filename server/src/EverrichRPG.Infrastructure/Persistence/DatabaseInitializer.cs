@@ -22,12 +22,14 @@ public static class DatabaseInitializer
         var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
         var databaseProvider = configuration["Database:Provider"] ?? "PostgreSql";
 
-        if (
-            databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase) ||
-            databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase)
-        )
+        if (databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
         {
             await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+        }
+        else if (databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase))
+        {
+            await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+            await EnsureSqliteTravelerAppearanceColumnsAsync(dbContext, cancellationToken);
         }
         else
         {
@@ -38,5 +40,44 @@ public static class DatabaseInitializer
         await catalogSeeder.SeedAsync(cancellationToken);
         var travelerSeeder = scope.ServiceProvider.GetRequiredService<TravelerRosterSeeder>();
         await travelerSeeder.SeedAsync(cancellationToken);
+    }
+
+    private static async Task EnsureSqliteTravelerAppearanceColumnsAsync(
+        GameDbContext dbContext,
+        CancellationToken cancellationToken)
+    {
+        var existingColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var connection = dbContext.Database.GetDbConnection();
+        if (connection.State != System.Data.ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken);
+        }
+
+        await using (var command = connection.CreateCommand())
+        {
+            command.CommandText = "PRAGMA table_info('Travelers');";
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                existingColumns.Add(reader.GetString(1));
+            }
+        }
+
+        foreach (var (name, sql) in new[]
+        {
+            ("Gender", "ALTER TABLE \"Travelers\" ADD COLUMN \"Gender\" TEXT NOT NULL DEFAULT '';"),
+            ("AgeGroup", "ALTER TABLE \"Travelers\" ADD COLUMN \"AgeGroup\" TEXT NOT NULL DEFAULT '';"),
+            ("HairStyle", "ALTER TABLE \"Travelers\" ADD COLUMN \"HairStyle\" TEXT NOT NULL DEFAULT '';"),
+            ("Top", "ALTER TABLE \"Travelers\" ADD COLUMN \"Top\" TEXT NOT NULL DEFAULT '';"),
+            ("Pants", "ALTER TABLE \"Travelers\" ADD COLUMN \"Pants\" TEXT NOT NULL DEFAULT '';")
+        })
+        {
+            if (existingColumns.Contains(name))
+            {
+                continue;
+            }
+
+            await dbContext.Database.ExecuteSqlRawAsync(sql, cancellationToken);
+        }
     }
 }

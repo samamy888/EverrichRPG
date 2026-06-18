@@ -1,4 +1,8 @@
 import { CONFIG } from "../config";
+import {
+  getPaperdollRecipeByVariant,
+  getPaperdollVariantForAppearance as findPaperdollVariantForAppearance
+} from "./paperdollRecipes";
 import type {
   Facing,
   NpcMovementType,
@@ -13,12 +17,49 @@ export type TravelerVariant =
   | "elder-male"
   | "elder-female"
   | "paperdoll-blue-male"
-  | "paperdoll-green-male";
+  | "paperdoll-green-male"
+  | "paperdoll-beige-male"
+  | "paperdoll-yellow-male"
+  | "paperdoll-coral-female"
+  | "paperdoll-yellow-female"
+  | "paperdoll-lavender-female";
+
+export type TravelerGender = "male" | "female";
+export type TravelerAgeGroup = "adult" | "child" | "elder";
+export type TravelerHairStyle =
+  | "tousled-brown"
+  | "sidepart-black"
+  | "bob-brown"
+  | "silver-short"
+  | "silver-bob";
+export type TravelerTop =
+  | "blue-travel-jacket"
+  | "green-hoodie"
+  | "coral-jacket"
+  | "yellow-cardigan"
+  | "beige-cardigan"
+  | "lavender-cardigan";
+export type TravelerPants =
+  | "dark-trousers"
+  | "beige-chinos"
+  | "navy-pants"
+  | "teal-skirt"
+  | "charcoal-pants"
+  | "dark-skirt";
+
+export interface TravelerAppearance {
+  gender: TravelerGender;
+  ageGroup: TravelerAgeGroup;
+  hairStyle: TravelerHairStyle;
+  top: TravelerTop;
+  pants: TravelerPants;
+}
 
 export interface TravelerProfile {
   id: string;
   name: string;
   variant: TravelerVariant;
+  appearance: TravelerAppearance;
   dialogue: string;
   movementType: NpcMovementType;
   facing: Facing;
@@ -26,9 +67,14 @@ export interface TravelerProfile {
 }
 
 interface TravelerRosterResponse {
-  schemaVersion: 2;
-  travelers: TravelerProfile[];
+  schemaVersion: number;
+  travelers: TravelerRosterItem[];
 }
+
+type TravelerRosterItem = Omit<TravelerProfile, "appearance"> &
+  Partial<TravelerAppearance> & {
+    appearance?: TravelerAppearance;
+  };
 
 export type TravelerRosterSource = "api" | "local";
 
@@ -51,6 +97,95 @@ export function getTravelerGender(variant: TravelerVariant): "male" | "female" {
   return variant === "male" || variant.endsWith("-male") ? "male" : "female";
 }
 
+export function getTravelerVariantForAppearance(
+  appearance: TravelerAppearance,
+  fallbackVariant: TravelerVariant
+): TravelerVariant {
+  const paperdollVariant = findPaperdollVariantForAppearance(appearance);
+  if (paperdollVariant) return paperdollVariant;
+  if (appearance.ageGroup === "child") {
+    return appearance.gender === "male" ? "child-male" : "child-female";
+  }
+  if (appearance.ageGroup === "elder") {
+    return appearance.gender === "male" ? "elder-male" : "elder-female";
+  }
+  return fallbackVariant;
+}
+
+export function getDefaultAppearanceForVariant(
+  variant: TravelerVariant
+): TravelerAppearance {
+  const paperdollRecipe = getPaperdollRecipeByVariant(variant);
+  if (paperdollRecipe) return paperdollRecipe.appearance;
+
+  switch (variant) {
+    case "male":
+      return {
+        gender: "male",
+        ageGroup: "adult",
+        hairStyle: "tousled-brown",
+        top: "blue-travel-jacket",
+        pants: "dark-trousers"
+      };
+    case "female":
+      return {
+        gender: "female",
+        ageGroup: "adult",
+        hairStyle: "bob-brown",
+        top: "coral-jacket",
+        pants: "navy-pants"
+      };
+    case "child-male":
+      return {
+        gender: "male",
+        ageGroup: "child",
+        hairStyle: "tousled-brown",
+        top: "green-hoodie",
+        pants: "dark-trousers"
+      };
+    case "child-female":
+      return {
+        gender: "female",
+        ageGroup: "child",
+        hairStyle: "bob-brown",
+        top: "yellow-cardigan",
+        pants: "teal-skirt"
+      };
+    case "elder-male":
+      return {
+        gender: "male",
+        ageGroup: "elder",
+        hairStyle: "silver-short",
+        top: "beige-cardigan",
+        pants: "charcoal-pants"
+      };
+    case "elder-female":
+      return {
+        gender: "female",
+        ageGroup: "elder",
+        hairStyle: "silver-bob",
+        top: "lavender-cardigan",
+        pants: "dark-skirt"
+      };
+  }
+
+  return getTravelerGender(variant) === "male"
+    ? {
+        gender: "male",
+        ageGroup: "adult",
+        hairStyle: "tousled-brown",
+        top: "blue-travel-jacket",
+        pants: "dark-trousers"
+      }
+    : {
+        gender: "female",
+        ageGroup: "adult",
+        hairStyle: "bob-brown",
+        top: "coral-jacket",
+        pants: "navy-pants"
+      };
+}
+
 export const TRAVELER_VARIANTS = [
   "male",
   "female",
@@ -59,7 +194,12 @@ export const TRAVELER_VARIANTS = [
   "elder-male",
   "elder-female",
   "paperdoll-blue-male",
-  "paperdoll-green-male"
+  "paperdoll-green-male",
+  "paperdoll-beige-male",
+  "paperdoll-yellow-male",
+  "paperdoll-coral-female",
+  "paperdoll-yellow-female",
+  "paperdoll-lavender-female"
 ] as const satisfies readonly TravelerVariant[];
 
 const POPULATION_RANGES: Record<RegionId, readonly [number, number]> = {
@@ -182,7 +322,7 @@ export async function syncTravelerRoster(): Promise<TravelerRosterSource> {
       throw new Error("Traveler selection response is invalid.");
     }
 
-    resetSessionPool(roster.travelers);
+    resetSessionPool(roster.travelers.map(normalizeTravelerProfile));
     rosterSource = "api";
   } catch (error) {
     resetSessionPool(createLocalSessionPool());
@@ -212,6 +352,7 @@ function createLocalSessionPool(): TravelerProfile[] {
   };
 
   return variants.map((variant, index) => ({
+    appearance: getDefaultAppearanceForVariant(variant),
     id: `local-traveler-${index + 1}`,
     name: namesByGender[getTravelerGender(variant)].pop()!,
     variant,
@@ -232,7 +373,7 @@ function createNames(givenNames: readonly string[]): string[] {
 
 function isTravelerRoster(value: TravelerRosterResponse): boolean {
   return (
-    value?.schemaVersion === 2 &&
+    value?.schemaVersion >= 2 &&
     Array.isArray(value.travelers) &&
     value.travelers.length > 0 &&
     value.travelers.every(
@@ -241,7 +382,6 @@ function isTravelerRoster(value: TravelerRosterResponse): boolean {
         typeof traveler.name === "string" &&
         traveler.name.trim().length > 0 &&
         isTravelerVariant(traveler.variant) &&
-        isTravelerNameCompatibleWithVariant(traveler.name, traveler.variant) &&
         typeof traveler.dialogue === "string" &&
         (traveler.movementType === "idle" ||
           traveler.movementType === "wander" ||
@@ -251,8 +391,91 @@ function isTravelerRoster(value: TravelerRosterResponse): boolean {
           traveler.facing === "left" ||
           traveler.facing === "right") &&
         Number.isInteger(traveler.speed) &&
-        traveler.speed > 0
+        traveler.speed > 0 &&
+        (traveler.appearance === undefined ||
+          isTravelerAppearance(traveler.appearance)) &&
+        (traveler.appearance !== undefined ||
+          hasFlatTravelerAppearance(traveler) ||
+          isTravelerVariant(traveler.variant))
     )
+  );
+}
+
+function normalizeTravelerProfile(traveler: TravelerRosterItem): TravelerProfile {
+  const appearance =
+    traveler.appearance ??
+    (hasFlatTravelerAppearance(traveler)
+      ? {
+          gender: traveler.gender,
+          ageGroup: traveler.ageGroup,
+          hairStyle: traveler.hairStyle,
+          top: traveler.top,
+          pants: traveler.pants
+        }
+      : getDefaultAppearanceForVariant(traveler.variant));
+  const variant = getTravelerVariantForAppearance(appearance, traveler.variant);
+  return { ...traveler, appearance, variant };
+}
+
+function hasFlatTravelerAppearance(
+  traveler: TravelerRosterItem
+): traveler is TravelerRosterItem & TravelerAppearance {
+  return (
+    isTravelerGender(traveler.gender) &&
+    isTravelerAgeGroup(traveler.ageGroup) &&
+    isTravelerHairStyle(traveler.hairStyle) &&
+    isTravelerTop(traveler.top) &&
+    isTravelerPants(traveler.pants)
+  );
+}
+
+function isTravelerAppearance(value: TravelerAppearance): boolean {
+  return (
+    isTravelerGender(value.gender) &&
+    isTravelerAgeGroup(value.ageGroup) &&
+    isTravelerHairStyle(value.hairStyle) &&
+    isTravelerTop(value.top) &&
+    isTravelerPants(value.pants)
+  );
+}
+
+function isTravelerGender(value: unknown): value is TravelerGender {
+  return value === "male" || value === "female";
+}
+
+function isTravelerAgeGroup(value: unknown): value is TravelerAgeGroup {
+  return value === "adult" || value === "child" || value === "elder";
+}
+
+function isTravelerHairStyle(value: unknown): value is TravelerHairStyle {
+  return (
+    value === "tousled-brown" ||
+    value === "sidepart-black" ||
+    value === "bob-brown" ||
+    value === "silver-short" ||
+    value === "silver-bob"
+  );
+}
+
+function isTravelerTop(value: unknown): value is TravelerTop {
+  return (
+    value === "blue-travel-jacket" ||
+    value === "green-hoodie" ||
+    value === "coral-jacket" ||
+    value === "yellow-cardigan" ||
+    value === "beige-cardigan" ||
+    value === "lavender-cardigan"
+  );
+}
+
+function isTravelerPants(value: unknown): value is TravelerPants {
+  return (
+    value === "dark-trousers" ||
+    value === "beige-chinos" ||
+    value === "navy-pants" ||
+    value === "teal-skirt" ||
+    value === "charcoal-pants" ||
+    value === "dark-skirt"
   );
 }
 

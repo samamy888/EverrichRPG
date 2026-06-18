@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { CONFIG } from "../config";
 import type { MapObjectData, RegionData } from "../data/prototypeRegions";
-import type { TravelerProfile } from "../data/travelerDirectory";
+import {
+  getDefaultAppearanceForVariant,
+  type TravelerProfile
+} from "../data/travelerDirectory";
 import {
   createRandomTravelerPopulation,
   isTravelerObject,
@@ -55,6 +58,7 @@ function createProfiles(count: number): TravelerProfile[] {
     id: `traveler-${index + 1}`,
     name: `旅客${index + 1}`,
     variant: variants[index % variants.length]!,
+    appearance: getDefaultAppearanceForVariant(variants[index % variants.length]!),
     dialogue: "我正在找伴手禮。",
     movementType: "wander",
     facing: "down",
@@ -169,6 +173,118 @@ describe("TravelerPopulation", () => {
 
     expect(objects.filter(isTravelerObject)).toHaveLength(0);
   });
+
+  it("resolves paperdoll outfit fields into a composed traveler sprite", () => {
+    const region = createRegion();
+    const profile = createProfiles(1)[0]!;
+    profile.variant = "male";
+    profile.appearance = {
+      gender: "male",
+      ageGroup: "adult",
+      hairStyle: "sidepart-black",
+      top: "green-hoodie",
+      pants: "beige-chinos"
+    };
+
+    const objects = createRandomTravelerPopulation(
+      region,
+      new SequenceRandom([0, 1, 2, 3]),
+      [profile]
+    );
+    const [traveler] = objects.filter(isTravelerObject);
+
+    expect(traveler?.texture).toBe("traveler-paperdoll-green-male-npc");
+    expect(traveler?.npcBehavior?.animationKey).toBe("traveler-paperdoll-green-male");
+  });
+
+  it("resolves female paperdoll fields into a composed traveler sprite", () => {
+    const region = createRegion();
+    const profile = createProfiles(1)[0]!;
+    profile.variant = "female";
+    profile.appearance = {
+      gender: "female",
+      ageGroup: "adult",
+      hairStyle: "bob-brown",
+      top: "coral-jacket",
+      pants: "navy-pants"
+    };
+
+    const objects = createRandomTravelerPopulation(
+      region,
+      new SequenceRandom([0, 1, 2, 3]),
+      [profile]
+    );
+    const [traveler] = objects.filter(isTravelerObject);
+
+    expect(traveler?.texture).toBe("traveler-paperdoll-coral-female-npc");
+    expect(traveler?.npcBehavior?.animationKey).toBe("traveler-paperdoll-coral-female");
+  });
+
+  it("resolves additional paperdoll recipes into composed traveler sprites", () => {
+    const recipes: Array<{
+      appearance: TravelerProfile["appearance"];
+      expectedVariant: TravelerProfile["variant"];
+    }> = [
+      {
+        appearance: {
+          gender: "male",
+          ageGroup: "adult",
+          hairStyle: "tousled-brown",
+          top: "beige-cardigan",
+          pants: "charcoal-pants"
+        },
+        expectedVariant: "paperdoll-beige-male"
+      },
+      {
+        appearance: {
+          gender: "male",
+          ageGroup: "adult",
+          hairStyle: "sidepart-black",
+          top: "yellow-cardigan",
+          pants: "dark-trousers"
+        },
+        expectedVariant: "paperdoll-yellow-male"
+      },
+      {
+        appearance: {
+          gender: "female",
+          ageGroup: "adult",
+          hairStyle: "bob-brown",
+          top: "yellow-cardigan",
+          pants: "teal-skirt"
+        },
+        expectedVariant: "paperdoll-yellow-female"
+      },
+      {
+        appearance: {
+          gender: "female",
+          ageGroup: "adult",
+          hairStyle: "silver-bob",
+          top: "lavender-cardigan",
+          pants: "dark-skirt"
+        },
+        expectedVariant: "paperdoll-lavender-female"
+      }
+    ];
+
+    for (const [index, recipe] of recipes.entries()) {
+      const region = createRegion();
+      const profile = createProfiles(1)[0]!;
+      profile.variant = recipe.appearance.gender;
+      profile.appearance = recipe.appearance;
+
+      const objects = createRandomTravelerPopulation(
+        region,
+        new SequenceRandom([index, 1, 2, 3]),
+        [profile]
+      );
+      const [traveler] = objects.filter(isTravelerObject);
+
+      expect(traveler?.texture).toBe(`traveler-${recipe.expectedVariant}-npc`);
+      expect(traveler?.npcBehavior?.animationKey).toBe(`traveler-${recipe.expectedVariant}`);
+    }
+  });
+
 });
 
 function intersects(

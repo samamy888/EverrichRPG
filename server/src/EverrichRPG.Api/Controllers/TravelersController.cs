@@ -60,6 +60,12 @@ public sealed class TravelersController(GameDbContext dbContext) : ControllerBas
                 traveler.Id,
                 traveler.Name,
                 traveler.Variant,
+                new TravelerAppearanceResponse(
+                    traveler.Gender,
+                    traveler.AgeGroup,
+                    traveler.HairStyle,
+                    traveler.Top,
+                    traveler.Pants),
                 traveler.Dialogue,
                 traveler.MovementType,
                 traveler.Facing,
@@ -75,7 +81,15 @@ public sealed record TravelerResponse(
     Guid Id,
     string Name,
     string Variant,
+    TravelerAppearanceResponse Appearance,
     string Dialogue,
     string MovementType,
     string Facing,
     int Speed);
+
+public sealed record TravelerAppearanceResponse(
+    string Gender,
+    string AgeGroup,
+    string HairStyle,
+    string Top,
+    string Pants);

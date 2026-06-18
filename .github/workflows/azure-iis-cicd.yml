@@ -113,6 +113,8 @@ jobs:
       PUBLIC_HEALTH_URL: ${{ vars.IIS_HEALTH_URL }}
       REQUIRE_PUBLIC_HEALTH: ${{ vars.IIS_REQUIRE_PUBLIC_HEALTH || 'false' }}
       BACKUP_ROOT: ${{ vars.IIS_BACKUP_ROOT }}
+      DATABASE_PROVIDER: ${{ vars.IIS_DATABASE_PROVIDER || 'PostgreSql' }}
+      DATABASE_CONNECTION_STRING: ${{ secrets.IIS_DATABASE_CONNECTION_STRING }}
 
     steps:
       - name: Download deployment package
@@ -143,6 +145,10 @@ jobs:
 
           if (-not $env:INTERNAL_HEALTH_URL) {
             "INTERNAL_HEALTH_URL=http://localhost:5080/api/v1/health/ready" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          }
+
+          if (-not $env:DATABASE_CONNECTION_STRING) {
+            Write-Warning "IIS_DATABASE_CONNECTION_STRING is not configured. API will use packaged appsettings."
           }
 
       - name: Stop IIS app pools
@@ -224,6 +230,30 @@ jobs:
           if (Test-Path $appOfflinePath) {
             Remove-Item -LiteralPath $appOfflinePath -Force
           }
+
+      - name: Configure production database
+        shell: powershell
+        run: |
+          if (-not $env:DATABASE_CONNECTION_STRING) {
+            Write-Warning "Skipping appsettings.Production.json because IIS_DATABASE_CONNECTION_STRING is not configured."
+            exit 0
+          }
+
+          $settings = [ordered]@{
+            ConnectionStrings = [ordered]@{
+              GameDatabase = $env:DATABASE_CONNECTION_STRING
+            }
+            Database = [ordered]@{
+              Provider = $env:DATABASE_PROVIDER
+              ApplyMigrations = $true
+            }
+          }
+
+          $settings |
+            ConvertTo-Json -Depth 5 |
+            Set-Content -Path (Join-Path $env:API_PATH "appsettings.Production.json") -Encoding UTF8
+
+          Write-Host "Production database settings were written to appsettings.Production.json."
 
       - name: Start IIS app pools
         if: always()

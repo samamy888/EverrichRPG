@@ -1,0 +1,1 @@
+Split pants layer from generated outfit-green-hoodie layer.
