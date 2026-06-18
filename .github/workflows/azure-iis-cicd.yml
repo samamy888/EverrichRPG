@@ -257,50 +257,73 @@ jobs:
           $webConfigPath = Join-Path $env:API_PATH "web.config"
           if (Test-Path $webConfigPath) {
             [xml]$webConfig = Get-Content $webConfigPath
-            $aspNetCore = $webConfig.configuration.'system.webServer'.aspNetCore
-            if (-not $aspNetCore) {
-              throw "API web.config does not contain system.webServer/aspNetCore."
-            }
-
-            $logsPath = Join-Path $env:API_PATH "logs"
-            New-Item -ItemType Directory -Force $logsPath | Out-Null
-            $aspNetCore.SetAttribute("stdoutLogEnabled", "true")
-            $aspNetCore.SetAttribute("stdoutLogFile", ".\logs\stdout")
-
-            $environmentVariables = $aspNetCore.environmentVariables
-            if (-not $environmentVariables) {
-              $environmentVariables = $webConfig.CreateElement("environmentVariables")
-              [void]$aspNetCore.AppendChild($environmentVariables)
-            }
-
-            function Set-WebConfigEnvironmentVariable {
-              param(
-                [xml]$Document,
-                [System.Xml.XmlElement]$Container,
-                [string]$Name,
-                [string]$Value
-              )
-
-              $variable = $Container.add | Where-Object { $_.name -eq $Name } | Select-Object -First 1
-              if (-not $variable) {
-                $variable = $Document.CreateElement("add")
-                $variable.SetAttribute("name", $Name)
-                [void]$Container.AppendChild($variable)
-              }
-              $variable.SetAttribute("value", $Value)
-            }
-
-            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "ASPNETCORE_ENVIRONMENT" "Production"
-            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "ConnectionStrings__GameDatabase" $env:DATABASE_CONNECTION_STRING
-            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Database__Provider" $env:DATABASE_PROVIDER
-            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Database__ApplyMigrations" "true"
-            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Serilog__WriteTo__1__Args__path" "logs/app-.clef"
-            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Serilog__WriteTo__1__Args__retainedFileCountLimit" "14"
-            if ($env:DIAGNOSTICS_LOG_ACCESS_TOKEN) {
-              Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Diagnostics__LogAccessToken" $env:DIAGNOSTICS_LOG_ACCESS_TOKEN
-            }
-            $webConfig.Save($webConfigPath)
           }
+          else {
+            [xml]$webConfig = New-Object System.Xml.XmlDocument
+            [void]$webConfig.AppendChild($webConfig.CreateXmlDeclaration("1.0", "utf-8", $null))
+            [void]$webConfig.AppendChild($webConfig.CreateElement("configuration"))
+          }
+
+          $configuration = $webConfig.configuration
+          if (-not $configuration) {
+            $configuration = $webConfig.CreateElement("configuration")
+            $webConfig.RemoveAll()
+            [void]$webConfig.AppendChild($configuration)
+          }
+
+          $systemWebServer = $configuration.'system.webServer'
+          if (-not $systemWebServer) {
+            $systemWebServer = $webConfig.CreateElement("system.webServer")
+            [void]$configuration.AppendChild($systemWebServer)
+          }
+
+          $aspNetCore = $systemWebServer.aspNetCore
+          if (-not $aspNetCore) {
+            $aspNetCore = $webConfig.CreateElement("aspNetCore")
+            $aspNetCore.SetAttribute("processPath", "dotnet")
+            $aspNetCore.SetAttribute("arguments", ".\EverrichRPG.Api.dll")
+            $aspNetCore.SetAttribute("hostingModel", "inprocess")
+            [void]$systemWebServer.AppendChild($aspNetCore)
+          }
+
+          $logsPath = Join-Path $env:API_PATH "logs"
+          New-Item -ItemType Directory -Force $logsPath | Out-Null
+          $aspNetCore.SetAttribute("stdoutLogEnabled", "true")
+          $aspNetCore.SetAttribute("stdoutLogFile", ".\logs\stdout")
+
+          $environmentVariables = $aspNetCore.environmentVariables
+          if (-not $environmentVariables) {
+            $environmentVariables = $webConfig.CreateElement("environmentVariables")
+            [void]$aspNetCore.AppendChild($environmentVariables)
+          }
+
+          function Set-WebConfigEnvironmentVariable {
+            param(
+              [xml]$Document,
+              [System.Xml.XmlElement]$Container,
+              [string]$Name,
+              [string]$Value
+            )
+
+            $variable = $Container.add | Where-Object { $_.name -eq $Name } | Select-Object -First 1
+            if (-not $variable) {
+              $variable = $Document.CreateElement("add")
+              $variable.SetAttribute("name", $Name)
+              [void]$Container.AppendChild($variable)
+            }
+            $variable.SetAttribute("value", $Value)
+          }
+
+          Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "ASPNETCORE_ENVIRONMENT" "Production"
+          Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "ConnectionStrings__GameDatabase" $env:DATABASE_CONNECTION_STRING
+          Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Database__Provider" $env:DATABASE_PROVIDER
+          Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Database__ApplyMigrations" "true"
+          Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Serilog__WriteTo__1__Args__path" "logs/app-.clef"
+          Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Serilog__WriteTo__1__Args__retainedFileCountLimit" "14"
+          if ($env:DIAGNOSTICS_LOG_ACCESS_TOKEN) {
+            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Diagnostics__LogAccessToken" $env:DIAGNOSTICS_LOG_ACCESS_TOKEN
+          }
+          $webConfig.Save($webConfigPath)
 
           $maskedConnectionString = $env:DATABASE_CONNECTION_STRING -replace "Password=[^;]*", "Password=***"
           Write-Host "Database provider: $env:DATABASE_PROVIDER"
