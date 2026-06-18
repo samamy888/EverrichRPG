@@ -253,6 +253,52 @@ jobs:
             ConvertTo-Json -Depth 5 |
             Set-Content -Path (Join-Path $env:API_PATH "appsettings.Production.json") -Encoding UTF8
 
+          $webConfigPath = Join-Path $env:API_PATH "web.config"
+          if (Test-Path $webConfigPath) {
+            [xml]$webConfig = Get-Content $webConfigPath
+            $aspNetCore = $webConfig.configuration.'system.webServer'.aspNetCore
+            if (-not $aspNetCore) {
+              throw "API web.config does not contain system.webServer/aspNetCore."
+            }
+
+            $logsPath = Join-Path $env:API_PATH "logs"
+            New-Item -ItemType Directory -Force $logsPath | Out-Null
+            $aspNetCore.SetAttribute("stdoutLogEnabled", "true")
+            $aspNetCore.SetAttribute("stdoutLogFile", ".\logs\stdout")
+
+            $environmentVariables = $aspNetCore.environmentVariables
+            if (-not $environmentVariables) {
+              $environmentVariables = $webConfig.CreateElement("environmentVariables")
+              [void]$aspNetCore.AppendChild($environmentVariables)
+            }
+
+            function Set-WebConfigEnvironmentVariable {
+              param(
+                [xml]$Document,
+                [System.Xml.XmlElement]$Container,
+                [string]$Name,
+                [string]$Value
+              )
+
+              $variable = $Container.add | Where-Object { $_.name -eq $Name } | Select-Object -First 1
+              if (-not $variable) {
+                $variable = $Document.CreateElement("add")
+                $variable.SetAttribute("name", $Name)
+                [void]$Container.AppendChild($variable)
+              }
+              $variable.SetAttribute("value", $Value)
+            }
+
+            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "ASPNETCORE_ENVIRONMENT" "Production"
+            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "ConnectionStrings__GameDatabase" $env:DATABASE_CONNECTION_STRING
+            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Database__Provider" $env:DATABASE_PROVIDER
+            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Database__ApplyMigrations" "true"
+            $webConfig.Save($webConfigPath)
+          }
+
+          $maskedConnectionString = $env:DATABASE_CONNECTION_STRING -replace "Password=[^;]*", "Password=***"
+          Write-Host "Database provider: $env:DATABASE_PROVIDER"
+          Write-Host "Database connection string: $maskedConnectionString"
           Write-Host "Production database settings were written to appsettings.Production.json."
 
       - name: Start IIS app pools
@@ -303,6 +349,20 @@ jobs:
             }
             catch {
               $lastError = $_.Exception.Message
+              if ($_.Exception.Response) {
+                try {
+                  $statusCode = [int]$_.Exception.Response.StatusCode
+                  $responseStream = $_.Exception.Response.GetResponseStream()
+                  $reader = New-Object System.IO.StreamReader($responseStream)
+                  $responseBody = $reader.ReadToEnd()
+                  if ($responseBody) {
+                    $lastError = "$lastError Status: $statusCode. Body: $responseBody"
+                  }
+                }
+                catch {
+                  Write-Host "Failed to read health error body: $($_.Exception.Message)"
+                }
+              }
               Write-Host "Internal health check failed: $lastError"
             }
 
@@ -321,6 +381,25 @@ jobs:
 
           Write-Host "Listening TCP ports:"
           netstat -ano | Select-String -Pattern "LISTENING|:5080"
+
+          Write-Host "API appsettings files:"
+          Get-ChildItem -Path $env:API_PATH -Filter "appsettings*.json" |
+            Select-Object Name, Length, LastWriteTime |
+            Format-Table -AutoSize
+
+          Write-Host "Recent API stdout logs:"
+          $stdoutLogs = Get-ChildItem -Path (Join-Path $env:API_PATH "logs") -Filter "stdout*.log" -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 3
+          foreach ($log in $stdoutLogs) {
+            Write-Host "--- $($log.FullName) ---"
+            Get-Content $log.FullName -Tail 80
+          }
+
+          Write-Host "Recent Application event log errors:"
+          Get-EventLog -LogName Application -Newest 40 -EntryType Error,Warning -ErrorAction SilentlyContinue |
+            Select-Object TimeGenerated, Source, EventID, Message |
+            Format-List
 
           throw "Internal API health check did not pass after $maxAttempts attempts. Last error: $lastError. Check API IIS binding, port 5080, API app pool, and IIS_INTERNAL_HEALTH_URL."
 

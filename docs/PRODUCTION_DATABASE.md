@@ -97,3 +97,51 @@ Data Source=everrich-rpg-dev.db
 ```
 
 這樣本地開發不需要安裝 PostgreSQL。
+
+## 6. CI/CD health check 500 排查
+
+如果 GitHub Actions 在 `Check internal API health` 出現：
+
+```text
+Internal API health check ... (500) Internal Server Error
+```
+
+優先在 VM 上檢查：
+
+```powershell
+Test-NetConnection localhost -Port 5432
+Test-NetConnection localhost -Port 5080
+```
+
+確認 PostgreSQL 登入：
+
+```powershell
+& "C:\Program Files\PostgreSQL\18\bin\psql.exe" `
+  -h localhost `
+  -p 5432 `
+  -U everrich_app `
+  -d everrich_rpg
+```
+
+進入 `psql` 後：
+
+```sql
+SELECT current_database(), current_user;
+SELECT COUNT(*) FROM "Travelers";
+SELECT COUNT(*) FROM "Products";
+```
+
+查看 API 實際使用的設定：
+
+```powershell
+Get-Content "你的 API IIS 路徑\appsettings.Production.json"
+Get-Content "你的 API IIS 路徑\web.config"
+```
+
+常見原因：
+
+- `IIS_DATABASE_CONNECTION_STRING` 沒設，或密碼錯。
+- PostgreSQL 沒啟動。
+- `everrich_rpg` database 不存在。
+- `everrich_app` 權限不足。
+- Migration 失敗，檢查 `你的 API IIS 路徑\logs\stdout*.log`。
