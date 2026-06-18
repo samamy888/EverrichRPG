@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-06-18T08:25:16+0800",
+  "source": "paperdoll layer composite",
+  "recipe": "paperdoll-blue-male",
+  "layers": [
+    "base-body",
+    "outfit-blue-travel",
+    "hair-tousled-brown"
+  ],
+  "sheet": "sheet-transparent.png",
+  "frames": [
+    "traveler-paperdoll-blue-male-1.png",
+    "traveler-paperdoll-blue-male-2.png",
+    "traveler-paperdoll-blue-male-3.png",
+    "traveler-paperdoll-blue-male-4.png",
+    "traveler-paperdoll-blue-male-5.png",
+    "traveler-paperdoll-blue-male-6.png",
+    "traveler-paperdoll-blue-male-7.png",
+    "traveler-paperdoll-blue-male-8.png",
+    "traveler-paperdoll-blue-male-9.png",
+    "traveler-paperdoll-blue-male-10.png",
+    "traveler-paperdoll-blue-male-11.png",
+    "traveler-paperdoll-blue-male-12.png",
+    "traveler-paperdoll-blue-male-13.png",
+    "traveler-paperdoll-blue-male-14.png",
+    "traveler-paperdoll-blue-male-15.png",
+    "traveler-paperdoll-blue-male-16.png"
+  ]
+}

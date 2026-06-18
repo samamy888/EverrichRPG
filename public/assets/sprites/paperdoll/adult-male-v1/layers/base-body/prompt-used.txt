@@ -1,0 +1,5 @@
+Create a paper-doll BASE BODY walking sprite sheet for an adult male airport traveler NPC in the same EverrichRPG polished GBA-era retro pixel-art style as the visible reference. This is NOT a nude body: use a safe neutral mannequin-like base with simple skin-tone head/arms and a plain tight light-gray undershirt + simple neutral shorts/leggings, no hair, no outer clothes, no shoes details, no bag, no accessories. Keep it suitable for layering clothes and hair on top.
+
+Exact layout: 4 columns x 4 rows on solid pure #FF00FF magenta background, no visible grid, no labels, no text, no shadows, no floor. Each invisible cell is 96x96-style. Full body centered, stable feet/bottom anchor, consistent scale and pose across frames.
+
+Rows top to bottom: down/front walk, left walk, right walk, up/back walk. Columns per row: contact, passing, opposite contact, passing. Keep the same head/body proportions, chibi adult male traveler silhouette, crisp outline, no facial hair, no hair.

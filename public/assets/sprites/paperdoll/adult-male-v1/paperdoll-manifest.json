@@ -1,0 +1,46 @@
+{
+  "bodyType": "adult-male",
+  "cellSize": [
+    96,
+    96
+  ],
+  "rows": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "columns": [
+    "contact",
+    "passing",
+    "opposite-contact",
+    "passing"
+  ],
+  "layers": [
+    "base-body",
+    "hair-tousled-brown",
+    "hair-sidepart-black",
+    "outfit-blue-travel",
+    "outfit-green-hoodie"
+  ],
+  "recipes": [
+    {
+      "id": "paperdoll-blue-male",
+      "layers": [
+        "base-body",
+        "outfit-blue-travel",
+        "hair-tousled-brown"
+      ],
+      "output": "public/assets/sprites/traveler-paperdoll-blue-male-v1/sheet-transparent.png"
+    },
+    {
+      "id": "paperdoll-green-male",
+      "layers": [
+        "base-body",
+        "outfit-green-hoodie",
+        "hair-sidepart-black"
+      ],
+      "output": "public/assets/sprites/traveler-paperdoll-green-male-v1/sheet-transparent.png"
+    }
+  ]
+}

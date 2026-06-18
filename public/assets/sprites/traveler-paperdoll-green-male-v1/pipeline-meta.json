@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-06-18T08:25:16+0800",
+  "source": "paperdoll layer composite",
+  "recipe": "paperdoll-green-male",
+  "layers": [
+    "base-body",
+    "outfit-green-hoodie",
+    "hair-sidepart-black"
+  ],
+  "sheet": "sheet-transparent.png",
+  "frames": [
+    "traveler-paperdoll-green-male-1.png",
+    "traveler-paperdoll-green-male-2.png",
+    "traveler-paperdoll-green-male-3.png",
+    "traveler-paperdoll-green-male-4.png",
+    "traveler-paperdoll-green-male-5.png",
+    "traveler-paperdoll-green-male-6.png",
+    "traveler-paperdoll-green-male-7.png",
+    "traveler-paperdoll-green-male-8.png",
+    "traveler-paperdoll-green-male-9.png",
+    "traveler-paperdoll-green-male-10.png",
+    "traveler-paperdoll-green-male-11.png",
+    "traveler-paperdoll-green-male-12.png",
+    "traveler-paperdoll-green-male-13.png",
+    "traveler-paperdoll-green-male-14.png",
+    "traveler-paperdoll-green-male-15.png",
+    "traveler-paperdoll-green-male-16.png"
+  ]
+}

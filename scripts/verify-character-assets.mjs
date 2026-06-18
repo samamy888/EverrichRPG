@@ -76,9 +76,9 @@ if (selfOrderKioskPipeline.edge_touch_frames.length > 0) {
 }
 
 for (const [tileId, expectedFrames] of [
-  [0, [0, 9, 10, 11]],
-  [1, [1, 12, 13, 14]],
-  [2, [2, 15, 16, 17]]
+  [0, [0, 11, 12, 13]],
+  [1, [1, 14, 15, 16]],
+  [2, [2, 17, 18, 19]]
 ]) {
   const tile = npcTileset.tiles.find((candidate) => candidate.id === tileId);
   const actualFrames = tile?.animation?.map((frame) => frame.tileid);
@@ -87,7 +87,14 @@ for (const [tileId, expectedFrames] of [
   }
 }
 
-for (const variant of ["child-male", "child-female", "elder-male", "elder-female"]) {
+for (const variant of [
+  "child-male",
+  "child-female",
+  "elder-male",
+  "elder-female",
+  "paperdoll-blue-male",
+  "paperdoll-green-male"
+]) {
   const directory = resolve(root, `public/assets/sprites/traveler-${variant}-v1`);
   const sheet = resolve(directory, "sheet-transparent.png");
   const metadataPath = resolve(directory, "pipeline-meta.json");
@@ -104,6 +111,15 @@ for (const variant of ["child-male", "child-female", "elder-male", "elder-female
   );
   if (!tile) fail(`Missing ${variant} traveler in Tiled NPC tileset`);
 }
+
+const paperdollManifestPath = resolve(
+  root,
+  "public/assets/sprites/paperdoll/adult-male-v1/paperdoll-manifest.json"
+);
+if (!existsSync(paperdollManifestPath)) fail("Missing adult male paperdoll manifest");
+const paperdollManifest = JSON.parse(readFileSync(paperdollManifestPath, "utf8"));
+if (paperdollManifest.layers.length < 5) fail("Paperdoll POC must include base, hair, and outfit layers");
+if (paperdollManifest.recipes.length < 2) fail("Paperdoll POC must include at least two recipes");
 const kioskTile = propTileset.tiles.find((tile) => tile.id === 80);
 if (
   JSON.stringify(kioskTile?.animation?.map((frame) => frame.tileid)) !==

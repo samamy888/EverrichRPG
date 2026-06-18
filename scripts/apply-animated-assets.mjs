@@ -133,11 +133,11 @@ props.tilecount = Math.max(props.tilecount ?? 0, 116);
 
 const npcs = JSON.parse(await readFile(npcsPath, "utf8"));
 const clerkAnimations = new Map([
-  ["clerk-beauty-01", { frames: [1, 2, 3, 4], tileIds: [0, 9, 10, 11] }],
-  ["clerk-liquor-food-01", { frames: [5, 6, 7, 8], tileIds: [1, 12, 13, 14] }],
-  ["clerk-gift-01", { frames: [9, 10, 11, 12], tileIds: [2, 15, 16, 17] }]
+  ["clerk-beauty-01", { frames: [1, 2, 3, 4], tileIds: [0, 11, 12, 13] }],
+  ["clerk-liquor-food-01", { frames: [5, 6, 7, 8], tileIds: [1, 14, 15, 16] }],
+  ["clerk-gift-01", { frames: [9, 10, 11, 12], tileIds: [2, 17, 18, 19] }]
 ]);
-npcs.tiles = npcs.tiles.filter((tile) => tile.id < 9);
+npcs.tiles = npcs.tiles.filter((tile) => tile.id < 11);
 for (const tile of npcs.tiles) {
   const texture = tile.properties?.find((property) => property.name === "texture")?.value;
   const animation = clerkAnimations.get(texture);
@@ -158,7 +158,7 @@ for (const tile of npcs.tiles) {
   }
 }
 npcs.tiles.sort((left, right) => left.id - right.id);
-npcs.tilecount = 18;
+npcs.tilecount = 20;
 
 const hall = JSON.parse(await readFile(hallPath, "utf8"));
 const hallMap = hall.layers

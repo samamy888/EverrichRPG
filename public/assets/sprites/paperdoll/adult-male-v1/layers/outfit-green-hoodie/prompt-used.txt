@@ -1,0 +1,5 @@
+Create a paper-doll CLOTHING ONLY overlay walking sprite sheet for an adult male airport traveler NPC in EverrichRPG polished GBA-era retro pixel-art style. The sheet must contain ONLY outfit pixels aligned to an adult male base walking cycle: green casual hoodie or jacket, cream shirt, beige chinos, white sneakers, and a small navy backpack strap/body. Do not draw head, face, hair, skin, body, hands, legs, or full character; only clothes, shoes, and bag pixels on solid #FF00FF background.
+
+Exact layout: 4 columns x 4 rows on solid pure #FF00FF magenta background, no grid, no labels, no text. Each invisible cell is 96x96-style, same body positions as a top-down 3/4 RPG walking base.
+
+Rows: down/front outfit, left outfit, right outfit, up/back outfit. Columns: contact, passing, opposite contact, passing. Keep outfit centered, consistent, and layer-friendly, with crisp dark outlines. Clothing must align to a chibi adult male traveler body.

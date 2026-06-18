@@ -1,0 +1,324 @@
+{
+  "generatedAt": "2026-06-18T08:25:14+0800",
+  "source": "image_gen + PIL chroma-key/postprocess",
+  "paperdollLayer": "hair-sidepart-black",
+  "cellSize": [
+    96,
+    96
+  ],
+  "layout": {
+    "columns": 4,
+    "rows": [
+      "down",
+      "left",
+      "right",
+      "up"
+    ]
+  },
+  "frames": [
+    {
+      "file": "hair-sidepart-black-1.png",
+      "row": 0,
+      "col": 0,
+      "source_bbox": [
+        80,
+        77,
+        268,
+        233
+      ],
+      "target_size": [
+        28,
+        23
+      ],
+      "anchor": [
+        34,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-2.png",
+      "row": 0,
+      "col": 1,
+      "source_bbox": [
+        66,
+        79,
+        254,
+        233
+      ],
+      "target_size": [
+        28,
+        23
+      ],
+      "anchor": [
+        34,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-3.png",
+      "row": 0,
+      "col": 2,
+      "source_bbox": [
+        55,
+        80,
+        243,
+        233
+      ],
+      "target_size": [
+        28,
+        23
+      ],
+      "anchor": [
+        34,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-4.png",
+      "row": 0,
+      "col": 3,
+      "source_bbox": [
+        46,
+        78,
+        237,
+        233
+      ],
+      "target_size": [
+        28,
+        23
+      ],
+      "anchor": [
+        34,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-5.png",
+      "row": 1,
+      "col": 0,
+      "source_bbox": [
+        79,
+        65,
+        261,
+        212
+      ],
+      "target_size": [
+        28,
+        23
+      ],
+      "anchor": [
+        34,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-6.png",
+      "row": 1,
+      "col": 1,
+      "source_bbox": [
+        63,
+        69,
+        246,
+        218
+      ],
+      "target_size": [
+        28,
+        23
+      ],
+      "anchor": [
+        34,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-7.png",
+      "row": 1,
+      "col": 2,
+      "source_bbox": [
+        55,
+        72,
+        236,
+        218
+      ],
+      "target_size": [
+        29,
+        23
+      ],
+      "anchor": [
+        33,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-8.png",
+      "row": 1,
+      "col": 3,
+      "source_bbox": [
+        43,
+        73,
+        224,
+        218
+      ],
+      "target_size": [
+        29,
+        23
+      ],
+      "anchor": [
+        33,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-9.png",
+      "row": 2,
+      "col": 0,
+      "source_bbox": [
+        85,
+        64,
+        261,
+        212
+      ],
+      "target_size": [
+        27,
+        23
+      ],
+      "anchor": [
+        34,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-10.png",
+      "row": 2,
+      "col": 1,
+      "source_bbox": [
+        73,
+        66,
+        248,
+        215
+      ],
+      "target_size": [
+        27,
+        23
+      ],
+      "anchor": [
+        34,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-11.png",
+      "row": 2,
+      "col": 2,
+      "source_bbox": [
+        64,
+        66,
+        240,
+        216
+      ],
+      "target_size": [
+        27,
+        23
+      ],
+      "anchor": [
+        34,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-12.png",
+      "row": 2,
+      "col": 3,
+      "source_bbox": [
+        53,
+        69,
+        229,
+        215
+      ],
+      "target_size": [
+        28,
+        23
+      ],
+      "anchor": [
+        34,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-13.png",
+      "row": 3,
+      "col": 0,
+      "source_bbox": [
+        82,
+        45,
+        260,
+        215
+      ],
+      "target_size": [
+        24,
+        23
+      ],
+      "anchor": [
+        36,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-14.png",
+      "row": 3,
+      "col": 1,
+      "source_bbox": [
+        69,
+        45,
+        250,
+        216
+      ],
+      "target_size": [
+        24,
+        23
+      ],
+      "anchor": [
+        36,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-15.png",
+      "row": 3,
+      "col": 2,
+      "source_bbox": [
+        59,
+        49,
+        236,
+        218
+      ],
+      "target_size": [
+        24,
+        23
+      ],
+      "anchor": [
+        36,
+        7
+      ]
+    },
+    {
+      "file": "hair-sidepart-black-16.png",
+      "row": 3,
+      "col": 3,
+      "source_bbox": [
+        46,
+        48,
+        229,
+        219
+      ],
+      "target_size": [
+        25,
+        23
+      ],
+      "anchor": [
+        35,
+        7
+      ]
+    }
+  ]
+}

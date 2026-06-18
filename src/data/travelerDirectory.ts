@@ -11,7 +11,9 @@ export type TravelerVariant =
   | "child-male"
   | "child-female"
   | "elder-male"
-  | "elder-female";
+  | "elder-female"
+  | "paperdoll-blue-male"
+  | "paperdoll-green-male";
 
 export interface TravelerProfile {
   id: string;
@@ -55,7 +57,9 @@ export const TRAVELER_VARIANTS = [
   "child-male",
   "child-female",
   "elder-male",
-  "elder-female"
+  "elder-female",
+  "paperdoll-blue-male",
+  "paperdoll-green-male"
 ] as const satisfies readonly TravelerVariant[];
 
 const POPULATION_RANGES: Record<RegionId, readonly [number, number]> = {

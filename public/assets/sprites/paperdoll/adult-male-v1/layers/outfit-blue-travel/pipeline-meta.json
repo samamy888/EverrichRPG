@@ -1,0 +1,324 @@
+{
+  "generatedAt": "2026-06-18T08:25:15+0800",
+  "source": "image_gen + PIL chroma-key/postprocess",
+  "paperdollLayer": "outfit-blue-travel",
+  "cellSize": [
+    96,
+    96
+  ],
+  "layout": {
+    "columns": 4,
+    "rows": [
+      "down",
+      "left",
+      "right",
+      "up"
+    ]
+  },
+  "frames": [
+    {
+      "file": "outfit-blue-travel-1.png",
+      "row": 0,
+      "col": 0,
+      "source_bbox": [
+        92,
+        94,
+        247,
+        277
+      ],
+      "target_size": [
+        47,
+        56
+      ],
+      "anchor": [
+        24,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-2.png",
+      "row": 0,
+      "col": 1,
+      "source_bbox": [
+        81,
+        93,
+        232,
+        277
+      ],
+      "target_size": [
+        46,
+        56
+      ],
+      "anchor": [
+        25,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-3.png",
+      "row": 0,
+      "col": 2,
+      "source_bbox": [
+        73,
+        94,
+        227,
+        277
+      ],
+      "target_size": [
+        47,
+        56
+      ],
+      "anchor": [
+        24,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-4.png",
+      "row": 0,
+      "col": 3,
+      "source_bbox": [
+        62,
+        93,
+        213,
+        277
+      ],
+      "target_size": [
+        46,
+        56
+      ],
+      "anchor": [
+        25,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-5.png",
+      "row": 1,
+      "col": 0,
+      "source_bbox": [
+        97,
+        49,
+        222,
+        243
+      ],
+      "target_size": [
+        36,
+        56
+      ],
+      "anchor": [
+        30,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-6.png",
+      "row": 1,
+      "col": 1,
+      "source_bbox": [
+        81,
+        53,
+        216,
+        243
+      ],
+      "target_size": [
+        40,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-7.png",
+      "row": 1,
+      "col": 2,
+      "source_bbox": [
+        76,
+        49,
+        198,
+        243
+      ],
+      "target_size": [
+        35,
+        56
+      ],
+      "anchor": [
+        30,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-8.png",
+      "row": 1,
+      "col": 3,
+      "source_bbox": [
+        62,
+        53,
+        196,
+        242
+      ],
+      "target_size": [
+        40,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-9.png",
+      "row": 2,
+      "col": 0,
+      "source_bbox": [
+        103,
+        20,
+        232,
+        313
+      ],
+      "target_size": [
+        25,
+        56
+      ],
+      "anchor": [
+        35,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-10.png",
+      "row": 2,
+      "col": 1,
+      "source_bbox": [
+        86,
+        21,
+        224,
+        313
+      ],
+      "target_size": [
+        26,
+        56
+      ],
+      "anchor": [
+        35,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-11.png",
+      "row": 2,
+      "col": 2,
+      "source_bbox": [
+        87,
+        21,
+        211,
+        313
+      ],
+      "target_size": [
+        24,
+        56
+      ],
+      "anchor": [
+        36,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-12.png",
+      "row": 2,
+      "col": 3,
+      "source_bbox": [
+        66,
+        21,
+        204,
+        313
+      ],
+      "target_size": [
+        26,
+        56
+      ],
+      "anchor": [
+        35,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-13.png",
+      "row": 3,
+      "col": 0,
+      "source_bbox": [
+        82,
+        0,
+        228,
+        183
+      ],
+      "target_size": [
+        45,
+        56
+      ],
+      "anchor": [
+        25,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-14.png",
+      "row": 3,
+      "col": 1,
+      "source_bbox": [
+        79,
+        0,
+        223,
+        184
+      ],
+      "target_size": [
+        44,
+        56
+      ],
+      "anchor": [
+        26,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-15.png",
+      "row": 3,
+      "col": 2,
+      "source_bbox": [
+        64,
+        0,
+        210,
+        183
+      ],
+      "target_size": [
+        45,
+        56
+      ],
+      "anchor": [
+        25,
+        33
+      ]
+    },
+    {
+      "file": "outfit-blue-travel-16.png",
+      "row": 3,
+      "col": 3,
+      "source_bbox": [
+        62,
+        0,
+        204,
+        184
+      ],
+      "target_size": [
+        43,
+        56
+      ],
+      "anchor": [
+        26,
+        33
+      ]
+    }
+  ]
+}

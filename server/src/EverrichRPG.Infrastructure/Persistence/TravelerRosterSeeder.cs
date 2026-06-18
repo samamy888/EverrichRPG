@@ -5,7 +5,7 @@ namespace EverrichRPG.Infrastructure.Persistence;
 
 public sealed class TravelerRosterSeeder(GameDbContext dbContext)
 {
-    public const int PoolSize = 160;
+    public const int PoolSize = 180;
 
     private static readonly string[] FamilyNames =
         ["陳", "林", "黃", "張", "李", "王", "吳", "劉", "蔡", "楊", "許", "鄭"];
@@ -29,7 +29,16 @@ public sealed class TravelerRosterSeeder(GameDbContext dbContext)
     ];
 
     public static readonly string[] Variants =
-        ["male", "female", "child-male", "child-female", "elder-male", "elder-female"];
+    [
+        "male",
+        "female",
+        "child-male",
+        "child-female",
+        "elder-male",
+        "elder-female",
+        "paperdoll-blue-male",
+        "paperdoll-green-male"
+    ];
     private static readonly string[] MovementTypes = ["wander", "wander", "wander", "patrol", "idle"];
     private static readonly string[] Facings = ["up", "down", "left", "right"];
 
@@ -112,7 +121,8 @@ public sealed class TravelerRosterSeeder(GameDbContext dbContext)
     {
         return variant switch
         {
-            "male" or "child-male" or "elder-male" => MaleGivenNames,
+            "male" or "child-male" or "elder-male" or
+                "paperdoll-blue-male" or "paperdoll-green-male" => MaleGivenNames,
             "female" or "child-female" or "elder-female" => FemaleGivenNames,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(variant),

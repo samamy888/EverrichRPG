@@ -1,0 +1,324 @@
+{
+  "generatedAt": "2026-06-18T08:25:16+0800",
+  "source": "image_gen + PIL chroma-key/postprocess",
+  "paperdollLayer": "outfit-green-hoodie",
+  "cellSize": [
+    96,
+    96
+  ],
+  "layout": {
+    "columns": 4,
+    "rows": [
+      "down",
+      "left",
+      "right",
+      "up"
+    ]
+  },
+  "frames": [
+    {
+      "file": "outfit-green-hoodie-1.png",
+      "row": 0,
+      "col": 0,
+      "source_bbox": [
+        102,
+        87,
+        237,
+        271
+      ],
+      "target_size": [
+        41,
+        56
+      ],
+      "anchor": [
+        27,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-2.png",
+      "row": 0,
+      "col": 1,
+      "source_bbox": [
+        95,
+        87,
+        225,
+        270
+      ],
+      "target_size": [
+        40,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-3.png",
+      "row": 0,
+      "col": 2,
+      "source_bbox": [
+        85,
+        87,
+        214,
+        270
+      ],
+      "target_size": [
+        39,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-4.png",
+      "row": 0,
+      "col": 3,
+      "source_bbox": [
+        74,
+        87,
+        205,
+        270
+      ],
+      "target_size": [
+        40,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-5.png",
+      "row": 1,
+      "col": 0,
+      "source_bbox": [
+        102,
+        49,
+        231,
+        237
+      ],
+      "target_size": [
+        38,
+        56
+      ],
+      "anchor": [
+        29,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-6.png",
+      "row": 1,
+      "col": 1,
+      "source_bbox": [
+        86,
+        49,
+        222,
+        236
+      ],
+      "target_size": [
+        41,
+        56
+      ],
+      "anchor": [
+        27,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-7.png",
+      "row": 1,
+      "col": 2,
+      "source_bbox": [
+        78,
+        49,
+        210,
+        237
+      ],
+      "target_size": [
+        39,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-8.png",
+      "row": 1,
+      "col": 3,
+      "source_bbox": [
+        64,
+        50,
+        205,
+        236
+      ],
+      "target_size": [
+        42,
+        56
+      ],
+      "anchor": [
+        27,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-9.png",
+      "row": 2,
+      "col": 0,
+      "source_bbox": [
+        103,
+        25,
+        233,
+        213
+      ],
+      "target_size": [
+        39,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-10.png",
+      "row": 2,
+      "col": 1,
+      "source_bbox": [
+        89,
+        25,
+        223,
+        212
+      ],
+      "target_size": [
+        40,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-11.png",
+      "row": 2,
+      "col": 2,
+      "source_bbox": [
+        81,
+        25,
+        210,
+        213
+      ],
+      "target_size": [
+        38,
+        56
+      ],
+      "anchor": [
+        29,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-12.png",
+      "row": 2,
+      "col": 3,
+      "source_bbox": [
+        65,
+        24,
+        206,
+        212
+      ],
+      "target_size": [
+        42,
+        56
+      ],
+      "anchor": [
+        27,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-13.png",
+      "row": 3,
+      "col": 0,
+      "source_bbox": [
+        101,
+        7,
+        235,
+        196
+      ],
+      "target_size": [
+        40,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-14.png",
+      "row": 3,
+      "col": 1,
+      "source_bbox": [
+        92,
+        7,
+        225,
+        196
+      ],
+      "target_size": [
+        39,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-15.png",
+      "row": 3,
+      "col": 2,
+      "source_bbox": [
+        81,
+        7,
+        214,
+        196
+      ],
+      "target_size": [
+        39,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    },
+    {
+      "file": "outfit-green-hoodie-16.png",
+      "row": 3,
+      "col": 3,
+      "source_bbox": [
+        71,
+        7,
+        205,
+        196
+      ],
+      "target_size": [
+        40,
+        56
+      ],
+      "anchor": [
+        28,
+        33
+      ]
+    }
+  ]
+}

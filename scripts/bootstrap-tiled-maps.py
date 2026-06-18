@@ -265,6 +265,14 @@ NPCS = [
     ("traveler-child-female-npc", "traveler-child-female-v1/traveler-child-female-1.png"),
     ("traveler-elder-male-npc", "traveler-elder-male-v1/traveler-elder-male-1.png"),
     ("traveler-elder-female-npc", "traveler-elder-female-v1/traveler-elder-female-1.png"),
+    (
+        "traveler-paperdoll-blue-male-npc",
+        "traveler-paperdoll-blue-male-v1/traveler-paperdoll-blue-male-1.png",
+    ),
+    (
+        "traveler-paperdoll-green-male-npc",
+        "traveler-paperdoll-green-male-v1/traveler-paperdoll-green-male-1.png",
+    ),
 ]
 
 REGION_NAMES = {
