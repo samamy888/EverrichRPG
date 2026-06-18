@@ -115,6 +115,7 @@ jobs:
       BACKUP_ROOT: ${{ vars.IIS_BACKUP_ROOT }}
       DATABASE_PROVIDER: ${{ vars.IIS_DATABASE_PROVIDER || 'PostgreSql' }}
       DATABASE_CONNECTION_STRING: ${{ secrets.IIS_DATABASE_CONNECTION_STRING }}
+      DIAGNOSTICS_LOG_ACCESS_TOKEN: ${{ secrets.IIS_DIAGNOSTICS_LOG_ACCESS_TOKEN }}
 
     steps:
       - name: Download deployment package
@@ -293,6 +294,11 @@ jobs:
             Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "ConnectionStrings__GameDatabase" $env:DATABASE_CONNECTION_STRING
             Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Database__Provider" $env:DATABASE_PROVIDER
             Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Database__ApplyMigrations" "true"
+            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Serilog__WriteTo__1__Args__path" "logs/app-.clef"
+            Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Serilog__WriteTo__1__Args__retainedFileCountLimit" "14"
+            if ($env:DIAGNOSTICS_LOG_ACCESS_TOKEN) {
+              Set-WebConfigEnvironmentVariable $webConfig $environmentVariables "Diagnostics__LogAccessToken" $env:DIAGNOSTICS_LOG_ACCESS_TOKEN
+            }
             $webConfig.Save($webConfigPath)
           }
 
@@ -394,6 +400,15 @@ jobs:
           foreach ($log in $stdoutLogs) {
             Write-Host "--- $($log.FullName) ---"
             Get-Content $log.FullName -Tail 80
+          }
+
+          Write-Host "Recent structured API logs:"
+          $apiLogs = Get-ChildItem -Path (Join-Path $env:API_PATH "logs") -Filter "app-*.clef" -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 3
+          foreach ($log in $apiLogs) {
+            Write-Host "--- $($log.FullName) ---"
+            Get-Content $log.FullName -Tail 120
           }
 
           Write-Host "Recent Application event log errors:"

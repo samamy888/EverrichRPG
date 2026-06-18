@@ -144,4 +144,4 @@ Get-Content "你的 API IIS 路徑\web.config"
 - PostgreSQL 沒啟動。
 - `everrich_rpg` database 不存在。
 - `everrich_app` 權限不足。
-- Migration 失敗，檢查 `你的 API IIS 路徑\logs\stdout*.log`。
+- Migration 失敗，檢查 `你的 API IIS 路徑\logs\stdout*.log` 與 `你的 API IIS 路徑\logs\app-*.clef`。
