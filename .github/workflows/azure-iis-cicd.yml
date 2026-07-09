@@ -430,7 +430,7 @@ jobs:
 
           $siteLines = & $appcmd list site
           $apiSiteLine = $siteLines |
-            Where-Object { $_ -match ":$healthPort:" } |
+            Where-Object { $_ -match ":${healthPort}:" } |
             Select-Object -First 1
 
           if (-not $apiSiteLine) {
