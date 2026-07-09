@@ -368,6 +368,7 @@ jobs:
           }
 
           Write-Host "Database TCP connectivity passed."
+          Write-Host "The API will create the configured MySQL database automatically if the account has CREATE DATABASE permission."
 
       - name: Start IIS app pools
         if: always()

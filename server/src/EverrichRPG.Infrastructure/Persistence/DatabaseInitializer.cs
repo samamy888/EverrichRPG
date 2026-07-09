@@ -2,6 +2,7 @@ using EverrichRPG.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MySql.Data.MySqlClient;
 
 namespace EverrichRPG.Infrastructure;
 
@@ -18,9 +19,15 @@ public static class DatabaseInitializer
             return;
         }
 
+        var databaseProvider = configuration["Database:Provider"] ?? "MySql";
+        if (databaseProvider.Equals("MySql", StringComparison.OrdinalIgnoreCase) ||
+            databaseProvider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
+        {
+            await EnsureMySqlDatabaseExistsAsync(configuration, cancellationToken);
+        }
+
         await using var scope = services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-        var databaseProvider = configuration["Database:Provider"] ?? "MySql";
 
         if (databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
         {
@@ -84,5 +91,33 @@ public static class DatabaseInitializer
 
             await dbContext.Database.ExecuteSqlRawAsync(sql, cancellationToken);
         }
+    }
+
+    private static async Task EnsureMySqlDatabaseExistsAsync(
+        IConfiguration configuration,
+        CancellationToken cancellationToken)
+    {
+        var connectionString = configuration.GetConnectionString("GameDatabase")
+            ?? throw new InvalidOperationException(
+                "Connection string 'GameDatabase' is not configured.");
+        var builder = new MySqlConnectionStringBuilder(connectionString);
+        var databaseName = builder.Database;
+        if (string.IsNullOrWhiteSpace(databaseName))
+        {
+            throw new InvalidOperationException(
+                "MySQL connection string must include a Database value.");
+        }
+
+        builder.Database = string.Empty;
+        await using var connection = new MySqlConnection(builder.ConnectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = $"""
+            CREATE DATABASE IF NOT EXISTS `{databaseName.Replace("`", "``")}`
+            CHARACTER SET utf8mb4
+            COLLATE utf8mb4_unicode_ci;
+            """;
+        await command.ExecuteNonQueryAsync(cancellationToken);
     }
 }

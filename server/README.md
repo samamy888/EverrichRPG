@@ -36,7 +36,7 @@ Endpoints:
 docker compose up --build
 ```
 
-The API is available at `http://localhost:5080`. The container creates the MySQL schema when it starts.
+The API is available at `http://localhost:5080`. The container creates the MySQL database and schema when it starts.
 
 Docker explicitly selects MySQL. The credentials in `compose.yaml` are development-only defaults. Production secrets must come from environment variables or a secret store.
 
@@ -60,7 +60,7 @@ See `../docs/PRODUCTION_DATABASE.md` for DBeaver, firewall, and GitHub Actions s
 - `Database__ApplyMigrations=false`
 - `Cors__AllowedOrigins__0`
 
-MySQL currently creates the schema from the EF model on startup. When schema changes become more formal, generate MySQL-specific migrations and run them as a deployment step before recycling the IIS application.
+MySQL currently creates the database and schema from the EF model on startup. When schema changes become more formal, generate MySQL-specific migrations and run them as a deployment step before recycling the IIS application.
 
 ## Validation
 

@@ -4,7 +4,7 @@
 
 ## 1. 建立資料庫
 
-在 VM 或本機 MySQL 執行：
+API 啟動時會先嘗試自動建立 `everrich_rpg` database。你也可以先在 VM 或本機 MySQL 手動執行：
 
 ```sql
 CREATE DATABASE IF NOT EXISTS everrich_rpg
@@ -118,5 +118,5 @@ Get-ChildItem "你的 API IIS 路徑\logs" -Filter "app-*.clef" |
 
 - MySQL 沒啟動或沒有聽 `3306`
 - `IIS_DATABASE_CONNECTION_STRING` 沒設定或密碼錯誤
-- `everrich_rpg` 資料庫尚未建立
+- root 帳號沒有 `CREATE DATABASE` 權限，導致 `everrich_rpg` 無法自動建立
 - IIS App Pool 沒有讀取 API 目錄或寫入 `logs` 目錄權限
