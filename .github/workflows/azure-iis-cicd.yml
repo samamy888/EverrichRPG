@@ -370,6 +370,21 @@ jobs:
           Write-Host "Database TCP connectivity passed."
           Write-Host "The API will create the configured MySQL database automatically if the account has CREATE DATABASE permission."
 
+      - name: Configure API app pool for ASP.NET Core
+        shell: powershell
+        run: |
+          $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
+          if (-not (Test-Path $appcmd)) {
+            throw "appcmd.exe was not found. Make sure this self-hosted runner is installed on the IIS server."
+          }
+
+          & $appcmd set apppool /apppool.name:"$env:API_APP_POOL" /managedRuntimeVersion:""
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to set API app pool managedRuntimeVersion to No Managed Code."
+          }
+
+          Write-Host "API app pool configured for ASP.NET Core: managedRuntimeVersion=No Managed Code."
+
       - name: Start IIS app pools
         if: always()
         shell: powershell
@@ -403,6 +418,104 @@ jobs:
           $maxAttempts = 10
           $delaySeconds = 6
           $lastError = $null
+
+          function Invoke-ApiStartupDiagnostic {
+            param([string]$Reason)
+
+            Write-Host "Running direct API startup diagnostic because: $Reason"
+            $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
+            if (Test-Path $appcmd) {
+              & $appcmd stop apppool /apppool.name:"$env:API_APP_POOL"
+              if ($LASTEXITCODE -ne 0) {
+                Write-Host "API app pool was not stopped for diagnostic. It may already be stopped."
+                $global:LASTEXITCODE = 0
+              }
+            }
+
+            $diagnosticOut = Join-Path $env:RUNNER_TEMP "everrich-api-direct.out.log"
+            $diagnosticErr = Join-Path $env:RUNNER_TEMP "everrich-api-direct.err.log"
+            Remove-Item $diagnosticOut, $diagnosticErr -Force -ErrorAction SilentlyContinue
+
+            $env:ASPNETCORE_ENVIRONMENT = "Production"
+            $env:ConnectionStrings__GameDatabase = $env:DATABASE_CONNECTION_STRING
+            $env:Database__Provider = $env:DATABASE_PROVIDER
+            $env:Database__ApplyMigrations = "true"
+            if ($env:DIAGNOSTICS_LOG_ACCESS_TOKEN) {
+              $env:Diagnostics__LogAccessToken = $env:DIAGNOSTICS_LOG_ACCESS_TOKEN
+            }
+
+            $process = Start-Process dotnet `
+              -ArgumentList @("EverrichRPG.Api.dll", "--urls", "http://127.0.0.1:5099") `
+              -WorkingDirectory $env:API_PATH `
+              -RedirectStandardOutput $diagnosticOut `
+              -RedirectStandardError $diagnosticErr `
+              -WindowStyle Hidden `
+              -PassThru
+
+            try {
+              $diagnosticHealth = "http://127.0.0.1:5099/api/v1/health/ready"
+              for ($diagnosticAttempt = 1; $diagnosticAttempt -le 8; $diagnosticAttempt++) {
+                Start-Sleep -Seconds 3
+                if ($process.HasExited) {
+                  Write-Host "Direct API diagnostic process exited with code $($process.ExitCode)."
+                  break
+                }
+
+                try {
+                  Write-Host "Direct API diagnostic health attempt ${diagnosticAttempt}/8: $diagnosticHealth"
+                  $diagnosticResponse = Invoke-WebRequest -Uri $diagnosticHealth -UseBasicParsing -TimeoutSec 10
+                  Write-Host "Direct API diagnostic health status: $($diagnosticResponse.StatusCode)"
+                  Write-Host "Direct API diagnostic health body: $($diagnosticResponse.Content)"
+                  break
+                }
+                catch {
+                  Write-Host "Direct API diagnostic health failed: $($_.Exception.Message)"
+                  if ($_.Exception.Response) {
+                    try {
+                      $stream = $_.Exception.Response.GetResponseStream()
+                      $reader = New-Object System.IO.StreamReader($stream)
+                      $body = $reader.ReadToEnd()
+                      if ($body) {
+                        Write-Host "Direct API diagnostic health body: $body"
+                      }
+                    }
+                    catch {
+                      Write-Host "Failed to read direct diagnostic health body: $($_.Exception.Message)"
+                    }
+                  }
+                }
+              }
+            }
+            finally {
+              if (-not $process.HasExited) {
+                Stop-Process -Id $process.Id -Force
+              }
+            }
+
+            Write-Host "Direct API diagnostic stdout:"
+            if (Test-Path $diagnosticOut) {
+              Get-Content $diagnosticOut -Tail 200
+            }
+            else {
+              Write-Host "(stdout file was not created)"
+            }
+
+            Write-Host "Direct API diagnostic stderr:"
+            if (Test-Path $diagnosticErr) {
+              Get-Content $diagnosticErr -Tail 200
+            }
+            else {
+              Write-Host "(stderr file was not created)"
+            }
+
+            if (Test-Path $appcmd) {
+              & $appcmd start apppool /apppool.name:"$env:API_APP_POOL"
+              if ($LASTEXITCODE -ne 0) {
+                Write-Host "API app pool was not restarted after diagnostic. Please check IIS app pool state."
+                $global:LASTEXITCODE = 0
+              }
+            }
+          }
 
           for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
             try {
@@ -449,7 +562,7 @@ jobs:
           }
 
           Write-Host "Listening TCP ports:"
-          netstat -ano | Select-String -Pattern "LISTENING|:5080"
+          netstat -ano | Select-String -Pattern "LISTENING|:5080|:5099"
 
           Write-Host "API appsettings files:"
           Get-ChildItem -Path $env:API_PATH -Filter "appsettings*.json" |
@@ -496,6 +609,8 @@ jobs:
           Get-EventLog -LogName Application -Newest 40 -EntryType Error,Warning -ErrorAction SilentlyContinue |
             Select-Object TimeGenerated, Source, EventID, Message |
             Format-List
+
+          Invoke-ApiStartupDiagnostic -Reason $lastError
 
           throw "Internal API health check did not pass after $maxAttempts attempts. Last error: $lastError. Check API IIS binding, port 5080, API app pool, and IIS_INTERNAL_HEALTH_URL."
 
