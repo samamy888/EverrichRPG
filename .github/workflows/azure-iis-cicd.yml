@@ -445,9 +445,14 @@ jobs:
 
           $apiSiteName = $Matches[1]
           Write-Host "Configuring IIS API site '$apiSiteName' for port $healthPort."
-          & $appcmd set app "$apiSiteName/" /physicalPath:"$env:API_PATH" /applicationPool:"$env:API_APP_POOL"
+          & $appcmd set app "$apiSiteName/" /applicationPool:"$env:API_APP_POOL"
           if ($LASTEXITCODE -ne 0) {
-            throw "Failed to set IIS API site '$apiSiteName' physical path to $env:API_PATH and app pool to $env:API_APP_POOL."
+            throw "Failed to set IIS API site '$apiSiteName' app pool to $env:API_APP_POOL."
+          }
+
+          & $appcmd set vdir "$apiSiteName/" /physicalPath:"$env:API_PATH"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to set IIS API site '$apiSiteName' physical path to $env:API_PATH."
           }
 
           Write-Host "IIS API site '$apiSiteName' now points to $env:API_PATH and uses app pool $env:API_APP_POOL."
