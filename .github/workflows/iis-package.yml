@@ -100,7 +100,7 @@ jobs:
 
           - IIS URL Rewrite Module for frontend SPA fallback.
           - ASP.NET Core Hosting Bundle compatible with the SDK/runtime in global.json.
-          - PostgreSQL production database. See docs/PRODUCTION_DATABASE.md.
+          - MySQL production database. See docs/PRODUCTION_DATABASE.md.
           - Database connection string configured through IIS environment variables, GitHub secret IIS_DATABASE_CONNECTION_STRING, or appsettings.Production.json.
           "@ | Set-Content -Path artifacts\iis-package\README.md -Encoding UTF8
 

@@ -1,147 +1,122 @@
-# EVERRICH RPG 正式機 PostgreSQL 設定
+# EVERRICH RPG MySQL 正式資料庫設定
 
-正式機建議使用 PostgreSQL，不要把 SQLite 當遠端資料庫使用。SQLite 是檔案型 DB，適合本地開發；正式機若要用 DBeaver 遠端維護，請用 PostgreSQL。
+後端目前以 MySQL 為主要資料庫。正式機與本機可以使用同一組帳密，但密碼不要提交到 Git；請用環境變數或 GitHub Actions Secret 注入。
 
-## 1. GitHub Actions Secret
+## 1. 建立資料庫
 
-在 GitHub repo 的 `Settings > Secrets and variables > Actions > Secrets` 新增：
+在 VM 或本機 MySQL 執行：
+
+```sql
+CREATE DATABASE IF NOT EXISTS everrich_rpg
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_0900_ai_ci;
+```
+
+如果你的 MySQL 版本不支援 `utf8mb4_0900_ai_ci`，改用：
+
+```sql
+CREATE DATABASE IF NOT EXISTS everrich_rpg
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+```
+
+## 2. 本機 API 連線
+
+PowerShell 啟動 API 前設定：
+
+```powershell
+$env:ConnectionStrings__GameDatabase='Server=127.0.0.1;Port=3306;Database=everrich_rpg;User=root;Password=你的密碼;TreatTinyAsBoolean=true'
+$env:Database__Provider='MySql'
+$env:Database__ApplyMigrations='true'
+dotnet run --project server/src/EverrichRPG.Api --urls http://localhost:5080
+```
+
+健康檢查：
+
+```powershell
+Invoke-WebRequest http://localhost:5080/api/v1/health/ready -UseBasicParsing
+```
+
+## 3. GitHub Actions 設定
+
+到 GitHub repo 的 `Settings > Secrets and variables > Actions` 設定：
+
+Secrets：
 
 ```text
 IIS_DATABASE_CONNECTION_STRING
 ```
 
-值請用正式機本機連線字串：
+值：
 
 ```text
-Host=localhost;Port=5432;Database=everrich_rpg;Username=everrich_app;Password=你的強密碼;Pooling=true;Include Error Detail=false
+Server=127.0.0.1;Port=3306;Database=everrich_rpg;User=root;Password=你的密碼;TreatTinyAsBoolean=true
 ```
 
-如果你想明確指定 provider，也可以在 `Settings > Secrets and variables > Actions > Variables` 新增：
+Variables：
 
 ```text
-IIS_DATABASE_PROVIDER=PostgreSql
+IIS_DATABASE_PROVIDER=MySql
 ```
 
-## 2. DBeaver 遠端連線資訊
+如果 API 與 MySQL 在同一台 VM，`Server=127.0.0.1` 最穩，不需要開放 MySQL 對外連線。
 
-Driver 選 `PostgreSQL`。
+## 4. DBeaver 連線
+
+Driver 選 `MySQL`。
 
 ```text
-Host: 你的 VM 固定 IP
-Port: 5432
+Host: VM 固定 IP 或 127.0.0.1
+Port: 3306
 Database: everrich_rpg
-Username: everrich_app
-Password: 你的強密碼
+Username: root
+Password: 你的密碼
 ```
 
-JDBC URL 範例：
+JDBC URL：
 
 ```text
-jdbc:postgresql://你的VM固定IP:5432/everrich_rpg
+jdbc:mysql://你的VM固定IP:3306/everrich_rpg
 ```
 
-## 3. VM 防火牆與安全建議
+如果要從自己的電腦遠端連 VM 的 MySQL，請只開放你的固定 IP，避免把 `3306` 公開給所有來源。
 
-請不要把 `5432` 對全世界開放。建議只允許你的固定 IP 連線。
+## 5. VM 防火牆檢查
 
-Azure NSG 入站規則：
+API 與 MySQL 同機時，只要確認 MySQL 有在本機聽 `3306`：
 
-```text
-Source: 你的家裡/公司固定 IP
-Destination port: 5432
-Protocol: TCP
-Action: Allow
-Priority: 低於 deny 規則即可
+```powershell
+Test-NetConnection 127.0.0.1 -Port 3306
 ```
 
-Windows 防火牆也只允許你的 IP：
+如果要遠端用 DBeaver 連線，Windows 防火牆可加規則：
 
 ```powershell
 New-NetFirewallRule `
-  -DisplayName "PostgreSQL 5432 from my IP" `
+  -DisplayName "MySQL 3306 from my IP" `
   -Direction Inbound `
   -Protocol TCP `
-  -LocalPort 5432 `
+  -LocalPort 3306 `
   -RemoteAddress "你的固定IP" `
   -Action Allow
 ```
 
-## 4. 正式 API 如何吃 PostgreSQL
+Azure NSG 也要加同樣來源 IP 的 `TCP 3306 Allow` 規則。
 
-CI/CD 會在部署 API 時產生：
+## 6. CI/CD 失敗排查
 
-```text
-appsettings.Production.json
-```
-
-內容會由 GitHub Secret 寫入：
-
-- `ConnectionStrings:GameDatabase`
-- `Database:Provider`
-- `Database:ApplyMigrations=true`
-
-所以正式機 IIS 不需要手改 repo 內的 `appsettings.json`。
-
-## 5. 本地仍使用 SQLite
-
-本地 `Development` 環境仍吃：
-
-```text
-server/src/EverrichRPG.Api/appsettings.Development.json
-```
-
-目前是：
-
-```text
-Data Source=everrich-rpg-dev.db
-```
-
-這樣本地開發不需要安裝 PostgreSQL。
-
-## 6. CI/CD health check 500 排查
-
-如果 GitHub Actions 在 `Check internal API health` 出現：
-
-```text
-Internal API health check ... (500) Internal Server Error
-```
-
-優先在 VM 上檢查：
+如果 `Check internal API health` 顯示 `500`，優先看 API log：
 
 ```powershell
-Test-NetConnection localhost -Port 5432
-Test-NetConnection localhost -Port 5080
-```
-
-確認 PostgreSQL 登入：
-
-```powershell
-& "C:\Program Files\PostgreSQL\18\bin\psql.exe" `
-  -h localhost `
-  -p 5432 `
-  -U everrich_app `
-  -d everrich_rpg
-```
-
-進入 `psql` 後：
-
-```sql
-SELECT current_database(), current_user;
-SELECT COUNT(*) FROM "Travelers";
-SELECT COUNT(*) FROM "Products";
-```
-
-查看 API 實際使用的設定：
-
-```powershell
-Get-Content "你的 API IIS 路徑\appsettings.Production.json"
-Get-Content "你的 API IIS 路徑\web.config"
+Get-ChildItem "你的 API IIS 路徑\logs" -Filter "app-*.clef" |
+  Sort-Object LastWriteTime -Descending |
+  Select-Object -First 1 |
+  Get-Content -Tail 120
 ```
 
 常見原因：
 
-- `IIS_DATABASE_CONNECTION_STRING` 沒設，或密碼錯。
-- PostgreSQL 沒啟動。
-- `everrich_rpg` database 不存在。
-- `everrich_app` 權限不足。
-- Migration 失敗，檢查 `你的 API IIS 路徑\logs\stdout*.log` 與 `你的 API IIS 路徑\logs\app-*.clef`。
+- MySQL 沒啟動或沒有聽 `3306`
+- `IIS_DATABASE_CONNECTION_STRING` 沒設定或密碼錯誤
+- `everrich_rpg` 資料庫尚未建立
+- IIS App Pool 沒有讀取 API 目錄或寫入 `logs` 目錄權限

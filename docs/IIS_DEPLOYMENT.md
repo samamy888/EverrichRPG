@@ -63,7 +63,7 @@ api_base_url=https://你的-api-domain/api/v1
 ```text
 ASPNETCORE_ENVIRONMENT=Production
 ConnectionStrings__GameDatabase=你的正式資料庫連線字串
-Database__Provider=PostgreSql
+Database__Provider=MySql
 Database__ApplyMigrations=false
 Cors__AllowedOrigins__0=https://你的前端網域
 ```

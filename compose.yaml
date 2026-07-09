@@ -1,16 +1,15 @@
 services:
   database:
-    image: postgres:18-alpine
+    image: mysql:8.4
     environment:
-      POSTGRES_DB: everrich_rpg
-      POSTGRES_USER: everrich
-      POSTGRES_PASSWORD: everrich_dev
+      MYSQL_DATABASE: everrich_rpg
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-everrich_dev}
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - everrich-postgres:/var/lib/postgresql/data
+      - everrich-mysql:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U everrich -d everrich_rpg"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -21,8 +20,8 @@ services:
       dockerfile: Dockerfile.api
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__GameDatabase: Host=database;Port=5432;Database=everrich_rpg;Username=everrich;Password=everrich_dev
-      Database__Provider: PostgreSql
+      ConnectionStrings__GameDatabase: Server=database;Port=3306;Database=everrich_rpg;User=root;Password=${MYSQL_ROOT_PASSWORD:-everrich_dev};TreatTinyAsBoolean=true
+      Database__Provider: MySql
       Database__ApplyMigrations: "true"
       Cors__AllowedOrigins__0: http://127.0.0.1:5173
       Cors__AllowedOrigins__1: http://localhost:5173
@@ -33,4 +32,4 @@ services:
         condition: service_healthy
 
 volumes:
-  everrich-postgres:
+  everrich-mysql:

@@ -3,16 +3,22 @@
 ## Requirements
 
 - .NET SDK `10.0.301` or a compatible `10.0.x` SDK
-- PostgreSQL 18, or Docker Desktop / Docker Engine with Compose
+- MySQL 8.x, or Docker Desktop / Docker Engine with Compose
 
 ## Local API
 
-Development uses an in-memory database and automatically imports the shop catalog, so PostgreSQL is not required for local frontend integration.
+Development uses MySQL by default and automatically imports the shop catalog and traveler roster.
 
 Run the API:
 
 ```powershell
 dotnet run --project server/src/EverrichRPG.Api --urls http://localhost:5080
+```
+
+If you do not want to store the database password in `appsettings.Development.json`, set it before running:
+
+```powershell
+$env:ConnectionStrings__GameDatabase='Server=127.0.0.1;Port=3306;Database=everrich_rpg;User=root;Password=你的密碼;TreatTinyAsBoolean=true'
 ```
 
 Endpoints:
@@ -30,9 +36,9 @@ Endpoints:
 docker compose up --build
 ```
 
-The API is available at `http://localhost:5080`. The container applies pending migrations when it starts.
+The API is available at `http://localhost:5080`. The container creates the MySQL schema when it starts.
 
-Docker explicitly selects PostgreSQL. The credentials in `compose.yaml` are development-only defaults. Production secrets must come from environment variables or a secret store.
+Docker explicitly selects MySQL. The credentials in `compose.yaml` are development-only defaults. Production secrets must come from environment variables or a secret store.
 
 ## IIS
 
@@ -47,14 +53,14 @@ dotnet publish server/src/EverrichRPG.Api `
 Install the .NET 10 Hosting Bundle on Windows Server, create an IIS application for `server/publish/api`, and configure these environment variables:
 
 - `ConnectionStrings__GameDatabase`
-- `Database__Provider=PostgreSql`
+- `Database__Provider=MySql`
 
-For a remotely maintainable production database, use PostgreSQL instead of SQLite.
+For a remotely maintainable production database, use MySQL instead of SQLite.
 See `../docs/PRODUCTION_DATABASE.md` for DBeaver, firewall, and GitHub Actions settings.
 - `Database__ApplyMigrations=false`
 - `Cors__AllowedOrigins__0`
 
-Run migrations as a deployment step before recycling the IIS application. Do not let multiple production instances apply migrations concurrently.
+MySQL currently creates the schema from the EF model on startup. When schema changes become more formal, generate MySQL-specific migrations and run them as a deployment step before recycling the IIS application.
 
 ## Validation
 

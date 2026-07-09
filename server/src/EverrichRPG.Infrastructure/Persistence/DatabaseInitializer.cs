@@ -20,7 +20,7 @@ public static class DatabaseInitializer
 
         await using var scope = services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-        var databaseProvider = configuration["Database:Provider"] ?? "PostgreSql";
+        var databaseProvider = configuration["Database:Provider"] ?? "MySql";
 
         if (databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
         {
@@ -30,6 +30,11 @@ public static class DatabaseInitializer
         {
             await dbContext.Database.EnsureCreatedAsync(cancellationToken);
             await EnsureSqliteTravelerAppearanceColumnsAsync(dbContext, cancellationToken);
+        }
+        else if (databaseProvider.Equals("MySql", StringComparison.OrdinalIgnoreCase) ||
+            databaseProvider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
+        {
+            await dbContext.Database.EnsureCreatedAsync(cancellationToken);
         }
         else
         {

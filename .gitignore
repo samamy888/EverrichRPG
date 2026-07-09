@@ -4,6 +4,9 @@ dist/
 **/obj/
 .DS_Store
 *.log
+*.clef
+logs/
+**/logs/
 *.db
 *.db-shm
 *.db-wal

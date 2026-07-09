@@ -147,7 +147,7 @@ Invoke-WebRequest https://www.biudream.com/api/v1/health -UseBasicParsing
 ```text
 ASPNETCORE_ENVIRONMENT=Production
 ConnectionStrings__GameDatabase=你的資料庫連線字串
-Database__Provider=PostgreSql
+Database__Provider=MySql
 Database__ApplyMigrations=false
 Cors__AllowedOrigins__0=https://www.biudream.com
 ```

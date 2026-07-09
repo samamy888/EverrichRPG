@@ -11,7 +11,7 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var databaseProvider = configuration["Database:Provider"] ?? "PostgreSql";
+        var databaseProvider = configuration["Database:Provider"] ?? "MySql";
         var inMemoryDatabaseName = $"EverrichRPG-{Guid.NewGuid():N}";
 
         services.AddDbContext<GameDbContext>(options =>
@@ -31,7 +31,21 @@ public static class DependencyInjection
                 return;
             }
 
-            options.UseNpgsql(connectionString);
+            if (databaseProvider.Equals("MySql", StringComparison.OrdinalIgnoreCase) ||
+                databaseProvider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
+            {
+                options.UseMySQL(connectionString);
+                return;
+            }
+
+            if (databaseProvider.Equals("PostgreSql", StringComparison.OrdinalIgnoreCase))
+            {
+                options.UseNpgsql(connectionString);
+                return;
+            }
+
+            throw new InvalidOperationException(
+                $"Unsupported database provider '{databaseProvider}'. Use InMemory, Sqlite, MySql, or PostgreSql.");
         });
         services.AddScoped<CommerceCatalogSeeder>();
         services.AddScoped<TravelerRosterSeeder>();

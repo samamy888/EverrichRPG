@@ -14,11 +14,11 @@ public sealed class DatabaseHealthCheck(GameDbContext dbContext) : IHealthCheck
         {
             return await dbContext.Database.CanConnectAsync(cancellationToken)
                 ? HealthCheckResult.Healthy()
-                : HealthCheckResult.Unhealthy("PostgreSQL is unavailable.");
+                : HealthCheckResult.Unhealthy("Database is unavailable.");
         }
         catch (Exception exception)
         {
-            return HealthCheckResult.Unhealthy("PostgreSQL health check failed.", exception);
+            return HealthCheckResult.Unhealthy("Database health check failed.", exception);
         }
     }
 }
