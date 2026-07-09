@@ -139,6 +139,34 @@ jobs:
             }
           }
 
+          $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
+          if (-not (Test-Path $appcmd)) {
+            throw "appcmd.exe was not found. Make sure this self-hosted runner is installed on the IIS server."
+          }
+
+          function Test-IisAppPoolExists {
+            param([string]$Name)
+
+            & $appcmd list apppool /name:"$Name" | Out-Null
+            $exists = $LASTEXITCODE -eq 0
+            $global:LASTEXITCODE = 0
+            return $exists
+          }
+
+          if (-not (Test-IisAppPoolExists $env:API_APP_POOL)) {
+            Write-Warning "Configured API app pool '$env:API_APP_POOL' does not exist."
+            if (Test-IisAppPoolExists "API") {
+              Write-Host "Using existing IIS app pool 'API' instead."
+              $env:API_APP_POOL = "API"
+              "API_APP_POOL=API" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            }
+            else {
+              Write-Host "Available IIS app pools:"
+              & $appcmd list apppool
+              throw "Configured API app pool '$env:API_APP_POOL' does not exist. Set GitHub variable IIS_API_APP_POOL to an existing app pool name, e.g. API."
+            }
+          }
+
           if (-not $env:BACKUP_ROOT) {
             $env:BACKUP_ROOT = Join-Path $env:RUNNER_TEMP "everrich-rpg-backups"
             "BACKUP_ROOT=$env:BACKUP_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
