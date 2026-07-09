@@ -308,11 +308,11 @@ jobs:
           $aspNetCore = $systemWebServer.aspNetCore
           if (-not $aspNetCore) {
             $aspNetCore = $webConfig.CreateElement("aspNetCore")
-            $aspNetCore.SetAttribute("processPath", "dotnet")
-            $aspNetCore.SetAttribute("arguments", ".\EverrichRPG.Api.dll")
-            $aspNetCore.SetAttribute("hostingModel", "inprocess")
             [void]$systemWebServer.AppendChild($aspNetCore)
           }
+          $aspNetCore.SetAttribute("processPath", "dotnet")
+          $aspNetCore.SetAttribute("arguments", ".\EverrichRPG.Api.dll")
+          $aspNetCore.SetAttribute("hostingModel", "outofprocess")
 
           $logsPath = Join-Path $env:API_PATH "logs"
           New-Item -ItemType Directory -Force $logsPath | Out-Null
@@ -357,6 +357,7 @@ jobs:
           Write-Host "Database provider: $env:DATABASE_PROVIDER"
           Write-Host "Database connection string: $maskedConnectionString"
           Write-Host "Production database settings were written to appsettings.Production.json."
+          Write-Host "API web.config hostingModel: outofprocess"
 
       - name: Check database TCP connectivity
         shell: powershell
@@ -412,6 +413,44 @@ jobs:
           }
 
           Write-Host "API app pool configured for ASP.NET Core: managedRuntimeVersion=No Managed Code."
+
+      - name: Configure API IIS site path
+        shell: powershell
+        run: |
+          $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
+          if (-not (Test-Path $appcmd)) {
+            throw "appcmd.exe was not found. Make sure this self-hosted runner is installed on the IIS server."
+          }
+
+          $healthUri = [Uri]$env:INTERNAL_HEALTH_URL
+          $healthPort = $healthUri.Port
+          if ($healthPort -le 0) {
+            $healthPort = 80
+          }
+
+          $siteLines = & $appcmd list site
+          $apiSiteLine = $siteLines |
+            Where-Object { $_ -match ":$healthPort:" } |
+            Select-Object -First 1
+
+          if (-not $apiSiteLine) {
+            Write-Host "Available IIS sites:"
+            & $appcmd list site
+            throw "Could not find an IIS site bound to port $healthPort from IIS_INTERNAL_HEALTH_URL=$env:INTERNAL_HEALTH_URL."
+          }
+
+          if ($apiSiteLine -notmatch 'SITE "([^"]+)"') {
+            throw "Failed to parse IIS site name from: $apiSiteLine"
+          }
+
+          $apiSiteName = $Matches[1]
+          Write-Host "Configuring IIS API site '$apiSiteName' for port $healthPort."
+          & $appcmd set app "$apiSiteName/" /physicalPath:"$env:API_PATH" /applicationPool:"$env:API_APP_POOL"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to set IIS API site '$apiSiteName' physical path to $env:API_PATH and app pool to $env:API_APP_POOL."
+          }
+
+          Write-Host "IIS API site '$apiSiteName' now points to $env:API_PATH and uses app pool $env:API_APP_POOL."
 
       - name: Start IIS app pools
         if: always()
