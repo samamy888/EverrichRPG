@@ -64,6 +64,11 @@
 - layer 只能畫自己的部位，不能重畫整個角色。
 - 同一 body type 的所有 layer 必須使用完全相同的格線與腳底錨點。
 - 服裝要貼合素體，不能像浮在身體外，也不能蓋掉手腳必要輪廓。
+- 產生器會用 `base-body` 的每幀透明邊界檢查 layer 是否合身，結果會寫入 `pipeline-meta.json` 的 `layerFit`。
+- `hair` 可以比頭頂略高，但不能整片漂離頭部；每幀至少要與素體頭部有穩定重疊。
+- `top` 可以因外套厚度左右略寬，但不能超出素體太多，也不能缺幀。
+- `pants` / 裙子可以延伸到腳底附近；走路幀素體腿部收窄時，仍以腳底錨點與下身輪廓一致為準。
+- 若 `acceptance.layerFitPassed` 不是 `true`，該 recipe 不可視為可用素材。
 
 ## 6. Body Type
 
@@ -190,6 +195,7 @@ Use solid magenta #FF00FF background for processing. No text, no logo, no full c
 - 每格必須是 `96x96`。
 - `stand` 欄必須是站立姿勢。
 - 所有 layer 必須跟素體貼合。
+- `pipeline-meta.json` 必須包含通過的 `layerFit` 報告。
 - 合成輸出不得有洋紅殘留。
 - recipe 的 `appearance` 必須能對應到前端旅客 variant。
 - Tiled NPC tileset 必須有對應 texture。

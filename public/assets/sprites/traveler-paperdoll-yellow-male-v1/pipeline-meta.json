@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-18T12:16:07+08:00",
+  "generatedAt": "2026-07-09T17:01:23+08:00",
   "source": "manifest-built accepted paperdoll composite",
   "spec": "docs/CHARACTER_ASSET_SPEC.md",
   "recipe": "paperdoll-yellow-male",
@@ -36,11 +36,963 @@
   "sheet": "sheet-transparent.png",
   "shared_scale": true,
   "edge_touch_frames": [],
+  "frameBounds": [
+    {
+      "frame": 1,
+      "row": "down",
+      "column": "stand",
+      "bbox": [
+        29,
+        12,
+        67,
+        88
+      ],
+      "width": 38,
+      "height": 76,
+      "touchesEdge": false
+    },
+    {
+      "frame": 2,
+      "row": "down",
+      "column": "step-a",
+      "bbox": [
+        29,
+        12,
+        67,
+        88
+      ],
+      "width": 38,
+      "height": 76,
+      "touchesEdge": false
+    },
+    {
+      "frame": 3,
+      "row": "down",
+      "column": "stand",
+      "bbox": [
+        29,
+        12,
+        67,
+        88
+      ],
+      "width": 38,
+      "height": 76,
+      "touchesEdge": false
+    },
+    {
+      "frame": 4,
+      "row": "down",
+      "column": "step-b",
+      "bbox": [
+        29,
+        12,
+        67,
+        88
+      ],
+      "width": 38,
+      "height": 76,
+      "touchesEdge": false
+    },
+    {
+      "frame": 5,
+      "row": "left",
+      "column": "stand",
+      "bbox": [
+        31,
+        13,
+        65,
+        88
+      ],
+      "width": 34,
+      "height": 75,
+      "touchesEdge": false
+    },
+    {
+      "frame": 6,
+      "row": "left",
+      "column": "step-a",
+      "bbox": [
+        30,
+        13,
+        65,
+        88
+      ],
+      "width": 35,
+      "height": 75,
+      "touchesEdge": false
+    },
+    {
+      "frame": 7,
+      "row": "left",
+      "column": "stand",
+      "bbox": [
+        30,
+        13,
+        65,
+        88
+      ],
+      "width": 35,
+      "height": 75,
+      "touchesEdge": false
+    },
+    {
+      "frame": 8,
+      "row": "left",
+      "column": "step-b",
+      "bbox": [
+        30,
+        13,
+        65,
+        88
+      ],
+      "width": 35,
+      "height": 75,
+      "touchesEdge": false
+    },
+    {
+      "frame": 9,
+      "row": "right",
+      "column": "stand",
+      "bbox": [
+        31,
+        14,
+        65,
+        88
+      ],
+      "width": 34,
+      "height": 74,
+      "touchesEdge": false
+    },
+    {
+      "frame": 10,
+      "row": "right",
+      "column": "step-a",
+      "bbox": [
+        30,
+        13,
+        65,
+        88
+      ],
+      "width": 35,
+      "height": 75,
+      "touchesEdge": false
+    },
+    {
+      "frame": 11,
+      "row": "right",
+      "column": "stand",
+      "bbox": [
+        31,
+        13,
+        64,
+        88
+      ],
+      "width": 33,
+      "height": 75,
+      "touchesEdge": false
+    },
+    {
+      "frame": 12,
+      "row": "right",
+      "column": "step-b",
+      "bbox": [
+        30,
+        13,
+        66,
+        88
+      ],
+      "width": 36,
+      "height": 75,
+      "touchesEdge": false
+    },
+    {
+      "frame": 13,
+      "row": "up",
+      "column": "stand",
+      "bbox": [
+        30,
+        10,
+        66,
+        88
+      ],
+      "width": 36,
+      "height": 78,
+      "touchesEdge": false
+    },
+    {
+      "frame": 14,
+      "row": "up",
+      "column": "step-a",
+      "bbox": [
+        30,
+        10,
+        66,
+        88
+      ],
+      "width": 36,
+      "height": 78,
+      "touchesEdge": false
+    },
+    {
+      "frame": 15,
+      "row": "up",
+      "column": "stand",
+      "bbox": [
+        30,
+        10,
+        66,
+        88
+      ],
+      "width": 36,
+      "height": 78,
+      "touchesEdge": false
+    },
+    {
+      "frame": 16,
+      "row": "up",
+      "column": "step-b",
+      "bbox": [
+        29,
+        10,
+        66,
+        88
+      ],
+      "width": 37,
+      "height": 78,
+      "touchesEdge": false
+    }
+  ],
+  "layerFit": {
+    "passed": true,
+    "baseLayer": "base-body",
+    "warnings": [],
+    "layers": [
+      {
+        "id": "pants-dark-trousers",
+        "slot": "pants",
+        "minimumOverlap": 0.58,
+        "margin": {
+          "left": 8,
+          "top": 10,
+          "right": 8,
+          "bottom": 8
+        },
+        "passed": true,
+        "warnings": [],
+        "frames": [
+          {
+            "frame": 1,
+            "row": "down",
+            "column": "stand",
+            "bbox": [
+              24,
+              48,
+              71,
+              89
+            ],
+            "overlapRatio": 0.81,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 2,
+            "row": "down",
+            "column": "step-a",
+            "bbox": [
+              25,
+              48,
+              71,
+              89
+            ],
+            "overlapRatio": 0.827,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 3,
+            "row": "down",
+            "column": "stand",
+            "bbox": [
+              24,
+              48,
+              71,
+              89
+            ],
+            "overlapRatio": 0.789,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 4,
+            "row": "down",
+            "column": "step-b",
+            "bbox": [
+              25,
+              48,
+              71,
+              89
+            ],
+            "overlapRatio": 0.827,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 5,
+            "row": "left",
+            "column": "stand",
+            "bbox": [
+              30,
+              48,
+              66,
+              89
+            ],
+            "overlapRatio": 0.949,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 6,
+            "row": "left",
+            "column": "step-a",
+            "bbox": [
+              28,
+              48,
+              68,
+              89
+            ],
+            "overlapRatio": 0.854,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 7,
+            "row": "left",
+            "column": "stand",
+            "bbox": [
+              30,
+              48,
+              65,
+              89
+            ],
+            "overlapRatio": 0.976,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 8,
+            "row": "left",
+            "column": "step-b",
+            "bbox": [
+              28,
+              48,
+              68,
+              89
+            ],
+            "overlapRatio": 0.854,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 9,
+            "row": "right",
+            "column": "stand",
+            "bbox": [
+              35,
+              48,
+              60,
+              89
+            ],
+            "overlapRatio": 0.976,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 10,
+            "row": "right",
+            "column": "step-a",
+            "bbox": [
+              35,
+              48,
+              61,
+              89
+            ],
+            "overlapRatio": 0.976,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 11,
+            "row": "right",
+            "column": "stand",
+            "bbox": [
+              36,
+              48,
+              60,
+              89
+            ],
+            "overlapRatio": 0.976,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 12,
+            "row": "right",
+            "column": "step-b",
+            "bbox": [
+              35,
+              48,
+              61,
+              89
+            ],
+            "overlapRatio": 0.976,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 13,
+            "row": "up",
+            "column": "stand",
+            "bbox": [
+              25,
+              48,
+              70,
+              89
+            ],
+            "overlapRatio": 0.846,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 14,
+            "row": "up",
+            "column": "step-a",
+            "bbox": [
+              26,
+              48,
+              70,
+              89
+            ],
+            "overlapRatio": 0.843,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 15,
+            "row": "up",
+            "column": "stand",
+            "bbox": [
+              25,
+              48,
+              70,
+              89
+            ],
+            "overlapRatio": 0.824,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 16,
+            "row": "up",
+            "column": "step-b",
+            "bbox": [
+              26,
+              48,
+              69,
+              89
+            ],
+            "overlapRatio": 0.862,
+            "marginOk": true,
+            "passed": true
+          }
+        ]
+      },
+      {
+        "id": "top-yellow-cardigan",
+        "slot": "top",
+        "minimumOverlap": 0.62,
+        "margin": {
+          "left": 8,
+          "top": 18,
+          "right": 8,
+          "bottom": 10
+        },
+        "passed": true,
+        "warnings": [],
+        "frames": [
+          {
+            "frame": 1,
+            "row": "down",
+            "column": "stand",
+            "bbox": [
+              29,
+              20,
+              67,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 2,
+            "row": "down",
+            "column": "step-a",
+            "bbox": [
+              29,
+              20,
+              67,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 3,
+            "row": "down",
+            "column": "stand",
+            "bbox": [
+              29,
+              20,
+              67,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 4,
+            "row": "down",
+            "column": "step-b",
+            "bbox": [
+              29,
+              20,
+              67,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 5,
+            "row": "left",
+            "column": "stand",
+            "bbox": [
+              31,
+              20,
+              65,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 6,
+            "row": "left",
+            "column": "step-a",
+            "bbox": [
+              30,
+              20,
+              64,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 7,
+            "row": "left",
+            "column": "stand",
+            "bbox": [
+              30,
+              20,
+              65,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 8,
+            "row": "left",
+            "column": "step-b",
+            "bbox": [
+              30,
+              20,
+              63,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 9,
+            "row": "right",
+            "column": "stand",
+            "bbox": [
+              31,
+              20,
+              65,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 10,
+            "row": "right",
+            "column": "step-a",
+            "bbox": [
+              31,
+              20,
+              65,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 11,
+            "row": "right",
+            "column": "stand",
+            "bbox": [
+              31,
+              20,
+              64,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 12,
+            "row": "right",
+            "column": "step-b",
+            "bbox": [
+              31,
+              20,
+              66,
+              72
+            ],
+            "overlapRatio": 0.971,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 13,
+            "row": "up",
+            "column": "stand",
+            "bbox": [
+              30,
+              20,
+              66,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 14,
+            "row": "up",
+            "column": "step-a",
+            "bbox": [
+              30,
+              20,
+              66,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 15,
+            "row": "up",
+            "column": "stand",
+            "bbox": [
+              30,
+              20,
+              66,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 16,
+            "row": "up",
+            "column": "step-b",
+            "bbox": [
+              29,
+              20,
+              65,
+              72
+            ],
+            "overlapRatio": 1.0,
+            "marginOk": true,
+            "passed": true
+          }
+        ]
+      },
+      {
+        "id": "hair-sidepart-black",
+        "slot": "hair",
+        "minimumOverlap": 0.38,
+        "margin": {
+          "left": 8,
+          "top": 14,
+          "right": 8,
+          "bottom": 10
+        },
+        "passed": true,
+        "warnings": [],
+        "frames": [
+          {
+            "frame": 1,
+            "row": "down",
+            "column": "stand",
+            "bbox": [
+              34,
+              7,
+              62,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 2,
+            "row": "down",
+            "column": "step-a",
+            "bbox": [
+              34,
+              7,
+              62,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 3,
+            "row": "down",
+            "column": "stand",
+            "bbox": [
+              34,
+              7,
+              62,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 4,
+            "row": "down",
+            "column": "step-b",
+            "bbox": [
+              34,
+              7,
+              62,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 5,
+            "row": "left",
+            "column": "stand",
+            "bbox": [
+              34,
+              7,
+              62,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 6,
+            "row": "left",
+            "column": "step-a",
+            "bbox": [
+              34,
+              7,
+              62,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 7,
+            "row": "left",
+            "column": "stand",
+            "bbox": [
+              33,
+              7,
+              62,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 8,
+            "row": "left",
+            "column": "step-b",
+            "bbox": [
+              33,
+              7,
+              62,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 9,
+            "row": "right",
+            "column": "stand",
+            "bbox": [
+              34,
+              7,
+              61,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 10,
+            "row": "right",
+            "column": "step-a",
+            "bbox": [
+              34,
+              7,
+              61,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 11,
+            "row": "right",
+            "column": "stand",
+            "bbox": [
+              34,
+              7,
+              61,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 12,
+            "row": "right",
+            "column": "step-b",
+            "bbox": [
+              34,
+              7,
+              62,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 13,
+            "row": "up",
+            "column": "stand",
+            "bbox": [
+              36,
+              7,
+              60,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 14,
+            "row": "up",
+            "column": "step-a",
+            "bbox": [
+              36,
+              7,
+              60,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 15,
+            "row": "up",
+            "column": "stand",
+            "bbox": [
+              36,
+              7,
+              60,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          },
+          {
+            "frame": 16,
+            "row": "up",
+            "column": "step-b",
+            "bbox": [
+              35,
+              7,
+              60,
+              30
+            ],
+            "overlapRatio": 0.783,
+            "marginOk": true,
+            "passed": true
+          }
+        ]
+      }
+    ]
+  },
   "acceptance": {
     "standFramesUseClosedFootPose": true,
     "clothingFitsBaseGuide": true,
     "travelerScaleMatchesPlayer": true,
-    "fallbackSafe": true
+    "fallbackSafe": true,
+    "noFrameTouchesEdge": true,
+    "layerFitPassed": true
   },
   "frames": [
     "traveler-paperdoll-yellow-male-1.png",

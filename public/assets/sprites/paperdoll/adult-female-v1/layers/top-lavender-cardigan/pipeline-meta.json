@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-06-18T11:10:12+08:00",
-  "source": "postprocessed from accepted generated composite sheet",
+  "generatedAt": "2026-07-09T17:01:13+08:00",
+  "source": "recolored from top-yellow-cardigan to preserve fitted female cardigan silhouette",
   "spec": "docs/CHARACTER_ASSET_SPEC.md",
   "paperdollLayer": "top-lavender-cardigan",
   "cellSize": [
@@ -38,5 +38,7 @@
     "top-lavender-cardigan-14.png",
     "top-lavender-cardigan-15.png",
     "top-lavender-cardigan-16.png"
-  ]
+  ],
+  "sheet": "sheet-transparent.png",
+  "fitSourceLayer": "top-yellow-cardigan"
 }

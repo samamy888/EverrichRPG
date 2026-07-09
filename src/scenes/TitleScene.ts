@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { CONFIG } from "../config";
 import { audioManager } from "../systems/audioManager";
 import { loadPrototypeSave } from "../systems/prototypeSave";
+import { addBitmapKeycapPrompt } from "../ui/bitmapKeycapPrompt";
 
 const BITMAP_FONT = "fusion-pixel-12-bitmap";
 
@@ -89,10 +90,9 @@ export class TitleScene extends Phaser.Scene {
       ease: "Sine.InOut"
     });
 
-    this.add
-      .bitmapText(CONFIG.width / 2, 270, BITMAP_FONT, "Enter / Space / A", 12)
-      .setTint(0x91aab1)
-      .setOrigin(0.5);
+    addBitmapKeycapPrompt(this, CONFIG.width / 2, 270, {
+      keys: ["ENTER", "SPACE", "A"]
+    });
     this.add
       .bitmapText(CONFIG.width / 2, 302, BITMAP_FONT, "AIRPORT QUEST PROTOTYPE", 12)
       .setTint(0x547079)

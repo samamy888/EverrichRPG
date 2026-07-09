@@ -99,11 +99,17 @@ def compose_recipe(
         raise ValueError(f"{recipe_id} must define slots and output")
 
     used_layers = validate_recipe_layers(recipe_id, slots, layers)
+    layer_sheets = {
+        layer_id: load_layer_sheet(manifest_dir, layers[layer_id])
+        for layer_id in used_layers
+    }
+    layer_fit = inspect_recipe_layer_fit(layers, layer_sheets, used_layers)
     sheet = build_accepted_composite(recipe_id) or compose_layers(
         manifest_dir,
         slots,
         layers,
         used_layers,
+        layer_sheets,
     )
 
     output_path = ROOT / output
@@ -112,7 +118,14 @@ def compose_recipe(
     sheet.save(output_path)
     save_frames(sheet, output_dir, f"traveler-{recipe_id}")
     save_animation(sheet, output_dir)
-    write_recipe_metadata(output_dir, manifest, recipe, used_layers)
+    write_recipe_metadata(
+        output_dir,
+        manifest,
+        recipe,
+        used_layers,
+        inspect_sheet(sheet),
+        layer_fit,
+    )
     (output_dir / "prompt-used.txt").write_text(
         f"Built from paperdoll recipe defined in {manifest_dir / 'paperdoll-manifest.json'}.\n",
         encoding="utf-8",
@@ -143,10 +156,16 @@ def compose_layers(
     slots: dict[str, Any],
     layers: dict[str, dict[str, Any]],
     used_layers: list[str],
+    layer_sheets: dict[str, Image.Image] | None = None,
 ) -> Image.Image:
     sheet = Image.new("RGBA", (SHEET_SIZE, SHEET_SIZE), (0, 0, 0, 0))
     for layer_id in used_layers:
-        sheet.alpha_composite(load_layer_sheet(manifest_dir, layers[layer_id]))
+        layer_sheet = (
+            layer_sheets[layer_id]
+            if layer_sheets is not None
+            else load_layer_sheet(manifest_dir, layers[layer_id])
+        )
+        sheet.alpha_composite(layer_sheet)
     return sheet
 
 
@@ -312,11 +331,213 @@ def save_animation(sheet: Image.Image, output_dir: Path) -> None:
     )
 
 
+def inspect_sheet(sheet: Image.Image) -> dict[str, Any]:
+    frames: list[dict[str, Any]] = []
+    edge_touch_frames: list[int] = []
+    for index in range(16):
+        column = index % 4
+        row = index // 4
+        frame = sheet.crop(
+            (
+                column * CELL_SIZE,
+                row * CELL_SIZE,
+                (column + 1) * CELL_SIZE,
+                (row + 1) * CELL_SIZE,
+            )
+        )
+        alpha = frame.getchannel("A")
+        bbox = alpha.getbbox()
+        if bbox is None:
+            frames.append(
+                {
+                    "frame": index + 1,
+                    "row": ROWS[row],
+                    "column": COLUMNS[column],
+                    "bbox": None,
+                }
+            )
+            edge_touch_frames.append(index + 1)
+            continue
+
+        left, top, right, bottom = bbox
+        touches_edge = left <= 0 or top <= 0 or right >= CELL_SIZE or bottom >= CELL_SIZE
+        if touches_edge:
+            edge_touch_frames.append(index + 1)
+        frames.append(
+            {
+                "frame": index + 1,
+                "row": ROWS[row],
+                "column": COLUMNS[column],
+                "bbox": [left, top, right, bottom],
+                "width": right - left,
+                "height": bottom - top,
+                "touchesEdge": touches_edge,
+            }
+        )
+
+    return {
+        "frames": frames,
+        "edgeTouchFrames": edge_touch_frames,
+    }
+
+
+def inspect_recipe_layer_fit(
+    layers: dict[str, dict[str, Any]],
+    layer_sheets: dict[str, Image.Image],
+    used_layers: list[str],
+) -> dict[str, Any]:
+    base_layer_id = next(
+        (layer_id for layer_id in used_layers if layers[layer_id]["slot"] == "base-body"),
+        None,
+    )
+    if base_layer_id is None:
+        return {
+            "passed": False,
+            "baseLayer": None,
+            "warnings": ["missing base-body layer"],
+            "layers": [],
+        }
+
+    base_frames = inspect_sheet(layer_sheets[base_layer_id])["frames"]
+    reports: list[dict[str, Any]] = []
+    warnings: list[str] = []
+    for layer_id in used_layers:
+        slot = layers[layer_id]["slot"]
+        if slot == "base-body":
+            continue
+
+        layer_frames = inspect_sheet(layer_sheets[layer_id])["frames"]
+        report = inspect_layer_fit(layer_id, slot, base_frames, layer_frames)
+        reports.append(report)
+        warnings.extend(report["warnings"])
+
+    return {
+        "passed": len(warnings) == 0,
+        "baseLayer": base_layer_id,
+        "warnings": warnings,
+        "layers": reports,
+    }
+
+
+def inspect_layer_fit(
+    layer_id: str,
+    slot: str,
+    base_frames: list[dict[str, Any]],
+    layer_frames: list[dict[str, Any]],
+) -> dict[str, Any]:
+    rules = slot_fit_rules(slot)
+    frame_reports: list[dict[str, Any]] = []
+    warnings: list[str] = []
+    for index, (base_frame, layer_frame) in enumerate(zip(base_frames, layer_frames), start=1):
+        base_box = base_frame.get("bbox")
+        layer_box = layer_frame.get("bbox")
+        if base_box is None:
+            warnings.append(f"{layer_id} frame {index}: base-body is empty")
+            continue
+        if layer_box is None:
+            warnings.append(f"{layer_id} frame {index}: layer is empty")
+            continue
+
+        overlap_ratio = overlap_area(base_box, layer_box) / max(1, box_area(layer_box))
+        margin_ok = is_inside_with_margin(layer_box, base_box, rules["margin"])
+        frame_passed = overlap_ratio >= rules["minimumOverlap"] and margin_ok
+        if not frame_passed:
+            warnings.append(
+                f"{layer_id} frame {index}: overlap={overlap_ratio:.2f}, "
+                f"marginOk={str(margin_ok).lower()}"
+            )
+        frame_reports.append(
+            {
+                "frame": index,
+                "row": layer_frame["row"],
+                "column": layer_frame["column"],
+                "bbox": layer_box,
+                "overlapRatio": round(overlap_ratio, 3),
+                "marginOk": margin_ok,
+                "passed": frame_passed,
+            }
+        )
+
+    return {
+        "id": layer_id,
+        "slot": slot,
+        "minimumOverlap": rules["minimumOverlap"],
+        "margin": rules["margin"],
+        "passed": len(warnings) == 0,
+        "warnings": warnings,
+        "frames": frame_reports,
+    }
+
+
+def slot_fit_rules(slot: str) -> dict[str, Any]:
+    rules: dict[str, dict[str, Any]] = {
+        "hair": {
+            "minimumOverlap": 0.38,
+            "margin": {"left": 8, "top": 14, "right": 8, "bottom": 10},
+        },
+        "top": {
+            "minimumOverlap": 0.62,
+            "margin": {"left": 8, "top": 18, "right": 8, "bottom": 10},
+        },
+        "pants": {
+            "minimumOverlap": 0.58,
+            "margin": {"left": 8, "top": 10, "right": 8, "bottom": 8},
+        },
+        "shoes": {
+            "minimumOverlap": 0.5,
+            "margin": {"left": 5, "top": 5, "right": 5, "bottom": 3},
+        },
+        "accessory-back": {
+            "minimumOverlap": 0.2,
+            "margin": {"left": 18, "top": 18, "right": 18, "bottom": 18},
+        },
+        "accessory-front": {
+            "minimumOverlap": 0.2,
+            "margin": {"left": 18, "top": 18, "right": 18, "bottom": 18},
+        },
+    }
+    return rules.get(
+        slot,
+        {
+            "minimumOverlap": 0.5,
+            "margin": {"left": 8, "top": 8, "right": 8, "bottom": 8},
+        },
+    )
+
+
+def box_area(box: list[int]) -> int:
+    left, top, right, bottom = box
+    return max(0, right - left) * max(0, bottom - top)
+
+
+def overlap_area(left_box: list[int], right_box: list[int]) -> int:
+    left = max(left_box[0], right_box[0])
+    top = max(left_box[1], right_box[1])
+    right = min(left_box[2], right_box[2])
+    bottom = min(left_box[3], right_box[3])
+    return box_area([left, top, right, bottom])
+
+
+def is_inside_with_margin(
+    layer_box: list[int],
+    base_box: list[int],
+    margin: dict[str, int],
+) -> bool:
+    return (
+        layer_box[0] >= base_box[0] - margin["left"]
+        and layer_box[1] >= base_box[1] - margin["top"]
+        and layer_box[2] <= base_box[2] + margin["right"]
+        and layer_box[3] <= base_box[3] + margin["bottom"]
+    )
+
+
 def write_recipe_metadata(
     output_dir: Path,
     manifest: dict[str, Any],
     recipe: dict[str, Any],
     used_layers: list[str],
+    qc: dict[str, Any],
+    layer_fit: dict[str, Any],
 ) -> None:
     recipe_id = recipe["id"]
     write_json(
@@ -334,12 +555,16 @@ def write_recipe_metadata(
             "layers": used_layers,
             "sheet": "sheet-transparent.png",
             "shared_scale": True,
-            "edge_touch_frames": [],
+            "edge_touch_frames": qc["edgeTouchFrames"],
+            "frameBounds": qc["frames"],
+            "layerFit": layer_fit,
             "acceptance": {
                 "standFramesUseClosedFootPose": True,
                 "clothingFitsBaseGuide": True,
                 "travelerScaleMatchesPlayer": True,
                 "fallbackSafe": True,
+                "noFrameTouchesEdge": len(qc["edgeTouchFrames"]) == 0,
+                "layerFitPassed": layer_fit["passed"],
             },
             "frames": [f"traveler-{recipe_id}-{index + 1}.png" for index in range(16)],
         },

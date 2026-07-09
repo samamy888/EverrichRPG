@@ -9,6 +9,7 @@ import {
   isPortraitTouchLayout,
   mapPointerToGamePoint
 } from "../ui/touchCoordinateMapper";
+import { addBitmapKeycapPrompt } from "../ui/bitmapKeycapPrompt";
 
 const BITMAP_FONT = "fusion-pixel-12-bitmap";
 
@@ -96,9 +97,12 @@ export class CharacterSelectScene extends Phaser.Scene {
       "female"
     );
     this.hint = this.add
-      .bitmapText(CONFIG.width / 2, 278, BITMAP_FONT, "左右選擇 · Enter / 點擊確認", 12)
+      .bitmapText(CONFIG.width / 2, 270, BITMAP_FONT, "左右選擇 · 點擊角色也可確認", 12)
       .setTint(0xd9e3e8)
       .setOrigin(0.5);
+    addBitmapKeycapPrompt(this, CONFIG.width / 2, 292, {
+      keys: ["ENTER", "SPACE", "A"]
+    });
 
     this.input.keyboard?.on("keydown-LEFT", this.selectMaleHandler);
     this.input.keyboard?.on("keydown-RIGHT", this.selectFemaleHandler);
@@ -210,7 +214,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.femalePortrait.anims.timeScale =
       this.selected === "female" ? 1.15 : 0.72;
     this.hint.setText(
-      `${this.selected === "male" ? "男旅客" : "女旅客"} · Enter / 點擊開始`
+      `${this.selected === "male" ? "男旅客" : "女旅客"} · 點擊或按鍵開始`
     );
   }
 

@@ -89,10 +89,28 @@ export const PAPERDOLL_RECIPES = [
   }
 ] as const satisfies readonly PaperdollRecipe[];
 
+export type PaperdollBodyType = PaperdollRecipe["bodyType"];
+
+export const PAPERDOLL_RECIPE_IDS = PAPERDOLL_RECIPES.map(
+  (recipe) => recipe.id
+) as readonly TravelerVariant[];
+
+export function isPaperdollVariant(
+  variant: TravelerVariant
+): boolean {
+  return PAPERDOLL_RECIPE_IDS.includes(variant);
+}
+
 export function getPaperdollRecipeByVariant(
   variant: TravelerVariant
 ): PaperdollRecipe | undefined {
   return PAPERDOLL_RECIPES.find((recipe) => recipe.id === variant);
+}
+
+export function getPaperdollRecipesByBodyType(
+  bodyType: PaperdollBodyType
+): readonly PaperdollRecipe[] {
+  return PAPERDOLL_RECIPES.filter((recipe) => recipe.bodyType === bodyType);
 }
 
 export function getPaperdollVariantForAppearance(

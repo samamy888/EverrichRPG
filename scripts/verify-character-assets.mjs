@@ -231,6 +231,12 @@ for (const bodyType of ["adult-male", "adult-female"]) {
     if (metadata.frames.length !== 16) fail(`${recipe.id} must have 16 frames`);
     if (!metadata.shared_scale) fail(`${recipe.id} must use shared scale`);
     if (metadata.edge_touch_frames.length > 0) fail(`${recipe.id} touches a cell edge`);
+    if (!metadata.layerFit?.passed) {
+      fail(`${recipe.id} paperdoll layers do not fit the base body`);
+    }
+    if (metadata.acceptance?.layerFitPassed !== true) {
+      fail(`${recipe.id} metadata must mark layerFitPassed`);
+    }
     if (JSON.stringify(metadata.appearance) !== JSON.stringify(recipe.appearance)) {
       fail(`${recipe.id} metadata appearance is out of sync with manifest`);
     }
