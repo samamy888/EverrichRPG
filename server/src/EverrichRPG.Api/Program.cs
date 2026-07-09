@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+using System.Text.Json;
 using EverrichRPG.Api.Middleware;
 using EverrichRPG.Api.Services;
 using EverrichRPG.Api.Health;
@@ -118,6 +119,22 @@ app.MapHealthChecks("/api/v1/health", new HealthCheckOptions
 app.MapHealthChecks("/api/v1/health/ready", new HealthCheckOptions
 {
     AllowCachingResponses = false,
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json; charset=utf-8";
+        var response = new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description,
+                exception = entry.Value.Exception?.Message
+            })
+        };
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+    },
     ResultStatusCodes =
     {
         [HealthStatus.Healthy] = StatusCodes.Status200OK,
