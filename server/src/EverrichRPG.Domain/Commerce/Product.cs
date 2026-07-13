@@ -73,4 +73,9 @@ public sealed class Product
         DisplayOrder = displayOrder;
         IsActive = true;
     }
+
+    public void Deactivate()
+    {
+        IsActive = false;
+    }
 }

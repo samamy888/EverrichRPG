@@ -43,6 +43,54 @@ public sealed class TravelersController(GameDbContext dbContext) : ControllerBas
         return Ok(new TravelerRosterResponse(2, travelers));
     }
 
+    [HttpPost]
+    public async Task<ActionResult<TravelerResponse>> CreateTraveler(
+        TravelerWriteRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!Validate(request)) return ValidationProblem(ModelState);
+
+        var traveler = new Traveler(
+            Guid.NewGuid(), request.Name.Trim(), request.Variant.Trim(),
+            request.Gender.Trim(), request.AgeGroup.Trim(), request.HairStyle.Trim(),
+            request.Top.Trim(), request.Pants.Trim(), request.Dialogue.Trim(),
+            request.MovementType.Trim(), request.Facing.Trim(), request.Speed);
+        dbContext.Travelers.Add(traveler);
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return Created($"/api/v1/travelers/{traveler.Id}", ToResponse(traveler));
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<TravelerResponse>> UpdateTraveler(
+        Guid id,
+        TravelerWriteRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!Validate(request)) return ValidationProblem(ModelState);
+        var traveler = await dbContext.Travelers
+            .FirstOrDefaultAsync(item => item.Id == id && item.IsActive, cancellationToken);
+        if (traveler is null) return NotFound();
+
+        traveler.UpdateDetails(
+            request.Name.Trim(), request.Variant.Trim(), request.Gender.Trim(),
+            request.AgeGroup.Trim(), request.HairStyle.Trim(), request.Top.Trim(),
+            request.Pants.Trim(), request.Dialogue.Trim(), request.MovementType.Trim(),
+            request.Facing.Trim(), request.Speed);
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return Ok(ToResponse(traveler));
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteTraveler(Guid id, CancellationToken cancellationToken)
+    {
+        var traveler = await dbContext.Travelers
+            .FirstOrDefaultAsync(item => item.Id == id && item.IsActive, cancellationToken);
+        if (traveler is null) return NotFound();
+        traveler.Deactivate();
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return NoContent();
+    }
+
     private IQueryable<Traveler> QueryActiveTravelers()
     {
         return dbContext.Travelers
@@ -105,6 +153,36 @@ public sealed class TravelersController(GameDbContext dbContext) : ControllerBas
 
         return selected.ToArray();
     }
+
+    private bool Validate(TravelerWriteRequest request)
+    {
+        ValidateRequired(nameof(request.Name), request.Name, 80);
+        ValidateRequired(nameof(request.Variant), request.Variant, 40);
+        ValidateRequired(nameof(request.Gender), request.Gender, 16);
+        ValidateRequired(nameof(request.AgeGroup), request.AgeGroup, 16);
+        ValidateRequired(nameof(request.HairStyle), request.HairStyle, 40);
+        ValidateRequired(nameof(request.Top), request.Top, 40);
+        ValidateRequired(nameof(request.Pants), request.Pants, 40);
+        ValidateRequired(nameof(request.Dialogue), request.Dialogue, 500);
+        ValidateRequired(nameof(request.MovementType), request.MovementType, 16);
+        ValidateRequired(nameof(request.Facing), request.Facing, 16);
+        if (request.Speed is < 1 or > 200)
+            ModelState.AddModelError(nameof(request.Speed), "Speed must be between 1 and 200.");
+        return ModelState.IsValid;
+    }
+
+    private void ValidateRequired(string key, string? value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value)) ModelState.AddModelError(key, $"{key} is required.");
+        else if (value.Length > maxLength) ModelState.AddModelError(key, $"{key} cannot exceed {maxLength} characters.");
+    }
+
+    private static TravelerResponse ToResponse(Traveler traveler) => new(
+        traveler.Id, traveler.Name, traveler.Variant,
+        new TravelerAppearanceResponse(
+            traveler.Gender, traveler.AgeGroup, traveler.HairStyle,
+            traveler.Top, traveler.Pants),
+        traveler.Dialogue, traveler.MovementType, traveler.Facing, traveler.Speed);
 }
 
 public sealed record TravelerRosterResponse(
@@ -127,3 +205,16 @@ public sealed record TravelerAppearanceResponse(
     string HairStyle,
     string Top,
     string Pants);
+
+public sealed record TravelerWriteRequest(
+    string Name,
+    string Variant,
+    string Gender,
+    string AgeGroup,
+    string HairStyle,
+    string Top,
+    string Pants,
+    string Dialogue,
+    string MovementType,
+    string Facing,
+    int Speed);

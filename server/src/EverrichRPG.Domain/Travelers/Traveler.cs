@@ -70,4 +70,31 @@ public sealed class Traveler
         Top = top;
         Pants = pants;
     }
+
+    public void UpdateDetails(
+        string name,
+        string variant,
+        string gender,
+        string ageGroup,
+        string hairStyle,
+        string top,
+        string pants,
+        string dialogue,
+        string movementType,
+        string facing,
+        int speed)
+    {
+        Name = name;
+        ChangeAppearance(variant, gender, ageGroup, hairStyle, top, pants);
+        Dialogue = dialogue;
+        MovementType = movementType;
+        Facing = facing;
+        Speed = speed;
+        IsActive = true;
+    }
+
+    public void Deactivate()
+    {
+        IsActive = false;
+    }
 }

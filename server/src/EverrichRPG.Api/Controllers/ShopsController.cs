@@ -103,7 +103,8 @@ public sealed class ShopsController(GameDbContext dbContext) : ControllerBase
                 product.PromotionStartAt,
                 product.PromotionEndAt,
                 product.StockQuantity,
-                product.ShopId));
+                product.ShopId,
+                product.DisplayOrder));
     }
 }
 
@@ -130,4 +131,5 @@ public sealed record ProductResponse(
     DateTimeOffset? PromotionStartAt,
     DateTimeOffset? PromotionEndAt,
     int StockQuantity,
-    string StoreId);
+    string StoreId,
+    int DisplayOrder);

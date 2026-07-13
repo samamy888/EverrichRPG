@@ -37,19 +37,8 @@ public sealed class CommerceCatalogSeeder(GameDbContext dbContext)
             displayOrderByShop.TryGetValue(product.StoreId, out var displayOrder);
             displayOrderByShop[product.StoreId] = displayOrder + 1;
 
-            if (existingProducts.TryGetValue(product.Id, out var existingProduct))
+            if (existingProducts.ContainsKey(product.Id))
             {
-                existingProduct.UpdateCatalogData(
-                    product.Name,
-                    product.Description,
-                    product.Category,
-                    product.Sku,
-                    product.Price,
-                    product.PromotionPrice,
-                    product.PromotionStartAt,
-                    product.PromotionEndAt,
-                    product.StockQuantity,
-                    displayOrder);
                 continue;
             }
 

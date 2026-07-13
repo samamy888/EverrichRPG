@@ -89,14 +89,7 @@ public sealed class TravelerRosterSeeder(GameDbContext dbContext)
                 hasChanges = true;
             }
 
-            if (IsNameCompatibleWithVariant(traveler.Name, traveler.Variant) &&
-                usedNames.Add(traveler.Name))
-            {
-                continue;
-            }
-
-            traveler.Rename(CreateUniqueName(random, usedNames, traveler.Variant));
-            hasChanges = true;
+            usedNames.Add(traveler.Name);
         }
 
         var travelers = new List<Traveler>();

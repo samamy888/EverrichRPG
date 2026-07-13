@@ -39,16 +39,18 @@ npm run build:iis
 - 後台管理到 `dist/backend/`
 - 複製根目錄 `web.config` 到 `dist/web.config`
 
-## 第一階段功能
+## 目前功能
 
 - 營運總覽
 - 商品清單讀取 `/api/v1/shops/catalog`
+- 商品新增、編輯與軟刪除 `/api/v1/products`
 - 旅客清單讀取 `/api/v1/travelers`
+- 旅客新增、編輯與軟刪除 `/api/v1/travelers`
+- 商品價格、促銷期間、庫存與顯示順序管理
+- 旅客紙娃娃外觀、對話與 AI 移動參數管理
 
 ## 下一階段
 
-- 商品 CRUD API
-- 旅客 CRUD API
 - 後台登入與權限
 - 紙娃娃 recipe 預覽
 - 商店/任務資料管理
