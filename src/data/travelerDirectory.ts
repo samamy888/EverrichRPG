@@ -289,15 +289,52 @@ export function getTravelersForRegion(regionId: RegionId): TravelerProfile[] {
 
   const [minimum, maximum] = POPULATION_RANGES[regionId];
   const count = randomInteger(minimum, maximum);
-  const available = shuffle(
-    sessionPool.filter((traveler) => !assignedTravelerIds.has(traveler.id))
+  const selected = createBalancedTravelerSelection(
+    sessionPool.filter((traveler) => !assignedTravelerIds.has(traveler.id)),
+    count
   );
-  const selected = available.slice(0, count);
 
   for (const traveler of selected) {
     assignedTravelerIds.add(traveler.id);
   }
   regionAssignments.set(regionId, selected);
+  return selected;
+}
+
+export function createBalancedTravelerSelection(
+  travelers: readonly TravelerProfile[],
+  count: number
+): TravelerProfile[] {
+  if (count <= 0) return [];
+
+  const buckets = new Map<TravelerVariant, TravelerProfile[]>();
+  for (const traveler of shuffle(travelers)) {
+    const variant = getTravelerVariantForAppearance(
+      traveler.appearance,
+      traveler.variant
+    );
+    const bucket = buckets.get(variant) ?? [];
+    bucket.push(traveler);
+    buckets.set(variant, bucket);
+  }
+
+  const variantQueue = shuffle(Array.from(buckets.keys()));
+  const selected: TravelerProfile[] = [];
+  while (selected.length < count && variantQueue.length > 0) {
+    for (const variant of [...variantQueue]) {
+      const bucket = buckets.get(variant);
+      const traveler = bucket?.shift();
+      if (traveler) {
+        selected.push(traveler);
+      }
+      if (!bucket || bucket.length === 0) {
+        const index = variantQueue.indexOf(variant);
+        if (index >= 0) variantQueue.splice(index, 1);
+      }
+      if (selected.length >= count) break;
+    }
+  }
+
   return selected;
 }
 

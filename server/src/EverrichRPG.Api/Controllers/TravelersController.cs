@@ -38,10 +38,7 @@ public sealed class TravelersController(GameDbContext dbContext) : ControllerBas
         var pool = await QueryActiveTravelers()
             .Select(ToResponse())
             .ToArrayAsync(cancellationToken);
-        var travelers = pool
-            .OrderBy(_ => Random.Shared.Next())
-            .Take(count)
-            .ToArray();
+        var travelers = SelectBalancedTravelers(pool, count);
 
         return Ok(new TravelerRosterResponse(2, travelers));
     }
@@ -70,6 +67,43 @@ public sealed class TravelersController(GameDbContext dbContext) : ControllerBas
                 traveler.MovementType,
                 traveler.Facing,
                 traveler.Speed);
+    }
+
+    private static TravelerResponse[] SelectBalancedTravelers(
+        IReadOnlyCollection<TravelerResponse> pool,
+        int count)
+    {
+        var buckets = pool
+            .OrderBy(_ => Random.Shared.Next())
+            .GroupBy(traveler => traveler.Variant)
+            .Select(group => new Queue<TravelerResponse>(group))
+            .OrderBy(_ => Random.Shared.Next())
+            .ToList();
+        var selected = new List<TravelerResponse>(count);
+
+        while (selected.Count < count && buckets.Count > 0)
+        {
+            for (var index = buckets.Count - 1; index >= 0; index--)
+            {
+                var bucket = buckets[index];
+                if (bucket.Count > 0)
+                {
+                    selected.Add(bucket.Dequeue());
+                }
+
+                if (bucket.Count == 0)
+                {
+                    buckets.RemoveAt(index);
+                }
+
+                if (selected.Count >= count)
+                {
+                    break;
+                }
+            }
+        }
+
+        return selected.ToArray();
     }
 }
 

@@ -56,6 +56,9 @@ public sealed class TravelerEndpointsTests : IClassFixture<ApiFactory>
         Assert.NotNull(roster);
         Assert.Equal(12, roster.Travelers.Length);
         Assert.Equal(12, roster.Travelers.Select(traveler => traveler.Id).Distinct().Count());
+        Assert.True(
+            roster.Travelers.Select(traveler => traveler.Variant).Distinct().Count() >= 10,
+            "Random traveler selection should spread across outfit variants.");
     }
 
     [Fact]

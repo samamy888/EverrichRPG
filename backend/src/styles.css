@@ -1,0 +1,296 @@
+﻿:root {
+  color: #17242b;
+  background: #eef3f5;
+  font-family:
+    Inter, "Noto Sans TC", "Microsoft JhengHei", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1080px;
+  min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+#app {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 100vh;
+  padding: 28px 20px;
+  color: #f5fbff;
+  background: linear-gradient(180deg, #102f3a, #081b22);
+  box-shadow: 12px 0 30px rgba(8, 27, 34, 0.18);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  color: #102f3a;
+  font-weight: 900;
+  background: #f3c55a;
+  border-radius: 14px;
+  box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.14);
+}
+
+.brand strong,
+.brand small {
+  display: block;
+}
+
+.brand small,
+.sidebar-note {
+  color: #9fc1cb;
+}
+
+nav {
+  display: grid;
+  gap: 10px;
+}
+
+.nav-button,
+.ghost-button {
+  cursor: pointer;
+  border: 0;
+}
+
+.nav-button {
+  width: 100%;
+  padding: 13px 14px;
+  color: #dcecf1;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+}
+
+.nav-button:hover,
+.nav-button.active {
+  color: #102f3a;
+  background: #f3c55a;
+}
+
+.sidebar-note {
+  margin-top: auto;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+}
+
+code {
+  padding: 2px 6px;
+  color: #0c3b46;
+  background: #dceef2;
+  border-radius: 6px;
+}
+
+.shell {
+  padding: 30px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: #607882;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: 34px;
+}
+
+h2 {
+  margin-bottom: 16px;
+}
+
+.ghost-button {
+  padding: 11px 18px;
+  color: #12323c;
+  background: #ffffff;
+  border: 1px solid #cbdbe1;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(16, 47, 58, 0.08);
+}
+
+.ghost-button:hover {
+  border-color: #f3c55a;
+  box-shadow: 0 10px 24px rgba(243, 197, 90, 0.22);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.metric-card,
+.panel {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #dbe6ea;
+  border-radius: 22px;
+  box-shadow: 0 14px 34px rgba(16, 47, 58, 0.08);
+}
+
+.metric-card {
+  display: grid;
+  gap: 8px;
+  min-height: 150px;
+  padding: 20px;
+}
+
+.metric-card span,
+.metric-card small {
+  color: #607882;
+}
+
+.metric-card strong {
+  font-size: 42px;
+  line-height: 1;
+}
+
+.panel {
+  padding: 22px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.panel-heading h2 {
+  margin-bottom: 0;
+}
+
+.panel-heading span {
+  color: #607882;
+}
+
+.state-panel {
+  display: grid;
+  min-height: 260px;
+  place-items: center;
+  color: #607882;
+  font-weight: 800;
+}
+
+.state-panel.error {
+  color: #9f2d20;
+  background: #fff4f1;
+}
+
+.todo-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 22px;
+  color: #425a64;
+}
+
+.table-wrap {
+  overflow: auto;
+  border: 1px solid #dde8ec;
+  border-radius: 16px;
+}
+
+table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+th,
+td {
+  padding: 14px 16px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #edf3f5;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  color: #607882;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #f7fafb;
+}
+
+td strong,
+td small {
+  display: block;
+}
+
+td small {
+  max-width: 360px;
+  margin-top: 4px;
+  color: #718791;
+  line-height: 1.45;
+}
+
+.stock {
+  display: inline-flex;
+  min-width: 42px;
+  justify-content: center;
+  padding: 4px 8px;
+  color: #14633f;
+  background: #ddf8e9;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.stock.low {
+  color: #9a4f00;
+  background: #fff0cf;
+}

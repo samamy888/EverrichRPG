@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "build:iis": "npm run build && node scripts/copy-web-config.mjs",
+    "build:iis": "npm run build && npm run backend:build && node scripts/copy-web-config.mjs",
     "map:slice": "python scripts/slice-map-tiles.py --input public/assets/map/village-base.png --output-dir public/assets/map/terminal/tiles --tile-size 128 --meta-output public/assets/map/terminal/chunks-meta.json --url-base /assets/map/terminal/tiles",
     "migration:inventory": "node scripts/build-migration-inventory.mjs",
     "phase0:verify": "npm run migration:inventory && node scripts/verify-phase0-data.mjs",
@@ -35,7 +35,10 @@
     "test:animation": "vitest run src/animation/AnimationRegistry.test.ts",
     "text:scan": "node scripts/check-text-encoding.mjs",
     "text:scan:src": "node scripts/check-text-encoding.mjs --src-only",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "backend:dev": "vite --config backend/vite.config.ts",
+    "backend:typecheck": "tsc -p backend/tsconfig.json --noEmit",
+    "backend:build": "npm run backend:typecheck && vite build --config backend/vite.config.ts"
   },
   "dependencies": {
     "phaser": "^3.90.0"
