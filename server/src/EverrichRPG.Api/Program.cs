@@ -11,6 +11,13 @@ using Serilog;
 using Serilog.Context;
 
 var builder = WebApplication.CreateBuilder(args);
+var databaseMaintenance = args.Contains("--database-maintenance", StringComparer.OrdinalIgnoreCase);
+var recreateDatabase = args.Contains("--recreate-database", StringComparer.OrdinalIgnoreCase);
+if (recreateDatabase && !databaseMaintenance)
+{
+    throw new InvalidOperationException(
+        "--recreate-database can only be used together with --database-maintenance.");
+}
 
 builder.Host.UseSerilog((context, services, loggerConfiguration) =>
 {
@@ -144,7 +151,12 @@ app.MapHealthChecks("/api/v1/health/ready", new HealthCheckOptions
 });
 app.MapControllers();
 
-await app.Services.InitializeDatabaseAsync(app.Configuration);
+await app.Services.InitializeDatabaseAsync(app.Configuration, recreateDatabase);
+
+if (databaseMaintenance)
+{
+    return;
+}
 
 app.Run();
 

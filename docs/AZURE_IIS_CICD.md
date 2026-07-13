@@ -10,6 +10,7 @@ GitHub push main/master
 → 測試前端
 → 建置 ASP.NET Core API
 → 測試 API
+→ 驗證 EF model 有對應的 MySQL migration
 → 打包 frontend / api
 → self-hosted runner 複製到 IIS 目錄
 → 重啟 IIS App Pool
@@ -148,17 +149,23 @@ Invoke-WebRequest https://www.biudream.com/api/v1/health -UseBasicParsing
 ASPNETCORE_ENVIRONMENT=Production
 ConnectionStrings__GameDatabase=你的資料庫連線字串
 Database__Provider=MySql
-Database__ApplyMigrations=false
+Database__ApplyMigrations=true
 Cors__AllowedOrigins__0=https://www.biudream.com
 ```
 
-如果要讓 API 啟動時自動套用 migration：
+API 啟動時會自動套用尚未執行的 MySQL migration，版本記錄於 `__EFMigrationsHistory`。CI 會先檢查 EF model 是否漏建 migration。
+
+## 一次性清空並重建資料庫
+
+目前正式 DB 可清空時，到 GitHub 手動執行：
 
 ```text
-Database__ApplyMigrations=true
+Actions → Azure IIS CI/CD → Run workflow
 ```
 
-正式環境建議先備份資料庫，再開啟自動 migration。
+勾選 `recreate_database`。部署流程會在 App Pool 停止期間執行資料庫 maintenance mode，刪除 MySQL database、重新套用 initial migration 並匯入初始商店及旅客資料。
+
+這個選項只對該次手動執行生效；push 部署與 IIS 重啟不會清空資料。
 
 ## 健康檢查策略
 

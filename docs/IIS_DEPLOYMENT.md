@@ -1,93 +1,64 @@
 # IIS 部署流程
 
-本專案可以用 GitHub Actions 產生 IIS 部署包，再手動放到 IIS 主機。
+本專案統一使用 `.github/workflows/azure-iis-cicd.yml` 部署到 Windows IIS。push 到 `main` / `master` 會執行一般部署，也可從 GitHub Actions 手動執行。
 
-## 1. 執行 CI
+完整的 runner、IIS variables、App Pool、健康檢查與 rollback 設定請見 `AZURE_IIS_CICD.md`。
 
-到 GitHub 專案頁面：
+## 部署內容
 
-1. 打開 `Actions`。
-2. 選擇 `Build IIS package`。
-3. 按 `Run workflow`。
-4. 如果前端和 API 同網域同站台，`api_base_url` 留空即可，前端會使用 `/api/v1`。
-5. 如果 API 架在不同網域，填入完整 API base URL，例如 `https://api.example.com/api/v1`。
+Workflow 會：
 
-CI 完成後，在 workflow run 的 `Artifacts` 下載 `everrich-rpg-iis-package`。
+1. 驗證 Tiled 地圖並執行前端測試。
+2. 建置遊戲前台與 `/backend` 管理後台。
+3. 執行 .NET 測試。
+4. 驗證 EF model 有對應的 MySQL migration。
+5. publish ASP.NET Core API。
+6. 備份目前的 IIS 前台與 API 目錄。
+7. 部署檔案並重啟 App Pool。
+8. 執行內部、公開健康檢查與 API smoke tests。
 
-## 2. 部署包內容
+## IIS 架構
 
-```text
-frontend/  Vite 前端靜態網站
-api/       ASP.NET Core API publish 輸出
-README.md 部署摘要
-```
+- 前台 physical path：GitHub variable `IIS_FRONTEND_PATH`
+- API physical path：GitHub variable `IIS_API_PATH`
+- 公開 `/api/*` 由前台 `web.config` 反向代理至 API IIS site。
+- `/backend/` 與遊戲前台部署在同一個前台目錄，不需要獨立 IIS site。
 
-## 3. IIS 建議架構
-
-### 同一台 IIS，同一網域
-
-建議：
-
-- 主站台指向 `frontend/`
-- API 建成同站台底下的應用程式，例如 `/api`
-- 前端預設會呼叫 `/api/v1`
-
-如果 API 實際路由是 `/api/v1`，可以依 IIS 結構選擇：
-
-- API 應用程式掛在站台根目錄，保留 Controller route `/api/v1`
-- 或使用 URL Rewrite / ARR 把 `/api/v1/*` 轉到 API 站台
-
-### 前端與 API 分站台
-
-如果 API 使用不同網域或 port，請在手動執行 workflow 時設定：
-
-```text
-api_base_url=https://你的-api-domain/api/v1
-```
-
-這會把 `VITE_API_BASE_URL` 寫入前端 build。
-
-## 4. IIS 主機需求
-
-- IIS
-- IIS URL Rewrite Module
-- ASP.NET Core Hosting Bundle，版本需相容 `global.json`
-- 資料庫連線字串
-
-## 5. 後端正式設定
-
-不要把開發用 DB 檔直接部署成正式資料庫。
-
-正式環境建議在 IIS 設定環境變數：
+API 使用：
 
 ```text
 ASPNETCORE_ENVIRONMENT=Production
-ConnectionStrings__GameDatabase=你的正式資料庫連線字串
+ConnectionStrings__GameDatabase=<GitHub secret IIS_DATABASE_CONNECTION_STRING>
 Database__Provider=MySql
-Database__ApplyMigrations=false
-Cors__AllowedOrigins__0=https://你的前端網域
-```
-
-如果你要讓 API 啟動時自動套 migration，可把：
-
-```text
 Database__ApplyMigrations=true
 ```
 
-但正式環境比較建議先在部署流程或 DBA 流程中控管 migration。
+## 一般部署
 
-## 6. 手動部署步驟
+push 到 `main`，或到：
 
-1. 停止 IIS 對應站台或 App Pool。
-2. 備份原本網站資料夾。
-3. 清空前端站台資料夾，放入 `frontend/` 內容。
-4. 清空 API 應用程式資料夾，放入 `api/` 內容。
-5. 設定 IIS 環境變數與 App Pool。
-6. 啟動站台。
-7. 檢查：
+```text
+Actions → Azure IIS CI/CD → Run workflow
+```
+
+一般部署不要勾選 `recreate_database`。API 啟動時只會套用尚未執行的 migration，不會清空既有資料。
+
+## 第一次重建 MySQL schema
+
+舊資料允許全部清空時，手動執行 workflow 並勾選 `recreate_database`。該次部署會：
+
+1. 刪除既有 MySQL database。
+2. 依 MySQL migrations 重建 schema。
+3. 建立 `__EFMigrationsHistory`。
+4. 匯入初始商店、商品及旅客資料。
+
+這個選項只對該次手動執行有效。
+
+## 部署後檢查
 
 ```text
 https://你的網域/
+https://你的網域/backend/
 https://你的網域/api/v1/health
 https://你的網域/api/v1/health/ready
 ```

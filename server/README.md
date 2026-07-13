@@ -7,7 +7,7 @@
 
 ## Local API
 
-Development uses MySQL by default and automatically imports the shop catalog and traveler roster.
+Development uses MySQL by default, applies committed EF migrations, and imports missing shop and traveler seed data.
 
 Run the API:
 
@@ -54,18 +54,38 @@ Install the .NET 10 Hosting Bundle on Windows Server, create an IIS application 
 
 - `ConnectionStrings__GameDatabase`
 - `Database__Provider=MySql`
+- `Database__ApplyMigrations=true`
 
-For a remotely maintainable production database, use MySQL instead of SQLite.
 See `../docs/PRODUCTION_DATABASE.md` for DBeaver, firewall, and GitHub Actions settings.
-- `Database__ApplyMigrations=false`
 - `Cors__AllowedOrigins__0`
 
-MySQL currently creates the database and schema from the EF model on startup. When schema changes become more formal, generate MySQL-specific migrations and run them as a deployment step before recycling the IIS application.
+MySQL is the only persistent database provider. InMemory is reserved for automated tests. The API creates the database when missing, applies committed migrations, and records versions in `__EFMigrationsHistory`.
+
+## Schema changes
+
+After changing an EF entity or configuration:
+
+```powershell
+dotnet tool restore
+dotnet ef migrations add YourMigrationName `
+  --project server/src/EverrichRPG.Infrastructure `
+  --startup-project server/src/EverrichRPG.Api `
+  --context GameDbContext `
+  --output-dir Persistence/Migrations
+
+dotnet tool run dotnet-ef migrations has-pending-model-changes `
+  --project server/src/EverrichRPG.Infrastructure `
+  --startup-project server/src/EverrichRPG.Api `
+  --context GameDbContext
+```
+
+Commit the generated migration and snapshot with the model change. CI rejects a model change that has no matching migration.
 
 ## Validation
 
 ```powershell
 dotnet build server/EverrichRPG.slnx
 dotnet test server/EverrichRPG.slnx
+dotnet tool run dotnet-ef migrations has-pending-model-changes --project server/src/EverrichRPG.Infrastructure --startup-project server/src/EverrichRPG.Api --context GameDbContext
 docker compose config
 ```

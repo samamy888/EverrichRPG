@@ -25,12 +25,6 @@ public static class DependencyInjection
             var connectionString = configuration.GetConnectionString("GameDatabase")
                 ?? throw new InvalidOperationException(
                     "Connection string 'GameDatabase' is not configured.");
-            if (databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase))
-            {
-                options.UseSqlite(connectionString);
-                return;
-            }
-
             if (databaseProvider.Equals("MySql", StringComparison.OrdinalIgnoreCase) ||
                 databaseProvider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
             {
@@ -38,14 +32,8 @@ public static class DependencyInjection
                 return;
             }
 
-            if (databaseProvider.Equals("PostgreSql", StringComparison.OrdinalIgnoreCase))
-            {
-                options.UseNpgsql(connectionString);
-                return;
-            }
-
             throw new InvalidOperationException(
-                $"Unsupported database provider '{databaseProvider}'. Use InMemory, Sqlite, MySql, or PostgreSql.");
+                $"Unsupported database provider '{databaseProvider}'. Use InMemory for tests or MySql for persistent data.");
         });
         services.AddScoped<CommerceCatalogSeeder>();
         services.AddScoped<TravelerRosterSeeder>();

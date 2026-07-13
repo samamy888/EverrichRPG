@@ -5,77 +5,74 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace EverrichRPG.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20260615070735_AddTravelerRoster")]
-    partial class AddTravelerRoster
+    [Migration("20260713081944_InitialMySqlSchema")]
+    partial class InitialMySqlSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.4")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("EverrichRPG.Domain.Commerce.Product", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(80)
-                        .HasColumnType("character varying(80)");
+                        .HasColumnType("varchar(80)");
 
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("character varying(40)");
+                        .HasColumnType("varchar(40)");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
+                        .HasColumnType("varchar(120)");
 
                     b.Property<int>("Price")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset?>("PromotionEndAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime");
 
                     b.Property<int?>("PromotionPrice")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset?>("PromotionStartAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("ShopId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.Property<string>("Sku")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("character varying(40)");
+                        .HasColumnType("varchar(40)");
 
                     b.Property<int>("StockQuantity")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -91,25 +88,25 @@ namespace EverrichRPG.Infrastructure.Persistence.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.Property<string>("ClerkMessage")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
+                        .HasColumnType("varchar(120)");
 
                     b.Property<string>("Welcome")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("varchar(500)");
 
                     b.HasKey("Id");
 
@@ -120,22 +117,22 @@ namespace EverrichRPG.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("DisplayName")
                         .HasMaxLength(80)
-                        .HasColumnType("character varying(80)");
+                        .HasColumnType("varchar(80)");
 
                     b.Property<DateTimeOffset>("LastSeenAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(24)
-                        .HasColumnType("character varying(24)");
+                        .HasColumnType("varchar(24)");
 
                     b.HasKey("Id");
 
@@ -145,42 +142,42 @@ namespace EverrichRPG.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("EverrichRPG.Domain.Players.PlayerSave", b =>
                 {
                     b.Property<Guid>("PlayerId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid>("ConcurrencyToken")
                         .IsConcurrencyToken()
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Facing")
                         .IsRequired()
                         .HasMaxLength(16)
-                        .HasColumnType("character varying(16)");
+                        .HasColumnType("varchar(16)");
 
                     b.Property<string>("MovementMode")
                         .IsRequired()
                         .HasMaxLength(16)
-                        .HasColumnType("character varying(16)");
+                        .HasColumnType("varchar(16)");
 
                     b.Property<string>("PlayerVariant")
                         .IsRequired()
                         .HasMaxLength(16)
-                        .HasColumnType("character varying(16)");
+                        .HasColumnType("varchar(16)");
 
                     b.Property<string>("RegionId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.Property<int>("SaveVersion")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("SpawnId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime");
 
                     b.HasKey("PlayerId");
 
@@ -191,50 +188,70 @@ namespace EverrichRPG.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("AgeGroup")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Dialogue")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Facing")
                         .IsRequired()
                         .HasMaxLength(16)
-                        .HasColumnType("character varying(16)");
+                        .HasColumnType("varchar(16)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)");
+
+                    b.Property<string>("HairStyle")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("MovementType")
                         .IsRequired()
                         .HasMaxLength(16)
-                        .HasColumnType("character varying(16)");
+                        .HasColumnType("varchar(16)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(80)
-                        .HasColumnType("character varying(80)");
+                        .HasColumnType("varchar(80)");
 
-                    b.Property<string>("RegionId")
+                    b.Property<string>("Pants")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.Property<int>("Speed")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
+
+                    b.Property<string>("Top")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.Property<string>("Variant")
                         .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("character varying(16)");
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RegionId", "IsActive");
+                    b.HasIndex("IsActive");
 
                     b.ToTable("Travelers", (string)null);
                 });

@@ -11,6 +11,7 @@ public static class DatabaseInitializer
     public static async Task InitializeDatabaseAsync(
         this IServiceProvider services,
         IConfiguration configuration,
+        bool recreateDatabase = false,
         CancellationToken cancellationToken = default)
     {
         if (!bool.TryParse(configuration["Database:ApplyMigrations"], out var applyMigrations) ||
@@ -20,8 +21,20 @@ public static class DatabaseInitializer
         }
 
         var databaseProvider = configuration["Database:Provider"] ?? "MySql";
-        if (databaseProvider.Equals("MySql", StringComparison.OrdinalIgnoreCase) ||
-            databaseProvider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
+        var isInMemory = databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase);
+        var isMySql = databaseProvider.Equals("MySql", StringComparison.OrdinalIgnoreCase) ||
+            databaseProvider.Equals("MySQL", StringComparison.OrdinalIgnoreCase);
+        if (!isInMemory && !isMySql)
+        {
+            throw new InvalidOperationException(
+                $"Unsupported database provider '{databaseProvider}'. Use InMemory for tests or MySql for persistent data.");
+        }
+        if (recreateDatabase && !isMySql)
+        {
+            throw new InvalidOperationException("Database recreation is only supported for MySql.");
+        }
+
+        if (isMySql)
         {
             await EnsureMySqlDatabaseExistsAsync(configuration, cancellationToken);
         }
@@ -29,22 +42,18 @@ public static class DatabaseInitializer
         await using var scope = services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
 
-        if (databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
-        {
-            await dbContext.Database.EnsureCreatedAsync(cancellationToken);
-        }
-        else if (databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase))
-        {
-            await dbContext.Database.EnsureCreatedAsync(cancellationToken);
-            await EnsureSqliteTravelerAppearanceColumnsAsync(dbContext, cancellationToken);
-        }
-        else if (databaseProvider.Equals("MySql", StringComparison.OrdinalIgnoreCase) ||
-            databaseProvider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
+        if (isInMemory)
         {
             await dbContext.Database.EnsureCreatedAsync(cancellationToken);
         }
         else
         {
+            if (recreateDatabase)
+            {
+                await dbContext.Database.EnsureDeletedAsync(cancellationToken);
+                await EnsureMySqlDatabaseExistsAsync(configuration, cancellationToken);
+            }
+
             await dbContext.Database.MigrateAsync(cancellationToken);
         }
 
@@ -52,45 +61,6 @@ public static class DatabaseInitializer
         await catalogSeeder.SeedAsync(cancellationToken);
         var travelerSeeder = scope.ServiceProvider.GetRequiredService<TravelerRosterSeeder>();
         await travelerSeeder.SeedAsync(cancellationToken);
-    }
-
-    private static async Task EnsureSqliteTravelerAppearanceColumnsAsync(
-        GameDbContext dbContext,
-        CancellationToken cancellationToken)
-    {
-        var existingColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var connection = dbContext.Database.GetDbConnection();
-        if (connection.State != System.Data.ConnectionState.Open)
-        {
-            await connection.OpenAsync(cancellationToken);
-        }
-
-        await using (var command = connection.CreateCommand())
-        {
-            command.CommandText = "PRAGMA table_info('Travelers');";
-            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                existingColumns.Add(reader.GetString(1));
-            }
-        }
-
-        foreach (var (name, sql) in new[]
-        {
-            ("Gender", "ALTER TABLE \"Travelers\" ADD COLUMN \"Gender\" TEXT NOT NULL DEFAULT '';"),
-            ("AgeGroup", "ALTER TABLE \"Travelers\" ADD COLUMN \"AgeGroup\" TEXT NOT NULL DEFAULT '';"),
-            ("HairStyle", "ALTER TABLE \"Travelers\" ADD COLUMN \"HairStyle\" TEXT NOT NULL DEFAULT '';"),
-            ("Top", "ALTER TABLE \"Travelers\" ADD COLUMN \"Top\" TEXT NOT NULL DEFAULT '';"),
-            ("Pants", "ALTER TABLE \"Travelers\" ADD COLUMN \"Pants\" TEXT NOT NULL DEFAULT '';")
-        })
-        {
-            if (existingColumns.Contains(name))
-            {
-                continue;
-            }
-
-            await dbContext.Database.ExecuteSqlRawAsync(sql, cancellationToken);
-        }
     }
 
     private static async Task EnsureMySqlDatabaseExistsAsync(
