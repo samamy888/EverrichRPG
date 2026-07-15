@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 
 const root = resolve(process.cwd(), "public/assets/maps/tiled");
 const regionIds = [
@@ -43,6 +43,10 @@ const directionalPropTextures = [
   "airport-escalator-north"
 ];
 const projectNativePropTextures = [
+  "airport-information-kiosk-v2",
+  "airport-information-counter-v2",
+  "airport-security-counter-left-v2",
+  "airport-security-counter-right-v2",
   "checkout-counter-base",
   "checkout-equipment-pos",
   "checkout-items-beauty",
@@ -127,7 +131,7 @@ const legacyDirectionalPropTextures = [
 const expectedOrientedObjects = {
   "traveler-info-sign": "airport-sign-pillar-east",
   "shopping-guide-sign": "airport-sign-pillar-west",
-  "entrance-service-counter": "dutyfree-service-counter-north",
+  "entrance-service-counter": "airport-information-counter-v2",
   "entrance-planter": "airport-planter-animated-west",
   "liquor-food-doorway": "dutyfree-curved-storefront-east",
   "gift-doorway": "dutyfree-luxury-storefront-west",
@@ -150,6 +154,84 @@ function containsPoint(rect, point) {
     point.y >= rect.y &&
     point.y <= rect.y + rect.height
   );
+}
+
+function tileKey(x, y) {
+  return `${x},${y}`;
+}
+
+function verifyRouteConnectivity(map, regionId, blockers, spawns) {
+  const blocked = new Set();
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      const center = { x: x * map.tilewidth + map.tilewidth / 2, y: y * map.tileheight + map.tileheight / 2 };
+      if (blockers.some((rect) => containsPoint(rect, center))) blocked.add(tileKey(x, y));
+    }
+  }
+
+  const portals = map.layers.find((layer) => layer.name === "Portals").objects;
+  for (const spawn of spawns) {
+    const start = {
+      x: Math.min(map.width - 1, Math.max(0, Math.floor(spawn.x / map.tilewidth))),
+      y: Math.min(map.height - 1, Math.max(0, Math.floor(spawn.y / map.tileheight)))
+    };
+    const visited = new Set([tileKey(start.x, start.y)]);
+    const queue = [start];
+    for (let cursor = 0; cursor < queue.length; cursor += 1) {
+      const current = queue[cursor];
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const x = current.x + dx;
+        const y = current.y + dy;
+        const key = tileKey(x, y);
+        if (x < 0 || y < 0 || x >= map.width || y >= map.height || blocked.has(key) || visited.has(key)) continue;
+        visited.add(key);
+        queue.push({ x, y });
+      }
+    }
+
+    for (const portal of portals) {
+      const reachable = [...visited].some((key) => {
+        const [x, y] = key.split(",").map(Number);
+        return containsPoint(portal, {
+          x: x * map.tilewidth + map.tilewidth / 2,
+          y: y * map.tileheight + map.tileheight / 2
+        });
+      });
+      if (!reachable) fail(`${regionId}/${spawn.name} cannot reach portal ${portal.name}`);
+    }
+  }
+}
+
+function buildGidTextureMap(map, mapPath) {
+  const gidTextures = new Map();
+  for (const reference of map.tilesets) {
+    const tilesetPath = resolve(dirname(mapPath), reference.source);
+    const tileset = JSON.parse(readFileSync(tilesetPath, "utf8"));
+    for (const tile of tileset.tiles ?? []) {
+      const texture = tile.properties?.find((property) => property.name === "texture")?.value;
+      if (typeof texture === "string") {
+        gidTextures.set(reference.firstgid + tile.id, texture);
+      }
+    }
+  }
+  return gidTextures;
+}
+
+function validateTilesetRanges(map, mapPath, regionId) {
+  let previousLastgid = 0;
+  for (const reference of map.tilesets) {
+    const tilesetPath = resolve(dirname(mapPath), reference.source);
+    const tileset = JSON.parse(readFileSync(tilesetPath, "utf8"));
+    const maxTileId = Math.max(...(tileset.tiles ?? []).map((tile) => tile.id), -1);
+    const expectedTilecount = maxTileId + 1;
+    if (tileset.tilecount !== expectedTilecount) {
+      fail(`${tileset.name} tilecount must be ${expectedTilecount}, got ${tileset.tilecount}`);
+    }
+    if (reference.firstgid <= previousLastgid) {
+      fail(`${regionId} has overlapping tileset GID ranges at ${reference.source}`);
+    }
+    previousLastgid = reference.firstgid + maxTileId;
+  }
 }
 
 for (const file of [
@@ -186,6 +268,8 @@ for (const regionId of regionIds) {
   const path = resolve(root, "regions", `${regionId}.tmj`);
   if (!existsSync(path)) fail(`Missing map ${regionId}`);
   const map = JSON.parse(readFileSync(path, "utf8"));
+  validateTilesetRanges(map, path, regionId);
+  const gidTextures = buildGidTextureMap(map, path);
   maps.set(regionId, map);
   if (map.tilewidth !== 16 || map.tileheight !== 16) fail(`${regionId} must use 16x16 tiles`);
   for (const layerName of requiredLayers) {
@@ -213,8 +297,47 @@ for (const regionId of regionIds) {
       objectNames.add(object.name);
     }
   }
+  for (const layerName of ["Props", "Merchandise", "NPCs"]) {
+    const layer = map.layers.find((candidate) => candidate.name === layerName);
+    for (const object of layer?.objects ?? []) {
+      const expectedTexture = object.properties?.find(
+        (property) => property.name === "texture"
+      )?.value;
+      if (typeof object.gid !== "number" || typeof expectedTexture !== "string") continue;
+      const gid = (object.gid >>> 0) & 0x1fffffff;
+      const gidTexture = gidTextures.get(gid);
+      if (gidTexture !== expectedTexture) {
+        fail(
+          `${regionId}/${layerName}/${object.name} GID resolves to ${gidTexture ?? "unknown"}, ` +
+          `but texture property is ${expectedTexture}`
+        );
+      }
+    }
+  }
   const ground = map.layers.find((layer) => layer.name === "Ground");
   if (ground.data.length !== map.width * map.height) fail(`${regionId} Ground size is invalid`);
+  for (const layer of map.layers.filter((candidate) => candidate.type === "tilelayer")) {
+    if (layer.data.length !== map.width * map.height) {
+      fail(`${regionId}/${layer.name} size is invalid`);
+    }
+    for (const rawGid of layer.data) {
+      const gid = (rawGid >>> 0) & 0x1fffffff;
+      if (gid !== 0 && !gidTextures.has(gid)) {
+        fail(`${regionId}/${layer.name} contains unresolved GID ${gid}`);
+      }
+    }
+  }
+  const collisionOwners = new Set(
+    collisionLayer.objects
+      .map((object) => object.properties?.find((property) => property.name === "ownerId")?.value)
+      .filter(Boolean)
+  );
+  for (const object of layerByName.get("Props").objects) {
+    const decorative = object.properties?.find((property) => property.name === "decorative")?.value;
+    if (!decorative && !collisionOwners.has(object.name)) {
+      fail(`${regionId}/${object.name} is missing an owned collision footprint`);
+    }
+  }
   if (map.layers.find((layer) => layer.name === "Spawns").objects.length === 0) {
     fail(`${regionId} needs at least one spawn`);
   }
@@ -229,6 +352,7 @@ for (const regionId of regionIds) {
       fail(`${regionId}/${spawn.name} overlaps blocker ${blocker.name}`);
     }
   }
+  verifyRouteConnectivity(map, regionId, blockers, spawns);
 }
 
 for (const [regionId, map] of maps) {
@@ -325,6 +449,38 @@ const expectedPublicConnections = {
   "information-core": ["to-departure-hall"],
   "airport-facilities": ["to-departure-hall"]
 };
+
+const informationCore = maps.get("information-core");
+const informationObjectNames = new Set(
+  informationCore.layers.find((layer) => layer.name === "Props").objects.map((object) => object.name)
+);
+for (const objectName of [
+  "information-counter",
+  "information-map-kiosk",
+  "information-planter",
+  "information-waiting-bench"
+]) {
+  if (!informationObjectNames.has(objectName)) {
+    fail(`information-core benchmark is missing ${objectName}`);
+  }
+}
+const informationFloorTextures = new Set();
+const informationGids = buildGidTextureMap(
+  informationCore,
+  resolve(root, "regions", "information-core.tmj")
+);
+for (const layer of informationCore.layers.filter((candidate) => candidate.type === "tilelayer")) {
+  for (const rawGid of layer.data) {
+    const texture = informationGids.get((rawGid >>> 0) & 0x1fffffff);
+    if (texture) informationFloorTextures.add(texture);
+  }
+}
+for (const family of ["terrazzo", "ivory", "carpet-blue"]) {
+  const count = [...informationFloorTextures].filter((texture) =>
+    texture.startsWith(`floor-${family}-v`)
+  ).length;
+  if (count !== 4) fail(`information-core must use four floor-${family} variants`);
+}
 for (const [regionId, portalIds] of Object.entries(expectedPublicConnections)) {
   const actual = maps
     .get(regionId)
@@ -466,7 +622,7 @@ for (const [shopId, objectIds] of Object.entries(expectedShopObjects)) {
       }
       const isEquipment = objectId.endsWith("-checkout-equipment");
       const expectedCenterX = isEquipment ? 260 : 184;
-      const expectedY = isEquipment ? 52.8 : 52;
+      const expectedY = isEquipment ? 100.8 : 100;
       const expectedDepthOffset = isEquipment ? 54 : 55;
       if (
         object.x + object.width / 2 !== expectedCenterX ||

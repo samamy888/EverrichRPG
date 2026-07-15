@@ -6,14 +6,20 @@ const regionRoot = resolve(tiledRoot, "regions");
 const propTileset = JSON.parse(
   readFileSync(resolve(tiledRoot, "tilesets/airport-props.tsj"), "utf8")
 );
+const floorTileset = JSON.parse(
+  readFileSync(resolve(tiledRoot, "tilesets/airport-floors.tsj"), "utf8")
+);
 const npcTileset = JSON.parse(
   readFileSync(resolve(tiledRoot, "tilesets/airport-npcs.tsj"), "utf8")
 );
 
+const floorFirstgid = 1;
+const propFirstgid = floorFirstgid + Math.max(...floorTileset.tiles.map((tile) => tile.id)) + 1;
+const npcFirstgid = propFirstgid + Math.max(...propTileset.tiles.map((tile) => tile.id)) + 1;
 const gidByTexture = new Map();
 for (const [tileset, firstgid] of [
-  [propTileset, 9],
-  [npcTileset, 66]
+  [propTileset, propFirstgid],
+  [npcTileset, npcFirstgid]
 ]) {
   for (const tile of tileset.tiles) {
     const texture = tile.properties?.find((property) => property.name === "texture")?.value;
@@ -167,7 +173,7 @@ function makeMap(spec) {
       layer(2, "Accent", "tilelayer", {
         data: accent,
         height: spec.height,
-        opacity: 0.65,
+        opacity: spec.accentOpacity ?? 0.65,
         width: spec.width
       }),
       layer(3, "Walls", "objectgroup", { draworder: "topdown", objects: walls }),
@@ -189,9 +195,9 @@ function makeMap(spec) {
     tiledversion: "1.11.2",
     tileheight: 16,
     tilesets: [
-      { firstgid: 1, source: "../tilesets/airport-floors.tsj" },
-      { firstgid: 9, source: "../tilesets/airport-props.tsj" },
-      { firstgid: 66, source: "../tilesets/airport-npcs.tsj" }
+      { firstgid: floorFirstgid, source: "../tilesets/airport-floors.tsj" },
+      { firstgid: propFirstgid, source: "../tilesets/airport-props.tsj" },
+      { firstgid: npcFirstgid, source: "../tilesets/airport-npcs.tsj" }
     ],
     tilewidth: 16,
     type: "map",
@@ -271,26 +277,15 @@ const maps = [
     ],
     props: [
       p(
-        "departure-floor-guide",
-        "airport-sign-pillar-east",
-        "三樓出境大廳",
-        ["前方依序是安全檢查與中央出境大廳。"],
-        112,
-        256,
-        26,
-        100,
-        { x: 120, y: 240, width: 16, height: 16 }
-      ),
-      p(
         "entrance-service-counter",
-        "dutyfree-service-counter-north",
+        "airport-information-counter-v2",
         "出境服務台",
         ["沿著中央米色動線即可前往安檢。"],
-        270.5,
+        240,
         320,
-        99,
-        60,
-        { x: 272, y: 288, width: 96, height: 32 },
+        160,
+        58,
+        { x: 240, y: 288, width: 160, height: 32 },
         true
       ),
       p(
@@ -300,8 +295,8 @@ const maps = [
         ["翠綠植栽讓出境入口多了一點放鬆感。"],
         480,
         264,
-        64,
-        80,
+        62,
+        100,
         { x: 488, y: 288, width: 48, height: 32 }
       )
     ],
@@ -355,7 +350,7 @@ const maps = [
     props: [
       p(
         "security-left-counter",
-        "dutyfree-service-counter-east",
+        "airport-security-counter-left-v2",
         "安檢通道 A",
         ["請先準備登機證與隨身行李。"],
         112,
@@ -366,7 +361,7 @@ const maps = [
       ),
       p(
         "security-right-counter",
-        "dutyfree-service-counter-west",
+        "airport-security-counter-right-v2",
         "安檢通道 B",
         ["液體與電子設備請依現場指示放置。"],
         438,
@@ -374,17 +369,6 @@ const maps = [
         90,
         54,
         { x: 448, y: 176, width: 80, height: 32 }
-      ),
-      p(
-        "security-guide-sign",
-        "airport-sign-pillar-east",
-        "安全檢查",
-        ["沿中央通道通過安檢，即可抵達出境大廳。"],
-        80,
-        112,
-        26,
-        100,
-        { x: 88, y: 96, width: 16, height: 16 }
       ),
       p(
         "security-left-queue",
@@ -611,7 +595,14 @@ const maps = [
     name: "旅客服務中心",
     width: 32,
     height: 22,
-    accents: [{ x: 0, y: 8, width: 32, height: 6 }],
+    accents: [
+      { x: 7, y: 3, width: 18, height: 6, gid: 6 },
+      { x: 13, y: 9, width: 6, height: 11, gid: 6 },
+      { x: 3, y: 13, width: 7, height: 6, gid: 7 },
+      { x: 17, y: 13, width: 11, height: 6, gid: 6 },
+      { x: 28, y: 8, width: 2, height: 6, gid: 6 }
+    ],
+    accentOpacity: 0.48,
     walls: [
       { id: "wall-top", x: 0, y: 0, width: 512, height: 32 },
       { id: "wall-bottom", x: 0, y: 320, width: 512, height: 32 },
@@ -622,7 +613,7 @@ const maps = [
     props: [
       p(
         "information-counter",
-        "dutyfree-service-counter-south",
+        "airport-information-counter-v2",
         "旅客服務中心",
         ["可以查詢設施與免稅商店的位置。", "目前尚未開放航班功能。"],
         160,
@@ -634,14 +625,36 @@ const maps = [
       ),
       p(
         "information-map-kiosk",
-        "airport-digital-map-kiosk-east",
+        "airport-information-kiosk-v2",
         "航廈地圖",
         ["中央大廳位於東側，北側通往免稅商店街。"],
-        64,
+        92,
         256,
-        96,
+        40,
         72,
         { x: 96, y: 240, width: 32, height: 16 }
+      ),
+      p(
+        "information-planter",
+        "airport-planter-animated-north",
+        "服務中心植栽",
+        ["植栽把服務櫃台與主要通道自然地分開。"],
+        40,
+        176,
+        96,
+        88,
+        { x: 56, y: 144, width: 64, height: 32 }
+      ),
+      p(
+        "information-waiting-bench",
+        "airport-waiting-seats-horizontal",
+        "等候座椅",
+        ["這裡可以稍坐片刻，再確認下一段動線。"],
+        280,
+        304,
+        176,
+        72,
+        { x: 296, y: 272, width: 144, height: 32 }
       )
     ],
     npcs: [
@@ -690,11 +703,11 @@ const maps = [
         "airport-restroom-entrance-south",
         "洗手間",
         ["洗手間入口嵌在北側牆面。"],
-        64,
-        96,
+        48,
+        112,
         176,
-        68,
-        { x: 72, y: 80, width: 160, height: 24 },
+        88,
+        { x: 56, y: 88, width: 160, height: 24 },
         true
       ),
       p(
@@ -702,22 +715,22 @@ const maps = [
         "airport-water-dispenser-south",
         "飲水機",
         ["補充水分後再繼續旅程吧。"],
-        248,
-        96,
-        48,
-        72,
-        { x: 264, y: 80, width: 16, height: 16 }
+        232,
+        112,
+        56,
+        88,
+        { x: 248, y: 96, width: 24, height: 16 }
       ),
       p(
         "facilities-self-order-kiosk",
         "airport-self-order-kiosk",
         "自助點餐機",
         ["螢幕正在輪播餐點與付款方式。"],
-        64,
-        296,
-        56,
+        40,
+        304,
+        72,
         112,
-        { x: 80, y: 280, width: 24, height: 16 },
+        { x: 60, y: 288, width: 32, height: 16 },
         false,
         false,
         0,
@@ -739,10 +752,10 @@ const maps = [
         "手扶梯",
         ["其他樓層尚未開放。"],
         368,
-        96,
+        128,
         112,
-        96,
-        { x: 384, y: 80, width: 80, height: 32 }
+        128,
+        { x: 384, y: 96, width: 80, height: 32 }
       ),
       p(
         "facilities-planter",
@@ -750,10 +763,10 @@ const maps = [
         "休息區植栽",
         ["設施區比中央大廳安靜一些。"],
         176,
-        312,
+        224,
         96,
         88,
-        { x: 216, y: 296, width: 16, height: 16 }
+        { x: 216, y: 208, width: 16, height: 16 }
       ),
       p(
         "facilities-waiting-seats",
@@ -761,10 +774,10 @@ const maps = [
         "候機座椅",
         ["座椅旁設有簡易充電位置。"],
         304,
-        320,
+        304,
         176,
         72,
-        { x: 312, y: 304, width: 152, height: 16 }
+        { x: 312, y: 288, width: 152, height: 16 }
       )
     ],
     npcs: [],

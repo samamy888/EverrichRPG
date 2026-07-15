@@ -35,6 +35,14 @@ export const WORLD_IMAGE_ASSETS: readonly ImageAssetDefinition[] = [
       `/assets/tilesets/airport-reference-v2/floor-${name}.png`
     )
   ),
+  ...["terrazzo", "ivory", "carpet-blue"].flatMap((name) =>
+    [1, 2, 3, 4].map((variant) =>
+      image(
+        `floor-${name}-v${variant}`,
+        `/assets/tilesets/airport-reference-v3/floor-${name}-v${variant}.png`
+      )
+    )
+  ),
   image(
     "wall-ivory-panel",
     "/assets/tilesets/airport-reference-v2/wall-ivory-panel.png"
@@ -75,7 +83,6 @@ export const WORLD_IMAGE_ASSETS: readonly ImageAssetDefinition[] = [
   ),
   ...[
     "airport-overhead-wayfinding",
-    "airport-queue-barriers",
     "airport-ceiling-skylight"
   ].map((name) =>
     image(
@@ -88,12 +95,28 @@ export const WORLD_IMAGE_ASSETS: readonly ImageAssetDefinition[] = [
     "/assets/props/airport-floor-wayfinding-v1/floor-duty-free.png"
   ),
   image(
+    "airport-information-kiosk-v2",
+    "/assets/props/information-kiosk-v2/prop.png"
+  ),
+  image(
+    "airport-information-counter-v2",
+    "/assets/props/information-counter-v2/prop.png"
+  ),
+  image(
+    "airport-security-counter-left-v2",
+    "/assets/props/security-counter-v2/security-counter-left.png"
+  ),
+  image(
+    "airport-security-counter-right-v2",
+    "/assets/props/security-counter-v2/security-counter-right.png"
+  ),
+  image(
     "airport-restroom-entrance-south",
     "/assets/props/airport-directional-v2/restroom-wall-south.png"
   ),
   image(
     "airport-waiting-seats-horizontal",
-    "/assets/props/airport-directional-v2/waiting-seats-horizontal.png"
+    "/assets/props/airport-directional-v3/waiting-seats-horizontal.png"
   ),
   image(
     "airport-waiting-seats-vertical",
@@ -101,19 +124,23 @@ export const WORLD_IMAGE_ASSETS: readonly ImageAssetDefinition[] = [
   ),
   image(
     "airport-charging-station-side",
-    "/assets/props/airport-directional-v2/charging-station-side.png"
+    "/assets/props/airport-facilities-v3/charging-station-side.png"
   ),
   image(
     "airport-charging-station-front",
-    "/assets/props/airport-directional-v2/charging-station-front.png"
+    "/assets/props/airport-facilities-v3/charging-station-front.png"
   ),
   image(
     "airport-emergency-cabinet-side",
-    "/assets/props/airport-directional-v2/emergency-cabinet-side.png"
+    "/assets/props/airport-facilities-v3/emergency-cabinet-side.png"
   ),
   image(
     "airport-emergency-cabinet-front",
-    "/assets/props/airport-directional-v2/emergency-cabinet-front.png"
+    "/assets/props/airport-facilities-v3/emergency-cabinet-front.png"
+  ),
+  image(
+    "airport-queue-barriers",
+    "/assets/props/airport-facilities-v3/queue-barriers.png"
   ),
   image(
     "airport-luggage-carts-front",
@@ -132,7 +159,11 @@ export const WORLD_IMAGE_ASSETS: readonly ImageAssetDefinition[] = [
   ].map((name) =>
     image(
       name,
-      `/assets/props/airport-terminal-details-v1/${name}/prop.png`
+      name === "airport-recycling-station"
+        ? "/assets/props/airport-facilities-v3/recycling-station.png"
+        : name === "airport-cleaning-trolley"
+          ? `/assets/props/airport-terminal-details-native-v2/${name}/prop.png`
+        : `/assets/props/airport-terminal-details-v1/${name}/prop.png`
     )
   ),
   ...[
@@ -219,15 +250,15 @@ export const WORLD_SPRITESHEET_ASSETS: readonly SpriteSheetAssetDefinition[] = [
   ),
   sheet(
     "airport-long-kiosk",
-    "/assets/props/airport-long-kiosk-v1/sheet-transparent.png",
-    128,
-    128
+    "/assets/props/airport-long-kiosk-v2/sheet-transparent.png",
+    352,
+    152
   ),
   sheet(
     "airport-self-order-kiosk",
-    "/assets/props/airport-self-order-kiosk-v1/sheet-transparent.png",
-    128,
-    128
+    "/assets/props/airport-self-order-kiosk-v2/sheet-transparent.png",
+    144,
+    224
   ),
   sheet(
     "airport-restroom-animated",
@@ -238,46 +269,48 @@ export const WORLD_SPRITESHEET_ASSETS: readonly SpriteSheetAssetDefinition[] = [
   ...(["south", "west", "east", "north"] as const).map((direction) =>
     sheet(
       `airport-planter-animated-${direction}`,
-      `/assets/props/airport-planter-animated-v2/${direction}/sheet-transparent.png`,
-      128,
-      128
+      direction === "south"
+        ? `/assets/props/airport-planter-animated-v2/${direction}/sheet-transparent.png`
+        : `/assets/props/airport-planter-animated-native-v3/${direction}/sheet-transparent.png`,
+      direction === "north" ? 192 : direction === "south" ? 128 : 124,
+      direction === "north" ? 176 : direction === "south" ? 128 : 200
     )
   ),
   sheet(
     "airport-water-dispenser-animated",
-    "/assets/props/airport-water-dispenser-animated-v1/sheet-transparent.png",
-    128,
-    128
+    "/assets/props/airport-water-dispenser-animated-v2/sheet-transparent.png",
+    112,
+    176
   ),
   sheet(
     "airport-vending-machine",
-    "/assets/props/airport-vending-machine-v1/sheet-transparent.png",
+    "/assets/props/airport-vending-machine-v2/sheet-transparent.png",
     128,
-    128
+    192
   ),
   sheet(
     "airport-ad-column",
-    "/assets/props/airport-ad-column-v1/sheet-transparent.png",
+    "/assets/props/airport-ad-column-v2/sheet-transparent.png",
     128,
-    128
+    224
   ),
   sheet(
     "airport-atrium-lamp",
-    "/assets/props/airport-atrium-lamp-v1/sheet-transparent.png",
+    "/assets/props/airport-atrium-lamp-v2/sheet-transparent.png",
     128,
-    128
+    192
   ),
   sheet(
     "airport-moving-walkway",
-    "/assets/props/airport-moving-walkway-v1/sheet-transparent.png",
-    128,
-    128
+    "/assets/props/airport-moving-walkway-v2/sheet-transparent.png",
+    288,
+    96
   ),
   sheet(
     "airport-escalator-animated-south",
-    "/assets/props/airport-escalator-animated-south-v1/sheet-transparent.png",
-    128,
-    128
+    "/assets/props/airport-escalator-animated-south-v2/sheet-transparent.png",
+    224,
+    256
   ),
   ...TRAVELER_VARIANTS.map((variant) =>
     sheet(

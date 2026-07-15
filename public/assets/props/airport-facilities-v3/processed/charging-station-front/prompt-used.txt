@@ -1,0 +1,25 @@
+Create one production-ready airport charging station prop for EverrichRPG.
+
+Reference roles:
+- Use the visible EverrichRPG style board as the authoritative art-style, palette, outline, material, lighting, and pixel-density reference.
+- Use the visible old charging-station image only as a functional silhouette reference; do not copy its coarse rendering.
+
+Subject and view:
+- one upright public USB and power charging pedestal, front view in a top-down 3/4 RPG object perspective
+- mostly front-facing and vertical, with a small readable top face
+- warm ivory body, navy lower housing, muted gold trim, restrained cyan screen and charging-port accents
+- no readable words, logos, brand marks, cables crossing the silhouette, or extra objects
+- bottom-center anchor, stable flat base, designed for a 3x5 tile visual footprint at 16px world tiles
+
+Style:
+- modern detailed pixel-inspired airport RPG prop
+- crisp controlled pixel clusters, medium detail, soft navy or warm-charcoal outline
+- upper-left light, tiny integrated contact shading only, no floating cast shadow
+- match the long digital kiosk and digital ad column material language
+- not retro 16-bit, not chunky low-resolution pixel art, not vector art, not photorealistic, not 3D render, not isometric
+
+Output:
+- exactly one isolated prop, centered, full object visible, generous padding
+- perfectly flat solid #FF00FF background with no gradient, texture, floor, reflection, or background shadow
+- do not use #FF00FF inside the object
+- no text, labels, UI frame, border, watermark, or additional prop

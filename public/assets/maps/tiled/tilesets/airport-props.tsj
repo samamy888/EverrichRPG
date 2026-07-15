@@ -3,7 +3,9 @@
   "version": "1.10",
   "tiledversion": "1.11.2",
   "name": "airport-props",
-  "tilecount": 143,
+  "tilewidth": 448,
+  "tileheight": 314,
+  "tilecount": 148,
   "columns": 0,
   "grid": {
     "orientation": "orthogonal",
@@ -1001,9 +1003,9 @@
     },
     {
       "id": 76,
-      "image": "../../../props/airport-directional-v2/waiting-seats-horizontal.png",
-      "imagewidth": 167,
-      "imageheight": 71,
+      "image": "../../../props/airport-directional-v3/waiting-seats-horizontal.png",
+      "imagewidth": 352,
+      "imageheight": 144,
       "properties": [
         {
           "name": "texture",
@@ -1014,9 +1016,9 @@
     },
     {
       "id": 77,
-      "image": "../../../props/airport-atrium-v1/queue-barriers.png",
-      "imagewidth": 152,
-      "imageheight": 80,
+      "image": "../../../props/airport-facilities-v3/queue-barriers.png",
+      "imagewidth": 304,
+      "imageheight": 160,
       "properties": [
         {
           "name": "texture",
@@ -1053,9 +1055,9 @@
     },
     {
       "id": 80,
-      "image": "../../../props/airport-long-kiosk-v1/long-kiosk-1.png",
-      "imagewidth": 128,
-      "imageheight": 128,
+      "image": "../../../props/airport-long-kiosk-v2/long-kiosk-1.png",
+      "imagewidth": 352,
+      "imageheight": 152,
       "animation": [
         {
           "duration": 900,
@@ -1084,27 +1086,27 @@
     },
     {
       "id": 81,
-      "image": "../../../props/airport-long-kiosk-v1/long-kiosk-2.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-long-kiosk-v2/long-kiosk-2.png",
+      "imagewidth": 352,
+      "imageheight": 152
     },
     {
       "id": 82,
-      "image": "../../../props/airport-long-kiosk-v1/long-kiosk-3.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-long-kiosk-v2/long-kiosk-3.png",
+      "imagewidth": 352,
+      "imageheight": 152
     },
     {
       "id": 83,
-      "image": "../../../props/airport-long-kiosk-v1/long-kiosk-4.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-long-kiosk-v2/long-kiosk-4.png",
+      "imagewidth": 352,
+      "imageheight": 152
     },
     {
       "id": 84,
-      "image": "../../../props/airport-self-order-kiosk-v1/self-order-kiosk-1.png",
-      "imagewidth": 128,
-      "imageheight": 128,
+      "image": "../../../props/airport-self-order-kiosk-v2/self-order-kiosk-1.png",
+      "imagewidth": 144,
+      "imageheight": 224,
       "animation": [
         {
           "duration": 900,
@@ -1133,21 +1135,21 @@
     },
     {
       "id": 85,
-      "image": "../../../props/airport-self-order-kiosk-v1/self-order-kiosk-2.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-self-order-kiosk-v2/self-order-kiosk-2.png",
+      "imagewidth": 144,
+      "imageheight": 224
     },
     {
       "id": 86,
-      "image": "../../../props/airport-self-order-kiosk-v1/self-order-kiosk-3.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-self-order-kiosk-v2/self-order-kiosk-3.png",
+      "imagewidth": 144,
+      "imageheight": 224
     },
     {
       "id": 87,
-      "image": "../../../props/airport-self-order-kiosk-v1/self-order-kiosk-4.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-self-order-kiosk-v2/self-order-kiosk-4.png",
+      "imagewidth": 144,
+      "imageheight": 224
     },
     {
       "id": 88,
@@ -1200,9 +1202,9 @@
     },
     {
       "id": 92,
-      "image": "../../../props/airport-water-dispenser-animated-v1/water-dispenser-1.png",
-      "imagewidth": 128,
-      "imageheight": 128,
+      "image": "../../../props/airport-water-dispenser-animated-v2/water-dispenser-1.png",
+      "imagewidth": 112,
+      "imageheight": 176,
       "animation": [
         {
           "duration": 420,
@@ -1231,27 +1233,27 @@
     },
     {
       "id": 93,
-      "image": "../../../props/airport-water-dispenser-animated-v1/water-dispenser-2.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-water-dispenser-animated-v2/water-dispenser-2.png",
+      "imagewidth": 112,
+      "imageheight": 176
     },
     {
       "id": 94,
-      "image": "../../../props/airport-water-dispenser-animated-v1/water-dispenser-3.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-water-dispenser-animated-v2/water-dispenser-3.png",
+      "imagewidth": 112,
+      "imageheight": 176
     },
     {
       "id": 95,
-      "image": "../../../props/airport-water-dispenser-animated-v1/water-dispenser-4.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-water-dispenser-animated-v2/water-dispenser-4.png",
+      "imagewidth": 112,
+      "imageheight": 176
     },
     {
       "id": 96,
-      "image": "../../../props/airport-planter-animated-v2/north/planter-north-1.png",
-      "imagewidth": 128,
-      "imageheight": 128,
+      "image": "../../../props/airport-planter-animated-native-v3/north/planter-north-1.png",
+      "imagewidth": 192,
+      "imageheight": 176,
       "animation": [
         {
           "duration": 650,
@@ -1280,27 +1282,27 @@
     },
     {
       "id": 97,
-      "image": "../../../props/airport-planter-animated-v2/north/planter-north-2.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-planter-animated-native-v3/north/planter-north-2.png",
+      "imagewidth": 192,
+      "imageheight": 176
     },
     {
       "id": 98,
-      "image": "../../../props/airport-planter-animated-v2/north/planter-north-3.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-planter-animated-native-v3/north/planter-north-3.png",
+      "imagewidth": 192,
+      "imageheight": 176
     },
     {
       "id": 99,
-      "image": "../../../props/airport-planter-animated-v2/north/planter-north-4.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-planter-animated-native-v3/north/planter-north-4.png",
+      "imagewidth": 192,
+      "imageheight": 176
     },
     {
       "id": 100,
-      "image": "../../../props/airport-vending-machine-v1/vending-machine-1.png",
+      "image": "../../../props/airport-vending-machine-v2/vending-machine-1.png",
       "imagewidth": 128,
-      "imageheight": 128,
+      "imageheight": 192,
       "animation": [
         {
           "duration": 650,
@@ -1329,21 +1331,21 @@
     },
     {
       "id": 101,
-      "image": "../../../props/airport-vending-machine-v1/vending-machine-2.png",
+      "image": "../../../props/airport-vending-machine-v2/vending-machine-2.png",
       "imagewidth": 128,
-      "imageheight": 128
+      "imageheight": 192
     },
     {
       "id": 102,
-      "image": "../../../props/airport-vending-machine-v1/vending-machine-3.png",
+      "image": "../../../props/airport-vending-machine-v2/vending-machine-3.png",
       "imagewidth": 128,
-      "imageheight": 128
+      "imageheight": 192
     },
     {
       "id": 103,
-      "image": "../../../props/airport-vending-machine-v1/vending-machine-4.png",
+      "image": "../../../props/airport-vending-machine-v2/vending-machine-4.png",
       "imagewidth": 128,
-      "imageheight": 128
+      "imageheight": 192
     },
     {
       "id": 104,
@@ -1396,9 +1398,9 @@
     },
     {
       "id": 108,
-      "image": "../../../props/airport-planter-animated-v2/west/planter-west-1.png",
-      "imagewidth": 128,
-      "imageheight": 128,
+      "image": "../../../props/airport-planter-animated-native-v3/west/planter-west-1.png",
+      "imagewidth": 124,
+      "imageheight": 200,
       "animation": [
         {
           "duration": 650,
@@ -1427,27 +1429,27 @@
     },
     {
       "id": 109,
-      "image": "../../../props/airport-planter-animated-v2/west/planter-west-2.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-planter-animated-native-v3/west/planter-west-2.png",
+      "imagewidth": 124,
+      "imageheight": 200
     },
     {
       "id": 110,
-      "image": "../../../props/airport-planter-animated-v2/west/planter-west-3.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-planter-animated-native-v3/west/planter-west-3.png",
+      "imagewidth": 124,
+      "imageheight": 200
     },
     {
       "id": 111,
-      "image": "../../../props/airport-planter-animated-v2/west/planter-west-4.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-planter-animated-native-v3/west/planter-west-4.png",
+      "imagewidth": 124,
+      "imageheight": 200
     },
     {
       "id": 112,
-      "image": "../../../props/airport-planter-animated-v2/east/planter-east-1.png",
-      "imagewidth": 128,
-      "imageheight": 128,
+      "image": "../../../props/airport-planter-animated-native-v3/east/planter-east-1.png",
+      "imagewidth": 124,
+      "imageheight": 200,
       "animation": [
         {
           "duration": 650,
@@ -1476,21 +1478,21 @@
     },
     {
       "id": 113,
-      "image": "../../../props/airport-planter-animated-v2/east/planter-east-2.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-planter-animated-native-v3/east/planter-east-2.png",
+      "imagewidth": 124,
+      "imageheight": 200
     },
     {
       "id": 114,
-      "image": "../../../props/airport-planter-animated-v2/east/planter-east-3.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-planter-animated-native-v3/east/planter-east-3.png",
+      "imagewidth": 124,
+      "imageheight": 200
     },
     {
       "id": 115,
-      "image": "../../../props/airport-planter-animated-v2/east/planter-east-4.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-planter-animated-native-v3/east/planter-east-4.png",
+      "imagewidth": 124,
+      "imageheight": 200
     },
     {
       "id": 116,
@@ -1507,9 +1509,9 @@
     },
     {
       "id": 117,
-      "image": "../../../props/airport-directional-v2/charging-station-front.png",
-      "imagewidth": 48,
-      "imageheight": 80,
+      "image": "../../../props/airport-facilities-v3/charging-station-front.png",
+      "imagewidth": 96,
+      "imageheight": 160,
       "properties": [
         {
           "name": "texture",
@@ -1533,9 +1535,9 @@
     },
     {
       "id": 119,
-      "image": "../../../props/airport-terminal-details-v1/airport-cleaning-trolley/prop.png",
-      "imagewidth": 225,
-      "imageheight": 307,
+      "image": "../../../props/airport-terminal-details-native-v2/airport-cleaning-trolley/prop.png",
+      "imagewidth": 128,
+      "imageheight": 144,
       "properties": [
         {
           "name": "texture",
@@ -1559,9 +1561,9 @@
     },
     {
       "id": 121,
-      "image": "../../../props/airport-terminal-details-v1/airport-recycling-station/prop.png",
-      "imagewidth": 288,
-      "imageheight": 158,
+      "image": "../../../props/airport-facilities-v3/recycling-station.png",
+      "imagewidth": 160,
+      "imageheight": 128,
       "properties": [
         {
           "name": "texture",
@@ -1572,9 +1574,9 @@
     },
     {
       "id": 122,
-      "image": "../../../props/airport-directional-v2/emergency-cabinet-front.png",
-      "imagewidth": 48,
-      "imageheight": 72,
+      "image": "../../../props/airport-facilities-v3/emergency-cabinet-front.png",
+      "imagewidth": 96,
+      "imageheight": 144,
       "properties": [
         {
           "name": "texture",
@@ -1611,9 +1613,9 @@
     },
     {
       "id": 125,
-      "image": "../../../props/airport-ad-column-v1/ad-column-1.png",
+      "image": "../../../props/airport-ad-column-v2/ad-column-1.png",
       "imagewidth": 128,
-      "imageheight": 128,
+      "imageheight": 224,
       "animation": [
         {
           "duration": 800,
@@ -1642,27 +1644,27 @@
     },
     {
       "id": 126,
-      "image": "../../../props/airport-ad-column-v1/ad-column-2.png",
+      "image": "../../../props/airport-ad-column-v2/ad-column-2.png",
       "imagewidth": 128,
-      "imageheight": 128
+      "imageheight": 224
     },
     {
       "id": 127,
-      "image": "../../../props/airport-ad-column-v1/ad-column-3.png",
+      "image": "../../../props/airport-ad-column-v2/ad-column-3.png",
       "imagewidth": 128,
-      "imageheight": 128
+      "imageheight": 224
     },
     {
       "id": 128,
-      "image": "../../../props/airport-ad-column-v1/ad-column-4.png",
+      "image": "../../../props/airport-ad-column-v2/ad-column-4.png",
       "imagewidth": 128,
-      "imageheight": 128
+      "imageheight": 224
     },
     {
       "id": 129,
-      "image": "../../../props/airport-atrium-lamp-v1/atrium-lamp-1.png",
+      "image": "../../../props/airport-atrium-lamp-v2/atrium-lamp-1.png",
       "imagewidth": 128,
-      "imageheight": 128,
+      "imageheight": 192,
       "animation": [
         {
           "duration": 650,
@@ -1691,27 +1693,27 @@
     },
     {
       "id": 130,
-      "image": "../../../props/airport-atrium-lamp-v1/atrium-lamp-2.png",
+      "image": "../../../props/airport-atrium-lamp-v2/atrium-lamp-2.png",
       "imagewidth": 128,
-      "imageheight": 128
+      "imageheight": 192
     },
     {
       "id": 131,
-      "image": "../../../props/airport-atrium-lamp-v1/atrium-lamp-3.png",
+      "image": "../../../props/airport-atrium-lamp-v2/atrium-lamp-3.png",
       "imagewidth": 128,
-      "imageheight": 128
+      "imageheight": 192
     },
     {
       "id": 132,
-      "image": "../../../props/airport-atrium-lamp-v1/atrium-lamp-4.png",
+      "image": "../../../props/airport-atrium-lamp-v2/atrium-lamp-4.png",
       "imagewidth": 128,
-      "imageheight": 128
+      "imageheight": 192
     },
     {
       "id": 133,
-      "image": "../../../props/airport-moving-walkway-v1/moving-walkway-1.png",
-      "imagewidth": 128,
-      "imageheight": 128,
+      "image": "../../../props/airport-moving-walkway-v2/moving-walkway-1.png",
+      "imagewidth": 288,
+      "imageheight": 96,
       "animation": [
         {
           "duration": 260,
@@ -1740,27 +1742,27 @@
     },
     {
       "id": 134,
-      "image": "../../../props/airport-moving-walkway-v1/moving-walkway-2.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-moving-walkway-v2/moving-walkway-2.png",
+      "imagewidth": 288,
+      "imageheight": 96
     },
     {
       "id": 135,
-      "image": "../../../props/airport-moving-walkway-v1/moving-walkway-3.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-moving-walkway-v2/moving-walkway-3.png",
+      "imagewidth": 288,
+      "imageheight": 96
     },
     {
       "id": 136,
-      "image": "../../../props/airport-moving-walkway-v1/moving-walkway-4.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-moving-walkway-v2/moving-walkway-4.png",
+      "imagewidth": 288,
+      "imageheight": 96
     },
     {
       "id": 137,
-      "image": "../../../props/airport-escalator-animated-south-v1/escalator-south-1.png",
-      "imagewidth": 128,
-      "imageheight": 128,
+      "image": "../../../props/airport-escalator-animated-south-v2/escalator-south-1.png",
+      "imagewidth": 224,
+      "imageheight": 256,
       "animation": [
         {
           "duration": 300,
@@ -1789,27 +1791,27 @@
     },
     {
       "id": 138,
-      "image": "../../../props/airport-escalator-animated-south-v1/escalator-south-2.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-escalator-animated-south-v2/escalator-south-2.png",
+      "imagewidth": 224,
+      "imageheight": 256
     },
     {
       "id": 139,
-      "image": "../../../props/airport-escalator-animated-south-v1/escalator-south-3.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-escalator-animated-south-v2/escalator-south-3.png",
+      "imagewidth": 224,
+      "imageheight": 256
     },
     {
       "id": 140,
-      "image": "../../../props/airport-escalator-animated-south-v1/escalator-south-4.png",
-      "imagewidth": 128,
-      "imageheight": 128
+      "image": "../../../props/airport-escalator-animated-south-v2/escalator-south-4.png",
+      "imagewidth": 224,
+      "imageheight": 256
     },
     {
       "id": 141,
-      "image": "../../../props/airport-directional-v2/charging-station-side.png",
-      "imagewidth": 34,
-      "imageheight": 80,
+      "image": "../../../props/airport-facilities-v3/charging-station-side.png",
+      "imagewidth": 68,
+      "imageheight": 160,
       "properties": [
         {
           "name": "texture",
@@ -1820,9 +1822,9 @@
     },
     {
       "id": 142,
-      "image": "../../../props/airport-directional-v2/emergency-cabinet-side.png",
-      "imagewidth": 28,
-      "imageheight": 72,
+      "image": "../../../props/airport-facilities-v3/emergency-cabinet-side.png",
+      "imagewidth": 56,
+      "imageheight": 144,
       "properties": [
         {
           "name": "texture",
@@ -1841,6 +1843,58 @@
           "name": "texture",
           "type": "string",
           "value": "airport-luggage-carts-front"
+        }
+      ]
+    },
+    {
+      "id": 144,
+      "image": "../../../props/information-kiosk-v2/prop.png",
+      "imagewidth": 80,
+      "imageheight": 144,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-information-kiosk-v2"
+        }
+      ]
+    },
+    {
+      "id": 145,
+      "image": "../../../props/information-counter-v2/prop.png",
+      "imagewidth": 352,
+      "imageheight": 128,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-information-counter-v2"
+        }
+      ]
+    },
+    {
+      "id": 146,
+      "image": "../../../props/security-counter-v2/security-counter-left.png",
+      "imagewidth": 180,
+      "imageheight": 108,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-security-counter-left-v2"
+        }
+      ]
+    },
+    {
+      "id": 147,
+      "image": "../../../props/security-counter-v2/security-counter-right.png",
+      "imagewidth": 180,
+      "imageheight": 108,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "airport-security-counter-right-v2"
         }
       ]
     }

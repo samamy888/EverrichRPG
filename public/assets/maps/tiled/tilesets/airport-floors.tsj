@@ -5,7 +5,7 @@
   "name": "airport-floors",
   "tilewidth": 16,
   "tileheight": 16,
-  "tilecount": 9,
+  "tilecount": 21,
   "columns": 0,
   "grid": {
     "orientation": "orthogonal",
@@ -127,6 +127,162 @@
           "name": "texture",
           "type": "string",
           "value": "wall-ivory-panel"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "image": "images/floor-terrazzo-v1.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-terrazzo-v1"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "image": "images/floor-terrazzo-v2.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-terrazzo-v2"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "image": "images/floor-terrazzo-v3.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-terrazzo-v3"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "image": "images/floor-terrazzo-v4.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-terrazzo-v4"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "image": "images/floor-ivory-v1.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-ivory-v1"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "image": "images/floor-ivory-v2.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-ivory-v2"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "image": "images/floor-ivory-v3.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-ivory-v3"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "image": "images/floor-ivory-v4.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-ivory-v4"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "image": "images/floor-carpet-blue-v1.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-carpet-blue-v1"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "image": "images/floor-carpet-blue-v2.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-carpet-blue-v2"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "image": "images/floor-carpet-blue-v3.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-carpet-blue-v3"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "image": "images/floor-carpet-blue-v4.png",
+      "imagewidth": 16,
+      "imageheight": 16,
+      "properties": [
+        {
+          "name": "texture",
+          "type": "string",
+          "value": "floor-carpet-blue-v4"
         }
       ]
     }

@@ -29,11 +29,11 @@
       "source": "../tilesets/airport-floors.tsj"
     },
     {
-      "firstgid": 100,
+      "firstgid": 22,
       "source": "../tilesets/airport-props.tsj"
     },
     {
-      "firstgid": 241,
+      "firstgid": 170,
       "source": "../tilesets/airport-npcs.tsj"
     }
   ],
@@ -1375,7 +1375,7 @@
           "type": "",
           "rotation": 0,
           "visible": true,
-          "gid": 109,
+          "gid": 31,
           "x": 144,
           "y": 144,
           "width": 192,
@@ -1414,7 +1414,7 @@
           "type": "",
           "rotation": 0,
           "visible": true,
-          "gid": 114,
+          "gid": 36,
           "x": 96,
           "y": 160,
           "width": 96,
@@ -1448,7 +1448,7 @@
           "type": "",
           "rotation": 0,
           "visible": true,
-          "gid": 114,
+          "gid": 36,
           "x": 288,
           "y": 160,
           "width": 96,
@@ -1482,7 +1482,7 @@
           "type": "",
           "rotation": 0,
           "visible": true,
-          "gid": 114,
+          "gid": 36,
           "x": 96,
           "y": 240,
           "width": 96,
@@ -1516,7 +1516,7 @@
           "type": "",
           "rotation": 0,
           "visible": true,
-          "gid": 114,
+          "gid": 36,
           "x": 288,
           "y": 240,
           "width": 96,
@@ -1561,9 +1561,9 @@
           "type": "",
           "rotation": 0,
           "visible": true,
-          "gid": 110,
+          "gid": 32,
           "x": 206,
-          "y": 52.8,
+          "y": 100.8,
           "width": 108,
           "height": 47,
           "properties": [
@@ -1590,9 +1590,9 @@
           "type": "",
           "rotation": 0,
           "visible": true,
-          "gid": 112,
+          "gid": 34,
           "x": 157,
-          "y": 52,
+          "y": 100,
           "width": 54,
           "height": 41,
           "properties": [
@@ -1619,7 +1619,7 @@
           "type": "",
           "rotation": 0,
           "visible": true,
-          "gid": 119,
+          "gid": 41,
           "x": 108,
           "y": 145.6,
           "width": 72,
@@ -1648,7 +1648,7 @@
           "type": "",
           "rotation": 0,
           "visible": true,
-          "gid": 120,
+          "gid": 42,
           "x": 300,
           "y": 145.6,
           "width": 72,
@@ -1677,7 +1677,7 @@
           "type": "",
           "rotation": 0,
           "visible": true,
-          "gid": 121,
+          "gid": 43,
           "x": 108,
           "y": 225.6,
           "width": 72,
@@ -1706,7 +1706,7 @@
           "type": "",
           "rotation": 0,
           "visible": true,
-          "gid": 122,
+          "gid": 44,
           "x": 300,
           "y": 225.6,
           "width": 72,
@@ -1742,7 +1742,7 @@
       "locked": false,
       "objects": [
         {
-          "gid": 242,
+          "gid": 171,
           "height": 36,
           "id": 26,
           "name": "clerk-liquor-food-01-reception-left",
@@ -1802,7 +1802,7 @@
           "y": 272
         },
         {
-          "gid": 242,
+          "gid": 171,
           "height": 36,
           "id": 28,
           "name": "clerk-liquor-food-01-reception-right",
@@ -1862,7 +1862,7 @@
           "y": 272
         },
         {
-          "gid": 242,
+          "gid": 171,
           "height": 36,
           "id": 30,
           "name": "clerk-liquor-food-01-cashier",

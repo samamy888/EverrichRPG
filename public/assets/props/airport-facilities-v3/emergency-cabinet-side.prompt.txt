@@ -1,0 +1,24 @@
+Create one production-ready side-view airport emergency fire-extinguisher cabinet prop for EverrichRPG.
+
+Reference roles:
+- Use the visible EverrichRPG style board as the authoritative art-style, outline, material, lighting, and pixel-density reference.
+- Use the visible old side cabinet only for functional thickness; redesign it to match the new front cabinet and the canonical airport facilities.
+
+Subject and view:
+- the same upright emergency cabinet as the front asset, shown from a clean side/profile direction suitable for a vertical airport corridor
+- do not rotate diagonally; retain believable cabinet thickness, a small visible top face, and a narrow glimpse of the controlled safety-red inset
+- warm ivory and navy casing, muted gold hardware, restrained red safety accent
+- no readable words, logos, loose equipment, or extra objects
+- bottom-center anchor, designed for a narrow 2x5 tile visual footprint at 16px world tiles
+
+Style:
+- modern detailed pixel-inspired airport RPG prop
+- crisp controlled pixel clusters, medium detail, soft navy or warm-charcoal outline
+- upper-left light, tiny integrated contact shading only, no floating cast shadow
+- not retro 16-bit, not chunky low-resolution pixel art, not vector art, not photorealistic, not 3D render, not isometric
+
+Output:
+- exactly one isolated prop, centered, full object visible, generous padding
+- perfectly flat solid #FF00FF background with no gradient, texture, floor, reflection, or background shadow
+- do not use #FF00FF inside the object
+- no text, labels, UI frame, border, watermark, or additional prop

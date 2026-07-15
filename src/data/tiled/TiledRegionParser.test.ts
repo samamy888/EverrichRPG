@@ -129,6 +129,8 @@ describe("TiledRegionParser", () => {
       id: "guide",
       x: 32,
       baselineY: 32,
+      displayWidth: 32,
+      displayHeight: 16,
       collision: { x: 20, y: 36, width: 24, height: 12 },
       interaction: {
         title: "您好",
@@ -147,6 +149,29 @@ describe("TiledRegionParser", () => {
         durationMs: 500,
       },
     });
+  });
+
+  it("uses the Tiled object height unless displayHeight explicitly overrides it", () => {
+    const tiledHeight = object("tiled-height", [
+      property("texture", "service-counter"),
+      property("decorative", true),
+    ], { height: 72 });
+    const overriddenHeight = object("overridden-height", [
+      property("texture", "service-counter"),
+      property("decorative", true),
+      property("displayHeight", 96),
+    ], { height: 72 });
+
+    const region = parser.parse(
+      "departure-hall",
+      mapWith([
+        { name: "Props", type: "objectgroup", objects: [tiledHeight, overriddenHeight] },
+      ]),
+      tilesets(),
+    );
+
+    expect(region.objects[0]!.displayHeight).toBe(72);
+    expect(region.objects[1]!.displayHeight).toBe(96);
   });
 
   it("rejects non-decorative objects without collision data", () => {

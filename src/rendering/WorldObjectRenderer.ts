@@ -12,6 +12,8 @@ import { getShopIdForRegion } from "../interaction/InteractionPolicy";
 import type { HiddenCollectible } from "../systems/explorationService";
 import { TravelerAI } from "../systems/TravelerAI";
 import type { WorldRenderPort } from "./WorldRenderer";
+import { resolveGroundingType, resolveGroundShadow } from "./GroundShadowPolicy";
+import { resolveObjectDepth } from "./ObjectDepthPolicy";
 
 export interface InteractiveObject {
   object: MapObjectData;
@@ -74,18 +76,13 @@ export class WorldObjectRenderer {
           : this.options.scene.add
               .image(object.x, object.baselineY, texture)
               .setOrigin(0.5, 1);
-      const displayWidth = isClerk
-        ? object.displayWidth * 1.2
-        : object.displayWidth;
+      const displayWidth = object.displayWidth;
       image.setDisplaySize(
         displayWidth,
         object.displayHeight ?? image.height * (displayWidth / image.width)
       );
-      image.setDepth(
-        (object.foreground ? object.baselineY + 10 : object.baselineY) +
-          (object.depthOffset ?? 0)
-      );
-      this.drawWallAttachmentShadow(object, image);
+      image.setDepth(resolveObjectDepth(object));
+      this.drawObjectShadow(object, image);
       if (objectAnimationKey && image instanceof Phaser.GameObjects.Sprite) {
         image.play(objectAnimationKey);
       }
@@ -169,11 +166,20 @@ export class WorldObjectRenderer {
     };
   }
 
-  private drawWallAttachmentShadow(
+  private drawObjectShadow(
     object: MapObjectData,
     image: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite
   ): void {
-    if (!object.wallAttachment) return;
+    const grounding = resolveGroundingType(object);
+    if (grounding === "none") return;
+    if (grounding === "ground") {
+      this.drawGroundContactShadow(object, image);
+      return;
+    }
+    if (grounding === "suspended") {
+      this.drawSuspendedShadow(object, image);
+      return;
+    }
 
     const bounds = image.getBounds();
     const shadow = this.options.scene.add
@@ -224,6 +230,48 @@ export class WorldObjectRenderer {
       object.baselineY - Math.max(3, object.collision.height * 0.12),
       Math.max(16, object.collision.width * 1.25),
       7
+    );
+  }
+
+  private drawSuspendedShadow(
+    object: MapObjectData,
+    image: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite
+  ): void {
+    this.options.scene.add
+      .graphics()
+      .setDepth(image.depth - 0.4)
+      .fillStyle(0x1f2933, 0.07)
+      .fillEllipse(
+        object.x + 3,
+        object.baselineY - 2,
+        Math.max(16, object.collision.width * 1.15),
+        7
+      );
+  }
+
+  private drawGroundContactShadow(
+    object: MapObjectData,
+    image: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite
+  ): void {
+    const metrics = resolveGroundShadow(object);
+    if (!metrics) return;
+
+    const shadow = this.options.scene.add
+      .graphics()
+      .setDepth(image.depth - 0.4);
+    shadow.fillStyle(0x1f2933, 0.14);
+    shadow.fillEllipse(
+      metrics.x,
+      metrics.y,
+      metrics.width,
+      metrics.height
+    );
+    shadow.fillStyle(0x111820, 0.08);
+    shadow.fillEllipse(
+      metrics.x,
+      metrics.y + 1,
+      metrics.width * 0.72,
+      Math.max(2, metrics.height * 0.52)
     );
   }
 

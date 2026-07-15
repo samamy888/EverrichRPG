@@ -32,6 +32,10 @@ const tileByTexture = new Map(
 for (const file of readdirSync(regionsDir).filter((name) => name.endsWith(".tmj"))) {
   const path = resolve(regionsDir, file);
   const map = JSON.parse(readFileSync(path, "utf8"));
+  const propTilesetReference = map.tilesets.find((reference) =>
+    reference.source.replaceAll("\\", "/").endsWith("/tilesets/airport-props.tsj")
+  );
+  if (!propTilesetReference) throw new Error(`${file} is missing airport-props.tsj`);
   const props = map.layers.find((layer) => layer.name === "Props")?.objects ?? [];
   const collisions = map.layers.find((layer) => layer.name === "Collision")?.objects ?? [];
   const collisionByOwner = new Map(
@@ -52,7 +56,7 @@ for (const file of readdirSync(regionsDir).filter((name) => name.endsWith(".tmj"
     if (!textureProperty) throw new Error(`${object.name} is missing texture property`);
     const centerX = object.x + object.width / 2;
     textureProperty.value = texture;
-    object.gid = 100 + tile.id;
+    object.gid = propTilesetReference.firstgid + tile.id;
     object.width = tile.imagewidth;
     object.height = tile.imageheight;
     object.x = centerX - object.width / 2;

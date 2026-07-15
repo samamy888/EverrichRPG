@@ -149,8 +149,9 @@ export class TiledRegionParser {
     const interactionChoices = properties.string("interactionChoices");
     const interactionQuestLines = properties.string("interactionQuestLines");
     const movementType = properties.string("movementType");
-    const displayHeight = properties.number("displayHeight");
+    const displayHeight = properties.number("displayHeight") ?? object.height;
     const depthOffset = properties.number("depthOffset") ?? 0;
+    const grounding = this.parseGrounding(properties.string("grounding"));
     const wallAttachment = this.parseWallAttachment(
       properties.string("wallAttachment"),
     );
@@ -170,7 +171,7 @@ export class TiledRegionParser {
       x: object.x + object.width / 2,
       baselineY: object.y,
       displayWidth: object.width,
-      ...(displayHeight ? { displayHeight } : {}),
+      displayHeight,
       collision: collision ?? {
         x: object.x,
         y: object.y,
@@ -199,6 +200,7 @@ export class TiledRegionParser {
         : {}),
       ...(properties.boolean("foreground") ? { foreground: true } : {}),
       ...(decorative ? { decorative: true } : {}),
+      ...(grounding ? { grounding } : {}),
       ...(depthOffset ? { depthOffset } : {}),
       ...(wallAttachment ? { wallAttachment } : {}),
       ...(npcBehavior ? { npcBehavior } : {}),
@@ -210,6 +212,20 @@ export class TiledRegionParser {
     value: string | undefined,
   ): MapObjectData["wallAttachment"] {
     if (value === "north" || value === "west" || value === "east") {
+      return value;
+    }
+    return undefined;
+  }
+
+  private parseGrounding(
+    value: string | undefined,
+  ): MapObjectData["grounding"] {
+    if (
+      value === "ground" ||
+      value === "wall" ||
+      value === "suspended" ||
+      value === "none"
+    ) {
       return value;
     }
     return undefined;

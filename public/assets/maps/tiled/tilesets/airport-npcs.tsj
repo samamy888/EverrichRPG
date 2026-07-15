@@ -3,6 +3,8 @@
   "version": "1.10",
   "tiledversion": "1.11.2",
   "name": "airport-npcs",
+  "tilewidth": 128,
+  "tileheight": 128,
   "tilecount": 25,
   "columns": 0,
   "grid": {

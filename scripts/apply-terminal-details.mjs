@@ -41,8 +41,10 @@ const animatedAssets = [
   },
   {
     texture: "airport-moving-walkway",
-    folder: "airport-moving-walkway-v1",
+    folder: "airport-moving-walkway-v2",
     prefix: "moving-walkway",
+    frameWidth: 288,
+    frameHeight: 96,
     duration: 260
   },
   {
@@ -92,8 +94,8 @@ for (const asset of animatedAssets) {
     tileset.tiles.push({
       id: nextTileId,
       image,
-      imagewidth: 128,
-      imageheight: 128,
+      imagewidth: asset.frameWidth ?? 128,
+      imageheight: asset.frameHeight ?? 128,
       ...(frame === 1
         ? {
             animation: Array.from({ length: 4 }, (_, index) => ({
@@ -241,34 +243,34 @@ const placements = {
       texture: "airport-moving-walkway",
       label: "電動步道",
       lines: ["步道持續向前運轉。"],
-      x: 304,
-      y: 288,
+      x: 336,
+      y: 224,
       width: 144,
       height: 48,
       displayHeight: 48,
-      collision: [336, 272, 80, 16]
+      collision: [368, 208, 80, 16]
     },
     {
       name: "facilities-recycling-station",
       texture: "airport-recycling-station",
       label: "分類回收站",
       lines: ["不同顏色代表不同回收分類。"],
-      x: 192,
-      y: 320,
+      x: 200,
+      y: 304,
       width: 80,
       height: 64,
-      collision: [200, 304, 64, 16]
+      collision: [208, 288, 64, 16]
     },
     {
       name: "facilities-charging-pedestal",
       texture: "airport-charging-station-front",
       label: "充電站",
       lines: ["旅客可以在這裡替裝置充電。"],
-      x: 240,
-      y: 296,
+      x: 280,
+      y: 224,
       width: 48,
       height: 80,
-      collision: [256, 280, 16, 16]
+      collision: [296, 208, 16, 16]
     },
     {
       name: "facilities-cleaning-trolley",
@@ -276,11 +278,11 @@ const placements = {
       texture: "airport-cleaning-trolley",
       label: "清潔推車",
       lines: ["清潔用品收納得很整齊。"],
-      x: 376,
-      y: 96,
+      x: 112,
+      y: 192,
       width: 64,
       height: 72,
-      collision: [392, 80, 32, 16]
+      collision: [128, 176, 32, 16]
     },
     {
       name: "facilities-emergency-cabinet",
@@ -288,11 +290,11 @@ const placements = {
       texture: "airport-emergency-cabinet-front",
       label: "緊急設備",
       lines: ["僅供緊急狀況使用。"],
-      x: 304,
-      y: 96,
+      x: 296,
+      y: 112,
       width: 48,
       height: 72,
-      collision: [320, 80, 16, 16]
+      collision: [312, 96, 16, 16]
     }
   ]
 };
@@ -333,7 +335,7 @@ for (const filename of Object.keys(placements)) {
     if (entry.name !== "facilities-escalator") continue;
     entry.gid = gid("airport-escalator-animated-south");
     entry.x = 368;
-    entry.y = 96;
+    entry.y = 128;
     entry.width = 112;
     entry.height = 128;
     entry.properties = entry.properties ?? [];
@@ -353,7 +355,7 @@ for (const filename of Object.keys(placements)) {
     const ownerId = entry.properties?.find((item) => item.name === "ownerId")?.value;
     if (ownerId !== "facilities-escalator") continue;
     entry.x = 384;
-    entry.y = 80;
+    entry.y = 96;
     entry.width = 80;
     entry.height = 32;
   }

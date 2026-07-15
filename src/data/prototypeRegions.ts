@@ -46,6 +46,18 @@ export type FloorTexture =
   | "floor-ivory"
   | "floor-carpet-blue"
   | "floor-navy-panel"
+  | "floor-terrazzo-v1"
+  | "floor-terrazzo-v2"
+  | "floor-terrazzo-v3"
+  | "floor-terrazzo-v4"
+  | "floor-ivory-v1"
+  | "floor-ivory-v2"
+  | "floor-ivory-v3"
+  | "floor-ivory-v4"
+  | "floor-carpet-blue-v1"
+  | "floor-carpet-blue-v2"
+  | "floor-carpet-blue-v3"
+  | "floor-carpet-blue-v4"
   | "wall-ivory-panel";
 
 export type MapObjectTexture =
@@ -154,6 +166,10 @@ export type MapObjectTexture =
   | "airport-floor-wayfinding"
   | "airport-queue-barriers"
   | "airport-ceiling-skylight"
+  | "airport-information-kiosk-v2"
+  | "airport-information-counter-v2"
+  | "airport-security-counter-left-v2"
+  | "airport-security-counter-right-v2"
   | "clerk-beauty-01"
   | "clerk-liquor-food-01"
   | "clerk-gift-01"
@@ -220,6 +236,7 @@ export interface MapObjectData {
   };
   foreground?: boolean;
   decorative?: boolean;
+  grounding?: "ground" | "wall" | "suspended" | "none";
   depthOffset?: number;
   wallAttachment?: "north" | "west" | "east";
   npcBehavior?: NpcBehaviorData;

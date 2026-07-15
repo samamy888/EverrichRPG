@@ -13,9 +13,9 @@ props.tiles = props.tiles.filter((tile) => tile.id < 88 || tile.id > 115);
 for (let frame = 1; frame <= 4; frame += 1) {
   props.tiles.push({
     id: 79 + frame,
-    image: `../../../props/airport-long-kiosk-v1/long-kiosk-${frame}.png`,
-    imagewidth: 128,
-    imageheight: 128,
+    image: `../../../props/airport-long-kiosk-v2/long-kiosk-${frame}.png`,
+    imagewidth: 352,
+    imageheight: 152,
     ...(frame === 1
       ? {
           animation: [80, 81, 82, 83].map((tileid) => ({ duration: 900, tileid })),
@@ -275,9 +275,9 @@ propsLayer.objects.push({
   rotation: 0,
   type: "",
   visible: true,
-  width: 56,
-  x: 64,
-  y: 296
+  width: 72,
+  x: 40,
+  y: 304
 });
 collisionLayer.objects.push({
   height: 16,
@@ -290,9 +290,9 @@ collisionLayer.objects.push({
   rotation: 0,
   type: "",
   visible: true,
-  width: 24,
-  x: 80,
-  y: 280
+  width: 32,
+  x: 60,
+  y: 288
 });
 propsLayer.objects.push({
   gid: 9 + 100,
@@ -334,7 +334,7 @@ propsLayer.objects.push({
   visible: true,
   width: 64,
   x: 120,
-  y: 296
+  y: 304
 });
 collisionLayer.objects.push({
   height: 16,
@@ -349,7 +349,7 @@ collisionLayer.objects.push({
   visible: true,
   width: 24,
   x: 140,
-  y: 280
+  y: 288
 });
 facilities.nextobjectid = Math.max(facilities.nextobjectid ?? 0, nextObjectId + 4);
 
