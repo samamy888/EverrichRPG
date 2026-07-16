@@ -1,4 +1,0 @@
-Create a 2-by-2 animated long airport digital Kiosk sheet on solid #FF00FF.
-Keep one identical wide navy, ivory, gold and cyan terminal body in every frame.
-Screens cycle through terminal map, duty-free directory, facilities, and departures layouts.
-All screen information is abstract and non-readable, with stable scale and bottom anchor.

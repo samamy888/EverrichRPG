@@ -1,1 +1,0 @@
-﻿Four-direction true idle standing sheet for the existing female traveler. 2x2 order: down, left, right, up. Feet naturally together, project-native GBA-style pixel art, solid #FF00FF background.

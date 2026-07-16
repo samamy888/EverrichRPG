@@ -1,6 +1,0 @@
-Use case: stylized-concept
-Asset type: decorative overhead airport atrium overlay
-Primary request: Wide cyan glass skylight, white steel truss lattice and three suspended circular lights.
-Style: clean pixel-inspired HD RPG overlay with airy modern terminal atmosphere.
-Constraints: no buildings, people, text, floor or cast shadow.
-Generation: built-in imagegen on solid #FF00FF, followed by generate2dsprite cleanup and scale normalization.

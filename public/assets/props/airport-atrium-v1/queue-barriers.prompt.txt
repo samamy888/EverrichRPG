@@ -1,6 +1,0 @@
-Use case: stylized-concept
-Asset type: airport queue barrier arrangement
-Primary request: Four stainless-steel stanchions connected by dark navy belts in a shallow zigzag security queue.
-Style: clean pixel-inspired HD RPG prop.
-Constraints: no people, signage, floor or cast shadow.
-Generation: built-in imagegen on solid #FF00FF, followed by generate2dsprite cleanup and scale normalization.

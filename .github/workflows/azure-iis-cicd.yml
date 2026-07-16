@@ -54,9 +54,6 @@ jobs:
       - name: Restore frontend dependencies
         run: npm ci
 
-      - name: Verify Tiled maps
-        run: npm run tiled:verify
-
       - name: Test frontend
         run: npm test
 
@@ -79,7 +76,7 @@ jobs:
           dotnet tool run dotnet-ef migrations has-pending-model-changes
           --project server/src/EverrichRPG.Infrastructure/EverrichRPG.Infrastructure.csproj
           --startup-project server/src/EverrichRPG.Api/EverrichRPG.Api.csproj
-          --context GameDbContext
+          --context AppDbContext
 
       - name: Publish API for IIS
         run: >
@@ -285,7 +282,7 @@ jobs:
 
           $settings = [ordered]@{
             ConnectionStrings = [ordered]@{
-              GameDatabase = $env:DATABASE_CONNECTION_STRING
+              AppDatabase = $env:DATABASE_CONNECTION_STRING
             }
             Database = [ordered]@{
               Provider = $env:DATABASE_PROVIDER
@@ -308,7 +305,7 @@ jobs:
 
           $environmentVariables = [ordered]@{
             "ASPNETCORE_ENVIRONMENT" = "Production"
-            "ConnectionStrings__GameDatabase" = $env:DATABASE_CONNECTION_STRING
+            "ConnectionStrings__AppDatabase" = $env:DATABASE_CONNECTION_STRING
             "Database__Provider" = $env:DATABASE_PROVIDER
             "Database__ApplyMigrations" = "true"
             "Serilog__WriteTo__1__Args__path" = "logs/app-.clef"
@@ -409,7 +406,7 @@ jobs:
         run: |
           Write-Warning "Recreating the production MySQL database. All existing data will be deleted."
           $env:ASPNETCORE_ENVIRONMENT = "Production"
-          $env:ConnectionStrings__GameDatabase = $env:DATABASE_CONNECTION_STRING
+          $env:ConnectionStrings__AppDatabase = $env:DATABASE_CONNECTION_STRING
           $env:Database__Provider = "MySql"
           $env:Database__ApplyMigrations = "true"
           $env:Serilog__WriteTo__1__Args__path = "logs/database-maintenance-.clef"
@@ -425,7 +422,7 @@ jobs:
             Pop-Location
           }
 
-          Write-Host "Production MySQL database was recreated, migrated, and seeded successfully."
+          Write-Host "Production MySQL database was recreated and migrated successfully."
 
       - name: Configure API IIS site path
         shell: powershell
@@ -522,7 +519,7 @@ jobs:
             Remove-Item $diagnosticOut, $diagnosticErr -Force -ErrorAction SilentlyContinue
 
             $env:ASPNETCORE_ENVIRONMENT = "Production"
-            $env:ConnectionStrings__GameDatabase = $env:DATABASE_CONNECTION_STRING
+            $env:ConnectionStrings__AppDatabase = $env:DATABASE_CONNECTION_STRING
             $env:Database__Provider = $env:DATABASE_PROVIDER
             $env:Database__ApplyMigrations = "true"
             if ($env:DIAGNOSTICS_LOG_ACCESS_TOKEN) {
@@ -665,7 +662,7 @@ jobs:
             Write-Host "Masked web.config database environment variables:"
             [xml]$webConfig = Get-Content $webConfigPath
             $webConfig.configuration.'system.webServer'.aspNetCore.environmentVariables.add |
-              Where-Object { $_.name -like "Database__*" -or $_.name -eq "ConnectionStrings__GameDatabase" } |
+              Where-Object { $_.name -like "Database__*" -or $_.name -eq "ConnectionStrings__AppDatabase" } |
               ForEach-Object {
                 $value = $_.value -replace "Password=[^;]*", "Password=***"
                 Write-Host "$($_.name)=$value"
@@ -737,35 +734,6 @@ jobs:
           }
 
           Write-Warning $message
-
-      - name: Check public API smoke endpoints
-        if: ${{ vars.IIS_HEALTH_URL != '' }}
-        shell: powershell
-        run: |
-          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-          $healthUri = [Uri]$env:PUBLIC_HEALTH_URL
-          $apiBaseUrl = $healthUri.AbsoluteUri -replace "/health(/ready)?$", ""
-          $endpoints = @(
-            "$apiBaseUrl/shops/catalog",
-            "$apiBaseUrl/travelers/random?count=3"
-          )
-
-          foreach ($endpoint in $endpoints) {
-            Write-Host "API smoke check: $endpoint"
-            try {
-              $response = Invoke-WebRequest -Uri $endpoint -UseBasicParsing -TimeoutSec 30
-              if ($response.StatusCode -lt 200 -or $response.StatusCode -ge 300) {
-                throw "Unexpected status code $($response.StatusCode)."
-              }
-              if (-not $response.Content -or $response.Content.Length -lt 10) {
-                throw "Response body was empty or too short."
-              }
-            }
-            catch {
-              throw "API smoke check failed for $endpoint. Last error: $($_.Exception.Message)"
-            }
-          }
 
       - name: Deployment summary
         shell: powershell

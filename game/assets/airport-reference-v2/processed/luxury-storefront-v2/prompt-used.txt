@@ -1,6 +1,0 @@
-Use the visible airport photographs above as environmental reference for premium airport boutiques with warm amber glass-block lighting, black framing, cream wall panels and minimal open displays. Create one original standalone luxury boutique storefront prop for a retro 16-bit top-down RPG.
-
-Three-quarter top-down front view, rectangular black and dark navy frame, amber glowing glass-block panels across the upper facade, warm cream interior, open central entrance, simple handbag-like abstract merchandise silhouettes on wall shelves, one small central display plinth. No readable text, no logo, no brand identity, no advertisements, no people.
-
-This is a collision-bearing wide map object. Keep the baseline perfectly horizontal, entrance visually obvious, silhouette clean, fully contained with generous padding, crisp intentional 16-bit pixel art, limited airport gray/navy/amber palette. Solid #FF00FF background only.
-

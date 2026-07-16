@@ -1,6 +1,0 @@
-Use case: stylized-concept
-Asset type: overhead airport wayfinding sign
-Primary request: Wide deep-blue airport sign with simplified gate, restroom, information, arrow and terminal map pictograms.
-Style: clean pixel-inspired HD RPG prop, brushed-silver frame, cool-white edge lighting.
-Constraints: no real airport names, no brands, no readable sentences, no floor or cast shadow.
-Generation: built-in imagegen on solid #FF00FF, followed by generate2dsprite cleanup and scale normalization.

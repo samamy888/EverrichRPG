@@ -1,1 +1,0 @@
-﻿Use docs/IMG_20260601_150924.jpg and the 3x3 layout guide as references. Generate a 3x3 modern pixel-art airport compact prop pack: waiting bench, charging pedestal, luggage carts, cleaning trolley, queue barriers, recycling station, emergency cabinet, gate pedestal, lamp column. Solid #FF00FF background, no text, generous margins.

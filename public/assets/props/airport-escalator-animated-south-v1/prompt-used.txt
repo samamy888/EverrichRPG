@@ -1,1 +1,0 @@
-﻿2x2 animation sheet. South-facing airport escalator with stair tread highlights and cyan side lights, based on static escalator style. Solid #FF00FF background.

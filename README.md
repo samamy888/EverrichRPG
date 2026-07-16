@@ -1,89 +1,24 @@
-# EVERRICH RPG
+# Everrich RPG
 
-Phaser + TypeScript + Vite based rewrite baseline for a modular 2D RPG.
+這個分支是全新版本的架構起點。舊遊戲內容、美術資產、地圖、角色、商品、任務與遷移資料均已移除。
 
-## Quick Start
+## 保留的系統
+
+- Vite + TypeScript 前端
+- Vite + TypeScript 管理後台（`/backend/`）
+- .NET 10 Clean Architecture API
+- EF Core + MySQL migration 架構
+- Serilog、健康檢查、CORS 與錯誤處理
+- GitHub Actions、Docker、IIS 部署設定
+- 單元測試與整合測試專案
+
+## 開發指令
+
 ```powershell
-npm ci
+npm install
 npm run dev
+npm run backend:dev
+dotnet run --project server/src/EverrichRPG.Api/EverrichRPG.Api.csproj
 ```
 
-Build:
-```powershell
-npm run build
-```
-
-Map chunk pipeline:
-```powershell
-npm run map:slice
-```
-
-World data verify:
-```powershell
-npm run world:verify
-```
-
-Release prep (map slice + verify + IIS build):
-```powershell
-npm run release:prep
-```
-
-Preview build:
-```powershell
-npm run preview
-```
-
-Backend:
-
-```powershell
-dotnet build server/EverrichRPG.slnx
-dotnet test server/EverrichRPG.slnx
-dotnet run --project server/src/EverrichRPG.Api --urls http://localhost:5080
-```
-
-Backend setup and deployment details are in `server/README.md`.
-
-## 操作方式
-- Grid movement: `WASD`, Arrow keys, or mobile touch D-pad
-- Interact: `Enter`, `Space`, or mobile `A`
-- Close dialogue: `Esc`, mobile `B`, or interact again
-- Collision and portal debug overlay: `E`
-- Mobile pause/help: `MENU`
-- Enter a region: walk into the yellow portal
-- Test fade transition: `T` (temporary Phase 1 shortcut)
-- Open menu: `M`
-
-目前版本：
-- Logical resolution: `480x320`
-- Tile size: `16x16`
-- Regions: entrance, central shopping street and three duty-free shops
-- Player variants: male and female traveler
-- Save behavior: current region and traveler restore after refresh
-- Generated map source: `game/assets/tilesets/duty-free-terminal-v1-source.png`
-- Tileset contract: `game/assets/tilesets/duty-free-terminal-v1.manifest.json`
-
-Regenerate extracted tiles and props:
-```powershell
-python scripts/extract-duty-free-tileset.py
-```
-
-## Architecture
-- `src/data/prototypeRegions.ts`: Phase 1 blockout region data
-- `src/scenes/WorldScene.ts`: shared data-driven exploration scene
-- `src/scenes/CharacterSelectScene.ts`: traveler selection
-- `src/systems/prototypeSave.ts`: prototype save and restore
-- `src/ui/UIOverlay.ts`: HUD and mobile touch controls
-- `game/content`: new content drafts and world topology
-- `game/schemas`: new content contracts
-- `migration`: legacy inventory and migration decisions
-
-## Deployment to IIS
-1. Run `npm run build`.
-2. Copy `dist/*` and `web.config` to IIS website root.
-3. Ensure IIS URL Rewrite module is installed.
-4. Verify SPA routing fallback works.
-
-## 專案計畫
-
-- `PROJECT_PLAN.md`：唯一的玩法、開發階段與驗收計畫。
-- `docs/Tiled_Map_Workflow.md`：Tiled 地圖編輯操作手冊。
+MySQL 可使用 `docker compose up database` 啟動。本機預設不會自動執行 migration；需要時設定 `Database__ApplyMigrations=true`。

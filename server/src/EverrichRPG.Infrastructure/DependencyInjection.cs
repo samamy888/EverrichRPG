@@ -11,32 +11,27 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var databaseProvider = configuration["Database:Provider"] ?? "MySql";
-        var inMemoryDatabaseName = $"EverrichRPG-{Guid.NewGuid():N}";
+        var provider = configuration["Database:Provider"] ?? "MySql";
 
-        services.AddDbContext<GameDbContext>(options =>
+        services.AddDbContext<AppDbContext>(options =>
         {
-            if (databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
+            if (provider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
             {
-                options.UseInMemoryDatabase(inMemoryDatabaseName);
+                options.UseInMemoryDatabase($"EverrichRPG-{Guid.NewGuid():N}");
                 return;
             }
 
-            var connectionString = configuration.GetConnectionString("GameDatabase")
+            if (!provider.Equals("MySql", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException(
+                    $"Unsupported database provider '{provider}'. Use MySql or InMemory.");
+            }
+
+            var connectionString = configuration.GetConnectionString("AppDatabase")
                 ?? throw new InvalidOperationException(
-                    "Connection string 'GameDatabase' is not configured.");
-            if (databaseProvider.Equals("MySql", StringComparison.OrdinalIgnoreCase) ||
-                databaseProvider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
-            {
-                options.UseMySQL(connectionString);
-                return;
-            }
-
-            throw new InvalidOperationException(
-                $"Unsupported database provider '{databaseProvider}'. Use InMemory for tests or MySql for persistent data.");
+                    "Connection string 'AppDatabase' is not configured.");
+            options.UseMySQL(connectionString);
         });
-        services.AddScoped<CommerceCatalogSeeder>();
-        services.AddScoped<TravelerRosterSeeder>();
 
         return services;
     }

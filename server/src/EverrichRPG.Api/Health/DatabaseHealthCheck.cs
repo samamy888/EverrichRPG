@@ -13,9 +13,8 @@ public sealed class DatabaseHealthCheck(IServiceScopeFactory scopeFactory) : IHe
         try
         {
             await using var scope = scopeFactory.CreateAsyncScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-
-            return await dbContext.Database.CanConnectAsync(cancellationToken)
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            return await db.Database.CanConnectAsync(cancellationToken)
                 ? HealthCheckResult.Healthy()
                 : HealthCheckResult.Unhealthy("Database is unavailable.");
         }

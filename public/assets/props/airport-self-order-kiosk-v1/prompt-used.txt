@@ -1,5 +1,0 @@
-Create a 2-by-2 animated airport self-order food Kiosk sheet on solid #FF00FF.
-Preserve one identical tall white and ivory machine with a portrait screen, payment terminal,
-contactless pad, receipt slot, orange pictogram header, navy base and gold accents.
-Screens cycle through food categories, menu grid, cart summary and payment confirmation.
-Use abstract non-readable interface content, stable scale and bottom anchor.

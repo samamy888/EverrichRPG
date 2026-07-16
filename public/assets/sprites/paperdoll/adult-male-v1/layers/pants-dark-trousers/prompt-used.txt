@@ -1,1 +1,0 @@
-Split pants layer from generated outfit-blue-travel layer.

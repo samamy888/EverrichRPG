@@ -1,6 +1,0 @@
-Use the visible airport photographs above as environmental reference for the large blue airport directory screens and suspended wayfinding displays. Create one original standalone interactive airport digital map kiosk prop for a retro 16-bit top-down RPG.
-
-Three-quarter top-down view, front-facing wide blue illuminated screen in a dark navy and brushed-metal frame, compact supporting base, subtle cyan glow, warm gold trim matching a premium duty-free concourse. The screen may contain abstract colored blocks and tiny non-legible map marks only: no readable words, gate numbers, logos, brands, arrows, copied interface, advertisements, people, or faces.
-
-The prop must be centered, fully contained with generous padding, strong readable silhouette, collision-friendly rectangular base, crisp intentional pixel art, same scale and palette as a 16x16-tile RPG map. Solid #FF00FF background only, no shadow touching image edges, no extra objects.
-

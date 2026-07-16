@@ -1,1 +1,0 @@
-4x4 diagonal walking sheet generated with image_gen. Rows: down-left, down-right, up-left, up-right. Processed to 96x96 transparent frames.

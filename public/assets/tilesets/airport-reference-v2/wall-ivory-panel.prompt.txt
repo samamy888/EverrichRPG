@@ -1,7 +1,0 @@
-Use case: stylized-concept
-Asset type: seamless 2D RPG airport wall tile texture
-Primary request: Edit the existing ivory wall panel into an almost-pure white modern airport wall while preserving its small horizontal rectangular panel grid.
-Palette: warm white #F7F6F2 to #FCFCFA with pale warm-gray grout and edge shadows near #DDDCD6.
-Style: clean contemporary premium airport architecture, understated, low contrast, softly dimensional.
-Constraints: no yellow cast, no blue cast, no objects, no text, no perspective, evenly lit, orthographic, seamless on every edge, readable at tiny game-tile scale.
-Generation: built-in imagegen edit, followed by local palette and tile-scale normalization.

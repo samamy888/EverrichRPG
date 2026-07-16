@@ -1,5 +1,0 @@
-Create a paper-doll HAIR ONLY overlay walking sprite sheet for an adult male airport traveler NPC in EverrichRPG polished GBA-era retro pixel-art style. The sheet must contain ONLY neat black side-part short hair pieces aligned to a bald adult male base body walking cycle. Do not draw face, skin, body, clothes, shoes, bag, or full character; only hair pixels with transparent-ready solid #FF00FF background everywhere else.
-
-Exact layout: 4 columns x 4 rows on solid pure #FF00FF magenta background, no grid, no labels. Each invisible cell is 96x96-style, same frame positions and head angles as a top-down 3/4 RPG walking base.
-
-Rows: down/front hair, left-facing hair, right-facing hair, up/back hair. Columns: contact, passing, opposite contact, passing. Hair must stay centered and consistent, with crisp dark outline and subtle blue-black highlights. It should fit over an adult male chibi traveler head without drifting.

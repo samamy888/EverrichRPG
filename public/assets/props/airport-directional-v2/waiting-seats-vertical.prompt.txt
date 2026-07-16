@@ -1,1 +1,0 @@
-Derived from existing airport-atrium-v1 waiting-seats.png; rotated into non-diagonal vertical waiting seat prop for EVERRICH airport map style.

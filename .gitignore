@@ -11,10 +11,9 @@ logs/
 *.db-shm
 *.db-wal
 coverage/
+artifacts/
+tmp/
 __pycache__/
 *.pyc
-*.tiled-session
-/tmp/
-/tools/agent-sprite-forge/
+.codex-logs/
 .codex-remote-attachments/
-/backend/src/generated/assetInventory.json

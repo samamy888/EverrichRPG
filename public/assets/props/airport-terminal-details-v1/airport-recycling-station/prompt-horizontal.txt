@@ -1,1 +1,0 @@
-﻿Redraw airport recycling station as a front-facing horizontal row, not diagonal or isometric. Use the prior recycling station as style reference. Solid #FF00FF background.

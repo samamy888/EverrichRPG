@@ -1,1 +1,0 @@
-﻿Four-frame back-facing walking-up cycle for the existing male traveler. 2x2 order: left contact, passing, right contact, passing. Clear alternating legs, project-native GBA-style pixel art, solid #FF00FF background.

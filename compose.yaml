@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile.api
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__GameDatabase: Server=database;Port=3306;Database=everrich_rpg;User=root;Password=${MYSQL_ROOT_PASSWORD:-everrich_dev};TreatTinyAsBoolean=true
+      ConnectionStrings__AppDatabase: Server=database;Port=3306;Database=everrich_rpg;User=root;Password=${MYSQL_ROOT_PASSWORD:-everrich_dev};TreatTinyAsBoolean=true
       Database__Provider: MySql
       Database__ApplyMigrations: "true"
       Cors__AllowedOrigins__0: http://127.0.0.1:5173

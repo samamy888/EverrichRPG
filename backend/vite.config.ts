@@ -5,7 +5,7 @@ export default defineConfig({
   root: "backend",
   build: {
     outDir: "../dist/backend",
-    emptyOutDir: true
+    emptyOutDir: false
   },
   server: {
     host: "0.0.0.0",

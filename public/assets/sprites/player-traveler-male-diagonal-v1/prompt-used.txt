@@ -1,9 +1,0 @@
-Create a pixel-art RPG character animation sprite sheet for a male airport traveler, matching this established style: chibi young adult male, dark brown tousled hair, blue jacket over light shirt, dark pants, small shoulder bag/backpack strap, clean modern airport RPG style, 32-bit pixel art with crisp outlines and compact proportions. Generate a single 4 columns x 4 rows animation sheet on a solid pure magenta #FF00FF background. Each frame should fit inside a 96x96 cell, character centered, same scale, same feet/bottom anchor, no cropping, no shadows outside the character.
-
-Rows from top to bottom must be:
-1) walking diagonally down-left, body and face angled 45 degrees down-left
-2) walking diagonally down-right, body and face angled 45 degrees down-right
-3) walking diagonally up-left, back/side visible angled 45 degrees up-left
-4) walking diagonally up-right, back/side visible angled 45 degrees up-right
-
-Each row has 4 walking frames: idle/contact, passing, opposite contact, passing. Make the diagonal direction obvious in head, torso, bag strap, feet placement, and arm swing. Avoid making down-left/down-right look like straight front view; avoid making up-left/up-right look like straight back view. Keep the same character identity in all frames. The output should be one clean sprite sheet only, no text, no labels, no grid lines, no extra props.

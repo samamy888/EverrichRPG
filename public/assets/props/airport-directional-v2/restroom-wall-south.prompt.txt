@@ -1,7 +1,0 @@
-Use case: stylized-concept
-Asset type: wall-mounted airport restroom entrance prop
-Primary request: Create a modern airport restroom entrance built flush into a north wall and facing south toward the player.
-Style: project-native clean 2D RPG prop, modern warm-white airport panels, pale warm-gray seams, brushed silver trim, subtle depth.
-Details: two recessed entrances, male and female pictograms, one accessible pictogram, soft neutral interior light.
-Constraints: straight back edge for wall alignment, no freestanding storefront silhouette, no black-and-gold styling, no words, no brand, no people, no cast shadow.
-Generation: built-in imagegen on solid #FF00FF, followed by generate2dsprite chroma-key cleanup and scale normalization.

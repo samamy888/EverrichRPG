@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api/v1";
+import { API_BASE_URL } from "../config";
 
 export interface SystemStatus {
   name: string;
@@ -6,8 +6,10 @@ export interface SystemStatus {
   version: string;
 }
 
-export async function loadSystemStatus(): Promise<SystemStatus> {
-  const response = await fetch(`${API_BASE_URL}/system`);
+export async function getSystemStatus(): Promise<SystemStatus> {
+  const response = await fetch(`${API_BASE_URL}/system`, {
+    headers: { Accept: "application/json" }
+  });
   if (!response.ok) throw new Error(`API returned ${response.status}`);
   return response.json() as Promise<SystemStatus>;
 }
