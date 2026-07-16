@@ -19,6 +19,8 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHealthChecks()
@@ -33,6 +35,15 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
 var app = builder.Build();
 
 app.UseExceptionHandler();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Everrich RPG API v1");
+        options.DocumentTitle = "Everrich RPG API";
+    });
+}
 if (!app.Environment.IsEnvironment("Testing")) app.UseHttpsRedirection();
 app.UseCors();
 app.UseMiddleware<RequestLoggingMiddleware>();

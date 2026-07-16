@@ -11,3 +11,5 @@ Clean Architecture solution targeting .NET 10:
 The schema intentionally contains no gameplay tables. Add new aggregates first in
 the Domain project, configure persistence in Infrastructure, then create an EF
 Core migration.
+
+Development Swagger UI: `http://localhost:5080/swagger`
