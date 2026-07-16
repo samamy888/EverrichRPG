@@ -15,3 +15,9 @@
 ## 資料庫
 
 MySQL schema 由 EF Core migration 管理。禁止在正式環境手動改表後不補 migration。測試使用 InMemory provider，正式與整合環境以 MySQL 為準。
+
+## 遊戲資產
+
+地圖視覺、runtime 物件與玩法資料必須分離：地面與結構使用 Tile／Chunk，Props 與 Actors 使用獨立透明資產，碰撞、事件、出入口及出生點使用結構化 metadata。完整場景母版只作為美術參考與驗收依據，不直接充當可遊玩的地圖。
+
+詳細的拆分、生產與驗收規則統一維護於 [遊戲美術與資產製作規範](GAME_ART_GUIDE.md)。

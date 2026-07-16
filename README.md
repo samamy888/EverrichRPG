@@ -22,3 +22,5 @@ dotnet run --project server/src/EverrichRPG.Api/EverrichRPG.Api.csproj
 ```
 
 MySQL 可使用 `docker compose up database` 啟動。本機預設不會自動執行 migration；需要時設定 `Database__ApplyMigrations=true`。
+
+專案文件的用途與閱讀順序請參考 [文件總覽](docs/README.md)。
