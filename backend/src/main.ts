@@ -14,8 +14,13 @@ import {
   type TravelerInput,
   type TravelerSummary
 } from "./api";
+import {
+  loadAssetInventory,
+  type AssetInventory,
+  type AssetInventoryItem
+} from "./assetInventory";
 
-type ViewKey = "dashboard" | "products" | "travelers";
+type ViewKey = "dashboard" | "products" | "travelers" | "assets";
 type Editor = { kind: "product" | "traveler"; id?: string } | null;
 
 interface BackendState {
@@ -27,6 +32,15 @@ interface BackendState {
   error: string | null;
   mutationError: string | null;
   editor: Editor;
+  assetQuery: string;
+  assetScope: string;
+  assetCategory: string;
+  assetType: string;
+  assetDuplicatesOnly: boolean;
+  assetPage: number;
+  assetInventory: AssetInventory | null;
+  assetLoading: boolean;
+  assetError: string | null;
 }
 
 const state: BackendState = {
@@ -37,7 +51,16 @@ const state: BackendState = {
   saving: false,
   error: null,
   mutationError: null,
-  editor: null
+  editor: null,
+  assetQuery: "",
+  assetScope: "all",
+  assetCategory: "all",
+  assetType: "all",
+  assetDuplicatesOnly: false,
+  assetPage: 0,
+  assetInventory: null,
+  assetLoading: false,
+  assetError: null
 };
 
 function getAppRoot(): HTMLDivElement {
@@ -83,12 +106,12 @@ function render(): void {
   appRoot.innerHTML = `
     <aside class="sidebar">
       <div class="brand"><span class="brand-mark">E</span><div><strong>EVERRICH RPG</strong><small>管理後台</small></div></div>
-      <nav>${navButton("dashboard", "總覽")}${navButton("products", "商品管理")}${navButton("travelers", "旅客管理")}</nav>
+      <nav>${navButton("dashboard", "總覽")}${navButton("products", "商品管理")}${navButton("travelers", "旅客管理")}${navButton("assets", "資產管理")}</nav>
       <p class="sidebar-note">共用 API：<code>/api/v1</code></p>
     </aside>
     <main class="shell">
       <header class="topbar"><div><p class="eyebrow">Airport Operations Console</p><h1>${viewTitle(state.view)}</h1></div><button class="ghost-button" data-action="refresh">重新整理</button></header>
-      ${state.loading ? renderLoading() : state.error ? renderError(state.error) : renderView(productCount, shopCount, travelerCount)}
+      ${state.view === "assets" ? renderAssets() : state.loading ? renderLoading() : state.error ? renderError(state.error) : renderView(productCount, shopCount, travelerCount)}
     </main>
     ${renderEditor()}`;
   bindEvents();
@@ -100,6 +123,7 @@ function bindEvents(): void {
       state.view = button.dataset.view as ViewKey;
       state.editor = null;
       render();
+      if (state.view === "assets") void ensureAssetInventory();
     });
   });
   appRoot.querySelector<HTMLButtonElement>("[data-action='refresh']")?.addEventListener("click", () => void loadData());
@@ -111,6 +135,7 @@ function bindEvents(): void {
   appRoot.querySelectorAll<HTMLButtonElement>("[data-action='delete-traveler']").forEach((button) => button.addEventListener("click", () => void removeItem("traveler", button.dataset.id!)));
   appRoot.querySelectorAll<HTMLElement>("[data-action='close-editor']").forEach((element) => element.addEventListener("click", closeEditor));
   appRoot.querySelector<HTMLFormElement>("#editor-form")?.addEventListener("submit", (event) => void saveEditor(event));
+  bindAssetEvents();
 }
 
 function navButton(view: ViewKey, label: string): string {
@@ -118,7 +143,7 @@ function navButton(view: ViewKey, label: string): string {
 }
 
 function viewTitle(view: ViewKey): string {
-  return { dashboard: "營運總覽", products: "商品管理", travelers: "旅客管理" }[view];
+  return { dashboard: "營運總覽", products: "商品管理", travelers: "旅客管理", assets: "資產管理" }[view];
 }
 
 function renderLoading(): string { return `<section class="panel state-panel">資料載入中...</section>`; }
@@ -127,6 +152,7 @@ function renderError(error: string): string { return `<section class="panel stat
 function renderView(productCount: number, shopCount: number, travelerCount: number): string {
   if (state.view === "products") return renderProducts();
   if (state.view === "travelers") return renderTravelers();
+  if (state.view === "assets") return renderAssets();
   const products = state.catalog?.products ?? [];
   return `<section class="cards">
     ${metricCard("商店", shopCount, "目前可管理的免稅店")}
@@ -163,6 +189,161 @@ function renderTravelers(): string {
 function renderTravelerRow(traveler: TravelerSummary): string {
   const id = escapeHtml(traveler.id);
   return `<tr><td><strong>${escapeHtml(traveler.name)}</strong><small>${escapeHtml(traveler.dialogue)}</small></td><td><code>${escapeHtml(traveler.variant)}</code></td><td>${escapeHtml(traveler.appearance.gender)} / ${escapeHtml(traveler.appearance.ageGroup)}</td><td>${escapeHtml(traveler.appearance.hairStyle)}</td><td>${escapeHtml(traveler.appearance.top)}</td><td>${escapeHtml(traveler.appearance.pants)}</td><td>${escapeHtml(traveler.movementType)} · ${escapeHtml(traveler.facing)} · ${traveler.speed}</td><td><div class="row-actions"><button class="link-button" data-action="edit-traveler" data-id="${id}">編輯</button><button class="link-button danger" data-action="delete-traveler" data-id="${id}">停用</button></div></td></tr>`;
+}
+
+const ASSET_PAGE_SIZE = 100;
+
+function renderAssets(): string {
+  if (state.assetLoading) return `<section class="panel state-panel">資產清冊載入中...</section>`;
+  if (state.assetError) return renderError(state.assetError);
+  if (!state.assetInventory) return `<section class="panel state-panel">準備資產清冊...</section>`;
+  const inventory = state.assetInventory;
+  const categories = [...new Set(inventory.assets.map((asset) => asset.category))].sort();
+  const types = [...new Set(inventory.assets.map((asset) => asset.type))].sort();
+  const filtered = filteredAssets();
+  const pageCount = Math.max(1, Math.ceil(filtered.length / ASSET_PAGE_SIZE));
+  if (state.assetPage >= pageCount) state.assetPage = pageCount - 1;
+  return `<section class="cards asset-cards">
+    ${metricCard("全部資產", inventory.summary.totalFiles, formatBytes(inventory.summary.totalBytes))}
+    ${metricCard("部署資產", inventory.summary.runtimeFiles, "public/assets")}
+    ${metricCard("來源資產", inventory.summary.sourceFiles, "game/assets")}
+    ${metricCard("重複群組", inventory.summary.duplicateGroups, `${inventory.summary.duplicateFiles} 個重複檔案`)}
+  </section>
+  <section class="panel asset-panel">
+    <div class="panel-heading"><div><h2>資產清冊</h2><span id="asset-result-count">${filtered.length} / ${inventory.summary.totalFiles} 筆</span></div><span class="inventory-note">每次後台 build 自動重新掃描</span></div>
+    <div class="asset-filters">
+      <label class="search-field"><span>搜尋</span><input id="asset-search" type="search" value="${escapeHtml(state.assetQuery)}" placeholder="名稱、路徑、格式或雜湊"></label>
+      ${filterSelect("asset-scope", "範圍", [["all", "全部"], ["runtime", "已部署"], ["source", "來源"]], state.assetScope)}
+      ${filterSelect("asset-category", "分類", [["all", "全部"], ...categories.map((value) => [value, assetCategoryLabel(value)] as [string, string])], state.assetCategory)}
+      ${filterSelect("asset-type", "類型", [["all", "全部"], ...types.map((value) => [value, assetTypeLabel(value)] as [string, string])], state.assetType)}
+      <label class="duplicate-toggle"><input id="asset-duplicates" type="checkbox" ${state.assetDuplicatesOnly ? "checked" : ""}><span>只看重複檔</span></label>
+    </div>
+    <div class="table-wrap asset-table-wrap"><table class="asset-table"><thead><tr><th>預覽</th><th>資產</th><th>分類</th><th>範圍</th><th>類型</th><th>大小</th><th>重複</th></tr></thead><tbody id="asset-table-body">${renderAssetRows(filtered)}</tbody></table></div>
+    <div id="asset-pagination">${renderAssetPagination(filtered.length)}</div>
+  </section>`;
+}
+
+function filterSelect(id: string, label: string, options: [string, string][], selected: string): string {
+  return `<label class="filter-field"><span>${label}</span><select id="${id}">${options.map(([value, text]) => `<option value="${escapeHtml(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(text)}</option>`).join("")}</select></label>`;
+}
+
+function filteredAssets(): AssetInventoryItem[] {
+  const inventory = state.assetInventory;
+  if (!inventory) return [];
+  const query = state.assetQuery.trim().toLowerCase();
+  return inventory.assets.filter((asset) => {
+    if (state.assetScope !== "all" && asset.scope !== state.assetScope) return false;
+    if (state.assetCategory !== "all" && asset.category !== state.assetCategory) return false;
+    if (state.assetType !== "all" && asset.type !== state.assetType) return false;
+    if (state.assetDuplicatesOnly && asset.duplicateCount < 2) return false;
+    if (!query) return true;
+    return `${asset.name} ${asset.path} ${asset.extension} ${asset.role} ${asset.sha256}`.toLowerCase().includes(query);
+  });
+}
+
+function renderAssetRows(assets: AssetInventoryItem[]): string {
+  const start = state.assetPage * ASSET_PAGE_SIZE;
+  const page = assets.slice(start, start + ASSET_PAGE_SIZE);
+  if (page.length === 0) return `<tr><td colspan="7" class="empty-cell">找不到符合條件的資產</td></tr>`;
+  return page.map(renderAssetRow).join("");
+}
+
+function renderAssetRow(asset: AssetInventoryItem): string {
+  const imageUrl = asset.url && asset.type === "image" ? assetUrl(asset.url) : null;
+  const preview = imageUrl
+    ? `<a href="${escapeHtml(imageUrl)}" target="_blank" rel="noreferrer"><img class="asset-thumbnail" src="${escapeHtml(imageUrl)}" alt="" loading="lazy"></a>`
+    : `<span class="asset-file-icon">${escapeHtml(asset.extension.slice(0, 4).toUpperCase())}</span>`;
+  return `<tr><td>${preview}</td><td><strong>${escapeHtml(asset.name)}</strong><small class="asset-path" title="${escapeHtml(asset.path)}">${escapeHtml(asset.path)}</small><small><code>${escapeHtml(asset.sha256.slice(0, 12))}</code> · ${escapeHtml(asset.role)}</small></td><td><span class="asset-tag">${escapeHtml(assetCategoryLabel(asset.category))}</span></td><td>${asset.scope === "runtime" ? "已部署" : "來源"}</td><td>${escapeHtml(assetTypeLabel(asset.type))}<small>.${escapeHtml(asset.extension)}</small></td><td>${formatBytes(asset.bytes)}</td><td>${asset.duplicateCount > 1 ? `<span class="duplicate-badge">${asset.duplicateCount} 份</span>` : "—"}</td></tr>`;
+}
+
+function renderAssetPagination(total: number): string {
+  const pageCount = Math.max(1, Math.ceil(total / ASSET_PAGE_SIZE));
+  return `<div class="pagination"><span>第 ${state.assetPage + 1} / ${pageCount} 頁</span><div><button class="ghost-button" data-action="asset-prev" ${state.assetPage === 0 ? "disabled" : ""}>上一頁</button><button class="ghost-button" data-action="asset-next" ${state.assetPage >= pageCount - 1 ? "disabled" : ""}>下一頁</button></div></div>`;
+}
+
+function bindAssetEvents(): void {
+  const search = appRoot.querySelector<HTMLInputElement>("#asset-search");
+  search?.addEventListener("input", () => {
+    state.assetQuery = search.value;
+    state.assetPage = 0;
+    updateAssetResults();
+  });
+  const bindings: [string, (value: string) => void][] = [
+    ["#asset-scope", (value) => { state.assetScope = value; }],
+    ["#asset-category", (value) => { state.assetCategory = value; }],
+    ["#asset-type", (value) => { state.assetType = value; }]
+  ];
+  for (const [selector, update] of bindings) {
+    appRoot.querySelector<HTMLSelectElement>(selector)?.addEventListener("change", (event) => {
+      update((event.currentTarget as HTMLSelectElement).value);
+      state.assetPage = 0;
+      updateAssetResults();
+    });
+  }
+  appRoot.querySelector<HTMLInputElement>("#asset-duplicates")?.addEventListener("change", (event) => {
+    state.assetDuplicatesOnly = (event.currentTarget as HTMLInputElement).checked;
+    state.assetPage = 0;
+    updateAssetResults();
+  });
+  bindAssetPagination();
+}
+
+function bindAssetPagination(): void {
+  appRoot.querySelector<HTMLButtonElement>("[data-action='asset-prev']")?.addEventListener("click", () => {
+    state.assetPage = Math.max(0, state.assetPage - 1);
+    updateAssetResults();
+  });
+  appRoot.querySelector<HTMLButtonElement>("[data-action='asset-next']")?.addEventListener("click", () => {
+    state.assetPage += 1;
+    updateAssetResults();
+  });
+}
+
+function updateAssetResults(): void {
+  if (!state.assetInventory) return;
+  const assets = filteredAssets();
+  const pageCount = Math.max(1, Math.ceil(assets.length / ASSET_PAGE_SIZE));
+  state.assetPage = Math.min(state.assetPage, pageCount - 1);
+  const tbody = appRoot.querySelector<HTMLTableSectionElement>("#asset-table-body");
+  const count = appRoot.querySelector<HTMLElement>("#asset-result-count");
+  const pagination = appRoot.querySelector<HTMLElement>("#asset-pagination");
+  if (tbody) tbody.innerHTML = renderAssetRows(assets);
+  if (count) count.textContent = `${assets.length} / ${state.assetInventory.summary.totalFiles} 筆`;
+  if (pagination) pagination.innerHTML = renderAssetPagination(assets.length);
+  bindAssetPagination();
+}
+
+async function ensureAssetInventory(): Promise<void> {
+  if (state.assetInventory || state.assetLoading) return;
+  state.assetLoading = true;
+  state.assetError = null;
+  render();
+  try {
+    state.assetInventory = await loadAssetInventory();
+  } catch (error) {
+    state.assetError = error instanceof Error ? error.message : "資產清冊載入失敗";
+  } finally {
+    state.assetLoading = false;
+    render();
+  }
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+}
+
+function assetUrl(url: string): string {
+  return import.meta.env.DEV ? `http://127.0.0.1:5173${url}` : url;
+}
+
+function assetCategoryLabel(category: string): string {
+  return ({ maps: "地圖", sprites: "角色", props: "場景物件", tilesets: "圖塊", fonts: "字型", audio: "音效", previews: "預覽", characters: "角色來源", reference: "參考素材" } as Record<string, string>)[category] ?? category;
+}
+
+function assetTypeLabel(type: string): string {
+  return ({ image: "圖片", audio: "音訊", tiled: "Tiled", font: "字型", data: "資料", text: "文字", other: "其他" } as Record<string, string>)[type] ?? type;
 }
 
 function openEditor(kind: "product" | "traveler", id?: string): void {

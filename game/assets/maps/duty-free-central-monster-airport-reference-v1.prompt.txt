@@ -1,0 +1,8 @@
+Use case: stylized-concept
+Asset type: in-world reference mockup for a playable Tiled/Phaser top-down tilemap
+Input image: user-provided airport duty-free pixel-art image used as a style and composition reference only, not an edit target.
+Primary request: Create an original airport duty-free central map concept for EverrichRPG, designed for a 48 by 30 logical grid with 16-pixel tiles and a 768 by 480 runtime map. Show a bottom-center entrance, a wide two-tile main aisle, a cashier focal point near the upper center, modular front-facing department shelves around the room, airport windows and wall trim along the top, two compact information kiosks, several planters, a staff-only door, and clear gate-direction signage.
+Style: polished retro pixel art with original handheld monster-taming RPG visual grammar, orthogonal 3/4 top-down perspective, crisp pixel clusters, one-pixel dark indigo outlines, simple readable shading, and no isometric diagonal storefronts.
+Palette: pale mint airport floor, ivory walls, steel blue window frames, deep navy airport signage, restrained category accents in mauve, green, amber, and violet.
+Constraints: no characters; maximum nine distinct runtime object families; coherent light from upper left; original airport pictograms only; no copyrighted characters, creatures, logos, franchise names, or copied proprietary assets.
+Avoid: high-resolution painted props scaled down, blurry resampling, mixed pixel density, photorealism, excessive texture noise, UI overlays, annotations, callout arrows, and watermarks.

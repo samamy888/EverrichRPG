@@ -10,7 +10,13 @@ from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
 REGIONS = ROOT / "public" / "assets" / "maps" / "tiled" / "regions"
-WALL_TEXTURE = ROOT / "public" / "assets" / "tilesets" / "airport-reference-v2" / "wall-ivory-panel.png"
+WALL_TEXTURES = {
+    "wall-ivory-panel": ROOT / "public" / "assets" / "tilesets" / "airport-reference-v2" / "wall-ivory-panel.png",
+    **{
+        f"monster-airport-wall-{direction}": ROOT / "public" / "assets" / "tilesets" / "duty-free-terminal-v1" / f"monster-airport-wall-{direction}.png"
+        for direction in ("up", "down", "left", "right")
+    },
+}
 
 
 def load_tiles(map_data: dict, map_path: Path) -> dict[int, Path]:
@@ -29,7 +35,7 @@ def alpha_composite_at(canvas: Image.Image, image: Image.Image, position: tuple[
 
 def tile_rectangle(canvas: Image.Image, texture: Image.Image, rect: tuple[int, int, int, int]) -> None:
     x, y, width, height = rect
-    tile = texture.convert("RGBA").resize((16, 16), Image.Resampling.LANCZOS)
+    tile = texture.convert("RGBA").resize((16, 16), Image.Resampling.NEAREST)
     for tile_y in range(y, y + height, 16):
         for tile_x in range(x, x + width, 16):
             crop = tile.crop((0, 0, min(16, x + width - tile_x), min(16, y + height - tile_y)))
@@ -58,8 +64,9 @@ def render(region_id: str, output_path: Path, scale: int) -> None:
             alpha_composite_at(canvas, tile, ((index % layer["width"]) * 16, (index // layer["width"]) * 16))
 
     wall_layer = next(layer for layer in map_data["layers"] if layer["name"] == "Walls")
-    wall_texture = Image.open(WALL_TEXTURE)
     for wall in wall_layer["objects"]:
+        properties = {p["name"]: p["value"] for p in wall.get("properties", [])}
+        wall_texture = Image.open(WALL_TEXTURES[properties.get("texture", "wall-ivory-panel")])
         tile_rectangle(canvas, wall_texture, (round(wall["x"]), round(wall["y"]), round(wall["width"]), round(wall["height"])))
 
     collision_layer = next(layer for layer in map_data["layers"] if layer["name"] == "Collision")

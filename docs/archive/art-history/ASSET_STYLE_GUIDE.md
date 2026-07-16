@@ -1,5 +1,7 @@
 # EverrichRPG 資產風格規範
 
+> 歷史文件：目前正式入口為 [`../../ART_PIPELINE.md`](../../ART_PIPELINE.md)，正式像素規格為 [`../../PIXEL_ART_STYLE_GUIDE.md`](../../PIXEL_ART_STYLE_GUIDE.md)。
+
 > 本文件是所有新資產、地圖物件、角色與動畫的美術基準。  
 > 之後產生或重畫資產時，優先遵守本文件，再依單一物件需求微調。
 

@@ -17,3 +17,4 @@ __pycache__/
 /tmp/
 /tools/agent-sprite-forge/
 .codex-remote-attachments/
+/backend/src/generated/assetInventory.json

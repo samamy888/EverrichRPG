@@ -47,6 +47,12 @@ export const WORLD_IMAGE_ASSETS: readonly ImageAssetDefinition[] = [
     "wall-ivory-panel",
     "/assets/tilesets/airport-reference-v2/wall-ivory-panel.png"
   ),
+  ...["up", "down", "left", "right"].map((direction) =>
+    image(
+      `monster-airport-wall-${direction}`,
+      `/assets/tilesets/duty-free-terminal-v1/monster-airport-wall-${direction}.png`
+    )
+  ),
   ...["service-counter", "display-shelf", "planter", "sign-pillar", "shop-doorway"].map(
     (name) =>
       image(name, `/assets/props/duty-free-terminal-v1/${name}.png`)

@@ -1,5 +1,7 @@
 # 角色紙娃娃系統 POC
 
+> 歷史 POC 紀錄：目前角色正式規格為 [`../../CHARACTER_ASSET_SPEC.md`](../../CHARACTER_ASSET_SPEC.md)。
+
 > 角色資產的正式規格以 `docs/CHARACTER_ASSET_SPEC.md` 為準。本文件只記錄目前 POC 的做法與落地狀態；之後新增或重畫資產時，必須先符合主規格。
 
 ## 目標

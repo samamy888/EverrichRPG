@@ -133,12 +133,7 @@ const expectedOrientedObjects = {
   "shopping-guide-sign": "airport-sign-pillar-west",
   "entrance-service-counter": "airport-information-counter-v2",
   "entrance-planter": "airport-planter-animated-west",
-  "liquor-food-doorway": "dutyfree-curved-storefront-east",
-  "gift-doorway": "dutyfree-luxury-storefront-west",
-  "left-display-shelf": "dutyfree-display-island-east",
-  "right-display-shelf": "dutyfree-display-island-west",
-  "central-digital-map": "airport-digital-map-kiosk-east",
-  "right-planter": "airport-planter-animated-west",
+  "right-planter": "planter",
   "beauty-directory": "airport-digital-map-kiosk-west",
 };
 
@@ -413,8 +408,8 @@ const centralPortalObjects = maps
   .layers.find((layer) => layer.name === "Portals")
   .objects;
 const expectedSideEntrances = {
-  "to-liquor-food": { x: 192, y: 208, width: 48, height: 80 },
-  "to-gift": { x: 528, y: 208, width: 48, height: 80 }
+  "to-liquor-food": { x: 0, y: 208, width: 64, height: 80 },
+  "to-gift": { x: 704, y: 208, width: 64, height: 80 }
 };
 for (const [portalId, expectedBounds] of Object.entries(expectedSideEntrances)) {
   const portal = centralPortalObjects.find((candidate) => candidate.name === portalId);

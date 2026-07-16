@@ -34,7 +34,14 @@ export interface PortalData {
 }
 
 export interface BoundaryData extends RectData {
-  texture: "floor-dark" | "floor-navy-panel" | "wall-ivory-panel";
+  texture:
+    | "floor-dark"
+    | "floor-navy-panel"
+    | "wall-ivory-panel"
+    | "monster-airport-wall-up"
+    | "monster-airport-wall-down"
+    | "monster-airport-wall-left"
+    | "monster-airport-wall-right";
 }
 
 export type FloorTexture =

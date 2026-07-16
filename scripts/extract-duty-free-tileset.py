@@ -12,6 +12,13 @@ def crop_tile(image: Image.Image, name: str, box: tuple[int, int, int, int]) -> 
     tile.save(TILE_OUTPUT / f"{name}.png")
 
 
+def save_cardinal_variants(image: Image.Image, output: Path, stem: str) -> None:
+    image.save(output / f"{stem}-down.png")
+    image.transpose(Image.Transpose.FLIP_TOP_BOTTOM).save(output / f"{stem}-up.png")
+    image.rotate(-90, expand=True).save(output / f"{stem}-left.png")
+    image.rotate(90, expand=True).save(output / f"{stem}-right.png")
+
+
 def remove_background(image: Image.Image, tolerance: int = 38) -> Image.Image:
     rgba = image.convert("RGBA")
     pixels = rgba.load()
@@ -52,6 +59,9 @@ def main() -> None:
     crop_tile(image, "floor-blue", (438, 36, 530, 130))
     crop_tile(image, "floor-gold", (36, 246, 130, 340))
     crop_tile(image, "floor-dark", (438, 246, 530, 340))
+
+    wall_down = image.crop((832, 36, 927, 130)).resize((16, 16), Image.Resampling.NEAREST)
+    save_cardinal_variants(wall_down, TILE_OUTPUT, "monster-airport-wall")
 
     crop_prop(image, "service-counter", (177, 494, 493, 580), 144)
     crop_prop(image, "display-shelf", (32, 603, 648, 708), 128)

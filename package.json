@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:sites": "npm run build && node scripts/build-sites-worker.mjs",
     "build:iis": "npm run build && npm run backend:build && node scripts/copy-web-config.mjs",
     "map:slice": "python scripts/slice-map-tiles.py --input public/assets/map/village-base.png --output-dir public/assets/map/terminal/tiles --tile-size 128 --meta-output public/assets/map/terminal/chunks-meta.json --url-base /assets/map/terminal/tiles",
     "migration:inventory": "node scripts/build-migration-inventory.mjs",
@@ -28,7 +29,8 @@
     "tiled:orient-props": "node scripts/orient-tiled-props.mjs",
     "tiled:normalize-firstgids": "node scripts/normalize-tiled-firstgids.mjs",
     "tiled:floor-variants": "node scripts/distribute-floor-variants.mjs",
-    "tiled:cohesion-refine": "node scripts/refine-airport-facilities.mjs && node scripts/refine-duty-free-entrance.mjs && node scripts/remove-legacy-sign-pillars.mjs && node scripts/refine-shop-checkouts.mjs && node scripts/distribute-floor-variants.mjs && node scripts/normalize-tiled-firstgids.mjs",
+    "tiled:cohesion-refine": "node scripts/refine-airport-facilities.mjs && node scripts/refine-duty-free-entrance.mjs && node scripts/remove-legacy-sign-pillars.mjs && node scripts/refine-shop-checkouts.mjs && node scripts/distribute-floor-variants.mjs && node scripts/refine-duty-free-central-monster-airport.mjs && node scripts/normalize-tiled-firstgids.mjs",
+    "tiled:monster-airport": "node scripts/refine-duty-free-central-monster-airport.mjs && node scripts/normalize-tiled-firstgids.mjs",
     "visual:qa": "python scripts/render-visual-qa.py",
     "tiled:verify": "node scripts/verify-tiled-maps.mjs",
     "shop:verify": "node scripts/verify-shop-data.mjs",

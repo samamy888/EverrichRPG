@@ -34,5 +34,11 @@
     "planter",
     "sign-pillar",
     "shop-doorway"
+  ],
+  "derivedCardinalAssets": [
+    "monster-airport-wall-up",
+    "monster-airport-wall-down",
+    "monster-airport-wall-left",
+    "monster-airport-wall-right"
   ]
 }

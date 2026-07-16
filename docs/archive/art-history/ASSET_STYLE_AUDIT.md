@@ -1,9 +1,11 @@
 # EverrichRPG 現役資產風格稽核
 
+> 歷史稽核紀錄：目前正式入口為 [`../../ART_PIPELINE.md`](../../ART_PIPELINE.md)。
+
 稽核日期：2026-07-14
 範圍：目前 Phaser 資產目錄、Tiled 九張區域地圖，以及代表性的角色、建築、商店與機場設施資產。
 
-![資產風格 A/B/C 對照板](asset-style-audit/asset-style-reference-board.png)
+![資產風格 A/B/C 對照板](../../asset-style-audit/asset-style-reference-board.png)
 
 ## 結論
 
@@ -127,7 +129,7 @@
 
 這批採 one-by-one 產圖，沒有把高瘦設施與寬型欄杆混入同一張方形 prop pack。每張資產保留 raw 圖、手寫 Prompt、透明化中間檔與 pipeline metadata，正式輸出統一為 `2×` source density、bottom-center 錨點。狀態仍是 `candidate-not-wired`，尚未切換 Tiled 或 Phaser 正式引用。
 
-![第一批 C 級候選資產遊戲尺寸預覽](../public/assets/props/airport-facilities-v3/airport-facilities-v3.preview.png)
+![第一批 C 級候選資產遊戲尺寸預覽](../../../public/assets/props/airport-facilities-v3/airport-facilities-v3.preview.png)
 
 ## 重建對照板
 

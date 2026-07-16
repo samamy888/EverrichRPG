@@ -48,6 +48,9 @@ npm run build:iis
 - 旅客新增、編輯與軟刪除 `/api/v1/travelers`
 - 商品價格、促銷期間、庫存與顯示順序管理
 - 旅客紙娃娃外觀、對話與 AI 移動參數管理
+- 資產清冊：自動盤點已部署與來源資產，支援搜尋、分類、格式及重複檔案篩選
+
+資產清冊由 `scripts/build-asset-inventory.mjs` 在後台開發或建置前自動產生，掃描 Git 追蹤中的 `public/assets` 與 `game/assets`，不需要人工維護清單。
 
 ## 下一階段
 
